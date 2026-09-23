@@ -1,0 +1,27 @@
+{
+  "name": "kaziforce-notification-system",
+  "private": true,
+  "description": "KaziForce Intelligent Notification System (monorepo root)",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "engines": {
+    "node": ">=22.22.0",
+    "npm": ">=11.20.0"
+  },
+  "scripts": {
+    "setup": "node scripts/setup-env.mjs && npm ci && docker compose up -d --build --wait && npm run db:deploy -w backend && npm run db:seed -w backend",
+    "dev": "docker compose up -d --wait && concurrently --names api,web --prefix-colors blue,green \"npm run dev -w backend\" \"npm run dev -w frontend\"",
+    "stop": "docker compose stop",
+    "lint": "npm run lint --workspaces",
+    "typecheck": "npm run typecheck --workspaces",
+    "test": "npm run test --workspaces",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5",
+    "prettier": "^3.9.9"
+  }
+}

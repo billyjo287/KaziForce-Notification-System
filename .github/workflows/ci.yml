@@ -1,0 +1,94 @@
+# Continuous integration: on every push and pull request, install, lint, type-check and test
+# all three apps. The backend job gets its own throwaway Postgres and Redis.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: 24
+  PYTHON_VERSION: '3.12'
+  # Needed by `prisma generate`, which runs after every npm install. Matches the services below.
+  DATABASE_URL: postgresql://kaziforce:kaziforce@localhost:5432/kaziforce
+  REDIS_URL: redis://localhost:6379
+
+jobs:
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: Check formatting (Prettier)
+        run: npm run format:check
+      - run: npm run lint -w frontend
+      - run: npm run typecheck -w frontend
+      - run: npm run test -w frontend
+      - run: npm run build -w frontend
+
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: kaziforce
+          POSTGRES_PASSWORD: kaziforce
+          POSTGRES_DB: kaziforce
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U kaziforce" --health-interval 5s --health-timeout 3s
+          --health-retries 20
+      redis:
+        image: redis:8-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 20
+    env:
+      NODE_ENV: test
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npm run lint -w backend
+      - run: npm run typecheck -w backend
+      - name: Apply database migrations
+        run: npm run db:deploy -w backend
+      - name: Check the seed script runs
+        run: npm run db:seed -w backend
+      - run: npm run test -w backend
+      - run: npm run build -w backend
+
+  ml-service:
+    name: ML service
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ml-service
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: ml-service/requirements-dev.txt
+      - run: pip install -r requirements-dev.txt
+      - name: Lint (ruff)
+        run: ruff check .
+      - name: Check formatting (ruff)
+        run: ruff format --check .
+      - run: pytest

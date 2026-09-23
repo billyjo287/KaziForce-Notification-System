@@ -1,0 +1,72 @@
+# Local development services. Start with `docker compose up -d` (or `npm run dev`).
+# Values come from the root .env file; the defaults after ":-" are used if it is missing.
+name: kaziforce
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-kaziforce}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kaziforce}
+      POSTGRES_DB: ${POSTGRES_DB:-kaziforce}
+      TZ: Africa/Nairobi
+    ports:
+      - '${POSTGRES_PORT:-5434}:5432'
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-kaziforce} -d ${POSTGRES_DB:-kaziforce}']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:8-alpine
+    # appendonly = write every change to disk, so queued jobs survive a restart (NFR-3).
+    # noeviction = never silently drop keys when memory is full (BullMQ requires this).
+    command: ['redis-server', '--appendonly', 'yes', '--maxmemory-policy', 'noeviction']
+    ports:
+      - '${REDIS_PORT:-6379}:6379'
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - '${MAILPIT_WEB_PORT:-8025}:8025' # web inbox: http://localhost:8025
+      - '${MAILPIT_SMTP_PORT:-1025}:1025' # the app sends email here
+    environment:
+      TZ: Africa/Nairobi
+    healthcheck:
+      test: ['CMD', '/mailpit', 'readyz']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  ml-service:
+    build: ./ml-service
+    env_file:
+      - path: ./ml-service/.env
+        required: false
+    ports:
+      - '${ML_SERVICE_PORT:-8000}:8000'
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'python',
+          '-c',
+          "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=2)",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  pg-data:
+  redis-data:

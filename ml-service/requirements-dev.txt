@@ -1,0 +1,5 @@
+# Development tools: tests (pytest; httpx2 is needed by FastAPI's TestClient) and the linter (ruff).
+-r requirements.txt
+pytest==9.1.1
+httpx2==2.13.1
+ruff==0.16.8

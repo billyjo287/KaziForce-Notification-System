@@ -1,0 +1,25 @@
+@import 'tailwindcss';
+
+/* Base readability rules (PRD section 6): 18px body text on phones, 16px+ elsewhere, 1.5 line height.
+   The full design system (colours, spacing, components) arrives in Phase 1. */
+@layer base {
+  html {
+    font-size: 112.5%;
+    line-height: 1.5;
+  }
+
+  @media (min-width: 768px) {
+    html {
+      font-size: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

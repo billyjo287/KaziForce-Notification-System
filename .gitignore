@@ -1,0 +1,45 @@
+# ---- Secrets: never commit real .env files (the .env.example files ARE committed) ----
+.env
+.env.*
+!.env.example
+
+# ---- Node ----
+node_modules/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+npm-debug.log*
+.vite/
+.eslintcache
+
+# Prisma generated client (rebuilt by `prisma generate`)
+backend/src/generated/
+
+# Playwright
+test-results/
+playwright-report/
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+
+# ML data and models: datasets and trained models stay out of Git (READMEs are kept)
+ml-service/data/*
+!ml-service/data/README.md
+ml-service/models/*
+!ml-service/models/README.md
+
+# ---- OS / editors ----
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.log

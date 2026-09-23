@@ -1,0 +1,19 @@
+[project]
+name = "kaziforce-ml-service"
+version = "0.1.0"
+description = "Spam detection and priority classification for KaziForce notifications"
+# The project targets Python 3.11+ (Docker and CI use 3.12). 3.10 is allowed temporarily so the
+# service also runs on Billy's current local Python; raise this to >=3.11 after upgrading.
+requires-python = ">=3.10"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = ["data", "models"]
+
+[tool.ruff.lint]
+# E/F = errors, I = import order, B = likely bugs, UP = modern syntax, N = naming
+select = ["E", "F", "I", "B", "UP", "N"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

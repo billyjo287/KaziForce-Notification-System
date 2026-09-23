@@ -1,0 +1,342 @@
+// KaziForce database schema.
+// Core notification tables (thesis ERD): User, Notification, UserPreference, DeliveryLog, MLMetadata.
+// Host marketplace tables (only there to create real notification events): Job, Application, Message.
+// Field meanings follow docs/PRD.md section 5.
+
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  moduleFormat        = "esm"
+  // .js import extensions so the compiled output runs on Node with ES modules.
+  importFileExtension = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------- Enums (fixed lists of allowed values) ----------
+
+// "business" is shown as "Employer" in the interface.
+enum Role {
+  worker
+  business
+  admin
+}
+
+enum SenderRole {
+  worker
+  business
+  admin
+  system
+}
+
+enum UserStatus {
+  active
+  suspended
+}
+
+enum Language {
+  en
+  sw
+}
+
+enum NotificationType {
+  job_alert
+  status_update
+  message
+  announcement
+}
+
+// Shown to users as "Urgent", "Important" and "For later".
+enum Priority {
+  urgent
+  medium
+  low
+}
+
+enum PredictionSource {
+  ml // trained model answered /predict
+  rules // rule-based classifier inside the ML service answered /predict
+  rules_fallback // ML service was slow (>500 ms) or down, so Node's own rules decided
+}
+
+enum NotificationStatus {
+  queued // saved, waiting for the pipeline
+  processing // being classified and routed
+  blocked // judged spam: never delivered, waiting for admin review
+  held // waiting for quiet hours to end or for the daily summary
+  sent // handed to at least one channel
+  failed // every channel failed after retries
+}
+
+enum Channel {
+  in_app
+  whatsapp
+  sms
+  email
+}
+
+enum DeliveryStatus {
+  pending // queued for this channel
+  sent // accepted by the provider
+  delivered // provider confirmed it reached the device/inbox
+  failed // this attempt failed (see error)
+}
+
+enum Preset {
+  recommended
+  urgent_only
+  everything
+  custom
+}
+
+enum TextSize {
+  normal
+  large
+}
+
+enum JobStatus {
+  open
+  closed // deadline passed or filled by the employer
+  removed // taken down by an admin
+}
+
+enum JobUrgency {
+  normal
+  urgent
+}
+
+enum ApplicationStatus {
+  received
+  reviewed
+  accepted
+  rejected
+}
+
+// ---------- Core notification tables ----------
+
+model User {
+  id                  String     @id @default(uuid()) @db.Uuid
+  email               String     @unique
+  passwordHash        String
+  name                String
+  role                Role
+  status              UserStatus @default(active)
+  language            Language   @default(en)
+  // Phone in E.164 format, e.g. +254712345678
+  phone               String?    @unique
+  phoneVerified       Boolean    @default(false)
+  // Explicit consent to receive SMS/WhatsApp (Kenya Data Protection Act 2019)
+  consentSmsWhatsapp  Boolean    @default(false)
+  consentAt           DateTime?
+  usesWhatsApp        Boolean    @default(false)
+  // Workers: where they want work and skill tags. Employers: company name and location.
+  location            String?
+  skills              String[]   @default([])
+  companyName         String?
+  lastLoginAt         DateTime?
+  // Set when the user asks to delete their account; a cleanup job deletes it within 30 days.
+  deletionRequestedAt DateTime?
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+
+  preference             UserPreference?
+  notificationsReceived  Notification[]  @relation("NotificationRecipient")
+  notificationsSent      Notification[]  @relation("NotificationSender")
+  notificationsCorrected Notification[]  @relation("NotificationCorrector")
+  jobsPosted             Job[]
+  applications           Application[]
+  messagesSent           Message[]       @relation("MessageSender")
+  messagesReceived       Message[]       @relation("MessageRecipient")
+
+  @@index([role, status])
+}
+
+// One row per user. Identity and consent live on User; how and when to be notified lives here.
+model UserPreference {
+  id                       String    @id @default(uuid()) @db.Uuid
+  userId                   String    @unique @db.Uuid
+  preset                   Preset    @default(recommended)
+  // External channels in order of preference. In-app is always on, so it is not listed.
+  channelOrder             Channel[] @default([whatsapp, sms, email])
+  // Per external channel: { "whatsapp": { "enabled": true, "threshold": "urgent_only" }, ... }
+  // threshold is one of "everything" | "urgent_and_important" | "urgent_only"
+  channelSettings          Json
+  urgentOnBothChannels     Boolean   @default(false)
+  // { "enabled": true, "start": "21:00", "end": "07:00" } in Africa/Nairobi time
+  quietHours               Json
+  dailySummary             Boolean   @default(true)
+  textSize                 TextSize  @default(normal)
+  reduceMotion             Boolean   @default(false)
+  // FR-4b: the "you reply faster on SMS" suggestion is shown once only
+  channelSuggestionShownAt DateTime?
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id            String             @id @default(uuid()) @db.Uuid
+  recipientId   String             @db.Uuid
+  recipientRole Role
+  senderId      String?            @db.Uuid
+  senderRole    SenderRole
+  type          NotificationType
+  // Finer grouping for the daily summary, e.g. "new_job", "application_update", "new_applicant"
+  category      String
+  title         String             @db.VarChar(120)
+  message       String             @db.VarChar(1000)
+  // In-app path the notification opens, e.g. /jobs/123
+  link          String?
+  jobId         String?            @db.Uuid
+  // Copied from the job so urgency and the escalation window can use it
+  deadlineAt    DateTime?
+  status        NotificationStatus @default(queued)
+
+  // ---- Classification (filled by /predict or the fallback rules) ----
+  predictedPriority  Priority?
+  priorityConfidence Float?
+  isSpam             Boolean           @default(false)
+  spamScore          Float?
+  modelVersion       String?
+  predictionSource   PredictionSource?
+  // Top features behind the decision: [{ "feature": "...", "weight": 0.4 }]
+  explanation        Json?
+
+  // ---- Admin corrections (training labels for the ML phase) ----
+  correctedPriority Priority?
+  correctedSpam     Boolean?
+  correctedById     String?   @db.Uuid
+  correctedAt       DateTime?
+
+  // ---- User interaction ----
+  readAt               DateTime?
+  markedNotImportant   Boolean   @default(false)
+  markedNotImportantAt DateTime?
+
+  // ---- Urgent escalation ----
+  escalatedAt DateTime?
+  escalatedTo Channel?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  recipient   User          @relation("NotificationRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  sender      User?         @relation("NotificationSender", fields: [senderId], references: [id], onDelete: SetNull)
+  correctedBy User?         @relation("NotificationCorrector", fields: [correctedById], references: [id], onDelete: SetNull)
+  job         Job?          @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  deliveries  DeliveryLog[]
+
+  @@index([recipientId, createdAt])
+  @@index([status])
+  @@index([isSpam, createdAt])
+}
+
+// One row per delivery attempt on one channel. Response time = openedAt - sentAt.
+model DeliveryLog {
+  id                String         @id @default(uuid()) @db.Uuid
+  notificationId    String         @db.Uuid
+  channel           Channel
+  attempt           Int            @default(1)
+  status            DeliveryStatus @default(pending)
+  // True when this send is the urgent "safety net" escalation to the next channel
+  isEscalation      Boolean        @default(false)
+  providerMessageId String?
+  error             String?
+  sentAt            DateTime?
+  deliveredAt       DateTime?
+  openedAt          DateTime?
+  clickedAt         DateTime?
+  dismissedAt       DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+
+  @@index([notificationId])
+  @@index([channel, status, createdAt])
+  @@index([providerMessageId])
+}
+
+// Registry of classifier versions ("rules-v0", "ml-v1", ...) with their evaluation metrics.
+model MLMetadata {
+  id           String    @id @default(uuid()) @db.Uuid
+  version      String    @unique
+  // "rules" for the rule-based classifier, otherwise the algorithm, e.g. "logistic_regression"
+  algorithm    String
+  description  String?
+  // e.g. { "priority_f1_weighted": 0.87, "spam_accuracy": 0.96, "spam_fpr": 0.03 }
+  metrics      Json?
+  // Size, class balance and date range of the training data
+  datasetInfo  Json?
+  // File name of the saved model in ml-service/models
+  artifactPath String?
+  isActive     Boolean   @default(false)
+  trainedAt    DateTime?
+  deployedAt   DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@map("MLMetadata")
+}
+
+// ---------- Host marketplace tables ----------
+
+model Job {
+  id            String     @id @default(uuid()) @db.Uuid
+  employerId    String     @db.Uuid
+  title         String     @db.VarChar(120)
+  description   String     @db.VarChar(2000)
+  location      String
+  skillTags     String[]   @default([])
+  deadline      DateTime
+  urgency       JobUrgency @default(normal)
+  status        JobStatus  @default(open)
+  // Why an admin removed the post (shown to the employer)
+  removedReason String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  employer      User           @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  applications  Application[]
+  messages      Message[]
+  notifications Notification[]
+
+  @@index([status, location])
+  @@index([employerId])
+}
+
+model Application {
+  id        String            @id @default(uuid()) @db.Uuid
+  jobId     String            @db.Uuid
+  workerId  String            @db.Uuid
+  status    ApplicationStatus @default(received)
+  note      String?           @db.VarChar(500)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  job    Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  worker User @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, workerId])
+  @@index([workerId])
+}
+
+model Message {
+  id          String    @id @default(uuid()) @db.Uuid
+  senderId    String    @db.Uuid
+  recipientId String    @db.Uuid
+  // The job the conversation is about, if any
+  jobId       String?   @db.Uuid
+  body        String    @db.VarChar(1000)
+  readAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  sender    User @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  recipient User @relation("MessageRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  job       Job? @relation(fields: [jobId], references: [id], onDelete: SetNull)
+
+  @@index([recipientId, createdAt])
+  @@index([senderId, recipientId])
+}
