@@ -1,0 +1,220 @@
+{
+  "app": {
+    "name": "KaziForce",
+    "skipToContent": "Skip to main content",
+    "pageTitle": "{{page}} · KaziForce"
+  },
+  "common": {
+    "undo": "Undo",
+    "close": "Close",
+    "tryAgain": "Try again",
+    "loading": "Loading…",
+    "backHome": "Go to the home page",
+    "comingSoonTitle": "Coming soon",
+    "comingSoonBody": "This part of KaziForce is still being built. It will be ready soon.",
+    "optional": "optional"
+  },
+  "languages": {
+    "en": "English",
+    "sw": "Kiswahili"
+  },
+  "nav": {
+    "label": "Main menu",
+    "more": "More",
+    "moreTitle": "More pages",
+    "alerts": "Alerts",
+    "jobs": "Jobs",
+    "myJobs": "My jobs",
+    "messages": "Messages",
+    "settings": "Settings",
+    "overview": "Overview",
+    "users": "Users",
+    "adminJobs": "Jobs",
+    "spam": "Spam review",
+    "deliveryLogs": "Delivery logs",
+    "announcements": "Announcements",
+    "models": "Model versions",
+    "auditLog": "Audit log",
+    "unreadCount_one": "{{count}} unread",
+    "unreadCount_other": "{{count}} unread",
+    "switchSide": "Preview another side"
+  },
+  "roles": {
+    "worker": "Worker",
+    "business": "Employer",
+    "admin": "Admin"
+  },
+  "priority": {
+    "urgent": "Urgent",
+    "medium": "Important",
+    "low": "For later"
+  },
+  "offline": {
+    "message": "You are offline. New alerts will appear when you are back online."
+  },
+  "alerts": {
+    "title": "Alerts",
+    "unreadSummary_one": "You have {{count}} unread alert.",
+    "unreadSummary_other": "You have {{count}} unread alerts.",
+    "allRead": "You have read all your alerts.",
+    "new": "New",
+    "closes": "Closes {{when}}",
+    "closed": "This job has closed",
+    "newAlertAnnouncement": "New {{priority}} alert: {{title}}",
+    "notImportantDone": "Marked as not important. We will show you fewer alerts like it.",
+    "showMore_one": "Show {{count}} more",
+    "showMore_other": "Show {{count}} more",
+    "showLess": "Show fewer",
+    "filters": {
+      "label": "Show",
+      "all": "All",
+      "unread": "Unread",
+      "urgent": "Urgent",
+      "last7days": "Last 7 days"
+    },
+    "groups": {
+      "urgent": "Act now. These can expire soon.",
+      "medium": "Worth a look today.",
+      "low": "No rush. We also send these in your daily summary email."
+    },
+    "empty": {
+      "allTitle": "No alerts yet",
+      "allBody": "When something needs your attention, it will show up here.",
+      "filteredTitle": "Nothing to show",
+      "filteredBody": "No alerts match this choice. Choose \"All\" to see everything."
+    },
+    "error": {
+      "title": "We could not load your alerts",
+      "body": "Check your internet connection, then try again."
+    },
+    "detail": {
+      "back": "Back to alerts",
+      "from": "From {{name}}",
+      "received": "Received {{when}}",
+      "location": "Where",
+      "deadline": "Closes",
+      "viewJob": "View job",
+      "viewApplication": "View my application",
+      "viewApplicants": "View applicants",
+      "openMessage": "Open message",
+      "notImportant": "Not important to me",
+      "notImportantHelp": "We will show you fewer alerts like this one.",
+      "choose": "Choose an alert on the left to see it here."
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "display": "Display and language",
+    "language": {
+      "label": "Language",
+      "help": "The language used in the app and in your messages."
+    },
+    "textSize": {
+      "label": "Text size",
+      "help": "Large makes all text and buttons bigger.",
+      "normal": "Normal",
+      "large": "Large"
+    },
+    "reduceMotion": {
+      "label": "Reduce motion",
+      "help": "Turns off movement and animation on the screen."
+    },
+    "saved": "Saved"
+  },
+  "errors": {
+    "notFoundTitle": "We cannot find that page",
+    "notFoundBody": "The link may be old or mistyped.",
+    "genericTitle": "Something went wrong",
+    "genericBody": "Please reload the page. If it keeps happening, try again later.",
+    "reload": "Reload the page"
+  },
+  "login": {
+    "title": "Log in",
+    "notReady": "Logging in is not ready yet. For now, choose which side of KaziForce you want to see.",
+    "worker": "I am looking for work",
+    "workerHelp": "See job alerts, applications and messages.",
+    "business": "I am an employer",
+    "businessHelp": "See new applicants, replies and your jobs.",
+    "admin": "I run KaziForce",
+    "adminHelp": "See the admin pages."
+  },
+  "landing": {
+    "title": "Job alerts that reach you in time",
+    "nav": {
+      "login": "Log in",
+      "switchTo": "Kiswahili"
+    },
+    "hero": {
+      "title": "Never miss a job that is right for you",
+      "body": "KaziForce sends urgent job alerts straight to your WhatsApp or SMS, and keeps everything else calm and tidy.",
+      "cta": "Get started",
+      "secondary": "See how it works"
+    },
+    "how": {
+      "title": "How KaziForce alerts work",
+      "checkTitle": "We check every alert",
+      "checkBody": "Fake jobs and messages asking you to send money are stopped before they reach you.",
+      "sortTitle": "We sort by urgency",
+      "sortBody": "Each alert is marked Urgent, Important or For later, so you know what to do first.",
+      "sendTitle": "We send it where you look",
+      "sendBody": "Urgent alerts go to WhatsApp or SMS. If you miss one, we try your next choice."
+    },
+    "levels": {
+      "title": "Three levels, easy to tell apart",
+      "body": "Every alert shows a colour, a picture and a word, so you never have to guess.",
+      "urgent": "Act now: jobs that close soon, or a job offer you received.",
+      "medium": "Worth a look today: messages and updates on your applications.",
+      "low": "No rush: tips and news. We also send these in one daily email."
+    },
+    "control": {
+      "title": "You are in control",
+      "channels": "Choose what comes first: WhatsApp, SMS or email.",
+      "quiet": "Quiet hours: we will not disturb you at night, except for urgent job offers.",
+      "notImportant": "Tap \"Not important to me\" to see fewer alerts like it.",
+      "language": "Use KaziForce in English or Kiswahili."
+    },
+    "employers": {
+      "title": "For employers",
+      "body": "Post a job and the right workers hear about it in minutes. You can see when each worker received your message.",
+      "cta": "Post a job"
+    },
+    "footer": {
+      "project": "A student project at Strathmore University, Nairobi.",
+      "privacy": "WhatsApp and SMS alerts never include your personal details."
+    }
+  },
+  "uiKit": {
+    "title": "Component gallery",
+    "intro": "Every building block of the KaziForce interface, in one place.",
+    "buttons": "Buttons",
+    "primary": "Save changes",
+    "secondary": "Cancel",
+    "ghost": "Show details",
+    "danger": "Delete account",
+    "inputs": "Text fields",
+    "nameLabel": "Your full name",
+    "nameHelp": "As it appears on your ID.",
+    "phoneLabel": "Phone number",
+    "phoneHelp": "We send a code to this number.",
+    "phoneError": "Enter a Kenyan number starting with 07 or 01, for example 0712 345 678.",
+    "switches": "Switches",
+    "switchLabel": "Daily summary email",
+    "switchHelp": "One email each morning with the alerts marked \"For later\".",
+    "selects": "Choose from a list",
+    "dialogs": "Dialogs",
+    "openDialog": "Open a dialog",
+    "dialogTitle": "Turn on quiet hours?",
+    "dialogBody": "We will not send alerts between 9pm and 7am, except urgent job offers.",
+    "dialogConfirm": "Turn on",
+    "toasts": "Messages with undo",
+    "showToast": "Show a message",
+    "toastMessage": "Alert removed.",
+    "badges": "Badges",
+    "cards": "Cards",
+    "cardTitle": "A simple card",
+    "cardBody": "Cards group related things together.",
+    "skeletons": "Loading placeholders",
+    "empty": "Empty states",
+    "offline": "Offline banner"
+  }
+}

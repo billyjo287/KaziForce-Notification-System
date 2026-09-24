@@ -1,0 +1,220 @@
+{
+  "app": {
+    "name": "KaziForce",
+    "skipToContent": "Ruka hadi maudhui makuu",
+    "pageTitle": "{{page}} · KaziForce"
+  },
+  "common": {
+    "undo": "Tendua",
+    "close": "Funga",
+    "tryAgain": "Jaribu tena",
+    "loading": "Inapakia…",
+    "backHome": "Nenda ukurasa wa mwanzo",
+    "comingSoonTitle": "Inakuja hivi karibuni",
+    "comingSoonBody": "Sehemu hii ya KaziForce bado inajengwa. Itakuwa tayari hivi karibuni.",
+    "optional": "si lazima"
+  },
+  "languages": {
+    "en": "English",
+    "sw": "Kiswahili"
+  },
+  "nav": {
+    "label": "Menyu kuu",
+    "more": "Zaidi",
+    "moreTitle": "Kurasa zaidi",
+    "alerts": "Arifa",
+    "jobs": "Kazi",
+    "myJobs": "Kazi zangu",
+    "messages": "Ujumbe",
+    "settings": "Mipangilio",
+    "overview": "Muhtasari",
+    "users": "Watumiaji",
+    "adminJobs": "Kazi",
+    "spam": "Kagua taka",
+    "deliveryLogs": "Kumbukumbu za utumaji",
+    "announcements": "Matangazo",
+    "models": "Matoleo ya modeli",
+    "auditLog": "Kumbukumbu ya ukaguzi",
+    "unreadCount_one": "{{count}} haijasomwa",
+    "unreadCount_other": "{{count}} hazijasomwa",
+    "switchSide": "Tazama upande mwingine"
+  },
+  "roles": {
+    "worker": "Mfanyakazi",
+    "business": "Mwajiri",
+    "admin": "Msimamizi"
+  },
+  "priority": {
+    "urgent": "Dharura",
+    "medium": "Muhimu",
+    "low": "Baadaye"
+  },
+  "offline": {
+    "message": "Hauko mtandaoni. Arifa mpya zitaonekana ukirudi mtandaoni."
+  },
+  "alerts": {
+    "title": "Arifa",
+    "unreadSummary_one": "Una arifa {{count}} ambayo haijasomwa.",
+    "unreadSummary_other": "Una arifa {{count}} ambazo hazijasomwa.",
+    "allRead": "Umesoma arifa zako zote.",
+    "new": "Mpya",
+    "closes": "Inafungwa {{when}}",
+    "closed": "Kazi hii imefungwa",
+    "newAlertAnnouncement": "Arifa mpya ya {{priority}}: {{title}}",
+    "notImportantDone": "Imewekwa kama si muhimu. Tutakuonyesha arifa chache kama hii.",
+    "showMore_one": "Onyesha {{count}} zaidi",
+    "showMore_other": "Onyesha {{count}} zaidi",
+    "showLess": "Onyesha chache",
+    "filters": {
+      "label": "Onyesha",
+      "all": "Zote",
+      "unread": "Hazijasomwa",
+      "urgent": "Dharura",
+      "last7days": "Siku 7 zilizopita"
+    },
+    "groups": {
+      "urgent": "Chukua hatua sasa. Hizi zinaweza kuisha muda hivi karibuni.",
+      "medium": "Zinafaa kuangaliwa leo.",
+      "low": "Hakuna haraka. Tunazituma pia kwenye barua pepe yako ya muhtasari wa kila siku."
+    },
+    "empty": {
+      "allTitle": "Bado hakuna arifa",
+      "allBody": "Kitu kikihitaji umakini wako, kitaonekana hapa.",
+      "filteredTitle": "Hakuna cha kuonyesha",
+      "filteredBody": "Hakuna arifa zinazolingana na chaguo hili. Chagua \"Zote\" kuona kila kitu."
+    },
+    "error": {
+      "title": "Hatukuweza kupakia arifa zako",
+      "body": "Angalia muunganisho wako wa intaneti, kisha ujaribu tena."
+    },
+    "detail": {
+      "back": "Rudi kwenye arifa",
+      "from": "Kutoka kwa {{name}}",
+      "received": "Imepokelewa {{when}}",
+      "location": "Mahali",
+      "deadline": "Inafungwa",
+      "viewJob": "Tazama kazi",
+      "viewApplication": "Tazama ombi langu",
+      "viewApplicants": "Tazama waombaji",
+      "openMessage": "Fungua ujumbe",
+      "notImportant": "Si muhimu kwangu",
+      "notImportantHelp": "Tutakuonyesha arifa chache kama hii.",
+      "choose": "Chagua arifa upande wa kushoto uione hapa."
+    }
+  },
+  "settings": {
+    "title": "Mipangilio",
+    "display": "Mwonekano na lugha",
+    "language": {
+      "label": "Lugha",
+      "help": "Lugha inayotumika kwenye programu na kwenye ujumbe wako."
+    },
+    "textSize": {
+      "label": "Ukubwa wa maandishi",
+      "help": "Kubwa hufanya maandishi na vitufe vyote kuwa vikubwa zaidi.",
+      "normal": "Kawaida",
+      "large": "Kubwa"
+    },
+    "reduceMotion": {
+      "label": "Punguza mwendo",
+      "help": "Huzima mwendo na uhuishaji kwenye skrini."
+    },
+    "saved": "Imehifadhiwa"
+  },
+  "errors": {
+    "notFoundTitle": "Hatuwezi kupata ukurasa huo",
+    "notFoundBody": "Huenda kiungo ni cha zamani au kimeandikwa vibaya.",
+    "genericTitle": "Kuna tatizo",
+    "genericBody": "Tafadhali pakia ukurasa upya. Tatizo likiendelea, jaribu tena baadaye.",
+    "reload": "Pakia ukurasa upya"
+  },
+  "login": {
+    "title": "Ingia",
+    "notReady": "Kuingia bado hakuko tayari. Kwa sasa, chagua upande wa KaziForce unaotaka kuona.",
+    "worker": "Ninatafuta kazi",
+    "workerHelp": "Tazama arifa za kazi, maombi na ujumbe.",
+    "business": "Mimi ni mwajiri",
+    "businessHelp": "Tazama waombaji wapya, majibu na kazi zako.",
+    "admin": "Ninasimamia KaziForce",
+    "adminHelp": "Tazama kurasa za msimamizi."
+  },
+  "landing": {
+    "title": "Arifa za kazi zinazokufikia kwa wakati",
+    "nav": {
+      "login": "Ingia",
+      "switchTo": "English"
+    },
+    "hero": {
+      "title": "Usikose kazi inayokufaa",
+      "body": "KaziForce hutuma arifa za kazi za dharura moja kwa moja kwenye WhatsApp au SMS yako, na hupanga mengine yote kwa utulivu.",
+      "cta": "Anza sasa",
+      "secondary": "Ona jinsi inavyofanya kazi"
+    },
+    "how": {
+      "title": "Jinsi arifa za KaziForce zinavyofanya kazi",
+      "checkTitle": "Tunakagua kila arifa",
+      "checkBody": "Kazi bandia na ujumbe unaokuomba kutuma pesa huzuiwa kabla ya kukufikia.",
+      "sortTitle": "Tunapanga kwa uharaka",
+      "sortBody": "Kila arifa huwekwa alama ya Dharura, Muhimu au Baadaye, ili ujue cha kufanya kwanza.",
+      "sendTitle": "Tunaituma unapoangalia",
+      "sendBody": "Arifa za dharura huenda kwenye WhatsApp au SMS. Ukikosa moja, tunajaribu chaguo lako linalofuata."
+    },
+    "levels": {
+      "title": "Viwango vitatu, rahisi kutofautisha",
+      "body": "Kila arifa ina rangi, picha na neno, kwa hivyo hutahitaji kubahatisha.",
+      "urgent": "Chukua hatua sasa: kazi zinazofungwa hivi karibuni, au ofa ya kazi uliyopokea.",
+      "medium": "Zinafaa kuangaliwa leo: ujumbe na taarifa kuhusu maombi yako.",
+      "low": "Hakuna haraka: vidokezo na habari. Tunazituma pia kwenye barua pepe moja ya kila siku."
+    },
+    "control": {
+      "title": "Wewe ndiye mwenye udhibiti",
+      "channels": "Chagua kinachokuja kwanza: WhatsApp, SMS au barua pepe.",
+      "quiet": "Saa za utulivu: hatutakusumbua usiku, isipokuwa kwa ofa za kazi za dharura.",
+      "notImportant": "Gusa \"Si muhimu kwangu\" ili uone arifa chache kama hiyo.",
+      "language": "Tumia KaziForce kwa Kiingereza au Kiswahili."
+    },
+    "employers": {
+      "title": "Kwa waajiri",
+      "body": "Chapisha kazi na wafanyakazi wanaofaa wanapata habari ndani ya dakika chache. Unaweza kuona kila mfanyakazi alipopokea ujumbe wako.",
+      "cta": "Chapisha kazi"
+    },
+    "footer": {
+      "project": "Mradi wa mwanafunzi katika Chuo Kikuu cha Strathmore, Nairobi.",
+      "privacy": "Arifa za WhatsApp na SMS hazina taarifa zako binafsi kamwe."
+    }
+  },
+  "uiKit": {
+    "title": "Mkusanyiko wa vipengele",
+    "intro": "Kila kipengele cha kiolesura cha KaziForce, mahali pamoja.",
+    "buttons": "Vitufe",
+    "primary": "Hifadhi mabadiliko",
+    "secondary": "Ghairi",
+    "ghost": "Onyesha maelezo",
+    "danger": "Futa akaunti",
+    "inputs": "Sehemu za maandishi",
+    "nameLabel": "Jina lako kamili",
+    "nameHelp": "Kama lilivyo kwenye kitambulisho chako.",
+    "phoneLabel": "Nambari ya simu",
+    "phoneHelp": "Tunatuma msimbo kwa nambari hii.",
+    "phoneError": "Andika nambari ya Kenya inayoanza na 07 au 01, kwa mfano 0712 345 678.",
+    "switches": "Swichi",
+    "switchLabel": "Barua pepe ya muhtasari wa kila siku",
+    "switchHelp": "Barua pepe moja kila asubuhi yenye arifa za \"Baadaye\".",
+    "selects": "Chagua kutoka kwenye orodha",
+    "dialogs": "Madirisha ya maswali",
+    "openDialog": "Fungua dirisha",
+    "dialogTitle": "Washa saa za utulivu?",
+    "dialogBody": "Hatutatuma arifa kati ya saa 3 usiku na saa 1 asubuhi, isipokuwa ofa za kazi za dharura.",
+    "dialogConfirm": "Washa",
+    "toasts": "Ujumbe wenye kutendua",
+    "showToast": "Onyesha ujumbe",
+    "toastMessage": "Arifa imeondolewa.",
+    "badges": "Beji",
+    "cards": "Kadi",
+    "cardTitle": "Kadi rahisi",
+    "cardBody": "Kadi huweka vitu vinavyohusiana pamoja.",
+    "skeletons": "Vishika-nafasi vya kupakia",
+    "empty": "Hali tupu",
+    "offline": "Bango la nje ya mtandao"
+  }
+}

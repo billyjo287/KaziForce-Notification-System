@@ -71,8 +71,10 @@ To also stop the Docker services: `npm run stop`.
 
 Then open:
 
-- http://localhost:5173: the website (it shows whether the backend, database and Redis are
-  working)
+- http://localhost:5173: the website (landing page). Click **Log in** to choose a side to
+  preview (Worker, Employer or Admin); real accounts arrive in Phase 2.
+- http://localhost:5173/worker/alerts: the worker Alerts dashboard (mock data)
+- http://localhost:5173/ui-kit: gallery of every interface component
 - http://localhost:4000/health: backend health (database and Redis)
 - http://localhost:8000/health: ML service health
 - http://localhost:8025: Mailpit fake inbox
@@ -87,6 +89,23 @@ npm run typecheck     # TypeScript, frontend + backend
 npm test              # Vitest tests, frontend + backend
 npm run format        # auto-format with Prettier
 ```
+
+Frontend browser tests (Playwright + axe accessibility checks at 320, 360 and 1440 px) and the
+bundle size report:
+
+```bash
+cd frontend
+npx playwright install chromium   # once: downloads the test browser (~150 MB)
+npm run test:e2e                  # browser tests + accessibility checks
+npm run build:report              # sizes per first visit; fails if Three.js reaches the app
+```
+
+To use the Google Chrome already on your computer instead of downloading a browser, set
+`PW_CHANNEL=chrome` first (PowerShell: `$env:PW_CHANNEL="chrome"`; macOS/Linux/Git Bash:
+`export PW_CHANNEL=chrome`).
+
+Preview helpers (add to any address): `?theme=dark` or `?theme=light`, `?lang=sw`, and on the
+Alerts page `?mock=empty` or `?mock=error` to see those states.
 
 ML service (one-time Python setup, then lint and test):
 

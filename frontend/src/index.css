@@ -1,25 +1,196 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/atkinson-hyperlegible-next';
 
-/* Base readability rules (PRD section 6): 18px body text on phones, 16px+ elsewhere, 1.5 line height.
-   The full design system (colours, spacing, components) arrives in Phase 1. */
+/* ==========================================================================
+   KaziForce design tokens ("calm notice board").
+   Colours are CSS variables so light/dark mode swap in one place.
+   Every text pair passes WCAG 2.2 AA (>= 4.5:1); bars and borders pass 3:1.
+   Contrast ratios are listed in docs/design/visual-direction.md.
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  --kf-canvas: #faf8f5; /* page background: warm off-white, softer than pure white */
+  --kf-surface: #ffffff; /* cards, sidebar, panels */
+  --kf-ink: #1c1917; /* main text            16.5:1 on canvas */
+  --kf-ink-muted: #57534e; /* secondary text        7.2:1 on canvas */
+  --kf-line: #e7e5e4; /* decorative dividers (never the only cue) */
+  --kf-line-strong: #78716c; /* input and card borders 4.8:1 on surface */
+
+  --kf-primary: #0b6b45; /* KaziForce green       6.6:1 with white text */
+  --kf-on-primary: #ffffff;
+  --kf-primary-soft: #e7f4ed; /* selected nav item background */
+  --kf-focus: #1d4ed8; /* keyboard focus ring   6.3:1 on canvas */
+
+  --kf-urgent: #b42318; /* "Urgent" text/icon    6.1:1 on its tint */
+  --kf-urgent-soft: #fef3f2;
+  --kf-urgent-bar: #b42318;
+  --kf-on-urgent: #ffffff; /* text on the solid urgent colour (unread count) 6.6:1 */
+
+  --kf-important: #93370d; /* "Important"           7.2:1 on its tint */
+  --kf-important-soft: #fffaeb;
+  --kf-important-bar: #dc6803; /* side bar             3.5:1 on surface */
+
+  --kf-later: #344054; /* "For later"           9.5:1 on its tint */
+  --kf-later-soft: #f2f4f7;
+  --kf-later-bar: #667085;
+
+  --kf-duration-fast: 150ms;
+  --kf-duration-base: 200ms;
+  --kf-duration-slow: 300ms;
+  --kf-ease-out: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Dark mode: follows the phone/computer setting, unless the user picked a theme. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --kf-canvas: #161311;
+    --kf-surface: #221e1b;
+    --kf-ink: #f5f5f4;
+    --kf-ink-muted: #b5afa9;
+    --kf-line: #3a3430;
+    --kf-line-strong: #8a837d;
+    --kf-primary: #4cc38a;
+    --kf-on-primary: #0b1f15;
+    --kf-primary-soft: #1d3328;
+    --kf-focus: #7aa2ff;
+    --kf-urgent: #fda29b;
+    --kf-urgent-soft: #3a1512;
+    --kf-urgent-bar: #f97066;
+    --kf-on-urgent: #1f0a08;
+    --kf-important: #fec84b;
+    --kf-important-soft: #35230a;
+    --kf-important-bar: #fdb022;
+    --kf-later: #d0d5dd;
+    --kf-later-soft: #262b33;
+    --kf-later-bar: #98a2b3;
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --kf-canvas: #161311;
+  --kf-surface: #221e1b;
+  --kf-ink: #f5f5f4;
+  --kf-ink-muted: #b5afa9;
+  --kf-line: #3a3430;
+  --kf-line-strong: #8a837d;
+  --kf-primary: #4cc38a;
+  --kf-on-primary: #0b1f15;
+  --kf-primary-soft: #1d3328;
+  --kf-focus: #7aa2ff;
+  --kf-urgent: #fda29b;
+  --kf-urgent-soft: #3a1512;
+  --kf-urgent-bar: #f97066;
+  --kf-on-urgent: #1f0a08;
+  --kf-important: #fec84b;
+  --kf-important-soft: #35230a;
+  --kf-important-bar: #fdb022;
+  --kf-later: #d0d5dd;
+  --kf-later-soft: #262b33;
+  --kf-later-bar: #98a2b3;
+}
+
+/* Expose the variables as Tailwind utilities: bg-canvas, text-ink, border-line-strong, ... */
+@theme inline {
+  --font-sans: 'Atkinson Hyperlegible Next Variable', ui-sans-serif, system-ui, sans-serif;
+
+  --color-canvas: var(--kf-canvas);
+  --color-surface: var(--kf-surface);
+  --color-ink: var(--kf-ink);
+  --color-ink-muted: var(--kf-ink-muted);
+  --color-line: var(--kf-line);
+  --color-line-strong: var(--kf-line-strong);
+  --color-primary: var(--kf-primary);
+  --color-on-primary: var(--kf-on-primary);
+  --color-primary-soft: var(--kf-primary-soft);
+  --color-focus: var(--kf-focus);
+  --color-urgent: var(--kf-urgent);
+  --color-urgent-soft: var(--kf-urgent-soft);
+  --color-urgent-bar: var(--kf-urgent-bar);
+  --color-on-urgent: var(--kf-on-urgent);
+  --color-important: var(--kf-important);
+  --color-important-soft: var(--kf-important-soft);
+  --color-important-bar: var(--kf-important-bar);
+  --color-later: var(--kf-later);
+  --color-later-soft: var(--kf-later-soft);
+  --color-later-bar: var(--kf-later-bar);
+
+  --ease-out-soft: var(--kf-ease-out);
+
+  --radius-card: 0.75rem;
+  --radius-control: 0.75rem;
+}
+
 @layer base {
+  /* 18px text on phones, 16px on larger screens. Everything is sized in rem, so the
+     "Text size: Large" setting (data-text-size on <html>) only changes this one number. */
   html {
     font-size: 112.5%;
     line-height: 1.5;
+  }
+
+  html[data-text-size='large'] {
+    font-size: 131.25%; /* 21px */
   }
 
   @media (min-width: 768px) {
     html {
       font-size: 100%;
     }
+
+    html[data-text-size='large'] {
+      font-size: 118.75%; /* 19px */
+    }
   }
 
+  body {
+    background-color: var(--kf-canvas);
+    color: var(--kf-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* One clear, thick focus ring everywhere (WCAG 2.4.7 / 2.4.13). */
+  :focus-visible {
+    outline: 3px solid var(--kf-focus);
+    outline-offset: 2px;
+  }
+
+  /* Reduced motion: the device setting OR the in-app "Reduce motion" switch. */
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
     *::after {
       animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
     }
   }
+
+  html[data-reduce-motion='true'] *,
+  html[data-reduce-motion='true'] *::before,
+  html[data-reduce-motion='true'] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Gentle pulse for a newly arrived urgent alert: twice, then stops (never flashes). */
+@keyframes kf-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--kf-urgent-bar) 45%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 8px color-mix(in srgb, var(--kf-urgent-bar) 0%, transparent);
+  }
+}
+
+@utility animate-kf-pulse {
+  animation: kf-pulse 1.2s var(--kf-ease-out) 2;
 }
