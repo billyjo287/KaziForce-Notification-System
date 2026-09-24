@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router/dom';
-import './i18n';
+import { i18nReady } from './i18n';
 import './index.css';
 import { router } from './router';
 import './stores/settings';
@@ -14,8 +14,11 @@ if (theme === 'dark' || theme === 'light') document.documentElement.dataset.them
 const root = document.getElementById('root');
 if (!root) throw new Error('Missing #root element in index.html');
 
-createRoot(root).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>,
-);
+// Draw once the starting language is ready (instant for English; Kiswahili is a small download).
+void i18nReady.finally(() => {
+  createRoot(root).render(
+    <StrictMode>
+      <RouterProvider router={router} />
+    </StrictMode>,
+  );
+});

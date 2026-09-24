@@ -1,6 +1,9 @@
 import { AxeBuilder } from '@axe-core/playwright';
 import { expect, type Page } from '@playwright/test';
 
+export const PASSWORD = 'Password123!';
+export const ADMIN = { email: 'admin@example.com', password: PASSWORD };
+
 /** Runs axe (WCAG 2.2 A + AA rules) and fails on any serious or critical problem. */
 export async function expectNoSeriousA11yIssues(page: Page) {
   const results = await new AxeBuilder({ page })
@@ -27,4 +30,19 @@ export function trackScripts(page: Page): string[] {
     if (request.resourceType() === 'script') urls.push(request.url());
   });
   return urls;
+}
+
+/** Logs in through the real log-in page and waits for the user's home page. */
+export async function logIn(page: Page, email: string, password = PASSWORD) {
+  await page.goto('/login');
+  await page.getByLabel('Email address').fill(email);
+  await page.getByLabel('Password', { exact: true }).fill(password);
+  await page.getByRole('button', { name: 'Log in' }).click();
+  await page.waitForURL(/\/(worker|employer|admin)\//);
+}
+
+/** Picks an option in one of our (Radix) dropdowns by its label. */
+export async function choose(page: Page, label: string, option: string) {
+  await page.getByRole('combobox', { name: label }).click();
+  await page.getByRole('option', { name: option, exact: true }).click();
 }

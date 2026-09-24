@@ -7,6 +7,7 @@ import { redis } from './lib/redis.js';
 const app = createApp({
   frontendOrigin: env.FRONTEND_ORIGIN,
   logger,
+  rateLimits: { login: env.LOGIN_RATE_LIMIT },
   healthChecks: {
     database: () => prisma.$queryRaw`SELECT 1`,
     redis: () => redis.ping(),

@@ -2,7 +2,7 @@ import { Check, ChevronDown } from 'lucide-react';
 import { Select as RadixSelect } from 'radix-ui';
 import { useId } from 'react';
 import { describedBy } from '../../lib/describedBy';
-import { HelpText } from './Field';
+import { ErrorText, HelpText } from './Field';
 
 export interface SelectOption {
   value: string;
@@ -14,14 +14,26 @@ export interface SelectOption {
 interface SelectProps {
   label: string;
   help?: string;
+  error?: string;
+  /** Shown before anything is chosen (use value "" for nothing chosen). */
+  placeholder?: string;
   value: string;
   options: SelectOption[];
   onValueChange: (value: string) => void;
 }
 
-export function Select({ label, help, value, options, onValueChange }: SelectProps) {
+export function Select({
+  label,
+  help,
+  error,
+  placeholder,
+  value,
+  options,
+  onValueChange,
+}: SelectProps) {
   const id = useId();
   const helpId = help ? `${id}-help` : undefined;
+  const errorId = error ? `${id}-error` : undefined;
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -29,13 +41,17 @@ export function Select({ label, help, value, options, onValueChange }: SelectPro
         {label}
       </label>
       {help && helpId && <HelpText id={helpId}>{help}</HelpText>}
+      {error && errorId && <ErrorText id={errorId}>{error}</ErrorText>}
       <RadixSelect.Root value={value} onValueChange={onValueChange}>
         <RadixSelect.Trigger
           id={id}
-          aria-describedby={describedBy(helpId)}
-          className="inline-flex min-h-12 w-full items-center justify-between gap-2 rounded-xl border-2 border-line-strong bg-surface px-4 text-left text-lg sm:max-w-sm"
+          aria-describedby={describedBy(helpId, errorId)}
+          aria-invalid={error ? true : undefined}
+          className={`inline-flex min-h-12 w-full items-center justify-between gap-2 rounded-xl border-2 bg-surface px-4 text-left text-lg data-placeholder:text-ink-muted sm:max-w-sm ${
+            error ? 'border-urgent' : 'border-line-strong'
+          }`}
         >
-          <RadixSelect.Value />
+          <RadixSelect.Value placeholder={placeholder} />
           <RadixSelect.Icon>
             <ChevronDown aria-hidden="true" className="size-5" />
           </RadixSelect.Icon>
@@ -44,7 +60,7 @@ export function Select({ label, help, value, options, onValueChange }: SelectPro
           <RadixSelect.Content
             position="popper"
             sideOffset={6}
-            className="z-50 min-w-(--radix-select-trigger-width) overflow-hidden rounded-xl border-2 border-line-strong bg-surface text-ink shadow-lg"
+            className="z-50 max-h-(--radix-select-content-available-height) min-w-(--radix-select-trigger-width) overflow-hidden rounded-xl border-2 border-line-strong bg-surface text-ink shadow-lg"
           >
             <RadixSelect.Viewport className="p-1.5">
               {options.map((option) => (

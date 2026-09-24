@@ -1,7 +1,6 @@
-import i18n from 'i18next';
+import i18n, { type BackendModule } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import en from './locales/en.json';
-import sw from './locales/sw.json';
 
 export const LANGUAGES = ['en', 'sw'] as const;
 export type Language = (typeof LANGUAGES)[number];
@@ -25,12 +24,33 @@ function initialLanguage(): Language {
   return 'en';
 }
 
-void i18n.use(initReactI18next).init({
-  resources: { en: { translation: en }, sw: { translation: sw } },
-  lng: initialLanguage(),
-  fallbackLng: 'en',
-  interpolation: { escapeValue: false }, // React already escapes text
-});
+// English is built in. Kiswahili is a separate small download, fetched only for people who
+// use it (keeps the first download of the app small for everyone else).
+const loadOnDemand: BackendModule = {
+  type: 'backend',
+  init: () => {},
+  read: (language, _namespace, callback) => {
+    if (language === 'en') return callback(null, en);
+    import('./locales/sw.json').then(
+      (module) => callback(null, module.default),
+      (error: unknown) => callback(error as Error, null),
+    );
+  },
+};
+
+/** Resolves when the starting language is ready (main.tsx waits for it before drawing). */
+export const i18nReady = i18n
+  .use(loadOnDemand)
+  .use(initReactI18next)
+  .init({
+    lng: initialLanguage(),
+    fallbackLng: 'en',
+    partialBundledLanguages: true,
+    resources: { en: { translation: en } },
+    initAsync: false,
+    interpolation: { escapeValue: false }, // React already escapes text
+    react: { useSuspense: false },
+  });
 
 i18n.on('languageChanged', (lng) => {
   document.documentElement.lang = lng;

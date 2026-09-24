@@ -17,6 +17,12 @@ const envSchema = z.object({
   ML_SERVICE_URL: z.url().default('http://localhost:8000'),
   ML_TIMEOUT_MS: z.coerce.number().int().positive().default(500),
   CHANNEL_MODE: z.enum(['mock', 'sandbox', 'live']).default('mock'),
+  JWT_ACCESS_SECRET: z.string().min(32, 'Use at least 32 characters'),
+  ACCESS_TOKEN_MINUTES: z.coerce.number().int().min(1).max(60).default(15),
+  REFRESH_TOKEN_DAYS: z.coerce.number().int().min(1).max(90).default(30),
+  // Log-in / sign-up attempts per 15 minutes per network address.
+  LOGIN_RATE_LIMIT: z.coerce.number().int().min(1).default(10),
+  STATUS_UNDO_SECONDS: z.coerce.number().int().min(0).max(120).default(15),
   SMTP_HOST: z.string().default('localhost'),
   SMTP_PORT: z.coerce.number().int().positive().default(1025),
   EMAIL_FROM: z.string().default('KaziForce <alerts@kaziforce.local>'),

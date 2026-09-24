@@ -45,6 +45,6 @@ describe('GET /health', () => {
     const res = await request(appWith({})).get('/nope');
 
     expect(res.status).toBe(404);
-    expect(res.body.error).toBe('Not found');
+    expect(res.body.error.code).toBe('not_found');
   });
 });

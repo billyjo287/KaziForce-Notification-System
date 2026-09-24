@@ -1,10 +1,11 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Toaster } from '../../components/ui/Toaster';
 import i18n from '../../i18n';
 import { renderWithRouter } from '../../test/renderWithRouter';
-import { useAlertsStore } from './alertsStore';
+import { api } from '../../lib/api';
+import { createNotifications } from '../../test/fixtures/notifications';
 import { AlertsPage } from './AlertsPage';
 import type { AlertRole } from './types';
 
@@ -17,12 +18,16 @@ function renderAlerts(role: AlertRole = 'worker') {
   );
 }
 
+// The API client is replaced by a stand-in that returns sample alerts.
+vi.mock('../../lib/api', () => ({
+  api: { get: vi.fn(), patch: vi.fn() },
+  apiErrorCode: () => 'generic',
+}));
+
 describe('Alerts dashboard', () => {
   beforeEach(() => {
-    useAlertsStore.setState({
-      status: { worker: 'loading', business: 'loading' },
-      alerts: { worker: [], business: [] },
-    });
+    vi.mocked(api.get).mockResolvedValue({ data: { items: createNotifications() } });
+    vi.mocked(api.patch).mockResolvedValue({ data: { items: [] } });
   });
   afterEach(async () => {
     await i18n.changeLanguage('en');
@@ -69,8 +74,13 @@ describe('Alerts dashboard', () => {
     expect(
       await screen.findByRole('heading', { level: 2, name: 'Warehouse packers needed today' }),
     ).toHaveFocus();
-    expect(screen.getByRole('button', { name: 'View job' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'View job' })).toHaveAttribute(
+      'href',
+      '/worker/jobs/job-a1',
+    );
     expect(screen.getByText('You have 3 unread alerts.')).toBeInTheDocument();
+    // The change is saved on the server too.
+    expect(api.patch).toHaveBeenCalledWith('/notifications', { ids: ['a1'], read: true });
   });
 
   it('"Not important to me" hides the alert, and Undo brings it back', async () => {
@@ -107,10 +117,8 @@ describe('Alerts dashboard', () => {
 
   it('gives employers the right main action', async () => {
     renderAlerts('business');
-    await userEvent.click(
-      await screen.findByRole('button', { name: /new applicants for "Warehouse packers"/ }),
-    );
-    expect(await screen.findByRole('button', { name: 'View applicants' })).toBeInTheDocument();
+    await userEvent.click(await screen.findByRole('button', { name: /You got the job/ }));
+    expect(await screen.findByRole('link', { name: 'View applicants' })).toBeInTheDocument();
   });
 
   it('shows Kiswahili text when the language is sw', async () => {

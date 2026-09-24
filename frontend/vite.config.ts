@@ -38,6 +38,16 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), bundleReport()],
   server: { port: 5173, strictPort: true },
   preview: { port: 4173, strictPort: true },
+  build: {
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          // axios is only needed once someone logs in: keep it out of the landing page download.
+          groups: [{ name: 'axios', test: /node_modules[/\\]axios/ }],
+        },
+      },
+    },
+  },
   test: {
     environment: 'jsdom',
     include: ['src/**/*.test.{ts,tsx}'],

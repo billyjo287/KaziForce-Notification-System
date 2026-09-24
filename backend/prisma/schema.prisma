@@ -117,40 +117,156 @@ enum ApplicationStatus {
 // ---------- Core notification tables ----------
 
 model User {
-  id                  String     @id @default(uuid()) @db.Uuid
-  email               String     @unique
-  passwordHash        String
-  name                String
-  role                Role
-  status              UserStatus @default(active)
-  language            Language   @default(en)
+  id                    String     @id @default(uuid()) @db.Uuid
+  email                 String     @unique
+  passwordHash          String
+  name                  String
+  role                  Role
+  status                UserStatus @default(active)
+  language              Language   @default(en)
   // Phone in E.164 format, e.g. +254712345678
-  phone               String?    @unique
-  phoneVerified       Boolean    @default(false)
+  phone                 String?    @unique
+  phoneVerified         Boolean    @default(false)
   // Explicit consent to receive SMS/WhatsApp (Kenya Data Protection Act 2019)
-  consentSmsWhatsapp  Boolean    @default(false)
-  consentAt           DateTime?
-  usesWhatsApp        Boolean    @default(false)
-  // Workers: where they want work and skill tags. Employers: company name and location.
-  location            String?
-  skills              String[]   @default([])
-  companyName         String?
-  lastLoginAt         DateTime?
+  consentSmsWhatsapp    Boolean    @default(false)
+  consentAt             DateTime?
+  usesWhatsApp          Boolean    @default(false)
+  // Workers: where they want work (and up to 5 skills). Employers: where the company is.
+  locationId            String?    @db.Uuid
+  companyName           String?
+  lastLoginAt           DateTime?
+  // Set when the user finishes (or skips) onboarding steps 2 and 3.
+  onboardingCompletedAt DateTime?
+  // Suspended users cannot log in (set by an admin, see AuditLog).
+  suspendedAt           DateTime?
+  suspendedReason       String?    @db.VarChar(500)
   // Set when the user asks to delete their account; a cleanup job deletes it within 30 days.
-  deletionRequestedAt DateTime?
-  createdAt           DateTime   @default(now())
-  updatedAt           DateTime   @updatedAt
+  deletionRequestedAt   DateTime?
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
 
+  location               Location?            @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  skills                 Skill[]
   preference             UserPreference?
-  notificationsReceived  Notification[]  @relation("NotificationRecipient")
-  notificationsSent      Notification[]  @relation("NotificationSender")
-  notificationsCorrected Notification[]  @relation("NotificationCorrector")
-  jobsPosted             Job[]
+  notificationsReceived  Notification[]       @relation("NotificationRecipient")
+  notificationsSent      Notification[]       @relation("NotificationSender")
+  notificationsCorrected Notification[]       @relation("NotificationCorrector")
+  jobsPosted             Job[]                @relation("JobEmployer")
+  jobsRemoved            Job[]                @relation("JobRemover")
   applications           Application[]
-  messagesSent           Message[]       @relation("MessageSender")
-  messagesReceived       Message[]       @relation("MessageRecipient")
+  messagesSent           Message[]            @relation("MessageSender")
+  messagesReceived       Message[]            @relation("MessageRecipient")
+  sessions               Session[]
+  passwordResetTokens    PasswordResetToken[]
+  phoneVerifications     PhoneVerification[]
+  auditActions           AuditLog[]           @relation("AuditActor")
 
   @@index([role, status])
+}
+
+// ---------- Lookup lists (picked from, never typed freely) ----------
+
+// Kenyan towns and areas. Place names are the same in English and Kiswahili.
+model Location {
+  id     String @id @default(uuid()) @db.Uuid
+  slug   String @unique
+  name   String
+  county String
+
+  users User[]
+  jobs  Job[]
+}
+
+model Skill {
+  id     String @id @default(uuid()) @db.Uuid
+  slug   String @unique
+  nameEn String
+  nameSw String
+
+  users User[]
+  jobs  Job[]
+}
+
+// ---------- Accounts ----------
+
+// One row per logged-in device. The refresh token itself is never stored, only its SHA-256 hash.
+// Tokens rotate on every refresh: the old row gets revokedAt + replacedById. If a revoked token
+// is used again (likely stolen), every session of that user is revoked.
+model Session {
+  id           String    @id @default(uuid()) @db.Uuid
+  userId       String    @db.Uuid
+  tokenHash    String    @unique
+  userAgent    String?   @db.VarChar(500)
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  replacedById String?   @db.Uuid
+  createdAt    DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// "Forgot password" link: one use, valid 1 hour, stored hashed.
+model PasswordResetToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// One-time SMS code for phone verification: 6 digits, valid 10 minutes, at most 5 tries.
+model PhoneVerification {
+  id         String    @id @default(uuid()) @db.Uuid
+  userId     String    @db.Uuid
+  phone      String
+  codeHash   String
+  attempts   Int       @default(0)
+  expiresAt  DateTime
+  verifiedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+// ---------- Admin audit trail and domain events ----------
+
+// Every admin action, e.g. "user.suspended", "user.reactivated", "job.removed".
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  actorId    String   @db.Uuid
+  action     String
+  targetType String
+  targetId   String   @db.Uuid
+  reason     String?  @db.VarChar(500)
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  actor User @relation("AuditActor", fields: [actorId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
+  @@index([targetType, targetId])
+}
+
+// Event log (the "outbox"): written in the same database transaction as the change itself, so
+// Phase 3 can turn every event into notifications without ever missing one.
+// availableAt delays an event (e.g. 15 s for accept/reject, so Undo can cancel it quietly).
+model DomainEvent {
+  id          String    @id @default(uuid()) @db.Uuid
+  type        String
+  payload     Json
+  availableAt DateTime  @default(now())
+  processedAt DateTime?
+  cancelledAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([processedAt, cancelledAt, availableAt])
 }
 
 // One row per user. Identity and consent live on User; how and when to be notified lives here.
@@ -288,55 +404,65 @@ model Job {
   employerId    String     @db.Uuid
   title         String     @db.VarChar(120)
   description   String     @db.VarChar(2000)
-  location      String
-  skillTags     String[]   @default([])
+  locationId    String     @db.Uuid
+  skillId       String     @db.Uuid
+  // Free text, e.g. "KSh 1,200 per day"
+  pay           String?    @db.VarChar(80)
   deadline      DateTime
   urgency       JobUrgency @default(normal)
   status        JobStatus  @default(open)
   // Why an admin removed the post (shown to the employer)
-  removedReason String?
+  removedReason String?    @db.VarChar(500)
+  removedAt     DateTime?
+  removedById   String?    @db.Uuid
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 
-  employer      User           @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  employer      User           @relation("JobEmployer", fields: [employerId], references: [id], onDelete: Cascade)
+  removedBy     User?          @relation("JobRemover", fields: [removedById], references: [id], onDelete: SetNull)
+  location      Location       @relation(fields: [locationId], references: [id])
+  skill         Skill          @relation(fields: [skillId], references: [id])
   applications  Application[]
-  messages      Message[]
   notifications Notification[]
 
-  @@index([status, location])
+  @@index([status, deadline])
+  @@index([locationId])
+  @@index([skillId])
   @@index([employerId])
 }
 
 model Application {
-  id        String            @id @default(uuid()) @db.Uuid
-  jobId     String            @db.Uuid
-  workerId  String            @db.Uuid
-  status    ApplicationStatus @default(received)
-  note      String?           @db.VarChar(500)
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
+  id              String            @id @default(uuid()) @db.Uuid
+  jobId           String            @db.Uuid
+  workerId        String            @db.Uuid
+  status          ApplicationStatus @default(received)
+  note            String?           @db.VarChar(500)
+  statusChangedAt DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
 
-  job    Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
-  worker User @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  job      Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  worker   User      @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  messages Message[]
 
   @@unique([jobId, workerId])
   @@index([workerId])
 }
 
+// One conversation per job application, between the worker and the employer. Text only.
 model Message {
-  id          String    @id @default(uuid()) @db.Uuid
-  senderId    String    @db.Uuid
-  recipientId String    @db.Uuid
-  // The job the conversation is about, if any
-  jobId       String?   @db.Uuid
-  body        String    @db.VarChar(1000)
-  readAt      DateTime?
-  createdAt   DateTime  @default(now())
+  id            String    @id @default(uuid()) @db.Uuid
+  applicationId String    @db.Uuid
+  senderId      String    @db.Uuid
+  recipientId   String    @db.Uuid
+  body          String    @db.VarChar(1000)
+  readAt        DateTime?
+  createdAt     DateTime  @default(now())
 
-  sender    User @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
-  recipient User @relation("MessageRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
-  job       Job? @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  sender      User        @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  recipient   User        @relation("MessageRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
 
-  @@index([recipientId, createdAt])
-  @@index([senderId, recipientId])
+  @@index([applicationId, createdAt])
+  @@index([recipientId, readAt])
 }

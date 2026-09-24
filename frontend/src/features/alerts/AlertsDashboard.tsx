@@ -8,7 +8,7 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { showToast } from '../../stores/toasts';
 import { AlertCard } from './AlertCard';
 import { AlertDetail } from './AlertDetail';
-import { useAlertsStore } from './alertsStore';
+import type { AlertActions } from './useAlerts';
 import { PRIORITY_STYLE } from './priorityStyle';
 import { PRIORITIES, type Alert, type AlertRole, type Priority } from './types';
 
@@ -38,12 +38,17 @@ function firstTabWithUnread(alerts: Alert[]): Priority {
  * Every tab has the same filters (All, Unread, Last 7 days) and "Mark all as read".
  * Phones and tablets: list OR detail (one thing per screen). Laptops (>= 1024px): side by side.
  */
-export function AlertsDashboard({ role, alerts }: { role: AlertRole; alerts: Alert[] }) {
+export function AlertsDashboard({
+  role,
+  alerts,
+  actions,
+}: {
+  role: AlertRole;
+  alerts: Alert[];
+  actions: AlertActions;
+}) {
   const { t } = useTranslation();
-  const markRead = useAlertsStore((s) => s.markRead);
-  const markManyRead = useAlertsStore((s) => s.markManyRead);
-  const markManyUnread = useAlertsStore((s) => s.markManyUnread);
-  const setNotImportant = useAlertsStore((s) => s.setNotImportant);
+  const { markRead, markManyRead, markManyUnread, setNotImportant } = actions;
 
   const shown = useMemo(() => alerts.filter((a) => !a.markedNotImportant), [alerts]);
   const [tab, setTab] = useState<Priority>(() => firstTabWithUnread(shown));
@@ -77,28 +82,28 @@ export function AlertsDashboard({ role, alerts }: { role: AlertRole; alerts: Ale
     lastOpenedId.current = id;
     focusAfterClose.current = 'card';
     setSelectedId(id);
-    markRead(role, id);
+    markRead(id);
   }
 
   function markAllRead() {
     const ids = unreadInTab.map((a) => a.id);
-    markManyRead(role, ids);
+    markManyRead(ids);
     showToast({
       message: t('alerts.markedAllRead', { count: ids.length }),
       actionLabel: t('common.undo'),
-      onAction: () => markManyUnread(role, ids),
+      onAction: () => markManyUnread(ids),
     });
   }
 
   function markNotImportant(alert: Alert) {
     focusAfterClose.current = 'heading';
-    setNotImportant(role, alert.id, true);
+    setNotImportant(alert.id, true);
     setSelectedId(null);
     // Forgiving: undo instead of a scary "Are you sure?" (PRD 6.7).
     showToast({
       message: t('alerts.notImportantDone'),
       actionLabel: t('common.undo'),
-      onAction: () => setNotImportant(role, alert.id, false),
+      onAction: () => setNotImportant(alert.id, false),
     });
   }
 

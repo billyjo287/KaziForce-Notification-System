@@ -47,3 +47,5 @@ export function Toaster() {
     </Toast.Provider>
   );
 }
+
+export default Toaster;

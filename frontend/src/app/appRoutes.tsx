@@ -1,19 +1,16 @@
-// Everything behind "log in": the three sides' layouts and pages.
+// The frame of each logged-in side (guard + app shell) and the Alerts pages.
 // Loaded as its own download, so visitors of the public landing page never pay for it.
-import { useEffect } from 'react';
+// Other pages are separate downloads too (see router.tsx).
 import { Outlet, useMatches } from 'react-router';
 import { AppShell } from '../components/shell/AppShell';
-import { useAlertsStore, useUnreadCount } from '../features/alerts/alertsStore';
 import { AlertsPage } from '../features/alerts/AlertsPage';
-import type { AlertRole } from '../features/alerts/types';
+import { useUnreadCount } from '../features/alerts/useAlerts';
 import { ComingSoonPage } from '../pages/ComingSoonPage';
+import { RequireAuth } from './RequireAuth';
 
-function AlertsRoleLayout({ role }: { role: AlertRole }) {
-  const load = useAlertsStore((s) => s.load);
-  const unreadCount = useUnreadCount(role);
-  // Load alerts here (not only on the Alerts page) so the menu badge is right on every page.
-  useEffect(() => load(role), [load, role]);
-
+function AlertsSideShell({ role }: { role: 'worker' | 'business' }) {
+  // The menu badge shows unread alerts on every page of this side.
+  const unreadCount = useUnreadCount();
   return (
     <AppShell role={role} unreadCount={unreadCount}>
       <Outlet />
@@ -21,18 +18,30 @@ function AlertsRoleLayout({ role }: { role: AlertRole }) {
   );
 }
 
-export const WorkerLayout = () => <AlertsRoleLayout role="worker" />;
-export const EmployerLayout = () => <AlertsRoleLayout role="business" />;
+export const WorkerLayout = () => (
+  <RequireAuth role="worker">
+    <AlertsSideShell role="worker" />
+  </RequireAuth>
+);
+
+export const EmployerLayout = () => (
+  <RequireAuth role="business">
+    <AlertsSideShell role="business" />
+  </RequireAuth>
+);
+
 export const AdminLayout = () => (
-  <AppShell role="admin" unreadCount={0}>
-    <Outlet />
-  </AppShell>
+  <RequireAuth role="admin">
+    <AppShell role="admin" unreadCount={0}>
+      <Outlet />
+    </AppShell>
+  </RequireAuth>
 );
 
 export const WorkerAlerts = () => <AlertsPage role="worker" />;
 export const EmployerAlerts = () => <AlertsPage role="business" />;
 
-/** Pages that arrive in later phases (see docs/ROADMAP.md). */
+/** Pages that arrive in later phases (see docs/ROADMAP.md); the title comes from the route. */
 export function ComingSoon() {
   const handle = useMatches().at(-1)?.handle as { titleKey?: string } | undefined;
   return <ComingSoonPage titleKey={handle?.titleKey ?? 'common.comingSoonTitle'} />;

@@ -46,7 +46,8 @@ describe('AppShell', () => {
     expect(within(bottomBar).getAllByRole('listitem')).toHaveLength(4);
 
     await userEvent.click(within(bottomBar).getByRole('button', { name: 'More' }));
-    const dialog = screen.getByRole('dialog', { name: 'More pages' });
+    // The menu's code downloads on first open, which can take a moment.
+    const dialog = await screen.findByRole('dialog', { name: 'More pages' }, { timeout: 5000 });
     expect(within(dialog).getByRole('link', { name: 'Delivery logs' })).toBeInTheDocument();
   });
 });

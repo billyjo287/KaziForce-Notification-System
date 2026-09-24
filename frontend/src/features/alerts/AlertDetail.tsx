@@ -1,6 +1,8 @@
 import { ArrowLeft, CalendarClock, EyeOff, MapPin } from 'lucide-react';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router';
+import { buttonClasses } from '../../components/ui/buttonStyles';
 import { relativeTime } from '../../lib/relativeTime';
 import { PriorityBadge } from './PriorityBadge';
 import type { Alert, AlertRole, AlertType } from './types';
@@ -90,13 +92,10 @@ export const AlertDetail = forwardRef<HTMLHeadingElement, AlertDetailProps>(func
       )}
 
       <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start">
-        {mainAction && (
-          <button
-            type="button"
-            className="min-h-12 rounded-xl bg-primary px-6 text-lg font-bold text-on-primary transition-opacity duration-150 hover:opacity-90"
-          >
+        {mainAction && alert.link && (
+          <Link to={alert.link} className={buttonClasses('primary', 'lg')}>
             {t(mainAction)}
-          </button>
+          </Link>
         )}
         <div className="flex flex-col">
           <button

@@ -14,6 +14,8 @@ export interface Alert {
   readAt: Date | null;
   deadlineAt?: Date;
   location?: string;
+  /** In-app page the main action opens, e.g. /worker/jobs/123. */
+  link?: string | null;
   /** The user tapped "Not important to me" (hidden from the list; a training signal later). */
   markedNotImportant?: boolean;
   /** Arrived while the page was open, so it slides in. */

@@ -1,5 +1,5 @@
 # Continuous integration: on every push and pull request, install, lint, type-check and test
-# all three apps. The backend job gets its own throwaway Postgres and Redis.
+# all three apps. Jobs that need a database get their own throwaway Postgres and Redis.
 name: CI
 
 on:
@@ -17,11 +17,32 @@ env:
   # Needed by `prisma generate`, which runs after every npm install. Matches the services below.
   DATABASE_URL: postgresql://kaziforce:kaziforce@localhost:5432/kaziforce
   REDIS_URL: redis://localhost:6379
+  # Tests use a separate database; the browser tests create "kaziforce_e2e" themselves.
+  TEST_DATABASE_URL: postgresql://kaziforce:kaziforce@localhost:5432/kaziforce_test
+  # CI-only signing secret for login tokens (not used anywhere real).
+  JWT_ACCESS_SECRET: ci-only-secret-not-used-anywhere-real-0123456789
 
 jobs:
   frontend:
     name: Frontend
     runs-on: ubuntu-latest
+    # The browser tests run the real backend against these.
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: kaziforce
+          POSTGRES_PASSWORD: kaziforce
+          POSTGRES_DB: kaziforce
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U kaziforce" --health-interval 5s --health-timeout 3s
+          --health-retries 20
+      redis:
+        image: redis:8-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 5s --health-timeout 3s --health-retries 20
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -39,7 +60,7 @@ jobs:
       - name: Install Playwright's browser
         run: npx playwright install --with-deps chromium
         working-directory: frontend
-      - name: Browser tests + accessibility (axe) at 360px and 1440px
+      - name: Browser tests + accessibility (axe) at 360px and 1440px, with the real backend
         run: npm run test:e2e -w frontend
       - name: Keep the Playwright report if tests fail
         if: failure()

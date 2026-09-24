@@ -1,15 +1,18 @@
-import { Menu, Repeat } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { LazyMotion, MotionConfig } from 'motion/react';
 import * as m from 'motion/react-m';
-import { useState, type ReactNode } from 'react';
+import { lazy, Suspense, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, NavLink, useLocation } from 'react-router';
+import { useAuth } from '../../stores/auth';
 import { useSettings } from '../../stores/settings';
 import { Logo } from '../Logo';
-import { Dialog } from '../ui/Dialog';
 import { OfflineBanner } from '../ui/OfflineBanner';
-import { Toaster } from '../ui/Toaster';
+import { LazyToaster } from '../ui/LazyToaster';
 import { NAV, type NavItem, type Role } from './navConfig';
+
+// Only the admin side has a "More" menu; its dialog code downloads when it is first opened.
+const MoreMenu = lazy(() => import('./MoreMenu'));
 
 const loadMotionFeatures = () => import('../../lib/motionFeatures').then((mod) => mod.default);
 
@@ -41,6 +44,7 @@ export function AppShell({ role, unreadCount, children }: AppShellProps) {
   const location = useLocation();
   const reduceMotion = useSettings((s) => s.reduceMotion);
   const [moreOpen, setMoreOpen] = useState(false);
+  const user = useAuth((s) => s.user);
   const nav = NAV[role];
 
   const href = (item: NavItem) => `${nav.basePath}/${item.path}`;
@@ -101,31 +105,23 @@ export function AppShell({ role, unreadCount, children }: AppShellProps) {
                 ))}
               </ul>
             </nav>
-            <div className="mt-auto rounded-lg bg-canvas px-3 py-3">
-              <p className="font-bold">{nav.userName}</p>
-              <p className="text-ink-muted">{t(`roles.${role}`)}</p>
-              <Link
-                to="/login"
-                className="mt-2 inline-flex min-h-11 items-center gap-2 font-bold text-primary underline-offset-4 hover:underline"
-              >
-                <Repeat aria-hidden="true" className="size-5" />
-                {t('nav.switchSide')}
-              </Link>
-            </div>
+            {user && (
+              <div className="mt-auto rounded-lg bg-canvas px-3 py-3">
+                <p className="font-bold break-words">{user.name}</p>
+                <p className="text-ink-muted">
+                  {user.companyName
+                    ? `${t('roles.business')} · ${user.companyName}`
+                    : t(`roles.${role}`)}
+                </p>
+              </div>
+            )}
           </aside>
 
           {/* ---------- Main content ---------- */}
           <div className="flex min-w-0 flex-1 flex-col">
-            <header className="sticky top-0 z-10 flex items-center justify-between border-b border-line bg-surface/95 px-4 py-3 backdrop-blur md:hidden">
-              <Link to={nav.basePath} className="rounded-lg">
+            <header className="sticky top-0 z-10 flex items-center border-b border-line bg-surface/95 px-4 py-3 backdrop-blur md:hidden">
+              <Link to={nav.basePath} className="kf-logo-link rounded-lg">
                 <Logo />
-              </Link>
-              <Link
-                to="/login"
-                aria-label={t('nav.switchSide')}
-                className="grid size-11 place-items-center rounded-lg text-ink-muted"
-              >
-                <Repeat aria-hidden="true" className="size-6" />
               </Link>
             </header>
             <main
@@ -193,29 +189,17 @@ export function AppShell({ role, unreadCount, children }: AppShellProps) {
             </ul>
           </nav>
 
-          {moreItems.length > 0 && (
-            <Dialog open={moreOpen} onOpenChange={setMoreOpen} title={t('nav.moreTitle')}>
-              <ul className="flex flex-col gap-1">
-                {moreItems.map((item) => (
-                  <li key={item.key}>
-                    <NavLink
-                      to={href(item)}
-                      onClick={() => setMoreOpen(false)}
-                      className={({ isActive }) =>
-                        `flex min-h-12 items-center gap-3 rounded-lg px-3 text-lg ${
-                          isActive ? 'bg-primary-soft font-bold' : 'font-medium hover:bg-canvas'
-                        }`
-                      }
-                    >
-                      <item.icon aria-hidden="true" className="size-6 shrink-0" />
-                      {t(`nav.${item.key}`)}
-                    </NavLink>
-                  </li>
-                ))}
-              </ul>
-            </Dialog>
+          {moreItems.length > 0 && moreOpen && (
+            <Suspense fallback={null}>
+              <MoreMenu
+                items={moreItems}
+                hrefFor={href}
+                open={moreOpen}
+                onOpenChange={setMoreOpen}
+              />
+            </Suspense>
           )}
-          <Toaster />
+          <LazyToaster />
         </div>
       </MotionConfig>
     </LazyMotion>

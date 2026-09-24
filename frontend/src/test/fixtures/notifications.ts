@@ -1,15 +1,17 @@
-// Made-up alerts for the design phase (no backend yet). Times are relative to "now" so the
-// "Closes in ..." countdowns always look realistic.
-import type { Alert } from './types';
+// Sample alerts in the shape the API returns, for unit tests.
+import type { ApiNotification } from '../../types/api';
 
 const MINUTE = 60 * 1000;
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
 
-export function createMockAlerts(now = Date.now()): Alert[] {
-  const at = (offset: number) => new Date(now + offset);
+type Sample = Omit<ApiNotification, 'link' | 'deadlineAt' | 'location' | 'markedNotImportant'> &
+  Partial<ApiNotification>;
 
-  return [
+export function createNotifications(now = Date.now()): ApiNotification[] {
+  const at = (offset: number) => new Date(now + offset).toISOString();
+
+  const samples: Sample[] = [
     {
       id: 'a1',
       priority: 'urgent',
@@ -97,82 +99,11 @@ export function createMockAlerts(now = Date.now()): Alert[] {
       readAt: at(-12 * DAY + HOUR),
     },
   ];
-}
-
-/** Alerts an employer (Peter Mwangi, Mwangi Logistics) would receive. */
-export function createEmployerMockAlerts(now = Date.now()): Alert[] {
-  const at = (offset: number) => new Date(now + offset);
-
-  return [
-    {
-      id: 'e1',
-      priority: 'urgent',
-      type: 'status_update',
-      title: 'Wanjiru Kamau accepted your job offer',
-      body: 'Wanjiru Kamau accepted "Warehouse packers needed today". The shift starts at 2pm. Send her the meeting point if you have not already.',
-      sender: 'Wanjiru Kamau',
-      createdAt: at(-8 * MINUTE),
-      readAt: null,
-      deadlineAt: at(90 * MINUTE),
-      location: 'Industrial Area, Nairobi',
-    },
-    {
-      id: 'e2',
-      priority: 'urgent',
-      type: 'status_update',
-      title: '3 new applicants for "Warehouse packers"',
-      body: 'Three workers applied in the last 20 minutes. This job closes soon, so review them now to fill your places.',
-      sender: 'KaziForce',
-      createdAt: at(-20 * MINUTE),
-      readAt: null,
-      deadlineAt: at(38 * MINUTE),
-    },
-    {
-      id: 'e3',
-      priority: 'medium',
-      type: 'message',
-      title: 'New message from Brian Kiprono',
-      body: 'Good morning. I have my own motorbike and a valid licence. Can I start on Saturday at 8am?',
-      sender: 'Brian Kiprono',
-      createdAt: at(-2 * HOUR),
-      readAt: null,
-    },
-    {
-      id: 'e4',
-      priority: 'low',
-      type: 'status_update',
-      title: 'Your job post "Site cleaner" has closed',
-      body: 'The deadline passed, so the job is no longer shown to workers. You can post it again at any time.',
-      sender: 'KaziForce',
-      createdAt: at(-1 * DAY),
-      readAt: at(-20 * HOUR),
-    },
-    {
-      id: 'e5',
-      priority: 'low',
-      type: 'announcement',
-      title: 'See when your messages were delivered',
-      body: 'You can now see if each worker received your message, and on which channel.',
-      sender: 'KaziForce',
-      createdAt: at(-4 * DAY),
-      readAt: at(-4 * DAY + HOUR),
-    },
-  ];
-}
-
-/** A fresh urgent alert used to show how a live alert slides in. */
-export function createIncomingAlert(now = Date.now()): Alert {
-  return {
-    id: `live-${now}`,
-    priority: 'urgent',
-    type: 'job_alert',
-    title: 'Event ushers needed this evening',
-    body: 'Nairobi Expo Centre needs 6 ushers from 5pm to 10pm tonight. Pay is KSh 1,500. Closes in 45 minutes.',
-    sender: 'Nairobi Expo Centre',
-    createdAt: new Date(now),
-    readAt: null,
-    deadlineAt: new Date(now + 45 * MINUTE),
-    location: 'Upper Hill, Nairobi',
-    arrivedLive: true,
-  };
+  return samples.map((n) => ({
+    link: n.type === 'announcement' ? null : `/worker/jobs/job-${n.id}`,
+    deadlineAt: null,
+    location: null,
+    markedNotImportant: false,
+    ...n,
+  }));
 }

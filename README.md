@@ -71,13 +71,23 @@ To also stop the Docker services: `npm run stop`.
 
 Then open:
 
-- http://localhost:5173: the website (landing page). Click **Log in** to choose a side to
-  preview (Worker, Employer or Admin); real accounts arrive in Phase 2.
-- http://localhost:5173/worker/alerts: the worker Alerts dashboard (mock data)
+- http://localhost:5173: the website. Click **Log in** and use one of the sample accounts below,
+  or **Create an account** (the SMS code is printed in the backend terminal, look for
+  `[mock SMS]`).
 - http://localhost:5173/ui-kit: gallery of every interface component
 - http://localhost:4000/health: backend health (database and Redis)
 - http://localhost:8000/health: ML service health
-- http://localhost:8025: Mailpit fake inbox
+- http://localhost:8025: Mailpit fake inbox (password-reset links and new-login emails land here)
+
+**Sample accounts** (made-up people; every password is `Password123!`):
+
+| Side     | Email                                                                                |
+| -------- | ------------------------------------------------------------------------------------ |
+| Worker   | `worker1@example.com` … `worker6@example.com` (worker3 and worker5 use Kiswahili)    |
+| Employer | `employer1@example.com` … `employer3@example.com`                                    |
+| Admin    | the `ADMIN_EMAIL` / `ADMIN_PASSWORD` in `backend/.env` (default `admin@example.com`) |
+
+`npm run db:seed -w backend` resets the sample data at any time.
 
 ## 4. Checks and tests
 
@@ -90,8 +100,9 @@ npm test              # Vitest tests, frontend + backend
 npm run format        # auto-format with Prettier
 ```
 
-Frontend browser tests (Playwright + axe accessibility checks at 320, 360 and 1440 px) and the
-bundle size report:
+Frontend browser tests (Playwright + axe accessibility checks at 320, 360 and 1440 px, run against
+the real backend on port 4001 with its own `kaziforce_e2e` database, so Docker must be running)
+and the bundle size report:
 
 ```bash
 cd frontend
@@ -104,8 +115,11 @@ To use the Google Chrome already on your computer instead of downloading a brows
 `PW_CHANNEL=chrome` first (PowerShell: `$env:PW_CHANNEL="chrome"`; macOS/Linux/Git Bash:
 `export PW_CHANNEL=chrome`).
 
-Preview helpers (add to any address): `?theme=dark` or `?theme=light`, `?lang=sw`, and on the
-Alerts page `?mock=empty` or `?mock=error` to see those states.
+Preview helpers (add to any address): `?theme=dark` or `?theme=light`, and `?lang=sw` before
+logging in.
+
+Backend tests use a separate `kaziforce_test` database (`TEST_DATABASE_URL`), created and filled
+with sample data automatically, so they never touch your development data.
 
 ML service (one-time Python setup, then lint and test):
 
