@@ -194,3 +194,53 @@
 @utility animate-kf-pulse {
   animation: kf-pulse 1.2s var(--kf-ease-out) 2;
 }
+
+/* ---------- Logo animations (see components/Logo.tsx) ---------- */
+.kf-logo-ring {
+  stroke-dasharray: 100;
+  animation: kf-logo-draw 700ms var(--kf-ease-out) both;
+}
+
+.kf-logo-dot {
+  transform-box: view-box;
+  transform-origin: 20px 20px;
+  /* 12 ticks, one every 0.4 s, then it stops back at 12 o'clock. */
+  animation: kf-logo-tick 4.8s steps(12, end) 700ms 1 both;
+}
+
+.kf-logo-link:hover .kf-logo-dot,
+a:focus-visible .kf-logo-dot {
+  animation: kf-logo-rewind 600ms var(--kf-ease-out) 1;
+}
+
+@keyframes kf-logo-draw {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes kf-logo-tick {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes kf-logo-rewind {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+/* Reduced motion (device setting or the in-app switch): the logo is simply still. */
+@media (prefers-reduced-motion: reduce) {
+  .kf-logo * {
+    animation: none !important;
+  }
+}
+
+html[data-reduce-motion='true'] .kf-logo * {
+  animation: none !important;
+}

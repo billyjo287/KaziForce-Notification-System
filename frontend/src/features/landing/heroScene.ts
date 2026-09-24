@@ -4,6 +4,7 @@
 //
 // Loaded on demand after the page has painted (see Hero.tsx), so it never slows the first view.
 import {
+  BoxGeometry,
   BufferGeometry,
   Color,
   Float32BufferAttribute,
@@ -17,6 +18,7 @@ import {
   PerspectiveCamera,
   Scene,
   SphereGeometry,
+  TorusGeometry,
   Vector3,
   WebGLRenderer,
 } from 'three';
@@ -109,6 +111,18 @@ export function mountHeroScene(container: HTMLElement, colors: HeroColors): () =
   );
   world.add(nodes);
 
+  // KaziForce's clock at the centre, matching the logo: a rim and a hand that ticks each second.
+  const clock = new Group();
+  clock.position.copy(positions[network.hub]!);
+  const rimGeometry = new TorusGeometry(0.12, 0.008, 8, 64);
+  const clockMaterial = new MeshBasicMaterial({ color: colors.hub });
+  clock.add(new Mesh(rimGeometry, clockMaterial));
+  const handGeometry = new BoxGeometry(0.012, 0.085, 0.012);
+  handGeometry.translate(0, 0.0425, 0); // rotate around the centre, not the middle of the hand
+  const hand = new Mesh(handGeometry, clockMaterial);
+  clock.add(hand);
+  world.add(clock);
+
   // Travelling alerts.
   const pulseGeometry = new SphereGeometry(0.04, 16, 12);
   const pulseMaterial = new MeshBasicMaterial({ color: colors.pulse });
@@ -128,6 +142,9 @@ export function mountHeroScene(container: HTMLElement, colors: HeroColors): () =
 
   function update(delta: number, time: number) {
     world.rotation.y += ROTATION_SPEED * delta;
+    // Keep the clock facing the viewer while the network turns; tick once per second.
+    clock.quaternion.copy(world.quaternion).invert();
+    hand.rotation.z = -Math.floor(time) * (Math.PI / 6);
 
     sinceLastPulse += delta;
     if (sinceLastPulse >= PULSE_EVERY_S && pulses.length < MAX_PULSES) {
@@ -217,6 +234,9 @@ export function mountHeroScene(container: HTMLElement, colors: HeroColors): () =
     nodeMaterial.dispose();
     nodes.dispose();
     pulseGeometry.dispose();
+    rimGeometry.dispose();
+    handGeometry.dispose();
+    clockMaterial.dispose();
     pulseMaterial.dispose();
     renderer.dispose();
     renderer.forceContextLoss();

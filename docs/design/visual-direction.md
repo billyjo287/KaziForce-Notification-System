@@ -63,3 +63,26 @@ the app (no Google Fonts request), which matters on slow connections.
   Opening an alert shows it as its own page with a "Back to alerts" button.
 - **Tablets (768–1023 px):** left sidebar menu, one column.
 - **Laptops (>= 1024 px):** left sidebar, alert list and alert details side by side.
+
+## Logo (revised 2026-09-24 at Billy's request)
+
+The letters **KF** drawn as clean strokes inside a **clock face**, on the green tile, with an amber
+"seconds" dot on the rim: KaziForce saves you time by getting the right alert to you at the right
+moment. Three small animations, all switched off by reduced motion (device setting or in-app
+switch):
+
+1. the clock rim draws itself in when the logo first appears (700 ms);
+2. the seconds dot ticks once around the clock, 12 ticks in 4.8 s, then stops (under 5 s, so no
+   pause button is needed under WCAG 2.2.2);
+3. on hover or keyboard focus of the logo, the dot rewinds ("time saved", 600 ms).
+
+The landing page's 3D hero uses the same clock at the centre of its network, with a hand that
+ticks once a second (never loaded with reduced motion).
+
+## Alerts layout (revised 2026-09-24)
+
+Alerts are grouped in **tabs**, one per category: Urgent | Important | For later. Each tab shows
+its colour, icon, word and how many are new. Every tab has the same filters (All, Unread, Last 7
+days) and a "Mark all as read" button with Undo. The app opens on the most important tab that has
+something new. On narrow screens the tab icon sits above the word; with Large text on very small
+phones the tabs stack, so no word is ever cut off.

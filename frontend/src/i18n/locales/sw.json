@@ -62,14 +62,10 @@
     "closed": "Kazi hii imefungwa",
     "newAlertAnnouncement": "Arifa mpya ya {{priority}}: {{title}}",
     "notImportantDone": "Imewekwa kama si muhimu. Tutakuonyesha arifa chache kama hii.",
-    "showMore_one": "Onyesha {{count}} zaidi",
-    "showMore_other": "Onyesha {{count}} zaidi",
-    "showLess": "Onyesha chache",
     "filters": {
       "label": "Onyesha",
       "all": "Zote",
       "unread": "Hazijasomwa",
-      "urgent": "Dharura",
       "last7days": "Siku 7 zilizopita"
     },
     "groups": {
@@ -78,10 +74,10 @@
       "low": "Hakuna haraka. Tunazituma pia kwenye barua pepe yako ya muhtasari wa kila siku."
     },
     "empty": {
-      "allTitle": "Bado hakuna arifa",
-      "allBody": "Kitu kikihitaji umakini wako, kitaonekana hapa.",
       "filteredTitle": "Hakuna cha kuonyesha",
-      "filteredBody": "Hakuna arifa zinazolingana na chaguo hili. Chagua \"Zote\" kuona kila kitu."
+      "filteredBody": "Hakuna arifa zinazolingana na chaguo hili. Chagua \"Zote\" kuona kila kitu katika aina hii.",
+      "tabTitle": "Hakuna kitu chini ya \"{{category}}\" kwa sasa",
+      "tabBody": "Kitu kipya kikifika, kitaonekana hapa."
     },
     "error": {
       "title": "Hatukuweza kupakia arifa zako",
@@ -100,7 +96,13 @@
       "notImportant": "Si muhimu kwangu",
       "notImportantHelp": "Tutakuonyesha arifa chache kama hii.",
       "choose": "Chagua arifa upande wa kushoto uione hapa."
-    }
+    },
+    "tabsLabel": "Aina za arifa",
+    "tabUnread_one": "{{count}} mpya",
+    "tabUnread_other": "{{count}} mpya",
+    "markAllRead": "Weka zote kama zimesomwa",
+    "markedAllRead_one": "Arifa {{count}} imewekwa kama imesomwa.",
+    "markedAllRead_other": "Arifa {{count}} zimewekwa kama zimesomwa."
   },
   "settings": {
     "title": "Mipangilio",

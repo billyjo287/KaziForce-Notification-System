@@ -13,6 +13,10 @@ interface AlertsState {
   alerts: Record<AlertRole, Alert[]>;
   load: (role: AlertRole) => void;
   markRead: (role: AlertRole, id: string) => void;
+  /** Marks several alerts read at once ("Mark all as read"). */
+  markManyRead: (role: AlertRole, ids: string[]) => void;
+  /** Undo for markManyRead. */
+  markManyUnread: (role: AlertRole, ids: string[]) => void;
   setNotImportant: (role: AlertRole, id: string, value: boolean) => void;
   add: (role: AlertRole, alert: Alert) => void;
 }
@@ -57,6 +61,24 @@ export const useAlertsStore = create<AlertsState>()((set, get) => ({
   markRead: (role, id) =>
     set((s) => ({
       alerts: updateAlert(s.alerts, role, id, (a) => (a.readAt ? a : { ...a, readAt: new Date() })),
+    })),
+
+  markManyRead: (role, ids) =>
+    set((s) => ({
+      alerts: {
+        ...s.alerts,
+        [role]: s.alerts[role].map((a) =>
+          ids.includes(a.id) && a.readAt === null ? { ...a, readAt: new Date() } : a,
+        ),
+      },
+    })),
+
+  markManyUnread: (role, ids) =>
+    set((s) => ({
+      alerts: {
+        ...s.alerts,
+        [role]: s.alerts[role].map((a) => (ids.includes(a.id) ? { ...a, readAt: null } : a)),
+      },
     })),
 
   setNotImportant: (role, id, value) =>

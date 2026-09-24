@@ -1,6 +1,7 @@
-import { Inbox } from 'lucide-react';
+import { CheckCheck, Inbox } from 'lucide-react';
 import { AnimatePresence } from 'motion/react';
 import * as m from 'motion/react-m';
+import { Tabs } from 'radix-ui';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { EmptyState } from '../../components/ui/EmptyState';
@@ -9,42 +10,45 @@ import { AlertCard } from './AlertCard';
 import { AlertDetail } from './AlertDetail';
 import { useAlertsStore } from './alertsStore';
 import { PRIORITY_STYLE } from './priorityStyle';
-import { PRIORITIES, type Alert, type AlertRole } from './types';
+import { PRIORITIES, type Alert, type AlertRole, type Priority } from './types';
 
-type Filter = 'all' | 'unread' | 'urgent' | 'last7days';
-const FILTERS: Filter[] = ['all', 'unread', 'urgent', 'last7days'];
+type Filter = 'all' | 'unread' | 'last7days';
+const FILTERS: Filter[] = ['all', 'unread', 'last7days'];
 const WEEK = 7 * 24 * 60 * 60 * 1000;
-/** "For later" shows this many cards, the rest behind "Show N more". */
-const LOW_PRIORITY_PREVIEW = 2;
 
 function matches(alert: Alert, filter: Filter, now: number): boolean {
-  switch (filter) {
-    case 'unread':
-      return alert.readAt === null;
-    case 'urgent':
-      return alert.priority === 'urgent';
-    case 'last7days':
-      return now - alert.createdAt.getTime() <= WEEK;
-    default:
-      return true;
-  }
+  if (filter === 'unread') return alert.readAt === null;
+  if (filter === 'last7days') return now - alert.createdAt.getTime() <= WEEK;
+  return true;
 }
+
+const byNewest = (a: Alert, b: Alert) => b.createdAt.getTime() - a.createdAt.getTime();
 
 // 200 ms, ease-out, no bounce (PRD section 7). MotionConfig makes these instant when
 // motion is reduced.
 const cardTransition = { duration: 0.2, ease: [0.2, 0, 0, 1] as const };
 
+/** Open on the most important category that has something new. */
+function firstTabWithUnread(alerts: Alert[]): Priority {
+  return PRIORITIES.find((p) => alerts.some((a) => a.priority === p && !a.readAt)) ?? 'urgent';
+}
+
 /**
- * Alerts dashboard, grouped Urgent / Important / For later (worker and employer).
+ * Alerts dashboard (worker and employer). One tab per category: Urgent, Important, For later.
+ * Every tab has the same filters (All, Unread, Last 7 days) and "Mark all as read".
  * Phones and tablets: list OR detail (one thing per screen). Laptops (>= 1024px): side by side.
  */
 export function AlertsDashboard({ role, alerts }: { role: AlertRole; alerts: Alert[] }) {
   const { t } = useTranslation();
   const markRead = useAlertsStore((s) => s.markRead);
+  const markManyRead = useAlertsStore((s) => s.markManyRead);
+  const markManyUnread = useAlertsStore((s) => s.markManyUnread);
   const setNotImportant = useAlertsStore((s) => s.setNotImportant);
+
+  const shown = useMemo(() => alerts.filter((a) => !a.markedNotImportant), [alerts]);
+  const [tab, setTab] = useState<Priority>(() => firstTabWithUnread(shown));
   const [filter, setFilter] = useState<Filter>('all');
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [showAllLow, setShowAllLow] = useState(false);
   const [now] = useState(() => Date.now());
   const pageHeading = useRef<HTMLHeadingElement>(null);
   const detailHeading = useRef<HTMLHeadingElement>(null);
@@ -52,19 +56,11 @@ export function AlertsDashboard({ role, alerts }: { role: AlertRole; alerts: Ale
   const lastOpenedId = useRef<string | null>(null);
   const focusAfterClose = useRef<'card' | 'heading'>('card');
 
-  const shown = useMemo(() => alerts.filter((a) => !a.markedNotImportant), [alerts]);
   const selected = shown.find((a) => a.id === selectedId) ?? null;
-  const unreadCount = shown.filter((a) => a.readAt === null).length;
-
-  const groups = useMemo(() => {
-    const visible = shown.filter((a) => matches(a, filter, now));
-    return PRIORITIES.map((priority) => ({
-      priority,
-      items: visible
-        .filter((a) => a.priority === priority)
-        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()),
-    })).filter((group) => group.items.length > 0);
-  }, [shown, filter, now]);
+  const unreadTotal = shown.filter((a) => a.readAt === null).length;
+  const inTab = useMemo(() => shown.filter((a) => a.priority === tab).sort(byNewest), [shown, tab]);
+  const visible = inTab.filter((a) => matches(a, filter, now));
+  const unreadInTab = inTab.filter((a) => a.readAt === null);
 
   // Move keyboard/screen-reader focus to the details when they open, and back when they close.
   useEffect(() => {
@@ -84,6 +80,16 @@ export function AlertsDashboard({ role, alerts }: { role: AlertRole; alerts: Ale
     markRead(role, id);
   }
 
+  function markAllRead() {
+    const ids = unreadInTab.map((a) => a.id);
+    markManyRead(role, ids);
+    showToast({
+      message: t('alerts.markedAllRead', { count: ids.length }),
+      actionLabel: t('common.undo'),
+      onAction: () => markManyUnread(role, ids),
+    });
+  }
+
   function markNotImportant(alert: Alert) {
     focusAfterClose.current = 'heading';
     setNotImportant(role, alert.id, true);
@@ -97,7 +103,7 @@ export function AlertsDashboard({ role, alerts }: { role: AlertRole; alerts: Ale
   }
 
   return (
-    <div className="lg:grid lg:grid-cols-[minmax(22rem,28rem)_1fr] lg:gap-8">
+    <div className="lg:grid lg:grid-cols-[minmax(24rem,30rem)_1fr] lg:gap-8">
       {/* ---------- List ---------- */}
       <div className={selected ? 'hidden lg:block' : 'block'}>
         <header className="mb-5">
@@ -105,106 +111,131 @@ export function AlertsDashboard({ role, alerts }: { role: AlertRole; alerts: Ale
             {t('alerts.title')}
           </h1>
           <p className="mt-1 text-ink-muted">
-            {unreadCount > 0
-              ? t('alerts.unreadSummary', { count: unreadCount })
+            {unreadTotal > 0
+              ? t('alerts.unreadSummary', { count: unreadTotal })
               : t('alerts.allRead')}
           </p>
         </header>
 
-        <div role="group" aria-labelledby="filter-label" className="mb-6">
-          <span id="filter-label" className="sr-only">
-            {t('alerts.filters.label')}
-          </span>
-          <div className="flex flex-wrap gap-2">
-            {FILTERS.map((f) => (
-              <button
-                key={f}
-                type="button"
-                aria-pressed={filter === f}
-                onClick={() => setFilter(f)}
-                className={`min-h-11 rounded-full border-2 px-4 font-bold transition-colors duration-150 ${
-                  filter === f
-                    ? 'border-primary bg-primary text-on-primary'
-                    : 'border-line-strong bg-surface text-ink hover:bg-canvas'
-                }`}
-              >
-                {t(`alerts.filters.${f}`)}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {groups.length === 0 ? (
-          <EmptyState
-            icon={Inbox}
-            title={
-              shown.length === 0 ? t('alerts.empty.allTitle') : t('alerts.empty.filteredTitle')
-            }
-            body={shown.length === 0 ? t('alerts.empty.allBody') : t('alerts.empty.filteredBody')}
-          />
-        ) : (
-          <div className="flex flex-col gap-8">
-            {groups.map(({ priority, items }) => {
-              const { icon: Icon, text } = PRIORITY_STYLE[priority];
-              const collapsible = priority === 'low' && items.length > LOW_PRIORITY_PREVIEW + 1;
-              const hiddenCount = items.length - LOW_PRIORITY_PREVIEW;
-              const visibleItems =
-                collapsible && !showAllLow ? items.slice(0, LOW_PRIORITY_PREVIEW) : items;
-
+        <Tabs.Root
+          value={tab}
+          onValueChange={(value) => {
+            setTab(value as Priority);
+            setSelectedId(null);
+          }}
+        >
+          {/* One tab per category: colour + icon + word + how many are new. */}
+          {/* Wraps onto a second row only when the words would not fit (very small screens or Large text). */}
+          <Tabs.List aria-label={t('alerts.tabsLabel')} className="flex flex-wrap gap-2">
+            {PRIORITIES.map((priority) => {
+              const { icon: Icon, text, bar } = PRIORITY_STYLE[priority];
+              const count = shown.filter((a) => a.priority === priority && !a.readAt).length;
               return (
-                <section key={priority} aria-labelledby={`group-${priority}`}>
-                  <h2
-                    id={`group-${priority}`}
-                    className={`flex items-center gap-2 text-xl font-bold ${text}`}
-                  >
-                    <Icon aria-hidden="true" className="size-6" strokeWidth={2.5} />
-                    {t(`priority.${priority}`)}
-                    <span className="font-medium text-ink-muted">({items.length})</span>
-                  </h2>
-                  <p className="mb-3 text-ink-muted">{t(`alerts.groups.${priority}`)}</p>
-                  <ul id={`list-${priority}`} className="flex flex-col gap-3">
-                    <AnimatePresence initial={false} mode="popLayout">
-                      {visibleItems.map((alert) => (
-                        <m.li
-                          key={alert.id}
-                          layout
-                          // New live alerts slide in from above; others fade in place.
-                          initial={alert.arrivedLive ? { opacity: 0, y: -24 } : { opacity: 0 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, x: -32 }}
-                          transition={cardTransition}
-                        >
-                          <AlertCard
-                            ref={(el) => {
-                              if (el) cardRefs.current.set(alert.id, el);
-                              else cardRefs.current.delete(alert.id);
-                            }}
-                            alert={alert}
-                            selected={alert.id === selectedId}
-                            onOpen={open}
-                          />
-                        </m.li>
-                      ))}
-                    </AnimatePresence>
-                  </ul>
-                  {collapsible && (
-                    <button
-                      type="button"
-                      aria-expanded={showAllLow}
-                      aria-controls={`list-${priority}`}
-                      onClick={() => setShowAllLow((v) => !v)}
-                      className="mt-3 inline-flex min-h-11 items-center rounded-lg px-2 font-bold text-primary underline-offset-4 hover:underline"
-                    >
-                      {showAllLow
-                        ? t('alerts.showLess')
-                        : t('alerts.showMore', { count: hiddenCount })}
-                    </button>
-                  )}
-                </section>
+                <Tabs.Trigger
+                  key={priority}
+                  value={priority}
+                  className="group relative flex min-h-16 min-w-fit flex-1 flex-col items-center justify-center gap-0.5 overflow-hidden rounded-xl border-2 border-line bg-surface px-2 pt-2 pb-3 text-center font-bold text-ink-muted transition-colors duration-150 hover:border-line-strong data-[state=active]:border-line-strong data-[state=active]:text-ink"
+                >
+                  {/* Thick coloured bar under the chosen tab (plus bold text and a border). */}
+                  <span
+                    aria-hidden="true"
+                    className={`absolute inset-x-0 bottom-0 h-1.5 opacity-0 group-data-[state=active]:opacity-100 ${bar}`}
+                  />
+                  <span className="flex flex-col items-center gap-0.5 sm:flex-row sm:gap-1.5">
+                    <Icon
+                      aria-hidden="true"
+                      className={`size-5 shrink-0 ${text}`}
+                      strokeWidth={2.5}
+                    />
+                    <span className="leading-tight whitespace-nowrap">
+                      {t(`priority.${priority}`)}
+                    </span>
+                  </span>
+                  <span className={`text-sm font-medium ${count > 0 ? text : 'text-ink-muted'}`}>
+                    {t('alerts.tabUnread', { count })}
+                  </span>
+                </Tabs.Trigger>
               );
             })}
-          </div>
-        )}
+          </Tabs.List>
+
+          {PRIORITIES.map((priority) => (
+            <Tabs.Content key={priority} value={priority} className="mt-5 outline-none">
+              <p className="mb-4 text-ink-muted">{t(`alerts.groups.${priority}`)}</p>
+
+              {/* The same filters in every category. */}
+              <div className="mb-5 flex flex-wrap items-center gap-2">
+                <div role="group" aria-label={t('alerts.filters.label')} className="contents">
+                  {FILTERS.map((f) => (
+                    <button
+                      key={f}
+                      type="button"
+                      aria-pressed={filter === f}
+                      onClick={() => setFilter(f)}
+                      className={`min-h-11 rounded-full border-2 px-4 font-bold transition-colors duration-150 ${
+                        filter === f
+                          ? 'border-primary bg-primary text-on-primary'
+                          : 'border-line-strong bg-surface text-ink hover:bg-canvas'
+                      }`}
+                    >
+                      {t(`alerts.filters.${f}`)}
+                    </button>
+                  ))}
+                </div>
+                {unreadInTab.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={markAllRead}
+                    className="inline-flex min-h-11 items-center gap-2 rounded-lg px-2 font-bold text-primary underline-offset-4 hover:underline"
+                  >
+                    <CheckCheck aria-hidden="true" className="size-5" />
+                    {t('alerts.markAllRead')}
+                  </button>
+                )}
+              </div>
+
+              {visible.length === 0 ? (
+                <EmptyState
+                  icon={Inbox}
+                  title={
+                    inTab.length === 0
+                      ? t('alerts.empty.tabTitle', { category: t(`priority.${priority}`) })
+                      : t('alerts.empty.filteredTitle')
+                  }
+                  body={
+                    inTab.length === 0 ? t('alerts.empty.tabBody') : t('alerts.empty.filteredBody')
+                  }
+                />
+              ) : (
+                <ul className="flex flex-col gap-3">
+                  <AnimatePresence initial={false} mode="popLayout">
+                    {visible.map((alert) => (
+                      <m.li
+                        key={alert.id}
+                        layout
+                        // New live alerts slide in from above; others fade in place.
+                        initial={alert.arrivedLive ? { opacity: 0, y: -24 } : { opacity: 0 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, x: -32 }}
+                        transition={cardTransition}
+                      >
+                        <AlertCard
+                          ref={(el) => {
+                            if (el) cardRefs.current.set(alert.id, el);
+                            else cardRefs.current.delete(alert.id);
+                          }}
+                          alert={alert}
+                          selected={alert.id === selectedId}
+                          onOpen={open}
+                        />
+                      </m.li>
+                    ))}
+                  </AnimatePresence>
+                </ul>
+              )}
+            </Tabs.Content>
+          ))}
+        </Tabs.Root>
       </div>
 
       {/* ---------- Detail ---------- */}

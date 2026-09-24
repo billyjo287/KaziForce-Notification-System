@@ -28,30 +28,36 @@ describe('Alerts dashboard', () => {
     await i18n.changeLanguage('en');
   });
 
-  it('shows a loading placeholder, then alerts grouped Urgent, Important, For later', async () => {
+  it('shows a loading placeholder, then one tab per category, opening on Urgent', async () => {
     renderAlerts();
     expect(screen.getByRole('status')).toHaveTextContent('Loading…');
 
-    const groups = await screen.findAllByRole('heading', { level: 2 });
-    expect(groups.map((h) => h.textContent)).toEqual([
-      expect.stringMatching(/^Urgent/),
-      expect.stringMatching(/^Important/),
-      expect.stringMatching(/^For later/),
+    const tabs = await screen.findAllByRole('tab');
+    expect(tabs.map((tab) => tab.textContent)).toEqual([
+      'Urgent2 new',
+      'Important1 new',
+      'For later1 new',
     ]);
+    expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
   });
 
   it('shows priority as a word, not only a colour', async () => {
     renderAlerts();
-    const urgent = await screen.findByRole('region', { name: /Urgent/ });
-    expect(within(urgent).getAllByRole('button')[0]).toHaveTextContent('Urgent');
+    const panel = await screen.findByRole('tabpanel', { name: /Urgent/ });
+    expect(within(panel).getAllByRole('button', { name: /Warehouse/ })[0]).toHaveTextContent(
+      'Urgent',
+    );
   });
 
-  it('filters to unread alerts', async () => {
+  it('each category has the same filters; Unread hides read alerts', async () => {
     renderAlerts();
-    await userEvent.click(await screen.findByRole('button', { name: 'Unread' }));
+    await userEvent.click(await screen.findByRole('tab', { name: /For later/ }));
+    expect(screen.getByText('Tips for a strong profile')).toBeInTheDocument();
 
+    await userEvent.click(screen.getByRole('button', { name: 'Unread' }));
     expect(screen.getByRole('button', { name: 'Unread' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.queryByText('Tips for a strong profile')).not.toBeInTheDocument();
+    expect(screen.getByText('New job near you: Shop assistant')).toBeInTheDocument();
   });
 
   it('opens the details, moves focus there and marks the alert as read', async () => {
@@ -69,9 +75,8 @@ describe('Alerts dashboard', () => {
 
   it('"Not important to me" hides the alert, and Undo brings it back', async () => {
     renderAlerts();
-    await userEvent.click(
-      await screen.findByRole('button', { name: /New message from Pwani Events/ }),
-    );
+    await userEvent.click(await screen.findByRole('tab', { name: /Important/ }));
+    await userEvent.click(screen.getByRole('button', { name: /New message from Pwani Events/ }));
     await userEvent.click(await screen.findByRole('button', { name: 'Not important to me' }));
 
     expect(await screen.findByText(/Marked as not important/)).toBeInTheDocument();
@@ -88,18 +93,16 @@ describe('Alerts dashboard', () => {
     ).toBeInTheDocument();
   });
 
-  it('keeps long "For later" lists short until the user asks for more', async () => {
+  it('"Mark all as read" marks the whole category, and Undo reverses it', async () => {
     renderAlerts();
-    const showMore = await screen.findByRole('button', { name: 'Show 2 more' });
-    expect(showMore).toHaveAttribute('aria-expanded', 'false');
-    expect(screen.queryByText('Holiday opening hours')).not.toBeInTheDocument();
+    expect(await screen.findByText('You have 4 unread alerts.')).toBeInTheDocument();
 
-    await userEvent.click(showMore);
-    expect(await screen.findByText('Holiday opening hours')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Show fewer' })).toHaveAttribute(
-      'aria-expanded',
-      'true',
-    );
+    await userEvent.click(screen.getByRole('button', { name: 'Mark all as read' }));
+    expect(screen.getByText('You have 2 unread alerts.')).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Urgent/ })).toHaveTextContent('0 new');
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Undo' }));
+    expect(screen.getByText('You have 4 unread alerts.')).toBeInTheDocument();
   });
 
   it('gives employers the right main action', async () => {

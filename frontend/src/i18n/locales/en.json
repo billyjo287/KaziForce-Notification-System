@@ -62,14 +62,10 @@
     "closed": "This job has closed",
     "newAlertAnnouncement": "New {{priority}} alert: {{title}}",
     "notImportantDone": "Marked as not important. We will show you fewer alerts like it.",
-    "showMore_one": "Show {{count}} more",
-    "showMore_other": "Show {{count}} more",
-    "showLess": "Show fewer",
     "filters": {
       "label": "Show",
       "all": "All",
       "unread": "Unread",
-      "urgent": "Urgent",
       "last7days": "Last 7 days"
     },
     "groups": {
@@ -78,10 +74,10 @@
       "low": "No rush. We also send these in your daily summary email."
     },
     "empty": {
-      "allTitle": "No alerts yet",
-      "allBody": "When something needs your attention, it will show up here.",
       "filteredTitle": "Nothing to show",
-      "filteredBody": "No alerts match this choice. Choose \"All\" to see everything."
+      "filteredBody": "No alerts match this choice. Choose \"All\" to see everything in this category.",
+      "tabTitle": "Nothing under \"{{category}}\" right now",
+      "tabBody": "When something new arrives, it will show up here."
     },
     "error": {
       "title": "We could not load your alerts",
@@ -100,7 +96,13 @@
       "notImportant": "Not important to me",
       "notImportantHelp": "We will show you fewer alerts like this one.",
       "choose": "Choose an alert on the left to see it here."
-    }
+    },
+    "tabsLabel": "Alert categories",
+    "tabUnread_one": "{{count}} new",
+    "tabUnread_other": "{{count}} new",
+    "markAllRead": "Mark all as read",
+    "markedAllRead_one": "{{count}} alert marked as read.",
+    "markedAllRead_other": "{{count}} alerts marked as read."
   },
   "settings": {
     "title": "Settings",

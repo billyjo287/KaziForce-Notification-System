@@ -36,7 +36,7 @@ export function HeroStatic() {
           key={i}
           cx={node.x}
           cy={node.y}
-          r={i === hub ? 0.06 : 0.026}
+          r={i === hub ? 0.036 : 0.026}
           fill={
             i === hub
               ? 'var(--kf-primary)'
@@ -46,6 +46,24 @@ export function HeroStatic() {
           }
         />
       ))}
+      {/* KaziForce's clock at the centre, matching the logo. */}
+      <circle
+        cx={point(hub).x}
+        cy={point(hub).y}
+        r="0.12"
+        fill="none"
+        stroke="var(--kf-primary)"
+        strokeWidth="0.016"
+      />
+      <line
+        x1={point(hub).x}
+        y1={point(hub).y}
+        x2={point(hub).x}
+        y2={point(hub).y - 0.085}
+        stroke="var(--kf-primary)"
+        strokeWidth="0.018"
+        strokeLinecap="round"
+      />
       {/* The person the alert reached: a ring around them. */}
       <circle
         cx={point(target).x}

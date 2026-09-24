@@ -4,7 +4,7 @@ import { expectNoHorizontalScroll, expectNoSeriousA11yIssues, trackScripts } fro
 test.describe('Worker Alerts dashboard', () => {
   test('passes axe in light mode, list and details', async ({ page }) => {
     await page.goto('/worker/alerts?theme=light');
-    await expect(page.getByRole('heading', { level: 2, name: /Urgent/ })).toBeVisible();
+    await expect(page.getByRole('tab', { name: /Urgent/ })).toBeVisible();
     await expectNoSeriousA11yIssues(page);
     await expectNoHorizontalScroll(page);
 
@@ -23,13 +23,14 @@ test.describe('Worker Alerts dashboard', () => {
   test('never downloads Three.js or the landing page code', async ({ page }) => {
     const scripts = trackScripts(page);
     await page.goto('/worker/alerts');
-    await expect(page.getByRole('heading', { level: 2, name: /Urgent/ })).toBeVisible();
+    await expect(page.getByRole('tab', { name: /Urgent/ })).toBeVisible();
     await page.waitForLoadState('networkidle');
     expect(scripts.filter((url) => /heroScene|LandingPage|three/i.test(url))).toEqual([]);
   });
 
   test('"Not important to me" can be undone', async ({ page }) => {
     await page.goto('/worker/alerts');
+    await page.getByRole('tab', { name: /Important/ }).click();
     const card = page.getByRole('button', { name: /New message from Pwani Events/ });
     await card.click();
     await page.getByRole('button', { name: 'Not important to me' }).click();
@@ -59,7 +60,7 @@ test.describe('Worker Alerts dashboard', () => {
       ),
     );
     await page.goto('/worker/alerts');
-    await expect(page.getByRole('heading', { level: 2, name: /Urgent/ })).toBeVisible();
+    await expect(page.getByRole('tab', { name: /Urgent/ })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.dataset.textSize)).toBe('large');
     await expectNoHorizontalScroll(page);
   });
