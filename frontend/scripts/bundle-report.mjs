@@ -45,6 +45,14 @@ const hero = new Set([...heroAll].filter((f) => !landing.has(f)));
 const motionAll = closure(chunkFor('src/lib/motionFeatures.ts'));
 const motionEngine = new Set([...motionAll].filter((f) => !appShell.has(f)));
 
+// socket.io-client (live alerts) is downloaded only after logging in.
+const liveAll = new Set(
+  chunks
+    .filter((c) => c.modules.some((m) => m.includes('/node_modules/socket.io-client/')))
+    .flatMap((c) => [...closure(c.file)]),
+);
+const live = new Set([...liveAll].filter((f) => !appShell.has(f)));
+
 const cssFiles = readdirSync(join(DIST, 'assets')).filter((f) => f.endsWith('.css'));
 const cssKb = cssFiles.reduce((t, f) => t + gzipKb(`assets/${f}`), 0);
 const fontFiles = readdirSync(join(DIST, 'assets')).filter((f) => f.endsWith('.woff2'));
@@ -55,6 +63,7 @@ const fontKb = latinFont ? rawKb(`assets/${latinFont}`) : 0;
 const rows = [
   ['App shell (first visit to /worker/alerts)', appShell],
   ['Animation engine, extra (app only, loaded right after the first paint)', motionEngine],
+  ['Live connection for new alerts, extra (loaded after logging in)', live],
   ['Landing page (first visit to /)', landing],
   ['3D hero, extra (loaded after the page is idle, capable devices only)', hero],
 ];
@@ -64,6 +73,10 @@ const threeInApp = containsLibrary(appShell, 'three');
 const threeInLanding = containsLibrary(landing, 'three');
 const threeInHero = containsLibrary(hero, 'three');
 const gsapInApp = containsLibrary(appShell, 'gsap');
+const socketInApp = containsLibrary(appShell, 'socket.io-client');
+if (socketInApp.length)
+  problems.push(`socket.io-client found in the app shell: ${socketInApp.join(', ')}`);
+if (!live.size) problems.push('socket.io-client chunk not found (report is wrong?)');
 if (threeInApp.length) problems.push(`Three.js found in the app bundle: ${threeInApp.join(', ')}`);
 if (threeInLanding.length)
   problems.push(
@@ -96,6 +109,7 @@ const lines = [
   `- Three.js in the landing page's first download: ${threeInLanding.length ? 'FAIL (found)' : 'PASS (not present)'}`,
   `- Three.js only in the lazy hero file: ${threeInHero.length ? `PASS (${threeInHero.join(', ')})` : 'FAIL'}`,
   `- GSAP in the app bundle: ${gsapInApp.length ? 'FAIL (found)' : 'PASS (not present)'}`,
+  `- Live connection (socket.io-client) kept out of the app shell: ${socketInApp.length ? 'FAIL (found)' : 'PASS'}`,
   '',
 ];
 const report = lines.join('\n');

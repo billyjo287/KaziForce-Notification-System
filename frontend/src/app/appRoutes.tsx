@@ -5,12 +5,14 @@ import { Outlet, useMatches } from 'react-router';
 import { AppShell } from '../components/shell/AppShell';
 import { AlertsPage } from '../features/alerts/AlertsPage';
 import { useUnreadCount } from '../features/alerts/useAlerts';
+import { useLiveAlerts } from '../features/alerts/useLiveAlerts';
 import { ComingSoonPage } from '../pages/ComingSoonPage';
 import { RequireAuth } from './RequireAuth';
 
 function AlertsSideShell({ role }: { role: 'worker' | 'business' }) {
-  // The menu badge shows unread alerts on every page of this side.
+  // The menu badge shows unread alerts on every page of this side; new ones arrive live.
   const unreadCount = useUnreadCount();
+  useLiveAlerts(role);
   return (
     <AppShell role={role} unreadCount={unreadCount}>
       <Outlet />

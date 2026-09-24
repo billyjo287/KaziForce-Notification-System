@@ -8,7 +8,12 @@ export default defineConfig({
   test: {
     include: ['tests/**/*.test.ts'],
     environment: 'node',
-    env: { NODE_ENV: 'test', DATABASE_URL: testDatabase, LOG_LEVEL: 'fatal' },
+    env: {
+      NODE_ENV: 'test',
+      DATABASE_URL: testDatabase,
+      LOG_LEVEL: 'fatal',
+      QUEUE_PREFIX: 'kf-test',
+    },
     globalSetup: ['./tests/globalSetup.ts'],
     // One shared test database: run the files one after another.
     fileParallelism: false,

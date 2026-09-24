@@ -4,6 +4,7 @@ import * as m from 'motion/react-m';
 import { Tabs } from 'radix-ui';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { showToast } from '../../stores/toasts';
 import { AlertCard } from './AlertCard';
@@ -48,12 +49,15 @@ export function AlertsDashboard({
   actions: AlertActions;
 }) {
   const { t } = useTranslation();
-  const { markRead, markManyRead, markManyUnread, setNotImportant } = actions;
+  const { markRead, markManyRead, markManyUnread, setNotImportant, markClicked } = actions;
 
   const shown = useMemo(() => alerts.filter((a) => !a.markedNotImportant), [alerts]);
-  const [tab, setTab] = useState<Priority>(() => firstTabWithUnread(shown));
+  // "?open=<id>" (from the "Open" button on a new-alert message) opens that alert directly.
+  const [params, setParams] = useSearchParams();
+  const [linked] = useState(() => shown.find((a) => a.id === params.get('open')) ?? null);
+  const [tab, setTab] = useState<Priority>(() => linked?.priority ?? firstTabWithUnread(shown));
   const [filter, setFilter] = useState<Filter>('all');
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(linked?.id ?? null);
   const [now] = useState(() => Date.now());
   const pageHeading = useRef<HTMLHeadingElement>(null);
   const detailHeading = useRef<HTMLHeadingElement>(null);
@@ -66,6 +70,16 @@ export function AlertsDashboard({
   const inTab = useMemo(() => shown.filter((a) => a.priority === tab).sort(byNewest), [shown, tab]);
   const visible = inTab.filter((a) => matches(a, filter, now));
   const unreadInTab = inTab.filter((a) => a.readAt === null);
+
+  // Opened from a link: count it as read, then tidy the address.
+  useEffect(() => {
+    if (!linked) return;
+    lastOpenedId.current = linked.id;
+    markRead(linked.id);
+    setParams({}, { replace: true });
+    // Only once, for the alert the page was opened with.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [linked]);
 
   // Move keyboard/screen-reader focus to the details when they open, and back when they close.
   useEffect(() => {
@@ -261,6 +275,7 @@ export function AlertsDashboard({
                   alert={selected}
                   onBack={() => setSelectedId(null)}
                   onNotImportant={() => markNotImportant(selected)}
+                  onMainAction={() => markClicked(selected.id)}
                 />
               </m.div>
             ) : (

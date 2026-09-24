@@ -255,8 +255,10 @@ model AuditLog {
 }
 
 // Event log (the "outbox"): written in the same database transaction as the change itself, so
-// Phase 3 can turn every event into notifications without ever missing one.
+// the worker can turn every event into notifications without ever missing one.
 // availableAt delays an event (e.g. 15 s for accept/reject, so Undo can cancel it quietly).
+// If turning an event into notifications fails, it is retried later (attempts, lastError); after
+// 5 failures it is set aside (processedAt set, lastError kept) so it cannot block the others.
 model DomainEvent {
   id          String    @id @default(uuid()) @db.Uuid
   type        String
@@ -264,6 +266,8 @@ model DomainEvent {
   availableAt DateTime  @default(now())
   processedAt DateTime?
   cancelledAt DateTime?
+  attempts    Int       @default(0)
+  lastError   String?   @db.VarChar(500)
   createdAt   DateTime  @default(now())
 
   @@index([processedAt, cancelledAt, availableAt])

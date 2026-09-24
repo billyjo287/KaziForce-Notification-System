@@ -14,6 +14,11 @@ const envSchema = z.object({
   APP_TIMEZONE: z.string().default('Africa/Nairobi'),
   DATABASE_URL: z.url(),
   REDIS_URL: z.url(),
+  // Name prefix for the queues and live-update channel in Redis, so tests never mix with dev.
+  QUEUE_PREFIX: z
+    .string()
+    .regex(/^[a-z0-9-]+$/)
+    .default('kf'),
   ML_SERVICE_URL: z.url().default('http://localhost:8000'),
   ML_TIMEOUT_MS: z.coerce.number().int().positive().default(500),
   CHANNEL_MODE: z.enum(['mock', 'sandbox', 'live']).default('mock'),

@@ -1,13 +1,15 @@
 // The user's alerts from the API. Changes (read, "Not important to me") show on screen at once
-// and are undone automatically if the server refuses them.
+// and are undone automatically if the server refuses them. New alerts arrive live (see
+// useLiveAlerts.ts) and are added to the same cached list.
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../lib/api';
 import type { ApiNotification } from '../../types/api';
 import type { Alert } from './types';
 
-const KEY = ['notifications'];
+export const ALERTS_KEY = ['notifications'];
+const KEY = ALERTS_KEY;
 
-function toAlert(n: ApiNotification): Alert {
+export function toAlert(n: ApiNotification): Alert {
   return {
     id: n.id,
     priority: n.priority,
@@ -32,21 +34,31 @@ export interface AlertActions {
   markManyRead: (ids: string[]) => void;
   markManyUnread: (ids: string[]) => void;
   setNotImportant: (id: string, value: boolean) => void;
+  /** The main action (e.g. "View job") was used. */
+  markClicked: (id: string) => void;
 }
 
 interface Change {
   ids: string[];
   read?: boolean;
   notImportant?: boolean;
+  clicked?: true;
 }
 
-function applyChange(alerts: Alert[], { ids, read, notImportant }: Change): Alert[] {
+/** Adds a live alert to the top of the list (once, even if it arrives twice). */
+export function addLiveAlert(alerts: Alert[] | undefined, alert: Alert): Alert[] | undefined {
+  if (!alerts) return alerts; // not loaded yet: the first fetch will include it
+  if (alerts.some((a) => a.id === alert.id)) return alerts;
+  return [{ ...alert, arrivedLive: true }, ...alerts];
+}
+
+function applyChange(alerts: Alert[], { ids, read, notImportant, clicked }: Change): Alert[] {
   const now = new Date();
   return alerts.map((a) => {
     if (!ids.includes(a.id)) return a;
     return {
       ...a,
-      ...(read === true && { readAt: a.readAt ?? now }),
+      ...((read === true || clicked) && { readAt: a.readAt ?? now }),
       ...(read === false && { readAt: null }),
       ...(notImportant !== undefined && { markedNotImportant: notImportant }),
     };
@@ -75,6 +87,7 @@ export function useAlerts() {
     markManyRead: (ids) => ids.length > 0 && update.mutate({ ids, read: true }),
     markManyUnread: (ids) => ids.length > 0 && update.mutate({ ids, read: false }),
     setNotImportant: (id, value) => update.mutate({ ids: [id], notImportant: value }),
+    markClicked: (id) => update.mutate({ ids: [id], clicked: true }),
   };
 
   const status = query.isPending ? 'loading' : query.isError ? 'error' : 'ready';

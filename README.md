@@ -14,7 +14,7 @@ Architecture decisions: [docs/adr/](docs/adr/)
 | Folder        | What it is                                                     | Runs on               |
 | ------------- | -------------------------------------------------------------- | --------------------- |
 | `frontend/`   | The website (React + Vite + TypeScript + Tailwind)             | http://localhost:5173 |
-| `backend/`    | The API, database schema (Prisma) and, later, queue workers    | http://localhost:4000 |
+| `backend/`    | The API, live alerts (Socket.IO), notification worker, Prisma  | http://localhost:4000 |
 | `ml-service/` | Spam and priority classifier (Python, FastAPI)                 | http://localhost:8000 |
 | `docs/`       | Requirements, roadmap and architecture decision records (ADRs) |                       |
 
@@ -66,8 +66,13 @@ This one command:
 npm run dev
 ```
 
-Starts the Docker services, then the backend and the frontend together. Stop with **Ctrl + C**.
-To also stop the Docker services: `npm run stop`.
+Starts the Docker services, then three programs together, each with its own colour in the
+terminal: `api` (the backend), `worker` (turns activity into alerts and sends them live) and `web`
+(the website). Stop with **Ctrl + C**. To also stop the Docker services: `npm run stop`.
+
+**Try live alerts:** log in as `worker1@example.com` in one browser window and as
+`employer1@example.com` in a private window. When the employer sends that worker a message (or
+posts a job in the worker's area), the alert appears on the worker's screen without refreshing.
 
 Then open:
 
@@ -161,6 +166,10 @@ Run from the project root:
   the port in the root `.env` (and `DATABASE_URL` in `backend/.env` if it is the Postgres port).
 - **"Cannot reach the server"** on the website: the backend is not running. Start it with
   `npm run dev` and check the terminal for errors.
+- **New alerts do not appear live:** check the `worker` lines in the terminal for errors. After
+  pulling new code, run `npm run db:deploy -w backend` once to bring the database up to date.
+  An orange "Reconnecting…" banner means the website lost its live connection to the backend;
+  it reconnects on its own and then fetches anything it missed.
 - **Backend says "Invalid environment variables"**: compare `backend/.env` with
   `backend/.env.example`.
 - **Something is badly stuck:** `docker compose down` then `npm run dev`. To also delete the

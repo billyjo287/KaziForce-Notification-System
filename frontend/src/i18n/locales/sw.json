@@ -60,7 +60,8 @@
     "low": "Baadaye"
   },
   "offline": {
-    "message": "Hauko mtandaoni. Arifa mpya zitaonekana ukirudi mtandaoni."
+    "message": "Hauko mtandaoni. Arifa mpya zitaonekana ukirudi mtandaoni.",
+    "reconnecting": "Tunaunganisha tena… Arifa mpya zitaonekana punde tu."
   },
   "alerts": {
     "title": "Arifa",
@@ -112,7 +113,8 @@
     "tabUnread_other": "{{count}} mpya",
     "markAllRead": "Weka zote kama zimesomwa",
     "markedAllRead_one": "Arifa {{count}} imewekwa kama imesomwa.",
-    "markedAllRead_other": "Arifa {{count}} zimewekwa kama zimesomwa."
+    "markedAllRead_other": "Arifa {{count}} zimewekwa kama zimesomwa.",
+    "openAlert": "Fungua"
   },
   "settings": {
     "title": "Mipangilio",
@@ -579,7 +581,8 @@
       "actions": {
         "user_suspended": "Alisimamisha akaunti",
         "user_reactivated": "Aliwasha tena akaunti",
-        "job_removed": "Aliondoa kazi"
+        "job_removed": "Aliondoa kazi",
+        "announcement_sent": "Ametuma tangazo"
       }
     }
   }

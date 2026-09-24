@@ -60,7 +60,8 @@
     "low": "For later"
   },
   "offline": {
-    "message": "You are offline. New alerts will appear when you are back online."
+    "message": "You are offline. New alerts will appear when you are back online.",
+    "reconnecting": "Reconnecting… New alerts will appear as soon as we are back."
   },
   "alerts": {
     "title": "Alerts",
@@ -112,7 +113,8 @@
     "tabUnread_other": "{{count}} new",
     "markAllRead": "Mark all as read",
     "markedAllRead_one": "{{count}} alert marked as read.",
-    "markedAllRead_other": "{{count}} alerts marked as read."
+    "markedAllRead_other": "{{count}} alerts marked as read.",
+    "openAlert": "Open"
   },
   "settings": {
     "title": "Settings",
@@ -579,7 +581,8 @@
       "actions": {
         "user_suspended": "Suspended an account",
         "user_reactivated": "Reactivated an account",
-        "job_removed": "Removed a job"
+        "job_removed": "Removed a job",
+        "announcement_sent": "Sent an announcement"
       }
     }
   }

@@ -2,7 +2,7 @@
 // with Undo (PRD FR-2.2).
 //
 // Undo: the status changes at once, but its "application.status_changed" event is held for
-// STATUS_UNDO_SECONDS before Phase 3 may act on it. Undo inside that window restores the old
+// STATUS_UNDO_SECONDS before the worker may act on it. Undo inside that window restores the old
 // status and cancels the event, so the worker never gets an alert that is then taken back.
 import { Router } from 'express';
 import { z } from 'zod';

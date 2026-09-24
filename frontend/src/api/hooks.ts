@@ -21,7 +21,7 @@ import type {
 } from '../types/api';
 
 const HOUR = 60 * 60 * 1000;
-/** Messages refresh this often until live updates arrive (Phase 3). */
+/** Messages also refresh at once when a live "new message" alert arrives; this is the backup. */
 const MESSAGE_POLL_MS = 15_000;
 
 // ---------- Lookups ----------

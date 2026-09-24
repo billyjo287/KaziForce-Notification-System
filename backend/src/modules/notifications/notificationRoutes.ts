@@ -1,49 +1,25 @@
-// The user's in-app alerts. Phase 2 only READS notifications (Phase 3 creates them from domain
-// events) and records the user's actions on them: read / unread and "Not important to me".
+// The user's in-app alerts: the list (also used to catch up after a lost live connection) and
+// the user's actions on them: read / unread, "Not important to me" and following the main link.
 // Those actions are also training signals for the ML phase (CLAUDE.md section 6).
 import { Router } from 'express';
 import { z } from 'zod';
-import type { Prisma } from '../../generated/prisma/client.js';
 import { prisma } from '../../lib/prisma.js';
 import { parse } from '../../lib/validate.js';
 import { currentUser, requireAuth } from '../../middleware/auth.js';
-
-const include = {
-  sender: { select: { name: true, companyName: true, role: true } },
-  job: { select: { location: { select: { name: true } } } },
-} satisfies Prisma.NotificationInclude;
-
-type Row = Prisma.NotificationGetPayload<{ include: typeof include }>;
-
-function serialize(n: Row) {
-  const sender =
-    !n.sender || n.senderRole === 'system' || n.senderRole === 'admin'
-      ? 'KaziForce'
-      : (n.sender.companyName ?? n.sender.name);
-  return {
-    id: n.id,
-    // An admin's correction wins; missing priority defaults to MEDIUM (PRD FR-3).
-    priority: n.correctedPriority ?? n.predictedPriority ?? 'medium',
-    type: n.type,
-    title: n.title,
-    body: n.message,
-    link: n.link,
-    sender,
-    createdAt: n.createdAt.toISOString(),
-    readAt: n.readAt?.toISOString() ?? null,
-    deadlineAt: n.deadlineAt?.toISOString() ?? null,
-    location: n.job?.location.name ?? null,
-    markedNotImportant: n.markedNotImportant,
-  };
-}
+import { notificationInclude as include, serializeNotification as serialize } from './serialize.js';
 
 const updateSchema = z
   .object({
     ids: z.array(z.uuid()).min(1).max(100),
     read: z.boolean().optional(),
     notImportant: z.boolean().optional(),
+    /** The user followed the alert's main action (e.g. "View job"). */
+    clicked: z.literal(true).optional(),
   })
-  .refine((v) => v.read !== undefined || v.notImportant !== undefined, 'Nothing to change');
+  .refine(
+    (v) => v.read !== undefined || v.notImportant !== undefined || v.clicked !== undefined,
+    'Nothing to change',
+  );
 
 export function notificationRoutes() {
   const router = Router();
@@ -58,29 +34,46 @@ export function notificationRoutes() {
       orderBy: { createdAt: 'desc' },
       take: 200,
     });
+    // Anything that had not reached this person yet (they were offline) has reached them now.
+    await prisma.deliveryLog.updateMany({
+      where: {
+        channel: 'in_app',
+        deliveredAt: null,
+        notificationId: { in: notifications.map((n) => n.id) },
+      },
+      data: { status: 'delivered', deliveredAt: new Date() },
+    });
     res.json({ items: notifications.map(serialize) });
   });
 
-  // Mark one or many as read/unread, or (not) important. Used by "Mark all as read" and Undo.
+  // Mark one or many as read/unread, (not) important, or clicked. Used by "Mark all as read",
+  // Undo and the main action button.
   router.patch('/', async (req, res) => {
     const me = currentUser(req);
     const input = parse(updateSchema, req.body);
     const now = new Date();
     const mine = { id: { in: input.ids }, recipientId: me.id };
+    const inApp = { notification: mine, channel: 'in_app' as const };
 
     await prisma.$transaction(async (tx) => {
-      if (input.read === true) {
+      if (input.read === true || input.clicked) {
         await tx.notification.updateMany({
           where: { ...mine, readAt: null },
           data: { readAt: now },
         });
         // First open of the in-app copy: response time = openedAt - sentAt.
         await tx.deliveryLog.updateMany({
-          where: { notification: mine, channel: 'in_app', openedAt: null },
+          where: { ...inApp, openedAt: null },
           data: { openedAt: now },
         });
       } else if (input.read === false) {
         await tx.notification.updateMany({ where: mine, data: { readAt: null } });
+      }
+      if (input.clicked) {
+        await tx.deliveryLog.updateMany({
+          where: { ...inApp, clickedAt: null },
+          data: { clickedAt: now },
+        });
       }
       if (input.notImportant !== undefined) {
         await tx.notification.updateMany({
@@ -91,7 +84,7 @@ export function notificationRoutes() {
           },
         });
         await tx.deliveryLog.updateMany({
-          where: { notification: mine, channel: 'in_app' },
+          where: inApp,
           data: { dismissedAt: input.notImportant ? now : null },
         });
       }

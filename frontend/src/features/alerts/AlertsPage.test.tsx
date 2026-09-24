@@ -9,12 +9,13 @@ import { createNotifications } from '../../test/fixtures/notifications';
 import { AlertsPage } from './AlertsPage';
 import type { AlertRole } from './types';
 
-function renderAlerts(role: AlertRole = 'worker') {
+function renderAlerts(role: AlertRole = 'worker', path = '/worker/alerts') {
   return renderWithRouter(
     <>
       <AlertsPage role={role} />
       <Toaster />
     </>,
+    path,
   );
 }
 
@@ -81,6 +82,23 @@ describe('Alerts dashboard', () => {
     expect(screen.getByText('You have 3 unread alerts.')).toBeInTheDocument();
     // The change is saved on the server too.
     expect(api.patch).toHaveBeenCalledWith('/notifications', { ids: ['a1'], read: true });
+  });
+
+  it('records a click when the main action is used', async () => {
+    renderAlerts();
+    await userEvent.click(
+      await screen.findByRole('button', { name: /Warehouse packers needed today/ }),
+    );
+    await userEvent.click(await screen.findByRole('link', { name: 'View job' }));
+    expect(api.patch).toHaveBeenCalledWith('/notifications', { ids: ['a1'], clicked: true });
+  });
+
+  it('opens the alert named in the link (the "Open" button on a new-alert message)', async () => {
+    renderAlerts('worker', '/worker/alerts?open=a2');
+    expect(
+      await screen.findByRole('heading', { level: 2, name: 'You got the job: Delivery rider' }),
+    ).toBeInTheDocument();
+    expect(api.patch).toHaveBeenCalledWith('/notifications', { ids: ['a2'], read: true });
   });
 
   it('"Not important to me" hides the alert, and Undo brings it back', async () => {

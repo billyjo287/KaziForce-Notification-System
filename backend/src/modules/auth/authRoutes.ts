@@ -20,9 +20,11 @@ import { badRequest, conflict, forbidden, unauthorized } from '../../lib/httpErr
 import { prisma } from '../../lib/prisma.js';
 import type { RateLimiters } from '../../lib/rateLimits.js';
 import { sendEmail } from '../../lib/mailer.js';
+import { redis } from '../../lib/redis.js';
 import { randomToken, sha256, signAccessToken } from '../../lib/tokens.js';
 import { parse } from '../../lib/validate.js';
 import { currentUser, requireAuth } from '../../middleware/auth.js';
+import { publish } from '../../realtime/bus.js';
 import { DEFAULT_QUIET_HOURS, PRESETS } from '../me/presets.js';
 import { serializeUser, userWithProfile } from '../me/serializeUser.js';
 import { describeDevice, newLoginEmail, passwordResetEmail } from './emails.js';
@@ -211,7 +213,10 @@ export function authRoutes(limits: RateLimiters) {
   });
 
   router.post('/logout-all', requireAuth, async (req, res) => {
-    await endAllSessions(currentUser(req).id);
+    const me = currentUser(req);
+    await endAllSessions(me.id);
+    // Other devices lose their live connection at once (this tab is logging out anyway).
+    await publish(redis, { kind: 'disconnect', userId: me.id }).catch(() => {});
     res.clearCookie(COOKIE, { path: '/api/auth' });
     res.status(204).end();
   });

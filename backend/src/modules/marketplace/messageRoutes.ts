@@ -1,5 +1,5 @@
 // Messages: one text-only conversation per job application, between the worker and the
-// employer (PRD FR-2.3). Refreshed by polling until Socket.IO arrives in Phase 3.
+// employer (PRD FR-2.3). Each message creates a live notification for the other person.
 import { Router } from 'express';
 import { z } from 'zod';
 import { recordEvent } from '../../events/domainEvents.js';

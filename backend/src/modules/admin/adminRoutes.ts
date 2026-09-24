@@ -1,12 +1,15 @@
-// Admin: users (search, view, suspend / reactivate), jobs (view, remove with a reason) and the
-// audit log. Every change is written to AuditLog in the same transaction.
+// Admin: users (search, view, suspend / reactivate), jobs (view, remove with a reason),
+// announcements and the audit log. Every change is written to AuditLog in the same transaction.
 import { Router } from 'express';
 import { z } from 'zod';
+import { recordEvent } from '../../events/domainEvents.js';
 import type { Prisma } from '../../generated/prisma/client.js';
 import { badRequest, notFound } from '../../lib/httpError.js';
 import { prisma } from '../../lib/prisma.js';
+import { redis } from '../../lib/redis.js';
 import { PAGE_SIZE, idParam, pageQuery, parse } from '../../lib/validate.js';
 import { currentUser, requireAuth, requireRole } from '../../middleware/auth.js';
+import { publish } from '../../realtime/bus.js';
 import { jobInclude, serializeJob } from '../marketplace/serializers.js';
 
 const userListQuery = z.object({
@@ -24,6 +27,11 @@ const reasonSchema = z.object({
   reason: z.string().trim().min(5, 'Write a short reason (at least 5 characters)').max(500),
 });
 const optionalReasonSchema = z.object({ reason: z.string().trim().max(500).optional() });
+const announcementSchema = z.object({
+  audience: z.enum(['everyone', 'worker', 'business']),
+  title: z.string().trim().min(3, 'Use at least 3 characters').max(120),
+  message: z.string().trim().min(1, 'Write a message').max(1000, 'Use at most 1,000 characters'),
+});
 
 const userListSelect = {
   id: true,
@@ -134,6 +142,8 @@ export function adminRoutes() {
         },
       }),
     ]);
+    // Close their open tabs' live connections too.
+    await publish(redis, { kind: 'disconnect', userId: id }).catch(() => {});
     res.json({ ok: true });
   });
 
@@ -222,6 +232,26 @@ export function adminRoutes() {
     res.json({ ok: true });
   });
 
+  // ---------- Announcements (PRD FR-2.4; the page to write them arrives in Phase 7) ----------
+  router.post('/announcements', async (req, res) => {
+    const admin = currentUser(req);
+    const input = parse(announcementSchema, req.body);
+    const event = await prisma.$transaction(async (tx) => {
+      const event = await recordEvent(tx, 'admin.announcement', { adminId: admin.id, ...input });
+      await tx.auditLog.create({
+        data: {
+          actorId: admin.id,
+          action: 'announcement.sent',
+          targetType: 'announcement',
+          targetId: event.id,
+          metadata: { audience: input.audience, title: input.title },
+        },
+      });
+      return event;
+    });
+    res.status(201).json({ announcementId: event.id });
+  });
+
   // ---------- Audit log ----------
   router.get('/audit-log', async (req, res) => {
     const { page } = parse(z.object({ page: pageQuery }), req.query);
@@ -251,7 +281,8 @@ export function adminRoutes() {
         action: e.action,
         targetType: e.targetType,
         targetId: e.targetId,
-        targetName: names.get(e.targetId) ?? null,
+        targetName:
+          names.get(e.targetId) ?? (e.metadata as { title?: string } | null)?.title ?? null,
         reason: e.reason,
         by: e.actor.name,
         at: e.createdAt.toISOString(),

@@ -25,11 +25,13 @@ interface AlertDetailProps {
   alert: Alert;
   onBack: () => void;
   onNotImportant: () => void;
+  /** The main action was used (recorded as "clicked"). */
+  onMainAction: () => void;
 }
 
 /** Full alert with its one main action. Phones show it as its own page, desktops beside the list. */
 export const AlertDetail = forwardRef<HTMLHeadingElement, AlertDetailProps>(function AlertDetail(
-  { role, alert, onBack, onNotImportant },
+  { role, alert, onBack, onNotImportant, onMainAction },
   headingRef,
 ) {
   const { t, i18n } = useTranslation();
@@ -93,7 +95,7 @@ export const AlertDetail = forwardRef<HTMLHeadingElement, AlertDetailProps>(func
 
       <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start">
         {mainAction && alert.link && (
-          <Link to={alert.link} className={buttonClasses('primary', 'lg')}>
+          <Link to={alert.link} onClick={onMainAction} className={buttonClasses('primary', 'lg')}>
             {t(mainAction)}
           </Link>
         )}

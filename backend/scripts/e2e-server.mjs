@@ -1,4 +1,5 @@
-// Starts the backend for the automated browser tests (Playwright), on its own database:
+// Starts the backend (API + notification worker) for the automated browser tests (Playwright),
+// on its own database and queue names:
 //   port 4001, database "kaziforce_e2e" (created, migrated and filled with sample data each run).
 // Your development database and server (port 4000) are never touched.
 import 'dotenv/config';
@@ -17,6 +18,7 @@ const env = {
   FRONTEND_ORIGIN: 'http://localhost:4173',
   PUBLIC_APP_URL: 'http://localhost:4173',
   CHANNEL_MODE: 'mock',
+  QUEUE_PREFIX: 'kf-e2e',
   LOG_LEVEL: 'warn',
   // Many test log-ins come from one computer.
   LOGIN_RATE_LIMIT: '1000',
@@ -25,8 +27,16 @@ const env = {
 execSync('npx prisma migrate deploy', { env, stdio: 'inherit' });
 execSync('npx tsx prisma/seed.ts', { env, stdio: 'inherit' });
 
+// The API and the notification worker (live alerts need both).
 const server = spawn('npx', ['tsx', 'src/server.ts'], { env, stdio: 'inherit', shell: true });
-const stop = () => server.kill();
+const worker = spawn('npx', ['tsx', 'src/worker.ts'], { env, stdio: 'inherit', shell: true });
+const stop = () => {
+  server.kill();
+  worker.kill();
+};
 process.on('SIGINT', stop);
 process.on('SIGTERM', stop);
-server.on('exit', (code) => process.exit(code ?? 0));
+server.on('exit', (code) => {
+  worker.kill();
+  process.exit(code ?? 0);
+});
