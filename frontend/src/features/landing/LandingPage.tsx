@@ -12,6 +12,7 @@ import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { LanguageToggle } from '../../components/LanguageToggle';
+import { ThemeButtons } from '../../components/ThemeButtons';
 import { Logo } from '../../components/Logo';
 import { Badge, type BadgeTone } from '../../components/ui/Badge';
 import { buttonClasses } from '../../components/ui/buttonStyles';
@@ -49,14 +50,16 @@ export default function LandingPage() {
         {t('app.skipToContent')}
       </a>
 
-      {/* Phones: the language switch gets its own slim row so the header fits 320px screens. */}
-      <div className="flex justify-end px-4 pt-3 sm:hidden">
+      {/* Phones: theme and language get their own slim row so the header fits 320px screens. */}
+      <div className="flex flex-wrap justify-end gap-2 px-4 pt-3 sm:hidden">
+        <ThemeButtons />
         <LanguageToggle />
       </div>
       <header className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-4 sm:px-8">
         <Logo />
         <div className="flex items-center gap-2">
-          <span className="hidden sm:block">
+          <span className="hidden items-center gap-2 sm:flex">
+            <ThemeButtons />
             <LanguageToggle />
           </span>
           <Link to="/login" className={buttonClasses('secondary', 'md', 'min-h-11 px-4')}>

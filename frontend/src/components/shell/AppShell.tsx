@@ -7,12 +7,16 @@ import { Link, NavLink, useLocation } from 'react-router';
 import { useAuth } from '../../stores/auth';
 import { useSettings } from '../../stores/settings';
 import { Logo } from '../Logo';
+import { ThemeButtons } from '../ThemeButtons';
 import { OfflineBanner } from '../ui/OfflineBanner';
 import { LazyToaster } from '../ui/LazyToaster';
+import { LogOutButton } from './LogOutButton';
 import { NAV, type NavItem, type Role } from './navConfig';
 
 // Only the admin side has a "More" menu; its dialog code downloads when it is first opened.
 const MoreMenu = lazy(() => import('./MoreMenu'));
+// Only needed right after logging in, so it is a separate small download.
+const WelcomeBanner = lazy(() => import('./WelcomeBanner'));
 
 const loadMotionFeatures = () => import('../../lib/motionFeatures').then((mod) => mod.default);
 
@@ -45,6 +49,7 @@ export function AppShell({ role, unreadCount, children }: AppShellProps) {
   const reduceMotion = useSettings((s) => s.reduceMotion);
   const [moreOpen, setMoreOpen] = useState(false);
   const user = useAuth((s) => s.user);
+  const justLoggedIn = useAuth((s) => s.justLoggedIn);
   const nav = NAV[role];
 
   const href = (item: NavItem) => `${nav.basePath}/${item.path}`;
@@ -105,24 +110,35 @@ export function AppShell({ role, unreadCount, children }: AppShellProps) {
                 ))}
               </ul>
             </nav>
-            {user && (
-              <div className="mt-auto rounded-lg bg-canvas px-3 py-3">
-                <p className="font-bold break-words">{user.name}</p>
-                <p className="text-ink-muted">
-                  {user.companyName
-                    ? `${t('roles.business')} · ${user.companyName}`
-                    : t(`roles.${role}`)}
-                </p>
-              </div>
-            )}
+            <div className="mt-auto flex flex-col gap-3 pt-6">
+              {user && (
+                <div className="rounded-lg bg-canvas px-3 py-3">
+                  <p className="font-bold break-words">{user.name}</p>
+                  <p className="text-ink-muted">
+                    {user.companyName
+                      ? `${t('roles.business')} · ${user.companyName}`
+                      : t(`roles.${role}`)}
+                  </p>
+                </div>
+              )}
+              <ThemeButtons />
+              <LogOutButton wide />
+            </div>
           </aside>
 
           {/* ---------- Main content ---------- */}
           <div className="flex min-w-0 flex-1 flex-col">
-            <header className="sticky top-0 z-10 flex items-center border-b border-line bg-surface/95 px-4 py-3 backdrop-blur md:hidden">
+            {/* Phones: logo, then theme and Log out (two rows at 360 px). It scrolls away with
+                the page so it never covers what the person is reading; the menu stays at the
+                bottom. */}
+            <header className="flex flex-wrap items-center justify-between gap-2 border-b border-line bg-surface px-4 py-2 md:hidden">
               <Link to={nav.basePath} className="kf-logo-link rounded-lg">
-                <Logo />
+                <Logo markClassName="size-11" />
               </Link>
+              <div className="flex items-center gap-1.5">
+                <ThemeButtons compact />
+                <LogOutButton compact />
+              </div>
             </header>
             <main
               id="main"
@@ -200,6 +216,11 @@ export function AppShell({ role, unreadCount, children }: AppShellProps) {
             </Suspense>
           )}
           <LazyToaster />
+          {justLoggedIn && (
+            <Suspense fallback={null}>
+              <WelcomeBanner />
+            </Suspense>
+          )}
         </div>
       </MotionConfig>
     </LazyMotion>

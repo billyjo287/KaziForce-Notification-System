@@ -39,6 +39,10 @@ export default defineConfig({
   server: { port: 5173, strictPort: true },
   preview: { port: 4173, strictPort: true },
   build: {
+    // The only file over Vite's 500 KB warning is the 3D hero (Three.js, ~530 KB before
+    // compression, ~130 KB downloaded), which loads on its own after the landing page, on capable
+    // devices only. The real size checks are in scripts/bundle-report.mjs.
+    chunkSizeWarningLimit: 560,
     rolldownOptions: {
       output: {
         codeSplitting: {

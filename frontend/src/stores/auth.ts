@@ -13,7 +13,11 @@ interface AuthState {
   accessToken: string | null;
   user: User | null;
   notice: AuthNotice;
+  /** True right after logging in with the form: shows the "Welcome back" message once. */
+  justLoggedIn: boolean;
   setSession: (session: Session) => void;
+  setJustLoggedIn: (value: boolean) => void;
+  clearNotice: () => void;
   setUser: (user: User) => void;
   clear: (notice?: AuthNotice) => void;
 }
@@ -23,13 +27,17 @@ export const useAuth = create<AuthState>()((set) => ({
   accessToken: null,
   user: null,
   notice: null,
+  justLoggedIn: false,
   setSession: ({ accessToken, user }) => {
     // The account's saved language wins on every device.
     if (user.language !== i18n.language) void i18n.changeLanguage(user.language);
     set({ status: 'user', accessToken, user, notice: null });
   },
   setUser: (user) => set({ user }),
-  clear: (notice = null) => set({ status: 'guest', accessToken: null, user: null, notice }),
+  setJustLoggedIn: (justLoggedIn) => set({ justLoggedIn }),
+  clearNotice: () => set({ notice: null }),
+  clear: (notice = null) =>
+    set({ status: 'guest', accessToken: null, user: null, notice, justLoggedIn: false }),
 }));
 
 /** Where each side starts after logging in. */

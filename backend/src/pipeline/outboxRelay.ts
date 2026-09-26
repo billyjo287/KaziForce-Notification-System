@@ -20,6 +20,7 @@ const MAX_ATTEMPTS = 5;
 /** Alerts about things that happened long ago only add noise (e.g. after the worker was off). */
 const MAX_EVENT_AGE_MS = 24 * 60 * 60 * 1000;
 const SWEEP_EVERY_MS = 30_000;
+const TRANSACTION_TIMEOUTS = { maxWait: 10_000, timeout: 30_000 };
 
 export interface RelayOptions {
   prisma: PrismaClient;
@@ -85,7 +86,9 @@ export function startOutboxRelay({
           where: { id: current.id },
           data: { processedAt: new Date(), lastError: note },
         });
-      });
+        // A busy computer or database can take more than Prisma's default 2 s to start a
+        // transaction; a big announcement can take a while to save.
+      }, TRANSACTION_TIMEOUTS);
     } catch (error) {
       if (!current) {
         // Could not even read the events (database down?): try again on the next tick.

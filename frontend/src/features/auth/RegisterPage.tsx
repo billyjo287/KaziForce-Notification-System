@@ -19,11 +19,18 @@ import { AuthLayout } from './AuthLayout';
 
 type SignUpRole = 'worker' | 'business';
 
-const schema = z.object({
-  name: z.string().trim().min(2, 'validation.nameMin').max(80, 'validation.tooLong'),
-  email: z.email('validation.email'),
-  password: z.string().min(8, 'validation.passwordMin').max(128, 'validation.tooLong'),
-});
+const schema = z
+  .object({
+    name: z.string().trim().min(2, 'validation.nameMin').max(80, 'validation.tooLong'),
+    email: z.email('validation.email'),
+    password: z.string().min(8, 'validation.passwordMin').max(128, 'validation.tooLong'),
+    // Typed twice so a typing mistake cannot lock the person out of their new account.
+    confirmPassword: z.string().min(1, 'validation.confirmPassword'),
+  })
+  .refine((v) => v.password === v.confirmPassword, {
+    path: ['confirmPassword'],
+    message: 'validation.passwordsDiffer',
+  });
 type Form = z.infer<typeof schema>;
 
 /**
@@ -52,11 +59,14 @@ export default function RegisterPage() {
     if (roleChosen) heading.current?.focus();
   }, [roleChosen]);
 
-  const onSubmit = handleSubmit(async (values) => {
+  const onSubmit = handleSubmit(async ({ name, email, password }) => {
     setServerError(null);
     try {
+      // The repeated password is only checked here; the server gets it once.
       const { data } = await api.post<Session>('/auth/register', {
-        ...values,
+        name,
+        email,
+        password,
         role,
         language: i18n.language,
       });
@@ -148,6 +158,14 @@ export default function RegisterPage() {
           autoComplete="new-password"
           error={errors.password && t(errors.password.message ?? 'validation.required')}
           {...register('password')}
+        />
+        <PasswordInput
+          label={t('auth.register.confirmPassword')}
+          autoComplete="new-password"
+          error={
+            errors.confirmPassword && t(errors.confirmPassword.message ?? 'validation.required')
+          }
+          {...register('confirmPassword')}
         />
         <Button type="submit" size="lg" disabled={isSubmitting}>
           {t('auth.register.submit')}

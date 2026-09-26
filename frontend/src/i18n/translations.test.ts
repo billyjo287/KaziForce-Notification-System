@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import en from './locales/en.json';
 import sw from './locales/sw.json';
+import adminEn from './locales/admin.en.json';
+import adminSw from './locales/admin.sw.json';
+import uiKitEn from './locales/uiKit.en.json';
+import uiKitSw from './locales/uiKit.sw.json';
 
 function keys(obj: object, prefix = ''): string[] {
   return Object.entries(obj).flatMap(([key, value]) =>
@@ -13,6 +17,8 @@ function keys(obj: object, prefix = ''): string[] {
 describe('translations', () => {
   it('English and Kiswahili have exactly the same keys (nothing left untranslated)', () => {
     expect(keys(sw).sort()).toEqual(keys(en).sort());
+    expect(keys(uiKitSw).sort()).toEqual(keys(uiKitEn).sort());
+    expect(keys(adminSw).sort()).toEqual(keys(adminEn).sort());
   });
 
   it('no Kiswahili text is empty', () => {

@@ -244,3 +244,63 @@ a:focus-visible .kf-logo-dot {
 html[data-reduce-motion='true'] .kf-logo * {
   animation: none !important;
 }
+
+/* ---------- Timed messages: "Welcome back" after logging in, "You are logged out" ----------
+   Slide in, stay for a few seconds (a bar counts down), then slide away. With reduced motion
+   they simply appear and disappear (the global rule above makes the animations instant). */
+@keyframes kf-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes kf-leave {
+  to {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes kf-countdown {
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes kf-check-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.kf-enter {
+  animation: kf-enter 250ms var(--kf-ease-out) both;
+}
+
+.kf-leave {
+  animation: kf-leave 300ms var(--kf-ease-out) both;
+}
+
+.kf-countdown {
+  transform-origin: left;
+  animation: kf-countdown var(--kf-countdown-ms, 5000ms) linear both;
+}
+
+.kf-check-draw {
+  stroke-dasharray: 1;
+  animation: kf-check-draw 500ms var(--kf-ease-out) 150ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kf-countdown {
+    display: none;
+  }
+}
+
+html[data-reduce-motion='true'] .kf-countdown {
+  display: none;
+}

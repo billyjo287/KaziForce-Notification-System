@@ -1,0 +1,70 @@
+{
+  "admin": {
+    "users": {
+      "title": "Watumiaji",
+      "search": "Tafuta",
+      "searchHelp": "Jina, barua pepe, simu au kampuni.",
+      "searchButton": "Tafuta",
+      "role": "Aina ya akaunti",
+      "status": "Hali",
+      "active": "Hai",
+      "suspended": "Imesimamishwa",
+      "emptyTitle": "Hakuna watumiaji waliopatikana",
+      "emptyBody": "Jaribu utafutaji mwingine.",
+      "errorTitle": "Hatukuweza kupakia watumiaji",
+      "joined": "Alijiunga {{when}}",
+      "view": "Tazama"
+    },
+    "user": {
+      "back": "Rudi kwa watumiaji",
+      "email": "Barua pepe",
+      "phone": "Simu",
+      "location": "Mahali",
+      "lastLogin": "Aliingia mwisho",
+      "never": "Hajawahi",
+      "jobs": "Kazi alizochapisha",
+      "applications": "Maombi",
+      "suspend": "Simamisha akaunti hii",
+      "suspendTitle": "Simamisha {{name}}?",
+      "suspendBody": "Atatolewa kila mahali na hawezi kuingia hadi uiwashe tena akaunti.",
+      "reason": "Sababu",
+      "reasonHelp": "Inahifadhiwa kwenye kumbukumbu ya ukaguzi. Kwa mfano: Alichapisha kazi bandia zinazoomba ada.",
+      "suspendConfirm": "Simamisha",
+      "reactivate": "Washa tena akaunti hii",
+      "suspendedToast": "Akaunti imesimamishwa.",
+      "reactivatedToast": "Akaunti imewashwa tena.",
+      "suspendedSince": "Imesimamishwa {{when}}. Sababu: {{reason}}",
+      "history": "Hatua za msimamizi",
+      "noHistory": "Bado hakuna hatua za msimamizi.",
+      "adminNote": "Akaunti za msimamizi haziwezi kusimamishwa hapa."
+    },
+    "jobs": {
+      "title": "Kazi",
+      "searchHelp": "Jina la kazi au mwajiri.",
+      "remove": "Ondoa",
+      "removeTitle": "Ondoa \"{{title}}\"?",
+      "removeBody": "Wafanyakazi hawataiona tena kazi hii. Mwajiri ataona sababu yako.",
+      "reasonHelp": "Kwa mfano: Inawaomba wafanyakazi walipe ada ya usajili.",
+      "removeConfirm": "Ondoa kazi",
+      "removedToast": "Kazi imeondolewa.",
+      "removedReason": "Imeondolewa: {{reason}}",
+      "emptyTitle": "Hakuna kazi zilizopatikana",
+      "errorTitle": "Hatukuweza kupakia kazi",
+      "by": "na {{name}}"
+    },
+    "audit": {
+      "title": "Kumbukumbu ya ukaguzi",
+      "intro": "Kila badiliko analofanya msimamizi, jipya kwanza.",
+      "emptyTitle": "Bado hakuna hatua za msimamizi",
+      "emptyBody": "Akaunti zilizosimamishwa na kazi zilizoondolewa zitaorodheshwa hapa.",
+      "errorTitle": "Hatukuweza kupakia kumbukumbu ya ukaguzi",
+      "by": "na {{name}}",
+      "actions": {
+        "user_suspended": "Alisimamisha akaunti",
+        "user_reactivated": "Aliwasha tena akaunti",
+        "job_removed": "Aliondoa kazi",
+        "announcement_sent": "Ametuma tangazo"
+      }
+    }
+  }
+}

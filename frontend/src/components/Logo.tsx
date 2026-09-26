@@ -46,11 +46,12 @@ export function LogoMark({ className = 'size-9' }: { className?: string }) {
   );
 }
 
-export function Logo() {
+/** The mark is clearly bigger than the word next to it, so the clock and the KF are readable. */
+export function Logo({ markClassName = 'size-12' }: { markClassName?: string }) {
   const { t } = useTranslation();
   return (
     <span className="kf-logo-link flex items-center gap-2.5 text-xl font-bold">
-      <LogoMark />
+      <LogoMark className={markClassName} />
       {t('app.name')}
     </span>
   );

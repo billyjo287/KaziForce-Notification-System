@@ -18,8 +18,13 @@ import { CardListSkeleton } from '../components/ui/Skeleton';
 import { Switch } from '../components/ui/Switch';
 import { Toaster } from '../components/ui/Toaster';
 import { buttonClasses } from '../components/ui/buttonStyles';
+import { addPageStrings } from '../i18n/addPageStrings';
+import uiKitEn from '../i18n/locales/uiKit.en.json';
+import uiKitSw from '../i18n/locales/uiKit.sw.json';
 import { usePageTitle } from '../lib/usePageTitle';
 import { showToast } from '../stores/toasts';
+
+addPageStrings(uiKitEn, uiKitSw);
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (

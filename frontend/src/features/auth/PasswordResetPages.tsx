@@ -15,9 +15,15 @@ import { usePageTitle } from '../../lib/usePageTitle';
 import { AuthLayout } from './AuthLayout';
 
 const forgotSchema = z.object({ email: z.email('validation.email') });
-const resetSchema = z.object({
-  password: z.string().min(8, 'validation.passwordMin').max(128, 'validation.tooLong'),
-});
+const resetSchema = z
+  .object({
+    password: z.string().min(8, 'validation.passwordMin').max(128, 'validation.tooLong'),
+    confirmPassword: z.string().min(1, 'validation.confirmPassword'),
+  })
+  .refine((v) => v.password === v.confirmPassword, {
+    path: ['confirmPassword'],
+    message: 'validation.passwordsDiffer',
+  });
 
 function BackToLogin() {
   const { t } = useTranslation();
@@ -137,6 +143,14 @@ export function ResetPasswordPage() {
               autoComplete="new-password"
               error={errors.password && t(errors.password.message ?? 'validation.required')}
               {...register('password')}
+            />
+            <PasswordInput
+              label={t('auth.reset.confirmPassword')}
+              autoComplete="new-password"
+              error={
+                errors.confirmPassword && t(errors.confirmPassword.message ?? 'validation.required')
+              }
+              {...register('confirmPassword')}
             />
             <Button type="submit" size="lg" disabled={isSubmitting}>
               {t('auth.reset.submit')}

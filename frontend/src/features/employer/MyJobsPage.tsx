@@ -72,7 +72,7 @@ export default function MyJobsPage() {
                     )}
                     {job.status === 'removed' && job.removedReason && (
                       <span className="text-ink-muted">
-                        {t('admin.jobs.removedReason', { reason: job.removedReason })}
+                        {t('employer.removedReason', { reason: job.removedReason })}
                       </span>
                     )}
                   </div>

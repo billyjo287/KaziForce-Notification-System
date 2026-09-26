@@ -1,0 +1,70 @@
+{
+  "admin": {
+    "users": {
+      "title": "Users",
+      "search": "Search",
+      "searchHelp": "Name, email, phone or company.",
+      "searchButton": "Search",
+      "role": "Type of account",
+      "status": "Status",
+      "active": "Active",
+      "suspended": "Suspended",
+      "emptyTitle": "No users found",
+      "emptyBody": "Try another search.",
+      "errorTitle": "We could not load users",
+      "joined": "Joined {{when}}",
+      "view": "View"
+    },
+    "user": {
+      "back": "Back to users",
+      "email": "Email",
+      "phone": "Phone",
+      "location": "Place",
+      "lastLogin": "Last login",
+      "never": "Never",
+      "jobs": "Jobs posted",
+      "applications": "Applications",
+      "suspend": "Suspend this account",
+      "suspendTitle": "Suspend {{name}}?",
+      "suspendBody": "They will be logged out everywhere and cannot log in until you reactivate the account.",
+      "reason": "Reason",
+      "reasonHelp": "Kept in the audit log. For example: Posted fake jobs asking for fees.",
+      "suspendConfirm": "Suspend",
+      "reactivate": "Reactivate this account",
+      "suspendedToast": "Account suspended.",
+      "reactivatedToast": "Account reactivated.",
+      "suspendedSince": "Suspended {{when}}. Reason: {{reason}}",
+      "history": "Admin actions",
+      "noHistory": "No admin actions yet.",
+      "adminNote": "Admin accounts cannot be suspended here."
+    },
+    "jobs": {
+      "title": "Jobs",
+      "searchHelp": "Job title or employer.",
+      "remove": "Remove",
+      "removeTitle": "Remove \"{{title}}\"?",
+      "removeBody": "Workers will no longer see this job. The employer sees your reason.",
+      "reasonHelp": "For example: Asks workers to pay a registration fee.",
+      "removeConfirm": "Remove job",
+      "removedToast": "Job removed.",
+      "removedReason": "Removed: {{reason}}",
+      "emptyTitle": "No jobs found",
+      "errorTitle": "We could not load jobs",
+      "by": "by {{name}}"
+    },
+    "audit": {
+      "title": "Audit log",
+      "intro": "Every change an admin makes, newest first.",
+      "emptyTitle": "No admin actions yet",
+      "emptyBody": "Suspensions and removed jobs will be listed here.",
+      "errorTitle": "We could not load the audit log",
+      "by": "by {{name}}",
+      "actions": {
+        "user_suspended": "Suspended an account",
+        "user_reactivated": "Reactivated an account",
+        "job_removed": "Removed a job",
+        "announcement_sent": "Sent an announcement"
+      }
+    }
+  }
+}

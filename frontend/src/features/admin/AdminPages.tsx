@@ -19,6 +19,9 @@ import { Input } from '../../components/ui/Input';
 import { Pagination } from '../../components/ui/Pagination';
 import { Select } from '../../components/ui/Select';
 import { CardListSkeleton } from '../../components/ui/Skeleton';
+import { addPageStrings } from '../../i18n/addPageStrings';
+import adminEn from '../../i18n/locales/admin.en.json';
+import adminSw from '../../i18n/locales/admin.sw.json';
 import { formatPhone } from '../../lib/phone';
 import { relativeTime } from '../../lib/relativeTime';
 import { useApiErrorMessage } from '../../lib/useApiErrorMessage';
@@ -27,6 +30,9 @@ import { showToast } from '../../stores/toasts';
 import type { Role } from '../../types/api';
 import { JobCard } from '../jobs/JobCard';
 import { ReasonDialog } from './ReasonDialog';
+
+// The admin pages' words arrive with these pages (workers and employers never need them).
+addPageStrings(adminEn, adminSw);
 
 const ANY = 'any';
 

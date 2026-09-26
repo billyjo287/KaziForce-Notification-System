@@ -199,40 +199,6 @@
       "privacy": "Arifa za WhatsApp na SMS hazina taarifa zako binafsi kamwe."
     }
   },
-  "uiKit": {
-    "title": "Mkusanyiko wa vipengele",
-    "intro": "Kila kipengele cha kiolesura cha KaziForce, mahali pamoja.",
-    "buttons": "Vitufe",
-    "primary": "Hifadhi mabadiliko",
-    "secondary": "Ghairi",
-    "ghost": "Onyesha maelezo",
-    "danger": "Futa akaunti",
-    "inputs": "Sehemu za maandishi",
-    "nameLabel": "Jina lako kamili",
-    "nameHelp": "Kama lilivyo kwenye kitambulisho chako.",
-    "phoneLabel": "Nambari ya simu",
-    "phoneHelp": "Tunatuma msimbo kwa nambari hii.",
-    "phoneError": "Andika nambari ya Kenya inayoanza na 07 au 01, kwa mfano 0712 345 678.",
-    "switches": "Swichi",
-    "switchLabel": "Barua pepe ya muhtasari wa kila siku",
-    "switchHelp": "Barua pepe moja kila asubuhi yenye arifa za \"Baadaye\".",
-    "selects": "Chagua kutoka kwenye orodha",
-    "dialogs": "Madirisha ya maswali",
-    "openDialog": "Fungua dirisha",
-    "dialogTitle": "Washa saa za utulivu?",
-    "dialogBody": "Hatutatuma arifa kati ya saa 3 usiku na saa 1 asubuhi, isipokuwa ofa za kazi za dharura.",
-    "dialogConfirm": "Washa",
-    "toasts": "Ujumbe wenye kutendua",
-    "showToast": "Onyesha ujumbe",
-    "toastMessage": "Arifa imeondolewa.",
-    "badges": "Beji",
-    "cards": "Kadi",
-    "cardTitle": "Kadi rahisi",
-    "cardBody": "Kadi huweka vitu vinavyohusiana pamoja.",
-    "skeletons": "Vishika-nafasi vya kupakia",
-    "empty": "Hali tupu",
-    "offline": "Bango la nje ya mtandao"
-  },
   "apiErrors": {
     "generic": "Kuna tatizo. Tafadhali jaribu tena.",
     "network": "Hatuwezi kufikia KaziForce. Angalia muunganisho wako wa intaneti kisha ujaribu tena.",
@@ -268,7 +234,9 @@
     "consent": "Tafadhali weka alama ili tuweze kukutumia ujumbe.",
     "choose": "Tafadhali chagua moja.",
     "deadlinePast": "Chagua muda wa kufunga ulio mbele.",
-    "reason": "Andika sababu fupi (angalau herufi 5)."
+    "reason": "Andika sababu fupi (angalau herufi 5).",
+    "confirmPassword": "Andika nenosiri tena.",
+    "passwordsDiffer": "Nenosiri hizi mbili si sawa. Andika nenosiri ileile mara zote mbili."
   },
   "auth": {
     "showPassword": "Onyesha",
@@ -304,7 +272,8 @@
       "passwordHelp": "Angalau herufi 8.",
       "submit": "Fungua akaunti",
       "haveAccount": "Tayari una akaunti?",
-      "login": "Ingia"
+      "login": "Ingia",
+      "confirmPassword": "Andika nenosiri tena"
     },
     "forgot": {
       "title": "Umesahau nenosiri?",
@@ -321,7 +290,12 @@
       "submit": "Hifadhi nenosiri jipya",
       "done": "Nenosiri lako limebadilishwa. Sasa unaweza kuingia.",
       "missingToken": "Kiungo hiki hakijakamilika. Omba kipya.",
-      "askAgain": "Omba kiungo kipya"
+      "askAgain": "Omba kiungo kipya",
+      "confirmPassword": "Andika nenosiri jipya tena"
+    },
+    "welcome": {
+      "title": "Karibu tena, {{name}}!",
+      "body": "Umeingia kwenye akaunti yako."
     }
   },
   "onboarding": {
@@ -483,7 +457,8 @@
       "name": "Jina la kampuni",
       "nameHelp": "Wafanyakazi wanaona hili kwenye matangazo yako ya kazi.",
       "location": "Kampuni yako iko wapi?"
-    }
+    },
+    "removedReason": "Imeondolewa: {{reason}}"
   },
   "profile": {
     "title": "Wasifu wako",
@@ -518,72 +493,19 @@
     "sentAt": "Imetumwa {{when}}",
     "receivedAt": "Imepokelewa {{when}}"
   },
-  "admin": {
-    "users": {
-      "title": "Watumiaji",
-      "search": "Tafuta",
-      "searchHelp": "Jina, barua pepe, simu au kampuni.",
-      "searchButton": "Tafuta",
-      "role": "Aina ya akaunti",
-      "status": "Hali",
-      "active": "Hai",
-      "suspended": "Imesimamishwa",
-      "emptyTitle": "Hakuna watumiaji waliopatikana",
-      "emptyBody": "Jaribu utafutaji mwingine.",
-      "errorTitle": "Hatukuweza kupakia watumiaji",
-      "joined": "Alijiunga {{when}}",
-      "view": "Tazama"
-    },
-    "user": {
-      "back": "Rudi kwa watumiaji",
-      "email": "Barua pepe",
-      "phone": "Simu",
-      "location": "Mahali",
-      "lastLogin": "Aliingia mwisho",
-      "never": "Hajawahi",
-      "jobs": "Kazi alizochapisha",
-      "applications": "Maombi",
-      "suspend": "Simamisha akaunti hii",
-      "suspendTitle": "Simamisha {{name}}?",
-      "suspendBody": "Atatolewa kila mahali na hawezi kuingia hadi uiwashe tena akaunti.",
-      "reason": "Sababu",
-      "reasonHelp": "Inahifadhiwa kwenye kumbukumbu ya ukaguzi. Kwa mfano: Alichapisha kazi bandia zinazoomba ada.",
-      "suspendConfirm": "Simamisha",
-      "reactivate": "Washa tena akaunti hii",
-      "suspendedToast": "Akaunti imesimamishwa.",
-      "reactivatedToast": "Akaunti imewashwa tena.",
-      "suspendedSince": "Imesimamishwa {{when}}. Sababu: {{reason}}",
-      "history": "Hatua za msimamizi",
-      "noHistory": "Bado hakuna hatua za msimamizi.",
-      "adminNote": "Akaunti za msimamizi haziwezi kusimamishwa hapa."
-    },
-    "jobs": {
-      "title": "Kazi",
-      "searchHelp": "Jina la kazi au mwajiri.",
-      "remove": "Ondoa",
-      "removeTitle": "Ondoa \"{{title}}\"?",
-      "removeBody": "Wafanyakazi hawataiona tena kazi hii. Mwajiri ataona sababu yako.",
-      "reasonHelp": "Kwa mfano: Inawaomba wafanyakazi walipe ada ya usajili.",
-      "removeConfirm": "Ondoa kazi",
-      "removedToast": "Kazi imeondolewa.",
-      "removedReason": "Imeondolewa: {{reason}}",
-      "emptyTitle": "Hakuna kazi zilizopatikana",
-      "errorTitle": "Hatukuweza kupakia kazi",
-      "by": "na {{name}}"
-    },
-    "audit": {
-      "title": "Kumbukumbu ya ukaguzi",
-      "intro": "Kila badiliko analofanya msimamizi, jipya kwanza.",
-      "emptyTitle": "Bado hakuna hatua za msimamizi",
-      "emptyBody": "Akaunti zilizosimamishwa na kazi zilizoondolewa zitaorodheshwa hapa.",
-      "errorTitle": "Hatukuweza kupakia kumbukumbu ya ukaguzi",
-      "by": "na {{name}}",
-      "actions": {
-        "user_suspended": "Alisimamisha akaunti",
-        "user_reactivated": "Aliwasha tena akaunti",
-        "job_removed": "Aliondoa kazi",
-        "announcement_sent": "Ametuma tangazo"
-      }
+  "theme": {
+    "label": "Mwonekano wa skrini",
+    "dark": "Giza",
+    "device": "Kifaa",
+    "darkOn": "Washa hali ya giza",
+    "darkOff": "Zima hali ya giza",
+    "deviceHelp": "Fuata mpangilio wa simu au kompyuta yako",
+    "settingsLabel": "Mwonekano",
+    "settingsHelp": "Rangi nyepesi, rangi nyeusi (giza), au kufuata simu au kompyuta yako.",
+    "options": {
+      "light": "Nyepesi",
+      "dark": "Giza",
+      "system": "Kama kifaa changu"
     }
   }
 }

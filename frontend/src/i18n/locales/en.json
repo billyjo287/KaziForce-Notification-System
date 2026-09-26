@@ -199,40 +199,6 @@
       "privacy": "WhatsApp and SMS alerts never include your personal details."
     }
   },
-  "uiKit": {
-    "title": "Component gallery",
-    "intro": "Every building block of the KaziForce interface, in one place.",
-    "buttons": "Buttons",
-    "primary": "Save changes",
-    "secondary": "Cancel",
-    "ghost": "Show details",
-    "danger": "Delete account",
-    "inputs": "Text fields",
-    "nameLabel": "Your full name",
-    "nameHelp": "As it appears on your ID.",
-    "phoneLabel": "Phone number",
-    "phoneHelp": "We send a code to this number.",
-    "phoneError": "Enter a Kenyan number starting with 07 or 01, for example 0712 345 678.",
-    "switches": "Switches",
-    "switchLabel": "Daily summary email",
-    "switchHelp": "One email each morning with the alerts marked \"For later\".",
-    "selects": "Choose from a list",
-    "dialogs": "Dialogs",
-    "openDialog": "Open a dialog",
-    "dialogTitle": "Turn on quiet hours?",
-    "dialogBody": "We will not send alerts between 9pm and 7am, except urgent job offers.",
-    "dialogConfirm": "Turn on",
-    "toasts": "Messages with undo",
-    "showToast": "Show a message",
-    "toastMessage": "Alert removed.",
-    "badges": "Badges",
-    "cards": "Cards",
-    "cardTitle": "A simple card",
-    "cardBody": "Cards group related things together.",
-    "skeletons": "Loading placeholders",
-    "empty": "Empty states",
-    "offline": "Offline banner"
-  },
   "apiErrors": {
     "generic": "Something went wrong. Please try again.",
     "network": "We cannot reach KaziForce. Check your internet connection and try again.",
@@ -268,7 +234,9 @@
     "consent": "Please tick the box so we can send you messages.",
     "choose": "Please choose one.",
     "deadlinePast": "Choose a closing time in the future.",
-    "reason": "Write a short reason (at least 5 characters)."
+    "reason": "Write a short reason (at least 5 characters).",
+    "confirmPassword": "Type your password again.",
+    "passwordsDiffer": "The two passwords are not the same. Type the same password in both boxes."
   },
   "auth": {
     "showPassword": "Show",
@@ -304,7 +272,8 @@
       "passwordHelp": "At least 8 characters.",
       "submit": "Create account",
       "haveAccount": "Already have an account?",
-      "login": "Log in"
+      "login": "Log in",
+      "confirmPassword": "Type the password again"
     },
     "forgot": {
       "title": "Forgot your password?",
@@ -321,7 +290,12 @@
       "submit": "Save new password",
       "done": "Your password has been changed. You can now log in.",
       "missingToken": "This link is not complete. Ask for a new one.",
-      "askAgain": "Ask for a new link"
+      "askAgain": "Ask for a new link",
+      "confirmPassword": "Type the new password again"
+    },
+    "welcome": {
+      "title": "Welcome back, {{name}}!",
+      "body": "You are logged in."
     }
   },
   "onboarding": {
@@ -483,7 +457,8 @@
       "name": "Company name",
       "nameHelp": "Workers see this on your job posts.",
       "location": "Where is your company?"
-    }
+    },
+    "removedReason": "Removed: {{reason}}"
   },
   "profile": {
     "title": "Your profile",
@@ -518,72 +493,19 @@
     "sentAt": "Sent {{when}}",
     "receivedAt": "Received {{when}}"
   },
-  "admin": {
-    "users": {
-      "title": "Users",
-      "search": "Search",
-      "searchHelp": "Name, email, phone or company.",
-      "searchButton": "Search",
-      "role": "Type of account",
-      "status": "Status",
-      "active": "Active",
-      "suspended": "Suspended",
-      "emptyTitle": "No users found",
-      "emptyBody": "Try another search.",
-      "errorTitle": "We could not load users",
-      "joined": "Joined {{when}}",
-      "view": "View"
-    },
-    "user": {
-      "back": "Back to users",
-      "email": "Email",
-      "phone": "Phone",
-      "location": "Place",
-      "lastLogin": "Last login",
-      "never": "Never",
-      "jobs": "Jobs posted",
-      "applications": "Applications",
-      "suspend": "Suspend this account",
-      "suspendTitle": "Suspend {{name}}?",
-      "suspendBody": "They will be logged out everywhere and cannot log in until you reactivate the account.",
-      "reason": "Reason",
-      "reasonHelp": "Kept in the audit log. For example: Posted fake jobs asking for fees.",
-      "suspendConfirm": "Suspend",
-      "reactivate": "Reactivate this account",
-      "suspendedToast": "Account suspended.",
-      "reactivatedToast": "Account reactivated.",
-      "suspendedSince": "Suspended {{when}}. Reason: {{reason}}",
-      "history": "Admin actions",
-      "noHistory": "No admin actions yet.",
-      "adminNote": "Admin accounts cannot be suspended here."
-    },
-    "jobs": {
-      "title": "Jobs",
-      "searchHelp": "Job title or employer.",
-      "remove": "Remove",
-      "removeTitle": "Remove \"{{title}}\"?",
-      "removeBody": "Workers will no longer see this job. The employer sees your reason.",
-      "reasonHelp": "For example: Asks workers to pay a registration fee.",
-      "removeConfirm": "Remove job",
-      "removedToast": "Job removed.",
-      "removedReason": "Removed: {{reason}}",
-      "emptyTitle": "No jobs found",
-      "errorTitle": "We could not load jobs",
-      "by": "by {{name}}"
-    },
-    "audit": {
-      "title": "Audit log",
-      "intro": "Every change an admin makes, newest first.",
-      "emptyTitle": "No admin actions yet",
-      "emptyBody": "Suspensions and removed jobs will be listed here.",
-      "errorTitle": "We could not load the audit log",
-      "by": "by {{name}}",
-      "actions": {
-        "user_suspended": "Suspended an account",
-        "user_reactivated": "Reactivated an account",
-        "job_removed": "Removed a job",
-        "announcement_sent": "Sent an announcement"
-      }
+  "theme": {
+    "label": "Screen colours",
+    "dark": "Dark",
+    "device": "Device",
+    "darkOn": "Switch dark mode on",
+    "darkOff": "Switch dark mode off",
+    "deviceHelp": "Follow your phone or computer setting",
+    "settingsLabel": "Appearance",
+    "settingsHelp": "Light colours, dark colours, or the same as your phone or computer.",
+    "options": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "Same as my device"
     }
   }
 }

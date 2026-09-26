@@ -86,3 +86,23 @@ its colour, icon, word and how many are new. Every tab has the same filters (All
 days) and a "Mark all as read" button with Undo. The app opens on the most important tab that has
 something new. On narrow screens the tab icon sits above the word; with Large text on very small
 phones the tabs stack, so no word is ever cut off.
+
+## Header controls, sign-up and timed messages (revised 2026-09-26 at Billy's request)
+
+- **Logo size:** the KF clock mark is 48 px (44 px in the phone top bar), clearly bigger than the
+  "KaziForce" word next to it, so the letters and the clock are readable.
+- **On every page:** **Dark** (switches dark mode on or off), **Device** (follows the phone or
+  computer setting; the default) and **Log out**. Phones: icon above the word, in the top bar,
+  which scrolls away with the page so it never covers what the person reads. Tablets and
+  computers: at the bottom of the sidebar. The log-in, sign-up and landing pages have Dark and
+  Device next to the language switch. Settings also has an "Appearance" choice (Light, Dark,
+  Same as my device). "Log out of all devices" stays in Settings, behind a confirmation.
+- **Sign-up and new password:** the password is typed twice; if they differ, the message says so
+  under the second box in plain words.
+- **"Welcome back, Wanjiru!"** after logging in: slides in at the top, a check mark draws itself
+  and a bar counts down 5 seconds, then it slides away. It never blocks the page (a forced
+  5-second wait would fail the 18-to-80 test on slow phones) and has a Close button.
+- **"You are logged out."** on the log-in page slides away after 5 seconds. Warnings
+  ("suspended", "session ended") stay until the person logs in.
+- With reduced motion (device setting or the in-app switch) these messages simply appear and
+  disappear, with no sliding, drawing or countdown bar.

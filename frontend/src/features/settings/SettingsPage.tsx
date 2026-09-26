@@ -1,24 +1,28 @@
-import { ChevronRight, LogOut, MonitorSmartphone } from 'lucide-react';
+import { ChevronRight, LogOut, MonitorSmartphone, Moon, Sun } from 'lucide-react';
 import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router';
+import { Link } from 'react-router';
 import { useUpdateLanguage } from '../../api/hooks';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
+import { ChoiceCards } from '../../components/ui/ChoiceCards';
 import { Dialog } from '../../components/ui/Dialog';
 import { HelpText } from '../../components/ui/Field';
 import { Select } from '../../components/ui/Select';
 import { Switch } from '../../components/ui/Switch';
 import { LANGUAGES, type Language } from '../../i18n';
-import { api } from '../../lib/api';
-import { queryClient } from '../../lib/queryClient';
-import { useApiErrorMessage } from '../../lib/useApiErrorMessage';
+import { useLogOut } from '../../lib/useLogOut';
 import { usePageTitle } from '../../lib/usePageTitle';
-import { sidePath, useAuth, type AuthNotice } from '../../stores/auth';
-import { useSettings, type TextSize } from '../../stores/settings';
+import { sidePath, useAuth } from '../../stores/auth';
+import { useSettings, type TextSize, type Theme } from '../../stores/settings';
 import { showToast } from '../../stores/toasts';
 
 const TEXT_SIZES: TextSize[] = ['normal', 'large'];
+const THEMES = [
+  { value: 'light', icon: Sun },
+  { value: 'dark', icon: Moon },
+  { value: 'system', icon: MonitorSmartphone },
+] as const satisfies { value: Theme; icon: unknown }[];
 
 /**
  * Settings shared by all three sides: profile link, language, text size, reduce motion, and
@@ -27,31 +31,14 @@ const TEXT_SIZES: TextSize[] = ['normal', 'large'];
 export function SettingsPage() {
   const { t, i18n } = useTranslation();
   usePageTitle(t('settings.title'));
-  const { textSize, reduceMotion, setTextSize, setReduceMotion } = useSettings();
+  const { theme, textSize, reduceMotion, setTheme, setTextSize, setReduceMotion } = useSettings();
   const textSizeId = useId();
   const user = useAuth((s) => s.user);
-  const clear = useAuth((s) => s.clear);
   const updateLanguage = useUpdateLanguage();
-  const navigate = useNavigate();
-  const errorMessage = useApiErrorMessage();
+  const { logOut, busy } = useLogOut();
   const [logoutAllOpen, setLogoutAllOpen] = useState(false);
-  const [busy, setBusy] = useState(false);
 
   const confirm = () => showToast({ message: t('settings.saved') });
-
-  async function logOut(everywhere: boolean) {
-    setBusy(true);
-    try {
-      await api.post(everywhere ? '/auth/logout-all' : '/auth/logout');
-      const notice: AuthNotice = everywhere ? 'loggedOutAll' : 'loggedOut';
-      queryClient.clear(); // forget this person's data on this device
-      clear(notice);
-      navigate('/login', { replace: true });
-    } catch (error) {
-      showToast({ message: errorMessage(error) });
-      setBusy(false);
-    }
-  }
 
   return (
     <div className="max-w-2xl">
@@ -92,6 +79,23 @@ export function SettingsPage() {
               void i18n.changeLanguage(lng as Language).then(confirm);
               // Remember it on the account too, so emails and SMS use it (and other devices).
               if (user) updateLanguage.mutate(lng as Language);
+            }}
+          />
+
+          <ChoiceCards
+            legend={t('theme.settingsLabel')}
+            help={t('theme.settingsHelp')}
+            name="theme"
+            value={theme}
+            columns={3}
+            choices={THEMES.map(({ value, icon }) => ({
+              value,
+              icon,
+              label: t(`theme.options.${value}`),
+            }))}
+            onChange={(value) => {
+              setTheme(value);
+              confirm();
             }}
           />
 

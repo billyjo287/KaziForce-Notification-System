@@ -11,6 +11,7 @@ import { PasswordInput } from '../../components/ui/PasswordInput';
 import { api } from '../../lib/api';
 import { useApiErrorMessage } from '../../lib/useApiErrorMessage';
 import { usePageTitle } from '../../lib/usePageTitle';
+import { useTimedExit } from '../../lib/useTimedExit';
 import { homePath, useAuth } from '../../stores/auth';
 import type { Session } from '../../types/api';
 import { AuthLayout } from './AuthLayout';
@@ -22,6 +23,8 @@ const schema = z.object({
 });
 type Form = z.infer<typeof schema>;
 
+const NOTICE_MS = 5000;
+
 export default function LoginPage() {
   const { t } = useTranslation();
   usePageTitle(t('auth.login.title'));
@@ -29,6 +32,12 @@ export default function LoginPage() {
   const [params] = useSearchParams();
   const notice = useAuth((s) => s.notice);
   const setSession = useAuth((s) => s.setSession);
+  const setJustLoggedIn = useAuth((s) => s.setJustLoggedIn);
+  const clearNotice = useAuth((s) => s.clearNotice);
+  // "You are logged out" is only a confirmation: it slides away after 5 seconds. Warnings
+  // (suspended, session expired) stay until the person logs in.
+  const temporary = notice === 'loggedOut' || notice === 'loggedOutAll';
+  const leaving = useTimedExit(temporary, NOTICE_MS, clearNotice);
   const errorMessage = useApiErrorMessage();
   const [serverError, setServerError] = useState<string | null>(null);
   const {
@@ -42,6 +51,7 @@ export default function LoginPage() {
     try {
       const { data } = await api.post<Session>('/auth/login', values);
       setSession(data);
+      setJustLoggedIn(true);
       const destination = data.user.onboardingCompleted
         ? (safeNext(params.get('next')) ?? homePath(data.user.role))
         : '/onboarding';
@@ -59,7 +69,10 @@ export default function LoginPage() {
       </div>
 
       {notice && !serverError && (
-        <FormAlert tone={notice === 'suspended' ? 'error' : 'success'}>
+        <FormAlert
+          tone={notice === 'suspended' ? 'error' : 'success'}
+          className={temporary ? (leaving ? 'kf-leave' : 'kf-enter') : undefined}
+        >
           {t(`auth.notices.${notice}`)}
         </FormAlert>
       )}

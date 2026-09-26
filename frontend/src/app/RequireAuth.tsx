@@ -12,10 +12,14 @@ import type { Role } from '../types/api';
 export function RequireAuth({ role, children }: { role: Role; children: ReactNode }) {
   const status = useRestoreSession();
   const user = useAuth((s) => s.user);
+  const notice = useAuth((s) => s.notice);
   const location = useLocation();
 
   if (status === 'unknown') return <PageSkeleton />;
   if (status === 'guest' || !user) {
+    // Come back to this page after logging in, unless the person chose to leave (log out) or
+    // was suspended: then the next person on this device starts from their own home page.
+    if (notice && notice !== 'expired') return <Navigate to="/login" replace />;
     const next = encodeURIComponent(location.pathname + location.search);
     return <Navigate to={`/login?next=${next}`} replace />;
   }

@@ -6,16 +6,18 @@ import { CircleAlert, CircleCheck } from 'lucide-react';
  */
 export function FormAlert({
   tone = 'error',
+  className = '',
   children,
 }: {
   tone?: 'error' | 'success';
+  className?: string;
   children: string;
 }) {
   const Icon = tone === 'error' ? CircleAlert : CircleCheck;
   return (
     <p
       role={tone === 'error' ? 'alert' : 'status'}
-      className={`flex items-start gap-3 rounded-xl border-2 p-4 font-bold ${
+      className={`flex items-start gap-3 rounded-xl border-2 p-4 font-bold ${className} ${
         tone === 'error'
           ? 'border-urgent bg-urgent-soft text-urgent'
           : 'border-primary bg-primary-soft text-ink'

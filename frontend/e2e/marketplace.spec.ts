@@ -110,6 +110,7 @@ test('a new worker signs up and completes onboarding', async ({ page }, testInfo
   await page.getByLabel('Your full name').fill('Test Mfanyakazi');
   await page.getByLabel('Email address').fill(email);
   await page.getByLabel('Choose a password').fill(PASSWORD);
+  await page.getByLabel('Type the password again').fill(PASSWORD);
   await page.getByRole('button', { name: 'Create account' }).click();
 
   // Step 2: phone, consent, SMS code (mock mode returns the code to tests).

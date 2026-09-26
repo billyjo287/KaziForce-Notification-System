@@ -28,7 +28,7 @@ requirements are in [PRD.md](PRD.md).
 | Monorepo with one folder per part of the system | `frontend/` (React + TypeScript), `backend/` (Express + TypeScript + Prisma), `ml-service/` (Python FastAPI), `docs/` |
 | Consistent code style, checked automatically | ESLint + Prettier (TypeScript), ruff (Python): `npm run lint`, `npm run format:check` |
 | Type safety throughout | TypeScript strict mode: `npm run typecheck` |
-| Automated tests | 52 backend (API, accounts, roles, suspension, marketplace, notification pipeline), 53 frontend unit, 8 ML service, and 65 browser tests with accessibility checks at phone and desktop sizes: `npm test`, `npm run test:e2e -w frontend` |
+| Automated tests | 52 backend (API, accounts, roles, suspension, marketplace, notification pipeline), 61 frontend unit, 8 ML service, and 69 browser tests with accessibility checks at phone and desktop sizes: `npm test`, `npm run test:e2e -w frontend` |
 | Architecture decisions recorded | [docs/adr/](adr/): 0001 overall architecture, 0002 frontend, 0003 accounts and events, 0004 real-time notification pipeline |
 | Design documented | [docs/design/visual-direction.md](design/visual-direction.md) (colours with contrast ratios, type, layout) |
 | Setup guide a classmate can follow | [README.md](../README.md) |
