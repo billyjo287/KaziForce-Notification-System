@@ -7,7 +7,7 @@ import { Link, NavLink, useLocation } from 'react-router';
 import { useAuth } from '../../stores/auth';
 import { useSettings } from '../../stores/settings';
 import { Logo } from '../Logo';
-import { ThemeButtons } from '../ThemeButtons';
+import { ThemeSelect } from '../ThemeSelect';
 import { OfflineBanner } from '../ui/OfflineBanner';
 import { LazyToaster } from '../ui/LazyToaster';
 import { LogOutButton } from './LogOutButton';
@@ -121,23 +121,23 @@ export function AppShell({ role, unreadCount, children }: AppShellProps) {
                   </p>
                 </div>
               )}
-              <ThemeButtons />
+              <ThemeSelect wide />
               <LogOutButton wide />
             </div>
           </aside>
 
           {/* ---------- Main content ---------- */}
           <div className="flex min-w-0 flex-1 flex-col">
-            {/* Phones: logo, then theme and Log out (two rows at 360 px). It scrolls away with
+            {/* Phones: logo and Log out, then the screen colours dropdown. It scrolls away with
                 the page so it never covers what the person is reading; the menu stays at the
                 bottom. */}
             <header className="flex flex-wrap items-center justify-between gap-2 border-b border-line bg-surface px-4 py-2 md:hidden">
               <Link to={nav.basePath} className="kf-logo-link rounded-lg">
                 <Logo markClassName="size-11" />
               </Link>
-              <div className="flex items-center gap-1.5">
-                <ThemeButtons compact />
-                <LogOutButton compact />
+              <LogOutButton />
+              <div className="w-full">
+                <ThemeSelect wide />
               </div>
             </header>
             <main

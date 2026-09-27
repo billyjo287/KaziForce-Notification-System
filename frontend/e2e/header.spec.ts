@@ -1,4 +1,4 @@
-// Header controls on every page (360 px phone and 1440 px desktop): dark mode, "Device",
+// Header controls on every page (360 px phone and 1440 px desktop): the screen colours dropdown,
 // Log out, the welcome message after logging in, and "You are logged out" that goes away.
 import { expect, test } from '@playwright/test';
 import { expectNoHorizontalScroll, expectNoSeriousA11yIssues, logIn } from './helpers';
@@ -14,7 +14,8 @@ test('dark mode, welcome message and Log out from any page', async ({ page }, te
   await expect(welcome).toBeHidden({ timeout: 7000 });
 
   // Dark mode on, checked for contrast and layout, then back to the device setting.
-  await page.getByRole('button', { name: 'Dark' }).locator('visible=true').click();
+  const colours = page.getByRole('combobox', { name: 'Screen colours' }).locator('visible=true');
+  await colours.selectOption('dark');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await expectNoSeriousA11yIssues(page);
   await expectNoHorizontalScroll(page);
@@ -22,7 +23,7 @@ test('dark mode, welcome message and Log out from any page', async ({ page }, te
 
   await page.reload(); // the choice is remembered
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await page.getByRole('button', { name: 'Device' }).locator('visible=true').click();
+  await colours.selectOption('system');
   await expect(page.locator('html')).not.toHaveAttribute('data-theme');
   await page.screenshot({ path: testInfo.outputPath('jobs-light.png') });
 

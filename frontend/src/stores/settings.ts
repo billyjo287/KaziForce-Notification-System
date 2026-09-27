@@ -1,7 +1,6 @@
 // Display settings chosen by the user: light/dark theme, text size and reduce motion.
 // Stored in the browser (localStorage) for now; Phase 6 saves them to the user's account.
 // The language is stored by i18n itself (see src/i18n).
-import { useSyncExternalStore } from 'react';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -58,19 +57,4 @@ export function prefersReducedMotion(): boolean {
     useSettings.getState().reduceMotion ||
     window.matchMedia('(prefers-reduced-motion: reduce)').matches
   );
-}
-
-const darkQuery = () => window.matchMedia('(prefers-color-scheme: dark)');
-function subscribeToDevice(callback: () => void) {
-  const query = darkQuery();
-  query.addEventListener('change', callback);
-  return () => query.removeEventListener('change', callback);
-}
-
-/** The theme actually on screen: the user's choice, or the device's when set to "system". */
-export function useShownTheme(): 'light' | 'dark' {
-  const theme = useSettings((s) => s.theme);
-  const deviceDark = useSyncExternalStore(subscribeToDevice, () => darkQuery().matches);
-  if (theme !== 'system') return theme;
-  return deviceDark ? 'dark' : 'light';
 }

@@ -495,17 +495,12 @@
   },
   "theme": {
     "label": "Mwonekano wa skrini",
-    "dark": "Giza",
-    "device": "Kifaa",
-    "darkOn": "Washa hali ya giza",
-    "darkOff": "Zima hali ya giza",
-    "deviceHelp": "Fuata mpangilio wa simu au kompyuta yako",
     "settingsLabel": "Mwonekano",
     "settingsHelp": "Rangi nyepesi, rangi nyeusi (giza), au kufuata simu au kompyuta yako.",
     "options": {
       "light": "Nyepesi",
       "dark": "Giza",
-      "system": "Kama kifaa changu"
+      "system": "Kama kifaa"
     }
   }
 }

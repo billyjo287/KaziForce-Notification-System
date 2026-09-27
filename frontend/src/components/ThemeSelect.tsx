@@ -6,7 +6,7 @@ const ICONS = { light: Sun, dark: Moon, system: MonitorSmartphone } as const;
 const THEMES: Theme[] = ['light', 'dark', 'system'];
 
 /**
- * Screen colours dropdown: Light, Dark, or Same as my device (the default).
+ * Screen colours dropdown: Light, Dark, or Same as device (the default).
  * A native <select>, so phones show their own large, familiar picker and it works with any
  * keyboard or screen reader. The icon shows the current choice.
  */

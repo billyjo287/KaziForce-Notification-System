@@ -1,11 +1,10 @@
-import { ChevronRight, LogOut, MonitorSmartphone, Moon, Sun } from 'lucide-react';
+import { ChevronRight, LogOut, MonitorSmartphone } from 'lucide-react';
 import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { useUpdateLanguage } from '../../api/hooks';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
-import { ChoiceCards } from '../../components/ui/ChoiceCards';
 import { Dialog } from '../../components/ui/Dialog';
 import { HelpText } from '../../components/ui/Field';
 import { Select } from '../../components/ui/Select';
@@ -18,11 +17,7 @@ import { useSettings, type TextSize, type Theme } from '../../stores/settings';
 import { showToast } from '../../stores/toasts';
 
 const TEXT_SIZES: TextSize[] = ['normal', 'large'];
-const THEMES = [
-  { value: 'light', icon: Sun },
-  { value: 'dark', icon: Moon },
-  { value: 'system', icon: MonitorSmartphone },
-] as const satisfies { value: Theme; icon: unknown }[];
+const THEMES: Theme[] = ['light', 'dark', 'system'];
 
 /**
  * Settings shared by all three sides: profile link, language, text size, reduce motion, and
@@ -82,19 +77,13 @@ export function SettingsPage() {
             }}
           />
 
-          <ChoiceCards
-            legend={t('theme.settingsLabel')}
+          <Select
+            label={t('theme.settingsLabel')}
             help={t('theme.settingsHelp')}
-            name="theme"
             value={theme}
-            columns={3}
-            choices={THEMES.map(({ value, icon }) => ({
-              value,
-              icon,
-              label: t(`theme.options.${value}`),
-            }))}
-            onChange={(value) => {
-              setTheme(value);
+            options={THEMES.map((value) => ({ value, label: t(`theme.options.${value}`) }))}
+            onValueChange={(value) => {
+              setTheme(value as Theme);
               confirm();
             }}
           />

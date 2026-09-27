@@ -91,12 +91,13 @@ phones the tabs stack, so no word is ever cut off.
 
 - **Logo size:** the KF clock mark is 48 px (44 px in the phone top bar), clearly bigger than the
   "KaziForce" word next to it, so the letters and the clock are readable.
-- **On every page:** **Dark** (switches dark mode on or off), **Device** (follows the phone or
-  computer setting; the default) and **Log out**. Phones: icon above the word, in the top bar,
-  which scrolls away with the page so it never covers what the person reads. Tablets and
-  computers: at the bottom of the sidebar. The log-in, sign-up and landing pages have Dark and
-  Device next to the language switch. Settings also has an "Appearance" choice (Light, Dark,
-  Same as my device). "Log out of all devices" stays in Settings, behind a confirmation.
+- **On every page:** a **Screen colours** dropdown (Light, Dark, Same as device; the default
+  follows the phone or computer) and **Log out**. It is the browser's own dropdown, so phones show
+  their large, familiar picker. Phones: a row under the logo in the top bar, which scrolls away
+  with the page so it never covers what the person reads. Tablets and computers: at the bottom of
+  the sidebar. The log-in, sign-up and landing pages have the dropdown next to the language
+  switch; Settings has the same choice as "Appearance". "Log out of all devices" stays in
+  Settings, behind a confirmation.
 - **Sign-up and new password:** the password is typed twice; if they differ, the message says so
   under the second box in plain words.
 - **"Welcome back, Wanjiru!"** after logging in: slides in at the top, a check mark draws itself

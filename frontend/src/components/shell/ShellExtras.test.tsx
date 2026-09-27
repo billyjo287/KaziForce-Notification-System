@@ -6,7 +6,7 @@ import { useAuth } from '../../stores/auth';
 import { useSettings } from '../../stores/settings';
 import { renderWithRouter } from '../../test/renderWithRouter';
 import type { User } from '../../types/api';
-import { ThemeButtons } from '../ThemeButtons';
+import { ThemeSelect } from '../ThemeSelect';
 import { AppShell } from './AppShell';
 import WelcomeBanner from './WelcomeBanner';
 
@@ -17,25 +17,25 @@ vi.mock('../../lib/api', async (importOriginal) => ({
 
 const wanjiru = { id: 'u1', name: 'Wanjiru Kamau', role: 'worker', language: 'en' } as User;
 
-describe('theme buttons', () => {
+describe('screen colours dropdown', () => {
   afterEach(() => useSettings.setState({ theme: 'system' }));
 
-  it('"Dark" switches dark mode on and off; "Device" follows the phone or computer', async () => {
-    renderWithRouter(<ThemeButtons />);
-    const dark = screen.getByRole('button', { name: 'Dark' });
-    const device = screen.getByRole('button', { name: 'Device' });
-    expect(device).toHaveAttribute('aria-pressed', 'true');
+  it('one dropdown chooses Light, Dark or Same as device (the default)', async () => {
+    renderWithRouter(<ThemeSelect />);
+    const menu = screen.getByRole('combobox', { name: 'Screen colours' });
+    expect(menu).toHaveValue('system');
+    expect(screen.getAllByRole('option').map((o) => o.textContent)).toEqual([
+      'Light',
+      'Dark',
+      'Same as device',
+    ]);
     expect(document.documentElement.dataset.theme).toBeUndefined();
 
-    await userEvent.click(dark);
-    expect(dark).toHaveAttribute('aria-pressed', 'true');
-    expect(device).toHaveAttribute('aria-pressed', 'false');
+    await userEvent.selectOptions(menu, 'dark');
     expect(document.documentElement.dataset.theme).toBe('dark');
-
-    await userEvent.click(dark);
+    await userEvent.selectOptions(menu, 'light');
     expect(document.documentElement.dataset.theme).toBe('light');
-
-    await userEvent.click(device);
+    await userEvent.selectOptions(menu, 'system');
     expect(document.documentElement.dataset.theme).toBeUndefined();
   });
 });

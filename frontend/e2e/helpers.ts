@@ -6,6 +6,13 @@ export const ADMIN = { email: 'admin@example.com', password: PASSWORD };
 
 /** Runs axe (WCAG 2.2 A + AA rules) and fails on any serious or critical problem. */
 export async function expectNoSeriousA11yIssues(page: Page) {
+  // Measure the finished page: during a fade-in, text is briefly see-through and axe would
+  // report low contrast that no person ever sees.
+  await page.waitForFunction(() =>
+    document
+      .getAnimations()
+      .every((a) => a.playState !== 'running' || a.effect?.getTiming().iterations === Infinity),
+  );
   const results = await new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
     .analyze();

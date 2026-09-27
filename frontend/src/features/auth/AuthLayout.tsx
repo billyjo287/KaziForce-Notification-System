@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router';
 import { LanguageToggle } from '../../components/LanguageToggle';
 import { Logo } from '../../components/Logo';
-import { ThemeButtons } from '../../components/ThemeButtons';
+import { ThemeSelect } from '../../components/ThemeSelect';
 import { Toaster } from '../../components/ui/Toaster';
 
 /** Simple frame for log-in, sign-up and onboarding: logo, theme and language, one narrow column. */
@@ -15,7 +15,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
             <Logo />
           </Link>
           <div className="flex flex-wrap items-center gap-2">
-            <ThemeButtons />
+            <ThemeSelect />
             <LanguageToggle />
           </div>
         </header>

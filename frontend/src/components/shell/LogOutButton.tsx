@@ -4,13 +4,7 @@ import { useLogOut } from '../../lib/useLogOut';
 import { headerButtonClasses } from '../headerButtonStyles';
 
 /** Log out of this device, from any page. ("Log out of all devices" stays in Settings.) */
-export function LogOutButton({
-  compact = false,
-  wide = false,
-}: {
-  compact?: boolean;
-  wide?: boolean;
-}) {
+export function LogOutButton({ wide = false }: { wide?: boolean }) {
   const { t } = useTranslation();
   const { logOut, busy } = useLogOut();
   return (
@@ -18,7 +12,7 @@ export function LogOutButton({
       type="button"
       onClick={() => void logOut()}
       disabled={busy}
-      className={`${headerButtonClasses(compact)} ${wide ? 'w-full justify-center' : ''}`}
+      className={`${headerButtonClasses()} ${wide ? 'w-full justify-center' : ''}`}
     >
       <LogOut aria-hidden="true" className="size-5 shrink-0" />
       {t('settings.logout')}

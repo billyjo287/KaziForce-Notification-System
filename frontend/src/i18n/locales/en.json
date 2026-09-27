@@ -495,17 +495,12 @@
   },
   "theme": {
     "label": "Screen colours",
-    "dark": "Dark",
-    "device": "Device",
-    "darkOn": "Switch dark mode on",
-    "darkOff": "Switch dark mode off",
-    "deviceHelp": "Follow your phone or computer setting",
     "settingsLabel": "Appearance",
     "settingsHelp": "Light colours, dark colours, or the same as your phone or computer.",
     "options": {
       "light": "Light",
       "dark": "Dark",
-      "system": "Same as my device"
+      "system": "Same as device"
     }
   }
 }
