@@ -18,6 +18,8 @@ const worker = startNotificationWorker({
   publisher: redis,
   logger,
   prefix: env.QUEUE_PREFIX,
+  mlServiceUrl: env.ML_SERVICE_URL,
+  mlTimeoutMs: env.ML_TIMEOUT_MS,
 });
 const relay = startOutboxRelay({ prisma, queue, databaseUrl: env.DATABASE_URL, logger });
 await relay.ready;

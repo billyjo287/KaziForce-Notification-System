@@ -6,12 +6,16 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class Settings:
-    model_version: str
+    #: Which classifier answers /predict: "rules" (now) or "trained" (Phase 9).
+    classifier: str
+    #: Where the trained model files are (only used when classifier is "trained").
+    model_path: str | None
     log_level: str
 
 
 def get_settings() -> Settings:
     return Settings(
-        model_version=os.getenv("MODEL_VERSION", "rules-v0"),
+        classifier=os.getenv("CLASSIFIER", "rules"),
+        model_path=os.getenv("MODEL_PATH") or None,
         log_level=os.getenv("LOG_LEVEL", "info"),
     )

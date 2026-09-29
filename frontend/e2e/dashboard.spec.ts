@@ -40,7 +40,10 @@ test.describe('Worker Alerts dashboard (real data)', () => {
   test('"Not important to me" can be undone', async ({ page }) => {
     await logIn(page, 'worker1@example.com');
     await page.getByRole('tab', { name: /Important/ }).click();
-    const card = page.getByRole('button', { name: /New message from Mwangi Logistics/ });
+    // The seeded message (other tests may add more messages from the same employer).
+    const card = page
+      .getByRole('button', { name: /New message from Mwangi Logistics/ })
+      .filter({ hasText: 'Ask for the shift supervisor' });
     await card.click();
     await page.getByRole('button', { name: 'Not important to me' }).click();
 

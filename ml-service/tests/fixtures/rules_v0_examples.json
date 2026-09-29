@@ -1,0 +1,766 @@
+[
+  {
+    "name": "Urgent job: deadline in 45 minutes",
+    "request": {
+      "text": "Warehouse packers needed\nMwangi Logistics needs Packing in Industrial Area. Pay: KSh 1,200 for the shift. Apply before Fri 2 Oct, 14:00.",
+      "type": "job_alert",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": 45
+    },
+    "expected": {
+      "priority": "urgent",
+      "priority_confidence": 0.9,
+      "is_spam": false,
+      "spam_score": 0.02,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "deadline_within_60_minutes",
+          "weight": 0.9
+        }
+      ]
+    }
+  },
+  {
+    "name": "Job marked urgent by the employer",
+    "request": {
+      "text": "Evening parcel sorters\nUrgent. Mwangi Logistics needs Delivery in Westlands. Pay: KSh 1,000. Apply before Sat 3 Oct, 18:00.",
+      "type": "job_alert",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": 600
+    },
+    "expected": {
+      "priority": "urgent",
+      "priority_confidence": 0.75,
+      "is_spam": false,
+      "spam_score": 0.02,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "urgent_words:urgent",
+          "weight": 0.75
+        }
+      ]
+    }
+  },
+  {
+    "name": "Ordinary job alert (two days to apply)",
+    "request": {
+      "text": "Painters for a school renovation\nLakeside Builders needs Painting in Kisumu. Pay: KSh 900 per day. Apply before Wed 30 Sep, 17:00.",
+      "type": "job_alert",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": 2880
+    },
+    "expected": {
+      "priority": "low",
+      "priority_confidence": 0.6,
+      "is_spam": false,
+      "spam_score": 0.02,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "general_job_alert",
+          "weight": 0.6
+        }
+      ]
+    }
+  },
+  {
+    "name": "Deadline exactly 60 minutes",
+    "request": {
+      "text": "Kitchen helpers\nPwani Events needs Catering in Nyali. Apply before Fri 2 Oct, 12:00.",
+      "type": "job_alert",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": 60
+    },
+    "expected": {
+      "priority": "urgent",
+      "priority_confidence": 0.9,
+      "is_spam": false,
+      "spam_score": 0.02,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "deadline_within_60_minutes",
+          "weight": 0.9
+        }
+      ]
+    }
+  },
+  {
+    "name": "Deadline 90 minutes, no urgent words",
+    "request": {
+      "text": "Loaders for a moving truck\nMwangi Logistics needs Warehouse work in Upper Hill. Pay: KSh 800. Apply before Sun 4 Oct, 09:00.",
+      "type": "job_alert",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": 90
+    },
+    "expected": {
+      "priority": "low",
+      "priority_confidence": 0.6,
+      "is_spam": false,
+      "spam_score": 0.02,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "general_job_alert",
+          "weight": 0.6
+        }
+      ]
+    }
+  },
+  {
+    "name": "Job alert that says today",
+    "request": {
+      "text": "Cleaners needed today in Kilimani\nSparkle Homes needs Cleaning in Kilimani.",
+      "type": "job_alert",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": null
+    },
+    "expected": {
+      "priority": "urgent",
+      "priority_confidence": 0.75,
+      "is_spam": false,
+      "spam_score": 0.02,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "urgent_words:today",
+          "weight": 0.75
+        }
+      ]
+    }
+  },
+  {
+    "name": "Kiswahili: urgent job (Haraka)",
+    "request": {
+      "text": "Wapakiaji wanahitajika\nHaraka. Mwangi Logistics inahitaji Upakiaji huko Industrial Area. Malipo: KSh 1,200. Omba kabla ya Ijm 2 Okt, 14:00.",
+      "type": "job_alert",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": 300
+    },
+    "expected": {
+      "priority": "urgent",
+      "priority_confidence": 0.75,
+      "is_spam": false,
+      "spam_score": 0.02,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "urgent_words:haraka",
+          "weight": 0.75
+        }
+      ]
+    }
+  },
+  {
+    "name": "Kiswahili: ordinary job alert",
+    "request": {
+      "text": "Wapaka rangi shuleni\nLakeside Builders inahitaji Upakaji rangi huko Kisumu. Malipo: KSh 900 kwa siku. Omba kabla ya Jtn 30 Sep, 17:00.",
+      "type": "job_alert",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": 2880
+    },
+    "expected": {
+      "priority": "low",
+      "priority_confidence": 0.6,
+      "is_spam": false,
+      "spam_score": 0.02,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "general_job_alert",
+          "weight": 0.6
+        }
+      ]
+    }
+  },
+  {
+    "name": "Application accepted",
+    "request": {
+      "text": "Your application was accepted\nMwangi Logistics accepted your application for \"Delivery rider\". Open Messages to agree the details.",
+      "type": "status_update",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": null
+    },
+    "expected": {
+      "priority": "urgent",
+      "priority_confidence": 0.85,
+      "is_spam": false,
+      "spam_score": 0.02,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "application_accepted",
+          "weight": 0.85
+        }
+      ]
+    }
+  },
+  {
+    "name": "Kiswahili: application accepted",
+    "request": {
+      "text": "Ombi lako limekubaliwa\nMwangi Logistics wamekubali ombi lako la \"Mpanda pikipiki\". Fungua Ujumbe mkubaliane maelezo.",
+      "type": "status_update",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": null
+    },
+    "expected": {
+      "priority": "urgent",
+      "priority_confidence": 0.85,
+      "is_spam": false,
+      "spam_score": 0.02,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "application_accepted",
+          "weight": 0.85
+        }
+      ]
+    }
+  },
+  {
+    "name": "Application reviewed",
+    "request": {
+      "text": "Your application was reviewed\nMwangi Logistics looked at your application for \"Delivery rider\".",
+      "type": "status_update",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": null
+    },
+    "expected": {
+      "priority": "medium",
+      "priority_confidence": 0.7,
+      "is_spam": false,
+      "spam_score": 0.02,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "application_update",
+          "weight": 0.7
+        }
+      ]
+    }
+  },
+  {
+    "name": "Application not successful",
+    "request": {
+      "text": "Your application was not successful\nPwani Events chose other people for \"Wedding waiters\". New jobs are added every day.",
+      "type": "status_update",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": null
+    },
+    "expected": {
+      "priority": "medium",
+      "priority_confidence": 0.7,
+      "is_spam": false,
+      "spam_score": 0.02,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "application_update",
+          "weight": 0.7
+        }
+      ]
+    }
+  },
+  {
+    "name": "Kiswahili: application not successful",
+    "request": {
+      "text": "Ombi lako halikufanikiwa\nPwani Events wamechagua watu wengine kwa \"Wahudumu wa harusi\". Kazi mpya huongezwa kila siku.",
+      "type": "status_update",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": null
+    },
+    "expected": {
+      "priority": "medium",
+      "priority_confidence": 0.7,
+      "is_spam": false,
+      "spam_score": 0.02,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "application_update",
+          "weight": 0.7
+        }
+      ]
+    }
+  },
+  {
+    "name": "Employer: new applicant",
+    "request": {
+      "text": "New applicant\nAmina Hassan applied for \"Catering staff for a wedding in Nyali\".",
+      "type": "status_update",
+      "recipient_role": "business",
+      "sender_role": "worker",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": null
+    },
+    "expected": {
+      "priority": "medium",
+      "priority_confidence": 0.7,
+      "is_spam": false,
+      "spam_score": 0.02,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "application_update",
+          "weight": 0.7
+        }
+      ]
+    }
+  },
+  {
+    "name": "Ordinary direct message",
+    "request": {
+      "text": "New message from Mwangi Logistics\nHello Wanjiru, please bring your ID on Monday.",
+      "type": "message",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": null
+    },
+    "expected": {
+      "priority": "medium",
+      "priority_confidence": 0.7,
+      "is_spam": false,
+      "spam_score": 0.02,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "direct_message",
+          "weight": 0.7
+        }
+      ]
+    }
+  },
+  {
+    "name": "Message asking to start tonight",
+    "request": {
+      "text": "New message from Pwani Events\nCan you start tonight at 6pm? Please reply soon.",
+      "type": "message",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": null
+    },
+    "expected": {
+      "priority": "urgent",
+      "priority_confidence": 0.75,
+      "is_spam": false,
+      "spam_score": 0.02,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "urgent_words:tonight",
+          "weight": 0.75
+        }
+      ]
+    }
+  },
+  {
+    "name": "Kiswahili: worker replies to employer",
+    "request": {
+      "text": "Ujumbe mpya kutoka kwa Amina Hassan\nAsante, nitafika kesho asubuhi saa mbili.",
+      "type": "message",
+      "recipient_role": "business",
+      "sender_role": "worker",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": null
+    },
+    "expected": {
+      "priority": "medium",
+      "priority_confidence": 0.7,
+      "is_spam": false,
+      "spam_score": 0.02,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "direct_message",
+          "weight": 0.7
+        }
+      ]
+    }
+  },
+  {
+    "name": "Message with a phone number (not spam)",
+    "request": {
+      "text": "New message from Lakeside Builders\nPlease call me on 0712 345 678 about the job.",
+      "type": "message",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": null
+    },
+    "expected": {
+      "priority": "medium",
+      "priority_confidence": 0.7,
+      "is_spam": false,
+      "spam_score": 0.02,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "direct_message",
+          "weight": 0.7
+        }
+      ]
+    }
+  },
+  {
+    "name": "Admin announcement mentioning urgent alerts stays For later",
+    "request": {
+      "text": "New: choose how we contact you\nYou can now pick WhatsApp, SMS or email for urgent job alerts in Settings.",
+      "type": "announcement",
+      "recipient_role": "worker",
+      "sender_role": "admin",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": null
+    },
+    "expected": {
+      "priority": "low",
+      "priority_confidence": 0.8,
+      "is_spam": false,
+      "spam_score": 0.0,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "announcement",
+          "weight": 0.8
+        },
+        {
+          "feature": "spam:trusted_sender",
+          "weight": 0.0
+        }
+      ]
+    }
+  },
+  {
+    "name": "Admin warning about fees is trusted (not spam)",
+    "request": {
+      "text": "Stay safe\nReminder: KaziForce never asks for a registration fee!!! Report anyone who does.",
+      "type": "announcement",
+      "recipient_role": "worker",
+      "sender_role": "admin",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": null
+    },
+    "expected": {
+      "priority": "low",
+      "priority_confidence": 0.8,
+      "is_spam": false,
+      "spam_score": 0.0,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "announcement",
+          "weight": 0.8
+        },
+        {
+          "feature": "spam:trusted_sender",
+          "weight": 0.0
+        }
+      ]
+    }
+  },
+  {
+    "name": "Scam: registration fee to secure a job",
+    "request": {
+      "text": "New message from Pwani Events\nCONGRATULATIONS!!! You are hired. Send KSh 500 registration fee to secure your job NOW!!!",
+      "type": "message",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": null
+    },
+    "expected": {
+      "priority": "medium",
+      "priority_confidence": 0.7,
+      "is_spam": true,
+      "spam_score": 1.0,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "direct_message",
+          "weight": 0.7
+        },
+        {
+          "feature": "spam:payment_request:registration fee,send ksh",
+          "weight": 0.6
+        },
+        {
+          "feature": "spam:blocked_keyword:congratulations you are hired",
+          "weight": 0.4
+        },
+        {
+          "feature": "spam:excessive_punctuation",
+          "weight": 0.15
+        }
+      ]
+    }
+  },
+  {
+    "name": "Kiswahili scam: send money via M-Pesa",
+    "request": {
+      "text": "Ujumbe mpya kutoka kwa Kazi Bora\nHongera! Umepata kazi ya uhakika. Tuma pesa KSh 300 kwa M-Pesa kama ada ya usajili leo.",
+      "type": "message",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": null
+    },
+    "expected": {
+      "priority": "urgent",
+      "priority_confidence": 0.75,
+      "is_spam": true,
+      "spam_score": 1.0,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "urgent_words:leo",
+          "weight": 0.75
+        },
+        {
+          "feature": "spam:payment_request:ada ya usajili,tuma pesa",
+          "weight": 0.6
+        },
+        {
+          "feature": "spam:blocked_keyword:kazi ya uhakika",
+          "weight": 0.4
+        }
+      ]
+    }
+  },
+  {
+    "name": "Kiswahili scam: lottery",
+    "request": {
+      "text": "Ujumbe mpya kutoka kwa Bahati Jobs\nUmeshinda bahati nasibu ya KSh 50,000! Tuma ksh 200 kupokea.",
+      "type": "message",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": null
+    },
+    "expected": {
+      "priority": "medium",
+      "priority_confidence": 0.7,
+      "is_spam": true,
+      "spam_score": 1.0,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "direct_message",
+          "weight": 0.7
+        },
+        {
+          "feature": "spam:payment_request:tuma ksh",
+          "weight": 0.6
+        },
+        {
+          "feature": "spam:blocked_keyword:umeshinda,bahati nasibu",
+          "weight": 0.4
+        }
+      ]
+    }
+  },
+  {
+    "name": "Scam: selected + shortened link",
+    "request": {
+      "text": "New message from Top Jobs\nYou have been selected for a job! Confirm at https://bit.ly/3xYz9",
+      "type": "message",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": null
+    },
+    "expected": {
+      "priority": "medium",
+      "priority_confidence": 0.7,
+      "is_spam": true,
+      "spam_score": 0.87,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "direct_message",
+          "weight": 0.7
+        },
+        {
+          "feature": "spam:blocked_keyword:you have been selected",
+          "weight": 0.4
+        },
+        {
+          "feature": "spam:link_shortener",
+          "weight": 0.45
+        }
+      ]
+    }
+  },
+  {
+    "name": "Scam: processing fee + unknown website",
+    "request": {
+      "text": "New message from Fast Jobs\nPay KSh 1,000 processing fee at www.fast-jobs-kenya.com to get hired.",
+      "type": "message",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": null
+    },
+    "expected": {
+      "priority": "medium",
+      "priority_confidence": 0.7,
+      "is_spam": true,
+      "spam_score": 0.97,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "direct_message",
+          "weight": 0.7
+        },
+        {
+          "feature": "spam:payment_request:processing fee",
+          "weight": 0.6
+        },
+        {
+          "feature": "spam:suspicious_link",
+          "weight": 0.35
+        }
+      ]
+    }
+  },
+  {
+    "name": "Scam: shouting in capitals, guaranteed income",
+    "request": {
+      "text": "HIRING\nURGENT HIRING NOW APPLY IMMEDIATELY GUARANTEED INCOME",
+      "type": "job_alert",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": null
+    },
+    "expected": {
+      "priority": "urgent",
+      "priority_confidence": 0.8,
+      "is_spam": true,
+      "spam_score": 0.62,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "urgent_words:urgent,immediately",
+          "weight": 0.8
+        },
+        {
+          "feature": "spam:blocked_keyword:guaranteed income",
+          "weight": 0.4
+        },
+        {
+          "feature": "spam:all_capitals",
+          "weight": 0.2
+        }
+      ]
+    }
+  },
+  {
+    "name": "A single shortened link alone is not enough for spam",
+    "request": {
+      "text": "New message from Pwani Events\nHere is the map to our office: https://bit.ly/shop-map",
+      "type": "message",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": null
+    },
+    "expected": {
+      "priority": "medium",
+      "priority_confidence": 0.7,
+      "is_spam": false,
+      "spam_score": 0.47,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "direct_message",
+          "weight": 0.7
+        },
+        {
+          "feature": "spam:link_shortener",
+          "weight": 0.45
+        }
+      ]
+    }
+  },
+  {
+    "name": "A KaziForce link is trusted",
+    "request": {
+      "text": "New message from Mwangi Logistics\nSee the job details at https://kaziforce.co.ke/jobs/123",
+      "type": "message",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-02T09:00:00+03:00",
+      "deadline_minutes": null
+    },
+    "expected": {
+      "priority": "medium",
+      "priority_confidence": 0.7,
+      "is_spam": false,
+      "spam_score": 0.02,
+      "model_version": "rules-v0",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "direct_message",
+          "weight": 0.7
+        }
+      ]
+    }
+  }
+]

@@ -70,6 +70,12 @@ Starts the Docker services, then three programs together, each with its own colo
 terminal: `api` (the backend), `worker` (turns activity into alerts and sends them live) and `web`
 (the website). Stop with **Ctrl + C**. To also stop the Docker services: `npm run stop`.
 
+**Try the spam filter and priorities:** as the employer, send the worker
+`CONGRATULATIONS!!! Send KSh 500 registration fee to secure your job` — it is blocked and never
+reaches the worker. "Can you start tonight?" arrives as **Urgent**; a normal message as
+**Important**. To ask the ML service directly: http://localhost:8000/docs (try `POST /predict`).
+Latency benchmark: `ml-service/.venv/Scripts/python ml-service/scripts/benchmark.py`.
+
 **Try live alerts:** log in as `worker1@example.com` in one browser window and as
 `employer1@example.com` in a private window. When the employer sends that worker a message (or
 posts a job in the worker's area), the alert appears on the worker's screen without refreshing.
@@ -162,8 +168,11 @@ Run from the project root:
   Update npm, then delete the `node_modules` folders and run `npm ci`. If `package-lock.json`
   shows as changed in GitHub Desktop, discard that change first.
 
-- **"port is already allocated"** when Docker starts: another program uses that port. Change
-  the port in the root `.env` (and `DATABASE_URL` in `backend/.env` if it is the Postgres port).
+- **"port is already allocated"** when Docker starts: another program (often another project's
+  Docker containers) uses that port. Change the port in the root `.env`, and the matching setting
+  in `backend/.env`: `DATABASE_URL` for `POSTGRES_PORT`, `SMTP_PORT` for `MAILPIT_SMTP_PORT`. For
+  example `MAILPIT_WEB_PORT=8026` and `MAILPIT_SMTP_PORT=1026` (then read mail at
+  http://localhost:8026).
 - **"Cannot reach the server"** on the website: the backend is not running. Start it with
   `npm run dev` and check the terminal for errors.
 - **New alerts do not appear live:** check the `worker` lines in the terminal for errors. After

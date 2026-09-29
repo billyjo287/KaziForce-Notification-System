@@ -272,7 +272,9 @@ async function main() {
     data: {
       version: 'rules-v0',
       algorithm: 'rules',
-      description: 'Rule-based classifier used until the trained models are ready.',
+      description:
+        'Rule-based classifier (PRD section 5): deadline, keywords and application status for ' +
+        'priority; payment requests, scam phrases, links, capitals and punctuation for spam.',
       isActive: true,
       deployedAt: ago(7 * DAY),
     },

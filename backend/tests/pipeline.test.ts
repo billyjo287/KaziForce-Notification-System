@@ -1,5 +1,6 @@
-// Phase 3 end to end, in one process: REST API + Socket.IO + outbox relay + BullMQ worker, on the
-// test database and the "kf-test" queue prefix. Measures and prints in-app latency (NFR-1).
+// Phases 3 and 4 end to end, in one process: REST API + Socket.IO + outbox relay + BullMQ worker
+// + a stand-in ML service, on the test database and the "kf-test" queue prefix. Measures and
+// prints in-app latency (NFR-1).
 import { createServer, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { Redis } from 'ioredis';
@@ -20,9 +21,11 @@ import { redis } from '../src/lib/redis.js';
 import { signAccessToken } from '../src/lib/tokens.js';
 import type { SerializedNotification } from '../src/modules/notifications/serialize.js';
 import { validateNotifications } from '../src/pipeline/createNotifications.js';
+import { createModelRegistry } from '../src/pipeline/modelRegistry.js';
 import { startNotificationWorker } from '../src/pipeline/notificationWorker.js';
 import { startOutboxRelay, type OutboxRelay } from '../src/pipeline/outboxRelay.js';
 import { attachRealtime } from '../src/realtime/socketServer.js';
+import { startFakeMlService } from './fakeMlService.js';
 import { auth, login, testApp, uniqueEmail } from './helpers.js';
 
 const app = testApp();
@@ -34,6 +37,7 @@ let connection: Redis;
 let queue: NotificationQueue;
 let worker: ReturnType<typeof startNotificationWorker>;
 let relay: OutboxRelay;
+let ml: Awaited<ReturnType<typeof startFakeMlService>>;
 const sockets: Socket[] = [];
 
 let employerToken: string;
@@ -59,12 +63,15 @@ beforeAll(async () => {
   });
   connection = queueConnection();
   queue = createNotificationQueue(connection);
+  ml = await startFakeMlService();
   worker = startNotificationWorker({
     prisma,
     connection,
     publisher: redis,
     logger,
     prefix: env.QUEUE_PREFIX,
+    mlServiceUrl: ml.url,
+    mlTimeoutMs: 500,
   });
   relay = startOutboxRelay({ prisma, queue, databaseUrl: env.DATABASE_URL, logger });
   await relay.ready;
@@ -87,6 +94,7 @@ afterAll(async () => {
   await worker.close();
   await queue.close();
   await realtime.close();
+  await ml.close();
   await Promise.allSettled([connection.quit(), subscriber.quit(), redis.quit()]);
   await prisma.$disconnect();
 });
@@ -229,7 +237,8 @@ describe('business posts a job -> worker receives it live', () => {
 
     expect(alert).toMatchObject({
       title: 'Evening parcel sorters',
-      priority: 'medium',
+      // An ordinary job two days away: "For later" (rules-v0).
+      priority: 'low',
       type: 'job_alert',
       link: `/worker/jobs/${res.body.job.id}`,
       location: 'Westlands',
@@ -238,12 +247,20 @@ describe('business posts a job -> worker receives it live', () => {
     // Kiswahili speakers get Kiswahili.
     expect((await arrivedSw).body).toContain('Omba kabla ya');
 
-    // Saved as the pipeline says: classified MEDIUM, not spam, sent, with an in-app delivery row.
+    // Saved as the pipeline says: classified by rules-v0, not spam, sent, with an in-app delivery.
     const saved = await prisma.notification.findUniqueOrThrow({
       where: { id: alert.id },
       include: { deliveries: true },
     });
-    expect(saved).toMatchObject({ status: 'sent', predictedPriority: 'medium', isSpam: false });
+    expect(saved).toMatchObject({
+      status: 'sent',
+      predictedPriority: 'low',
+      isSpam: false,
+      spamScore: 0.02,
+      modelVersion: 'rules-v0',
+      predictionSource: 'rules',
+      explanation: [{ feature: 'general_job_alert', weight: 0.6 }],
+    });
     expect(saved.deliveries).toHaveLength(1);
     expect(saved.deliveries[0]).toMatchObject({ channel: 'in_app' });
     expect(saved.deliveries[0]!.sentAt).toBeInstanceOf(Date);
@@ -562,5 +579,137 @@ describe('input contract (DR-3)', () => {
     expect(ok).toHaveLength(0);
     expect(rejected).toHaveLength(4);
     expect(rejected[0]!.problems.join()).toContain('recipientId');
+  });
+});
+
+describe('Phase 4: priority and spam from /predict', () => {
+  /** A job with a worker who can message the employer (employer1 = Mwangi Logistics). */
+  async function conversation() {
+    const job = await prisma.job.create({
+      data: {
+        employerId,
+        title: 'Classifier test job',
+        description: 'Used to check priority and spam.',
+        locationId: kisumu,
+        skillId: painting,
+        deadline: inTwoDays(),
+      },
+    });
+    const worker = await makeUser('worker', { locationId: kisumu });
+    const application = await prisma.application.create({
+      data: { jobId: job.id, workerId: worker.user.id },
+    });
+    return { worker, application };
+  }
+
+  it('a job closing within the hour is Urgent', async () => {
+    const worker = await makeUser('worker', { locationId: westlands });
+    const socket = await openSocket(worker.token);
+    const arrived = nextNotification(socket, (n) => n.type === 'job_alert');
+    await request(app)
+      .post('/api/jobs')
+      .set(auth(employerToken))
+      .send({
+        title: 'Packers needed within the hour',
+        description: 'Pack parcels at our Westlands depot straight away.',
+        locationId: westlands,
+        skillId: delivery,
+        deadline: new Date(Date.now() + 45 * 60_000).toISOString(),
+      })
+      .expect(201);
+    expect(await arrived).toMatchObject({ priority: 'urgent' });
+  });
+
+  it('spam is blocked: never delivered, kept for admin review with its reasons', async () => {
+    const { worker, application } = await conversation();
+    const socket = await openSocket(worker.token);
+    let delivered = false;
+    socket.on('notification:new', () => (delivered = true));
+
+    const scam =
+      'CONGRATULATIONS!!! You are hired. Send KSh 500 registration fee to secure your job NOW!!!';
+    await request(app)
+      .post(`/api/conversations/${application.id}`)
+      .set(auth(employerToken))
+      .send({ body: scam })
+      .expect(201);
+
+    let saved;
+    await eventually(async () => {
+      saved = await prisma.notification.findFirstOrThrow({
+        where: { recipientId: worker.user.id, message: scam },
+        include: { deliveries: true },
+      });
+      expect(saved.status).toBe('blocked');
+    });
+    expect(saved).toMatchObject({
+      isSpam: true,
+      spamScore: 1,
+      modelVersion: 'rules-v0',
+      predictionSource: 'rules',
+      deliveries: [],
+    });
+    // Not in the worker's list, and never pushed live.
+    const list = await request(app).get('/api/notifications').set(auth(worker.token));
+    expect(list.body.items).toHaveLength(0);
+    await new Promise((r) => setTimeout(r, 200));
+    expect(delivered).toBe(false);
+
+    // In the admin's review list, with the rules that fired.
+    const review = await request(app).get('/api/admin/review/spam').set(auth(adminToken));
+    expect(review.status).toBe(200);
+    const item = review.body.items.find((i: { message: string }) => i.message === scam);
+    expect(item).toMatchObject({ spamScore: 1, sender: { name: 'Mwangi Logistics' } });
+    expect(item.explanation.map((e: { feature: string }) => e.feature)).toContain(
+      'spam:excessive_punctuation',
+    );
+    // Workers and employers cannot see it.
+    await request(app).get('/api/admin/review/spam').set(auth(worker.token)).expect(403);
+  });
+
+  it('if the ML service is too slow, the Node rules decide (rules_fallback), and nothing is lost', async () => {
+    const { worker, application } = await conversation();
+    const socket = await openSocket(worker.token);
+    ml.setMode('slow', 900);
+    try {
+      const arrived = nextNotification(socket, (n) => n.body === 'Can you start tonight at 6pm?');
+      await request(app)
+        .post(`/api/conversations/${application.id}`)
+        .set(auth(employerToken))
+        .send({ body: 'Can you start tonight at 6pm?' })
+        .expect(201);
+      const alert = await arrived;
+      expect(alert.priority).toBe('urgent');
+      const saved = await prisma.notification.findUniqueOrThrow({ where: { id: alert.id } });
+      expect(saved).toMatchObject({
+        predictionSource: 'rules_fallback',
+        modelVersion: 'rules-v0',
+        predictedPriority: 'urgent',
+        priorityConfidence: 0.75,
+      });
+    } finally {
+      ml.setMode('ok');
+    }
+  });
+
+  it('registers each model version in MLMetadata the first time it answers', async () => {
+    await prisma.mLMetadata.deleteMany();
+    const register = createModelRegistry(prisma);
+    await register('rules-v0');
+    expect(await prisma.mLMetadata.findMany({ where: { isActive: true } })).toMatchObject([
+      { version: 'rules-v0', algorithm: 'rules' },
+    ]);
+
+    // A trained model later (Phase 9) takes over as the active one; rules-v0 stays listed.
+    await register('ml-v1');
+    const all = await prisma.mLMetadata.findMany({ orderBy: { version: 'asc' } });
+    expect(all.map((m) => [m.version, m.isActive])).toEqual([
+      ['ml-v1', true],
+      ['rules-v0', false],
+    ]);
+
+    // Back to the state the other tests expect.
+    await prisma.mLMetadata.deleteMany({ where: { version: 'ml-v1' } });
+    await prisma.mLMetadata.update({ where: { version: 'rules-v0' }, data: { isActive: true } });
   });
 });

@@ -1,0 +1,117 @@
+{
+  "version": "rules-v0",
+  "about": "Rule-based classifier v0 (PRD section 5). Used by the ML service and, word for word, by the backend's fallback (backend/src/pipeline/rulesV0.ts; a test checks both copies are identical). Numbers are whole percentages so Python and JavaScript compute exactly the same results. Phrases are matched as whole words after lower-casing and replacing everything except a-z and 0-9 with spaces.",
+  "priority": {
+    "urgent_deadline_minutes": 60,
+    "urgent_deadline_confidence": 90,
+    "accepted_confidence": 85,
+    "urgent_words_confidence": 75,
+    "urgent_words_extra_per_word": 5,
+    "urgent_words_max_confidence": 90,
+    "urgent_words_skip_types": ["announcement"],
+    "urgent_words": [
+      "urgent",
+      "urgently",
+      "expires",
+      "expiring",
+      "today",
+      "tonight",
+      "action required",
+      "immediately",
+      "asap",
+      "right now",
+      "haraka",
+      "dharura",
+      "leo",
+      "usiku huu",
+      "sasa hivi",
+      "mara moja",
+      "inaisha",
+      "muda unaisha"
+    ],
+    "accepted_phrases": [
+      "accepted your application",
+      "application was accepted",
+      "you got the job",
+      "wamekubali ombi",
+      "ombi lako limekubaliwa",
+      "umepata kazi"
+    ],
+    "by_type": {
+      "message": {
+        "priority": "medium",
+        "confidence": 70,
+        "feature": "direct_message"
+      },
+      "status_update": {
+        "priority": "medium",
+        "confidence": 70,
+        "feature": "application_update"
+      },
+      "job_alert": {
+        "priority": "low",
+        "confidence": 60,
+        "feature": "general_job_alert"
+      },
+      "announcement": {
+        "priority": "low",
+        "confidence": 80,
+        "feature": "announcement"
+      }
+    }
+  },
+  "spam": {
+    "threshold": 50,
+    "base_score": 2,
+    "trusted_senders": ["admin", "system"],
+    "payment_request_weight": 60,
+    "payment_phrases": [
+      "registration fee",
+      "processing fee",
+      "application fee",
+      "training fee",
+      "security fee",
+      "pay a fee",
+      "send money",
+      "send ksh",
+      "deposit ksh",
+      "send to till",
+      "paybill",
+      "m pesa to",
+      "mpesa to",
+      "ada ya usajili",
+      "ada ya maombi",
+      "lipa ada",
+      "tuma pesa",
+      "tuma ksh",
+      "tuma kwa mpesa",
+      "tuma kwa m pesa"
+    ],
+    "blocked_keyword_weight": 40,
+    "blocked_keywords": [
+      "congratulations you are hired",
+      "you have won",
+      "you have been selected",
+      "lottery",
+      "guaranteed job",
+      "guaranteed income",
+      "double your money",
+      "investment opportunity",
+      "bitcoin",
+      "crypto",
+      "umeshinda",
+      "bahati nasibu",
+      "kazi ya uhakika",
+      "pesa ya haraka"
+    ],
+    "suspicious_link_weight": 35,
+    "link_shortener_weight": 45,
+    "link_shorteners": ["bit.ly", "tinyurl.com", "t.co", "goo.gl", "cutt.ly", "is.gd", "rb.gy"],
+    "trusted_link_domains": ["kaziforce"],
+    "all_caps_weight": 20,
+    "all_caps_min_letters": 12,
+    "all_caps_percent": 60,
+    "punctuation_weight": 15,
+    "punctuation_min_exclamations": 3
+  }
+}

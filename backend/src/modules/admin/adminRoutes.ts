@@ -232,6 +232,48 @@ export function adminRoutes() {
     res.json({ ok: true });
   });
 
+  // ---------- Spam review (PRD FR-3; the page to release or confirm arrives in Phase 7) ----------
+  // Notifications the classifier blocked as spam and no admin has looked at yet, newest first.
+  router.get('/review/spam', async (req, res) => {
+    const { page } = parse(z.object({ page: pageQuery }), req.query);
+    const where = {
+      status: 'blocked',
+      correctedSpam: null,
+    } satisfies Prisma.NotificationWhereInput;
+    const [items, total] = await Promise.all([
+      prisma.notification.findMany({
+        where,
+        include: {
+          sender: { select: { id: true, name: true, companyName: true } },
+          recipient: { select: { id: true, name: true } },
+        },
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * PAGE_SIZE,
+        take: PAGE_SIZE,
+      }),
+      prisma.notification.count({ where }),
+    ]);
+    res.json({
+      items: items.map((n) => ({
+        id: n.id,
+        type: n.type,
+        title: n.title,
+        message: n.message,
+        sender: n.sender ? { id: n.sender.id, name: n.sender.companyName ?? n.sender.name } : null,
+        recipient: { id: n.recipient.id, name: n.recipient.name },
+        spamScore: n.spamScore,
+        predictedPriority: n.predictedPriority,
+        modelVersion: n.modelVersion,
+        predictionSource: n.predictionSource,
+        explanation: n.explanation,
+        createdAt: n.createdAt.toISOString(),
+      })),
+      total,
+      page,
+      pageSize: PAGE_SIZE,
+    });
+  });
+
   // ---------- Announcements (PRD FR-2.4; the page to write them arrives in Phase 7) ----------
   router.post('/announcements', async (req, res) => {
     const admin = currentUser(req);
