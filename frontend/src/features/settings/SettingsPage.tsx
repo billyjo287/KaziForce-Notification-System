@@ -11,6 +11,7 @@ import { Select } from '../../components/ui/Select';
 import { Switch } from '../../components/ui/Switch';
 import { LANGUAGES, type Language } from '../../i18n';
 import { useLogOut } from '../../lib/useLogOut';
+import { ChannelSuggestionCard } from './ChannelSuggestionCard';
 import { usePageTitle } from '../../lib/usePageTitle';
 import { sidePath, useAuth } from '../../stores/auth';
 import { useSettings, type TextSize, type Theme } from '../../stores/settings';
@@ -38,6 +39,8 @@ export function SettingsPage() {
   return (
     <div className="max-w-2xl">
       <h1 className="mb-6 text-3xl font-bold">{t('settings.title')}</h1>
+
+      <ChannelSuggestionCard enabled={!!user && user.role !== 'admin'} />
 
       {user && user.role !== 'admin' && (
         <Link

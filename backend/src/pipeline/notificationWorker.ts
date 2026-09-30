@@ -2,14 +2,15 @@
 //   QUEUED -> processing -> classify (ML service /predict, or the same rules in Node if it does
 //   not answer within 500 ms) -> spam? BLOCKED (never delivered; waits for admin review)
 //          -> in-app delivery: DeliveryLog row + live push to the user's Socket.IO room -> SENT
-// Phase 5 adds the channel router and one job per external channel after the in-app step.
+//          -> external channels (channels/delivery.ts): WhatsApp / SMS / email by priority and
+//             the person's preferences, with the urgent safety net.
 import { Worker } from 'bullmq';
 import type { Redis } from 'ioredis';
 import type { Logger } from 'pino';
 import type { PrismaClient } from '../generated/prisma/client.js';
 import { NOTIFICATION_QUEUE, type ProcessJobData } from '../lib/queue.js';
 import { notificationInclude, serializeNotification } from '../modules/notifications/serialize.js';
-import { publish } from '../realtime/bus.js';
+import { InAppAdapter } from '../channels/InAppAdapter.js';
 import { classify } from './classify.js';
 import { createModelRegistry } from './modelRegistry.js';
 
@@ -24,6 +25,8 @@ export interface WorkerOptions {
   /** Where the ML service runs, and how long to wait for /predict before using the Node rules. */
   mlServiceUrl: string;
   mlTimeoutMs: number;
+  /** Plans and queues the external channels (channels/delivery.ts). Tests may leave it out. */
+  dispatch?: (notificationId: string) => Promise<unknown>;
   concurrency?: number;
 }
 
@@ -35,8 +38,10 @@ export function startNotificationWorker({
   prefix,
   mlServiceUrl,
   mlTimeoutMs,
+  dispatch,
   concurrency = 20,
 }: WorkerOptions) {
+  const inApp = new InAppAdapter({ mode: 'live', logger }, publisher, prefix);
   const registerModel = createModelRegistry(prisma);
   // Log "ML service unavailable" once per outage, not once per notification.
   let mlDown = false;
@@ -97,18 +102,17 @@ export function startNotificationWorker({
     ]);
 
     try {
-      await publish(
-        publisher,
-        {
-          kind: 'notification',
-          userId: notification.recipientId,
-          notification: serializeNotification(notification),
-        },
-        prefix,
-      );
+      await inApp.push(notification.recipientId, serializeNotification(notification));
     } catch (error) {
       // Already saved as sent: the app fetches it on its next load or reconnect.
       logger.warn({ err: error, notificationId: id }, 'Live push failed');
+    }
+    if (dispatch) {
+      try {
+        await dispatch(id);
+      } catch (error) {
+        logger.error({ err: error, notificationId: id }, 'Could not queue external channels');
+      }
     }
     logger.debug(
       { notificationId: id, ms: Date.now() - notification.createdAt.getTime() },

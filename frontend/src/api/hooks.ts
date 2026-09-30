@@ -8,6 +8,7 @@ import type {
   AdminUserRow,
   Applicant,
   AuditEntry,
+  ChannelSuggestion,
   ChatMessage,
   Conversation,
   ExternalChannel,
@@ -66,6 +67,29 @@ export const useUpdateLanguage = () =>
     async (language: 'en' | 'sw') =>
       (await api.patch<{ user: User }>('/me/language', { language })).data,
   );
+
+/** FR-4b: a one-time suggestion to change the first channel (null when there is none). */
+export const useChannelSuggestion = (enabled: boolean) =>
+  useQuery({
+    queryKey: ['channelSuggestion'],
+    queryFn: async () =>
+      (await api.get<{ suggestion: ChannelSuggestion | null }>('/me/channel-suggestion')).data
+        .suggestion,
+    enabled,
+  });
+
+export function useAnswerChannelSuggestion() {
+  const client = useQueryClient();
+  const setUser = useAuth((s) => s.setUser);
+  return useMutation({
+    mutationFn: async (accept: boolean) =>
+      (await api.post<{ user: User }>('/me/channel-suggestion', { accept })).data,
+    onSuccess: ({ user }) => {
+      setUser(user);
+      client.setQueryData(['channelSuggestion'], null);
+    },
+  });
+}
 
 export const useSendPhoneCode = () =>
   useMutation({

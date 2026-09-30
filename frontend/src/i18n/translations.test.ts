@@ -3,6 +3,8 @@ import en from './locales/en.json';
 import sw from './locales/sw.json';
 import adminEn from './locales/admin.en.json';
 import adminSw from './locales/admin.sw.json';
+import suggestionEn from './locales/suggestion.en.json';
+import suggestionSw from './locales/suggestion.sw.json';
 import uiKitEn from './locales/uiKit.en.json';
 import uiKitSw from './locales/uiKit.sw.json';
 
@@ -19,6 +21,7 @@ describe('translations', () => {
     expect(keys(sw).sort()).toEqual(keys(en).sort());
     expect(keys(uiKitSw).sort()).toEqual(keys(uiKitEn).sort());
     expect(keys(adminSw).sort()).toEqual(keys(adminEn).sort());
+    expect(keys(suggestionSw).sort()).toEqual(keys(suggestionEn).sort());
   });
 
   it('no Kiswahili text is empty', () => {

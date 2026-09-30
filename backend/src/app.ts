@@ -18,6 +18,7 @@ import { lookupRoutes } from './modules/marketplace/lookupRoutes.js';
 import { messageRoutes } from './modules/marketplace/messageRoutes.js';
 import { meRoutes } from './modules/me/meRoutes.js';
 import { notificationRoutes } from './modules/notifications/notificationRoutes.js';
+import { linkRoutes, webhookRoutes } from './modules/webhooks/webhookRoutes.js';
 import { healthRouter, type HealthCheck } from './routes/health.js';
 
 export interface AppOptions {
@@ -41,6 +42,9 @@ export function createApp({ frontendOrigin, healthChecks, logger, rateLimits }: 
   if (logger) app.use(pinoHttp({ logger }));
 
   app.use(healthRouter(healthChecks));
+  // Tracked links in SMS / WhatsApp / email, and the providers' delivery reports.
+  app.use(linkRoutes());
+  app.use('/webhooks', webhookRoutes());
 
   const api = Router();
   api.use('/auth', authRoutes(limits));

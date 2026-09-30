@@ -1,5 +1,8 @@
-// The BullMQ job queue (stored in Redis). One queue for now, "notifications", with one kind of
-// job, "notification.process". Phase 5 adds one job per channel.
+// The BullMQ job queues (stored in Redis):
+//   notifications     "notification.process": classify, deliver in-app, plan external channels
+//   channel-<name>    one queue per external channel (whatsapp, sms, email): one send each,
+//                     3 tries with exponential backoff, one DeliveryLog row per try
+//   escalation        "escalation.check" jobs, delayed until the urgent escalation window ends
 import { Queue } from 'bullmq';
 import { Redis } from 'ioredis';
 import { env } from '../config/env.js';
@@ -46,4 +49,45 @@ export async function enqueueNotifications(queue: NotificationQueue, ids: string
       opts: { jobId: notificationId },
     })),
   );
+}
+
+export const channelQueueName = (channel: string) => `channel-${channel}`;
+export const ESCALATION_QUEUE = 'escalation';
+export const ESCALATION_JOB = 'escalation.check';
+
+export interface ChannelJobData {
+  notificationId: string;
+  channel: string;
+  /** Sent because the first choice failed or was not opened in time (the safety net). */
+  isEscalation: boolean;
+}
+
+export interface EscalationJobData {
+  notificationId: string;
+  /** "window": the escalation window ended; "failed": a provider reported a failed delivery. */
+  reason: 'window' | 'failed';
+}
+
+let apiConnection: Redis | null = null;
+let apiEscalationQueue: Queue<EscalationJobData> | null = null;
+
+/** For the API process (delivery reports): asks the worker to escalate at once. */
+export async function requestEscalation(notificationId: string, prefix = env.QUEUE_PREFIX) {
+  apiConnection ??= queueConnection();
+  apiEscalationQueue ??= new Queue<EscalationJobData>(ESCALATION_QUEUE, {
+    connection: apiConnection,
+    prefix,
+  });
+  await apiEscalationQueue.add(
+    ESCALATION_JOB,
+    { notificationId, reason: 'failed' },
+    { jobId: `${notificationId}-failed`, removeOnComplete: 1000, removeOnFail: 5000 },
+  );
+}
+
+export async function closeApiQueues() {
+  await apiEscalationQueue?.close();
+  await apiConnection?.quit();
+  apiEscalationQueue = null;
+  apiConnection = null;
 }

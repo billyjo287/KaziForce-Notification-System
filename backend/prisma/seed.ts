@@ -495,6 +495,49 @@ async function main() {
     },
   });
 
+  // Faith: five past urgent alerts where WhatsApp went unread but she opened the SMS within
+  // minutes. Logging in as worker5 shows the one-time suggestion in Settings (PRD FR-4b):
+  // "You usually open SMS fastest. Make SMS your first choice?"
+  for (let i = 0; i < 5; i++) {
+    const sentAt = ago((8 + i) * DAY);
+    const at = (minutes: number) => new Date(sentAt.getTime() + minutes * MINUTE);
+    await prisma.notification.create({
+      data: {
+        ...classified,
+        recipientId: faith.id,
+        recipientRole: 'worker',
+        senderId: events.id,
+        senderRole: 'business',
+        type: 'job_alert',
+        category: 'new_job',
+        title: 'Cleaners needed today',
+        message: 'Haraka. Pwani Events inahitaji Usafi huko Kilimani. Omba kabla ya saa nane.',
+        predictedPriority: 'urgent',
+        priorityConfidence: 0.75,
+        spamScore: 0.02,
+        escalatedAt: at(10),
+        escalatedTo: 'sms',
+        readAt: at(10 + 2 + i),
+        createdAt: sentAt,
+        deliveries: {
+          create: [
+            inApp(sentAt),
+            { channel: 'whatsapp', status: 'delivered', sentAt, deliveredAt: sentAt },
+            {
+              channel: 'sms',
+              status: 'delivered',
+              isEscalation: true,
+              sentAt: at(10),
+              deliveredAt: at(10),
+              openedAt: at(10 + 2 + i),
+              clickedAt: at(10 + 2 + i),
+            },
+          ],
+        },
+      },
+    });
+  }
+
   const counts = {
     users: await prisma.user.count(),
     locations: await prisma.location.count(),

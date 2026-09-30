@@ -13,6 +13,12 @@ export default defineConfig({
       DATABASE_URL: testDatabase,
       LOG_LEVEL: 'fatal',
       QUEUE_PREFIX: 'kf-test',
+      CHANNEL_MODE: 'mock',
+      PUBLIC_API_URL: 'http://localhost:4000',
+      // Made-up secrets so the webhook checks can be tested.
+      TWILIO_AUTH_TOKEN: 'test-twilio-auth-token',
+      AFRICASTALKING_WEBHOOK_SECRET: 'test-africastalking-secret',
+      MOCK_FAIL_CHANNELS: '',
     },
     globalSetup: ['./tests/globalSetup.ts'],
     // One shared test database: run the files one after another.

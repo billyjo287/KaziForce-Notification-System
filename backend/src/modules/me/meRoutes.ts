@@ -2,6 +2,7 @@
 // answers (PRD FR-1, FR-5; onboarding steps 2 and 3).
 import { Router } from 'express';
 import { z } from 'zod';
+import { channelSuggestion } from '../../channels/suggestion.js';
 import { env } from '../../config/env.js';
 import { badRequest, conflict, forbidden } from '../../lib/httpError.js';
 import { prisma } from '../../lib/prisma.js';
@@ -193,6 +194,33 @@ export function meRoutes(limits: RateLimiters) {
             dailySummary: PRESETS[preset].dailySummary,
           },
         },
+      },
+    });
+    await sendMe(res, me.id);
+  });
+
+  // FR-4b: "You usually open SMS fastest. Make SMS your first choice?" (shown once).
+  router.get('/channel-suggestion', async (req, res) => {
+    res.json({ suggestion: await channelSuggestion(prisma, currentUser(req).id) });
+  });
+
+  // The person's answer. Only "yes" changes the channel order; either answer hides it for good.
+  router.post('/channel-suggestion', async (req, res) => {
+    const me = currentUser(req);
+    const { accept } = parse(z.object({ accept: z.boolean() }), req.body);
+    const suggestion = await channelSuggestion(prisma, me.id);
+    if (!suggestion) throw conflict('no_suggestion', 'There is no suggestion to answer.');
+    const preference = await prisma.userPreference.findUniqueOrThrow({ where: { userId: me.id } });
+    await prisma.userPreference.update({
+      where: { userId: me.id },
+      data: {
+        channelSuggestionShownAt: new Date(),
+        ...(accept && {
+          channelOrder: [
+            suggestion.channel,
+            ...preference.channelOrder.filter((c) => c !== suggestion.channel),
+          ],
+        }),
       },
     });
     await sendMe(res, me.id);

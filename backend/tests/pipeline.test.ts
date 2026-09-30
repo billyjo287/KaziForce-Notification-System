@@ -25,6 +25,8 @@ import { createModelRegistry } from '../src/pipeline/modelRegistry.js';
 import { startNotificationWorker } from '../src/pipeline/notificationWorker.js';
 import { startOutboxRelay, type OutboxRelay } from '../src/pipeline/outboxRelay.js';
 import { attachRealtime } from '../src/realtime/socketServer.js';
+import { startDelivery, type Delivery } from '../src/channels/delivery.js';
+import { createAdapters } from '../src/channels/index.js';
 import { startFakeMlService } from './fakeMlService.js';
 import { auth, login, testApp, uniqueEmail } from './helpers.js';
 
@@ -38,6 +40,8 @@ let queue: NotificationQueue;
 let worker: ReturnType<typeof startNotificationWorker>;
 let relay: OutboxRelay;
 let ml: Awaited<ReturnType<typeof startFakeMlService>>;
+let channelDelivery: Delivery;
+const deliveryConnection = queueConnection();
 const sockets: Socket[] = [];
 
 let employerToken: string;
@@ -64,6 +68,18 @@ beforeAll(async () => {
   connection = queueConnection();
   queue = createNotificationQueue(connection);
   ml = await startFakeMlService();
+  // External channels in mock mode: nothing leaves the computer; every send is logged.
+  channelDelivery = startDelivery({
+    prisma,
+    connection: deliveryConnection,
+    prefix: env.QUEUE_PREFIX,
+    logger,
+    adapters: createAdapters({ mode: 'mock', logger }),
+    publicApiUrl: env.PUBLIC_API_URL,
+    publicAppUrl: env.PUBLIC_APP_URL,
+    windowMinutes: 10,
+    retryDelayMs: 20,
+  });
   worker = startNotificationWorker({
     prisma,
     connection,
@@ -72,6 +88,7 @@ beforeAll(async () => {
     prefix: env.QUEUE_PREFIX,
     mlServiceUrl: ml.url,
     mlTimeoutMs: 500,
+    dispatch: channelDelivery.dispatch,
   });
   relay = startOutboxRelay({ prisma, queue, databaseUrl: env.DATABASE_URL, logger });
   await relay.ready;
@@ -95,7 +112,13 @@ afterAll(async () => {
   await queue.close();
   await realtime.close();
   await ml.close();
-  await Promise.allSettled([connection.quit(), subscriber.quit(), redis.quit()]);
+  await channelDelivery.close();
+  await Promise.allSettled([
+    connection.quit(),
+    deliveryConnection.quit(),
+    subscriber.quit(),
+    redis.quit(),
+  ]);
   await prisma.$disconnect();
 });
 
@@ -104,7 +127,13 @@ afterAll(async () => {
 /** A new user straight in the database, with a login token (no password needed). */
 async function makeUser(
   role: Role,
-  options: { locationId?: string; skillIds?: string[]; language?: 'en' | 'sw' } = {},
+  options: {
+    locationId?: string;
+    skillIds?: string[];
+    language?: 'en' | 'sw';
+    /** A verified WhatsApp number with consent (for WhatsApp / SMS). */
+    phone?: string;
+  } = {},
 ) {
   const user = await prisma.user.create({
     data: {
@@ -115,6 +144,23 @@ async function makeUser(
       language: options.language ?? 'en',
       locationId: options.locationId,
       skills: options.skillIds ? { connect: options.skillIds.map((id) => ({ id })) } : undefined,
+      ...(options.phone && {
+        phone: options.phone,
+        phoneVerified: true,
+        consentSmsWhatsapp: true,
+        usesWhatsApp: true,
+        preference: {
+          create: {
+            channelOrder: ['whatsapp', 'sms', 'email'],
+            channelSettings: {
+              whatsapp: { enabled: true, threshold: 'urgent_only' },
+              sms: { enabled: true, threshold: 'urgent_only' },
+              email: { enabled: true, threshold: 'urgent_and_important' },
+            },
+            quietHours: { enabled: false, start: '21:00', end: '07:00' },
+          },
+        },
+      }),
     },
   });
   return { user, token: signAccessToken(user) };
@@ -711,5 +757,51 @@ describe('Phase 4: priority and spam from /predict', () => {
     // Back to the state the other tests expect.
     await prisma.mLMetadata.deleteMany({ where: { version: 'ml-v1' } });
     await prisma.mLMetadata.update({ where: { version: 'rules-v0' }, data: { isActive: true } });
+  });
+});
+
+describe('Phase 5: urgent alerts reach the provider fast (NFR-1)', () => {
+  it('creation -> "accepted by provider" (WhatsApp, mock mode): 95% within 2 seconds', async () => {
+    const job = await prisma.job.create({
+      data: {
+        employerId,
+        title: 'Provider latency test job',
+        description: 'Used to measure urgent delivery speed.',
+        locationId: kisumu,
+        skillId: painting,
+        deadline: inTwoDays(),
+      },
+    });
+    const phone = `+2547${String(Date.now()).slice(-8)}`;
+    const worker = await makeUser('worker', { locationId: kisumu, phone });
+    const application = await prisma.application.create({
+      data: { jobId: job.id, workerId: worker.user.id },
+    });
+
+    const timings: number[] = [];
+    for (let i = 0; i < 20; i++) {
+      const body = `Can you start tonight at 6pm? (${i})`;
+      await request(app)
+        .post(`/api/conversations/${application.id}`)
+        .set(auth(employerToken))
+        .send({ body })
+        .expect(201);
+      await eventually(async () => {
+        const n = await prisma.notification.findFirstOrThrow({
+          where: { recipientId: worker.user.id, message: body },
+          include: { deliveries: { where: { channel: 'whatsapp', status: 'sent' } } },
+        });
+        expect(n.predictedPriority).toBe('urgent');
+        expect(n.deliveries).toHaveLength(1);
+        timings.push(n.deliveries[0]!.sentAt!.getTime() - n.createdAt.getTime());
+      });
+    }
+    const p95 = percentile(timings, 95);
+    console.log(
+      `Urgent alert, creation -> accepted by provider (WhatsApp, mock mode), 20 alerts: ` +
+        `median ${median(timings).toFixed(0)} ms, 95th percentile ${p95.toFixed(0)} ms, ` +
+        `slowest ${Math.max(...timings).toFixed(0)} ms`,
+    );
+    expect(p95).toBeLessThan(2000);
   });
 });

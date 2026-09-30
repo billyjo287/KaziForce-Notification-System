@@ -142,6 +142,10 @@ model User {
   suspendedReason       String?    @db.VarChar(500)
   // Set when the user asks to delete their account; a cleanup job deletes it within 30 days.
   deletionRequestedAt   DateTime?
+  // The person replied STOP (WhatsApp) or opted out with their network (SMS): that channel is
+  // switched off in their preferences and never used until they switch it back on.
+  whatsappOptedOutAt    DateTime?
+  smsOptedOutAt         DateTime?
   createdAt             DateTime   @default(now())
   updatedAt             DateTime   @updatedAt
 
@@ -343,11 +347,12 @@ model Notification {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  recipient   User          @relation("NotificationRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
-  sender      User?         @relation("NotificationSender", fields: [senderId], references: [id], onDelete: SetNull)
-  correctedBy User?         @relation("NotificationCorrector", fields: [correctedById], references: [id], onDelete: SetNull)
-  job         Job?          @relation(fields: [jobId], references: [id], onDelete: SetNull)
-  deliveries  DeliveryLog[]
+  recipient    User          @relation("NotificationRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  sender       User?         @relation("NotificationSender", fields: [senderId], references: [id], onDelete: SetNull)
+  correctedBy  User?         @relation("NotificationCorrector", fields: [correctedById], references: [id], onDelete: SetNull)
+  job          Job?          @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  deliveries   DeliveryLog[]
+  trackedLinks TrackedLink[]
 
   @@index([recipientId, createdAt])
   @@index([status])
@@ -378,6 +383,25 @@ model DeliveryLog {
   @@index([notificationId])
   @@index([channel, status, createdAt])
   @@index([providerMessageId])
+}
+
+// The short link in an SMS, WhatsApp message or email (/o/<token>). Opening it counts as
+// "opened" for that channel (stops the urgent escalation), then sends the person to the alert in
+// the app, where they must be logged in to see any details. One link per notification and channel.
+model TrackedLink {
+  id             String    @id @default(uuid()) @db.Uuid
+  // Short random code, e.g. "k7Qp2xZa" (keeps SMS under 160 characters)
+  token          String    @unique
+  notificationId String    @db.Uuid
+  channel        Channel
+  clickCount     Int       @default(0)
+  firstClickedAt DateTime?
+  expiresAt      DateTime
+  createdAt      DateTime  @default(now())
+
+  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+
+  @@unique([notificationId, channel])
 }
 
 // Registry of classifier versions ("rules-v0", "ml-v1", ...) with their evaluation metrics.

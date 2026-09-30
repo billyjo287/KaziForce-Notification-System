@@ -3,6 +3,15 @@
 export type Role = 'worker' | 'business' | 'admin';
 export type Language = 'en' | 'sw';
 export type ExternalChannel = 'whatsapp' | 'sms' | 'email';
+
+/** FR-4b: "You usually open SMS fastest. Make SMS your first choice?" */
+export interface ChannelSuggestion {
+  channel: ExternalChannel;
+  currentFirst: ExternalChannel;
+  alerts: number;
+  wins: number;
+  medianMinutes: number;
+}
 export type PresetName = 'recommended' | 'urgent_only' | 'everything';
 export type ApplicationStatus = 'received' | 'reviewed' | 'accepted' | 'rejected';
 

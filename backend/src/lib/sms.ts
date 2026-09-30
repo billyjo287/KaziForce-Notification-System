@@ -1,11 +1,11 @@
-// SMS for account codes. Phase 5 replaces this with the Africa's Talking channel adapter.
+// SMS for account codes (phone verification), through the SMS channel adapter (Africa's Talking).
 // In mock mode (the default) the message is only printed in the backend console.
-import { env } from '../config/env.js';
+// Sent in the background: an SMS problem is logged and never blocks the request.
+import { sharedAdapters } from '../channels/index.js';
 import { logger } from './logger.js';
 
 export function sendSms(to: string, text: string): void {
-  if (env.CHANNEL_MODE !== 'mock') {
-    logger.warn('Real SMS arrives in Phase 5; printing the message instead');
-  }
-  logger.info(`[mock SMS] to ${to}: ${text}`);
+  sharedAdapters()
+    .sms.sendText(to, text)
+    .catch((error: unknown) => logger.error({ err: error, to }, 'Account SMS failed'));
 }
