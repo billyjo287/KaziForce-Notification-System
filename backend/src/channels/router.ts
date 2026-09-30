@@ -1,15 +1,18 @@
-// The channel router (PRD FR-4, "first choice, with a safety net"). Pure decisions only: which
-// external channels to use now, and whether and when to check for escalation. No database, no
-// queues, so every rule is easy to test. In-app always happens first, separately.
+// The channel router (PRD FR-4, "first choice, with a safety net"; FR-5 quiet hours). Pure
+// decisions only: which external channels to use now, and whether and when to check for
+// escalation. No database, no queues, so every rule is easy to test. In-app always happens first,
+// separately, and is never held.
 //
-//   URGENT  the person's FIRST usable channel from channelOrder, now. If the alert is not opened
-//           within the escalation window (10 minutes, or half the time left before the job
-//           deadline if that is shorter), the NEXT usable channel. If the first channel fails
-//           after its retries, the next one at once. "Send urgent alerts on both": first and
-//           second together, no escalation.
+//   URGENT  the person's FIRST usable channel from channelOrder, now, even in quiet hours. If the
+//           alert is not opened within the escalation window (10 minutes, or half the time left
+//           before the job deadline if that is shorter), the NEXT usable channel. If the first
+//           channel fails after its retries, the next one at once. "Send urgent alerts on both":
+//           first and second together, no escalation.
 //   MEDIUM  every usable channel whose threshold includes "important" (email in the Recommended
-//           preset). No escalation. (Held during quiet hours: Phase 6.)
-//   LOW     in-app only (and the daily summary email, Phase 6).
+//           preset). No escalation.
+//   LOW     every usable channel set to "everything" (email in "Tell me everything"); in the
+//           other presets that is none, so LOW stays in the app and goes in the daily summary.
+//   Quiet hours: MEDIUM and LOW external sends are held until the quiet hours end.
 //
 // "Usable" = switched on in the person's settings, its threshold includes this priority, and the
 // channel can reach them (e.g. WhatsApp only for people who use it, with a verified number and
@@ -17,6 +20,7 @@
 // so a new channel needs no change here.
 import type { Channel, Priority } from '../generated/prisma/client.js';
 import { PRESETS, type ChannelSettings, type Threshold } from '../modules/me/presets.js';
+import { quietHoursEndAt, type QuietHours } from '../preferences/quietHours.js';
 import type { ChannelAdapter, Recipient } from './ChannelAdapter.js';
 
 export type ExternalChannel = Exclude<Channel, 'in_app'>;
@@ -25,6 +29,7 @@ export interface Preferences {
   channelOrder: Channel[];
   channelSettings: unknown;
   urgentOnBothChannels: boolean;
+  quietHours?: QuietHours;
 }
 
 export type Adapters = Partial<Record<ExternalChannel, ChannelAdapter>>;
@@ -87,6 +92,8 @@ export interface DeliveryPlan {
   now: ExternalChannel[];
   /** Urgent only: the channel to try if the alert is still unopened after `windowMs`. */
   escalation: { to: ExternalChannel; windowMs: number } | null;
+  /** Quiet hours: nothing is sent now; plan again at this time. */
+  heldUntil?: Date;
 }
 
 export function planDelivery(input: {
@@ -99,8 +106,15 @@ export function planDelivery(input: {
   windowMinutes: number;
 }): DeliveryPlan {
   const usable = usableChannels(input.priority, input.preferences, input.recipient, input.adapters);
-  if (input.priority === 'low') return { now: [], escalation: null };
-  if (input.priority === 'medium') return { now: usable, escalation: null };
+  if (input.priority !== 'urgent') {
+    const quietUntil =
+      usable.length > 0 && input.preferences.quietHours
+        ? quietHoursEndAt(input.preferences.quietHours, input.now)
+        : null;
+    return quietUntil
+      ? { now: [], escalation: null, heldUntil: quietUntil }
+      : { now: usable, escalation: null };
+  }
 
   const [first, second] = usable;
   if (!first) return { now: [], escalation: null };

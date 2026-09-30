@@ -1,0 +1,98 @@
+{
+  "settings": {
+    "suggestion": {
+      "title": "Unafungua {{channel}} haraka zaidi",
+      "body_one": "Kati ya arifa zako {{total}} za haraka za hivi karibuni, ulifungua {{count}} kwanza kwenye {{channel}}, kwa kawaida baada ya dakika {{minutes}}.",
+      "body_other": "Kati ya arifa zako {{total}} za haraka za hivi karibuni, ulifungua {{count}} kwanza kwenye {{channel}}, kwa kawaida baada ya dakika {{minutes}}.",
+      "help": "Tukitumia {{channel}} kwanza, arifa za haraka zitakufikia mapema. Unaweza kubadilisha hili wakati wowote.",
+      "yes": "Ndiyo, tumia {{channel}} kwanza",
+      "no": "Hapana, endelea na {{channel}}",
+      "accepted": "Sawa. Arifa za haraka sasa zitaenda kwa {{channel}} kwanza.",
+      "declined": "Sawa. Tutaendelea kutumia {{channel}} kwanza."
+    },
+    "notifications": {
+      "title": "Arifa",
+      "intro": "Chagua jinsi na wakati KaziForce inavyokufikia nje ya programu. Kila kitu pia kinaonekana kwenye programu.",
+      "loadError": "Hatukuweza kupakia mipangilio yako ya arifa.",
+      "undone": "Mabadiliko yametenduliwa",
+      "order": {
+        "title": "Arifa za haraka zinaenda wapi kwanza",
+        "help": "Tunatuma arifa za haraka kwa chaguo lako la kwanza. Usipoifungua ndani ya dakika 10, tunajaribu linalofuata.",
+        "moveUp": "Sogeza {{channel}} juu",
+        "moveDown": "Sogeza {{channel}} chini",
+        "moved": "Imehifadhiwa: {{channel}} sasa ni chaguo la {{position}}",
+        "needsPhone": "Inahitaji nambari ya simu iliyothibitishwa. Iongeze kwenye Wasifu wako.",
+        "switchedOff": "Imezimwa chini ya Rekebisha, kwa hivyo tunairuka.",
+        "stopped": "Ulijibu STOP, kwa hivyo tunairuka. Iwashe chini ya Rekebisha ili kuanza tena."
+      },
+      "whatsapp": {
+        "label": "Ninatumia WhatsApp",
+        "help": "Washa hii tu kama unatumia WhatsApp kwenye nambari yako ya simu."
+      },
+      "both": {
+        "label": "Tuma arifa za haraka kwa zote mbili",
+        "help": "Chaguo lako la kwanza na la pili hupata arifa za haraka kwa wakati mmoja. SMS inaweza kugharimu zaidi."
+      },
+      "presets": {
+        "title": "Tukuambie kiasi gani?",
+        "help": "Chagua moja. Unaweza kubadilisha maelezo chini ya Rekebisha.",
+        "custom": "Ulibadilisha baadhi ya mipangilio chini ya Rekebisha, kwa hivyo hakuna kati ya haya kilichochaguliwa."
+      },
+      "customise": {
+        "button": "Rekebisha",
+        "help": "Weka kila njia, saa za utulivu na barua pepe ya kila siku mwenyewe."
+      },
+      "channel": {
+        "label": "Ujumbe wa {{channel}}",
+        "help": "Zima ili usipate kamwe ujumbe kwa {{channel}}.",
+        "what": "Kinachokuja kwa {{channel}}",
+        "whatHelp": "Arifa za haraka ni kazi na habari zisizoweza kusubiri.",
+        "thresholds": {
+          "everything": "Kila kitu",
+          "urgent_and_important": "Za haraka na muhimu",
+          "urgent_only": "Za haraka tu"
+        }
+      },
+      "quiet": {
+        "label": "Saa za utulivu",
+        "help": "Katika saa hizi arifa za haraka pekee ndizo zinakufikia. Ujumbe mwingine unasubiri hadi zimalizike.",
+        "from": "Kuanzia",
+        "fromHelp": "Saa za utulivu zinapoanza (saa za Kenya).",
+        "until": "Hadi",
+        "untilHelp": "Ujumbe unapoanza tena (saa za Kenya).",
+        "same": "Chagua nyakati mbili tofauti."
+      },
+      "summary": {
+        "label": "Barua pepe ya muhtasari wa kila siku",
+        "help": "Saa 2 asubuhi (8:00): mambo yasiyo ya haraka ya siku iliyopita. Bila habari, hakuna barua pepe."
+      }
+    },
+    "delete": {
+      "button": "Futa akaunti yangu",
+      "help": "Tunafuta akaunti yako na kila kitu ndani yake baada ya siku 14. Unaweza kubadilisha nia hadi wakati huo.",
+      "dialogTitle": "Futa akaunti yako?",
+      "dialogBody": "Wasifu wako, arifa, maombi na ujumbe vitafutwa baada ya siku 14. Hadi wakati huo unaweza kuingia na kuhifadhi akaunti yako.",
+      "password": "Nenosiri lako",
+      "passwordHelp": "Ili kuhakikisha ni wewe kweli.",
+      "confirm": "Futa akaunti yangu",
+      "requested": "Tutafuta akaunti yako tarehe {{date}}.",
+      "pending": "Akaunti yako itafutwa tarehe {{date}}.",
+      "pendingHelp": "Umebadilisha nia? Hifadhi akaunti yako na kila kitu kinabaki kama kilivyo.",
+      "keep": "Hifadhi akaunti yangu",
+      "kept": "Akaunti yako iko salama. Hatutaifuta."
+    }
+  },
+  "channels": {
+    "whatsapp": "WhatsApp",
+    "sms": "SMS",
+    "email": "barua pepe"
+  },
+  "channelTitles": {
+    "whatsapp": "WhatsApp",
+    "sms": "SMS",
+    "email": "Barua pepe"
+  },
+  "apiErrors": {
+    "password_wrong": "Nenosiri hilo si sahihi."
+  }
+}

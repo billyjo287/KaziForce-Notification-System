@@ -7,6 +7,10 @@
 //                up on an urgent alert, the next channel is tried at once.
 //   escalation   when the window ends: if the alert is still unopened (in the app, by a tracked
 //                link, or a WhatsApp "read"), send it on the next channel; save escalatedAt/To.
+//   held         quiet hours (FR-5): a non-urgent alert waits until they end, then is planned
+//                again with the settings of that moment (skipped if already opened in the app).
+//
+// Nobody gets outside messages while their account is suspended or being deleted.
 import { Queue, UnrecoverableError, Worker, type Job } from 'bullmq';
 import type { Redis } from 'ioredis';
 import type { Logger } from 'pino';
@@ -14,11 +18,14 @@ import type { Priority, PrismaClient } from '../generated/prisma/client.js';
 import {
   ESCALATION_JOB,
   ESCALATION_QUEUE,
+  HELD_JOB,
+  HELD_QUEUE,
   channelQueueName,
   type ChannelJobData,
   type EscalationJobData,
+  type HeldJobData,
 } from '../lib/queue.js';
-import { PRESETS } from '../modules/me/presets.js';
+import type { UserPreferenceManager } from '../preferences/UserPreferenceManager.js';
 import { SendError, type OutgoingMessage, type Recipient } from './ChannelAdapter.js';
 import { emailContent, shortText, summaryFor } from './messages.js';
 import {
@@ -27,7 +34,6 @@ import {
   usableChannels,
   type Adapters,
   type ExternalChannel,
-  type Preferences,
 } from './router.js';
 import { trackedLinkFor } from './trackedLinks.js';
 
@@ -41,18 +47,16 @@ export interface DeliveryOptions {
   prefix: string;
   logger: Logger;
   adapters: Adapters;
+  /** Cached preferences (Redis), cleared whenever the person changes them. */
+  preferences: UserPreferenceManager;
   publicApiUrl: string;
   publicAppUrl: string;
   windowMinutes: number;
   retryDelayMs: number;
   concurrency?: number;
+  /** The current time (tests set it to check quiet hours). */
+  now?: () => Date;
 }
-
-const DEFAULT_PREFERENCES: Preferences = {
-  channelOrder: ['whatsapp', 'sms', 'email'],
-  channelSettings: PRESETS.recommended.channelSettings,
-  urgentOnBothChannels: false,
-};
 
 const include = {
   recipient: {
@@ -67,9 +71,8 @@ const include = {
       usesWhatsApp: true,
       whatsappOptedOutAt: true,
       smsOptedOutAt: true,
-      preference: {
-        select: { channelOrder: true, channelSettings: true, urgentOnBothChannels: true },
-      },
+      status: true,
+      deletionRequestedAt: true,
     },
   },
   deliveries: { select: { channel: true, openedAt: true, clickedAt: true } },
@@ -88,10 +91,14 @@ const isOpened = (n: Loaded) =>
   n.readAt !== null || n.deliveries.some((d) => d.openedAt !== null || d.clickedAt !== null);
 
 const recipientOf = (n: Loaded): Recipient => n.recipient;
-const preferencesOf = (n: Loaded): Preferences => n.recipient.preference ?? DEFAULT_PREFERENCES;
+
+/** Suspended accounts and accounts waiting to be deleted get nothing outside the app. */
+const reachable = (n: Loaded) =>
+  n.recipient.status === 'active' && n.recipient.deletionRequestedAt === null;
 
 export function startDelivery(options: DeliveryOptions) {
-  const { prisma, connection, prefix, logger, adapters } = options;
+  const { prisma, connection, prefix, logger, adapters, preferences } = options;
+  const clock = options.now ?? (() => new Date());
   const channels = Object.keys(adapters) as ExternalChannel[];
   const queueOptions = {
     connection,
@@ -102,6 +109,7 @@ export function startDelivery(options: DeliveryOptions) {
     channels.map((c) => [c, new Queue<ChannelJobData>(channelQueueName(c), queueOptions)]),
   );
   const escalationQueue = new Queue<EscalationJobData>(ESCALATION_QUEUE, queueOptions);
+  const heldQueue = new Queue<HeldJobData>(HELD_QUEUE, queueOptions);
 
   async function enqueueSend(
     notificationId: string,
@@ -120,19 +128,44 @@ export function startDelivery(options: DeliveryOptions) {
     );
   }
 
-  /** Right after the in-app delivery: send on the planned channels, schedule the check. */
+  /**
+   * Right after the in-app delivery: send on the planned channels and schedule the escalation
+   * check, or hold everything until the quiet hours end. Runs again when a held alert is released.
+   */
   async function dispatch(notificationId: string) {
     const n = await load(prisma, notificationId);
-    if (!n || n.recipient.role === 'admin') return null;
+    if (!n || n.recipient.role === 'admin' || !reachable(n)) return null;
+    const now = clock();
+    // The job has closed: a message outside the app would only waste the person's time.
+    if (n.deadlineAt && n.deadlineAt <= now) return null;
+    // Released after quiet hours, but the person has already seen it in the app.
+    if (n.heldUntil && isOpened(n)) return null;
+
     const plan = planDelivery({
       priority: priorityOf(n),
-      preferences: preferencesOf(n),
+      preferences: await preferences.get(n.recipientId),
       recipient: recipientOf(n),
       adapters,
       deadlineAt: n.deadlineAt,
-      now: new Date(),
+      now,
       windowMinutes: options.windowMinutes,
     });
+    if (plan.heldUntil) {
+      await prisma.notification.update({
+        where: { id: notificationId },
+        data: { heldUntil: plan.heldUntil },
+      });
+      await heldQueue.add(
+        HELD_JOB,
+        { notificationId },
+        {
+          // The time is part of the id: if it is held again later, that is a new job.
+          jobId: `${notificationId}-held-${plan.heldUntil.getTime()}`,
+          delay: plan.heldUntil.getTime() - now.getTime(),
+        },
+      );
+      return plan;
+    }
     for (const channel of plan.now) await enqueueSend(notificationId, channel, false);
     if (plan.escalation) {
       await escalationQueue.add(
@@ -147,10 +180,15 @@ export function startDelivery(options: DeliveryOptions) {
   /** The safety net: the next usable channel, if the urgent alert still needs one. */
   async function escalate(notificationId: string, reason: EscalationJobData['reason']) {
     const n = await load(prisma, notificationId);
-    if (!n || priorityOf(n) !== 'urgent' || isOpened(n)) return null;
+    if (!n || !reachable(n) || priorityOf(n) !== 'urgent' || isOpened(n)) return null;
     // The window check escalates once; a failure always moves on (so a message gets through).
     if (reason === 'window' && n.escalatedAt) return null;
-    const usable = usableChannels('urgent', preferencesOf(n), recipientOf(n), adapters);
+    const usable = usableChannels(
+      'urgent',
+      await preferences.get(n.recipientId),
+      recipientOf(n),
+      adapters,
+    );
     const next = nextChannel(
       usable,
       n.deliveries.map((d) => d.channel),
@@ -198,7 +236,7 @@ export function startDelivery(options: DeliveryOptions) {
     const channel = job.data.channel as ExternalChannel;
     const adapter = adapters[channel];
     const n = await load(prisma, notificationId);
-    if (!adapter || !n) return 'gone';
+    if (!adapter || !n || !reachable(n)) return 'gone';
     const attempt = job.attemptsMade + 1;
     const lastTry = attempt >= (job.opts.attempts ?? adapter.attempts);
 
@@ -243,6 +281,7 @@ export function startDelivery(options: DeliveryOptions) {
       (job) => escalate(job.data.notificationId, job.data.reason),
       workerOptions,
     ),
+    new Worker<HeldJobData>(HELD_QUEUE, (job) => dispatch(job.data.notificationId), workerOptions),
   ];
   for (const worker of workers) {
     worker.on('error', (error) => logger.error({ err: error }, 'Delivery worker error'));
@@ -253,9 +292,10 @@ export function startDelivery(options: DeliveryOptions) {
     escalate,
     queues,
     escalationQueue,
+    heldQueue,
     async close() {
       await Promise.all(workers.map((w) => w.close()));
-      await Promise.all([...queues.values(), escalationQueue].map((q) => q.close()));
+      await Promise.all([...queues.values(), escalationQueue, heldQueue].map((q) => q.close()));
     },
   };
 }

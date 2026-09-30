@@ -12,6 +12,8 @@ import { Switch } from '../../components/ui/Switch';
 import { LANGUAGES, type Language } from '../../i18n';
 import { useLogOut } from '../../lib/useLogOut';
 import { ChannelSuggestionCard } from './ChannelSuggestionCard';
+import { DeleteAccount } from './DeleteAccount';
+import { NotificationSettings } from './NotificationSettings';
 import { usePageTitle } from '../../lib/usePageTitle';
 import { sidePath, useAuth } from '../../stores/auth';
 import { useSettings, type TextSize, type Theme } from '../../stores/settings';
@@ -21,8 +23,9 @@ const TEXT_SIZES: TextSize[] = ['normal', 'large'];
 const THEMES: Theme[] = ['light', 'dark', 'system'];
 
 /**
- * Settings shared by all three sides: profile link, language, text size, reduce motion, and
- * logging out (here or on every device). Notification settings arrive in Phase 6.
+ * Settings shared by all three sides: notifications (workers and employers), profile link,
+ * language, text size, reduce motion, logging out (here or on every device) and deleting the
+ * account.
  */
 export function SettingsPage() {
   const { t, i18n } = useTranslation();
@@ -41,6 +44,8 @@ export function SettingsPage() {
       <h1 className="mb-6 text-3xl font-bold">{t('settings.title')}</h1>
 
       <ChannelSuggestionCard enabled={!!user && user.role !== 'admin'} />
+
+      {user && user.role !== 'admin' && <NotificationSettings />}
 
       {user && user.role !== 'admin' && (
         <Link
@@ -149,6 +154,7 @@ export function SettingsPage() {
             </Button>
             <p className="text-ink-muted">{t('settings.logoutAllHelp')}</p>
           </div>
+          {user && user.role !== 'admin' && <DeleteAccount />}
         </div>
       </Card>
 

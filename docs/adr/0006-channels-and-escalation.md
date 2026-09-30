@@ -77,6 +77,7 @@ Creation → "accepted by provider" (WhatsApp): median 60 ms, 95th percentile 70
 
 ## Deferred
 
-Quiet hours (holding medium alerts, only urgent gets through) and the daily summary: Phase 6.
+Quiet hours (holding medium alerts, only urgent gets through) and the daily summary: Phase 6
+(done, see ADR 0007).
 Email delivery webhooks (Resend/SendGrid events): not needed for FR-4 because email "opened"
 comes from the tracked link; can be added in Phase 7 for the admin dashboard.

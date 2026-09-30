@@ -20,6 +20,7 @@ import { closeApiQueues, queueConnection } from '../src/lib/queue.js';
 import { redis } from '../src/lib/redis.js';
 import { signAccessToken } from '../src/lib/tokens.js';
 import { PRESETS } from '../src/modules/me/presets.js';
+import { UserPreferenceManager } from '../src/preferences/UserPreferenceManager.js';
 import { auth, testApp, uniqueEmail } from './helpers.js';
 
 const silent = pino({ level: 'silent' });
@@ -76,6 +77,8 @@ const email = new TestEmail(options, {
 const app = testApp();
 let delivery: Delivery;
 const connection = queueConnection();
+// Same Redis keys as the API's manager, so a STOP reply clears what the worker has cached.
+const preferences = new UserPreferenceManager(prisma, redis, 'kf-test');
 
 beforeAll(() => {
   delivery = startDelivery({
@@ -84,6 +87,7 @@ beforeAll(() => {
     prefix: 'kf-test',
     logger: silent,
     adapters: { whatsapp, sms, email },
+    preferences,
     publicApiUrl: 'http://localhost:4000',
     publicAppUrl: 'http://localhost:5173',
     windowMinutes: WINDOW_MINUTES,
@@ -303,6 +307,7 @@ describe('urgent: first choice, with a safety net', () => {
       prefix: 'kf-test-deadline',
       logger: silent,
       adapters: { whatsapp, sms, email },
+      preferences,
       publicApiUrl: 'http://localhost:4000',
       publicAppUrl: 'http://localhost:5173',
       windowMinutes: 10,

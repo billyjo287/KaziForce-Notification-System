@@ -110,6 +110,47 @@ describe('channel router: "first choice, with a safety net"', () => {
     const everything = prefs({ channelSettings: PRESETS.everything.channelSettings });
     expect(plan('medium', { preferences: everything }).now).toEqual(['whatsapp', 'email']);
   });
+
+  it('low goes to channels set to "everything" (email in "Tell me everything")', () => {
+    const everything = prefs({ channelSettings: PRESETS.everything.channelSettings });
+    expect(plan('low', { preferences: everything })).toEqual({ now: ['email'], escalation: null });
+    expect(
+      plan('low', { preferences: prefs({ channelSettings: PRESETS.urgent_only.channelSettings }) }),
+    ).toEqual({ now: [], escalation: null });
+  });
+});
+
+describe('channel router: quiet hours (FR-5)', () => {
+  // `now` is 12:00 in Nairobi; these quiet hours cover it and end at 13:30 Nairobi time.
+  const quietHours = { enabled: true, start: '11:00', end: '13:30' };
+  const quiet = prefs({ quietHours });
+
+  it('only urgent gets through: medium is held until the quiet hours end', () => {
+    expect(plan('medium', { preferences: quiet })).toEqual({
+      now: [],
+      escalation: null,
+      heldUntil: new Date('2026-10-02T10:30:00Z'),
+    });
+    expect(plan('urgent', { preferences: quiet })).toEqual({
+      now: ['whatsapp'],
+      escalation: { to: 'sms', windowMs: 10 * 60_000 },
+    });
+  });
+
+  it('low with "everything" is held too; low with nothing to send is not held at all', () => {
+    const everything = prefs({ channelSettings: PRESETS.everything.channelSettings, quietHours });
+    expect(plan('low', { preferences: everything }).heldUntil).toEqual(
+      new Date('2026-10-02T10:30:00Z'),
+    );
+    expect(plan('low', { preferences: quiet })).toEqual({ now: [], escalation: null });
+  });
+
+  it('outside quiet hours, or with them switched off, nothing is held', () => {
+    const later = prefs({ quietHours: { enabled: true, start: '22:00', end: '06:00' } });
+    expect(plan('medium', { preferences: later })).toEqual({ now: ['email'], escalation: null });
+    const off = prefs({ quietHours: { ...quietHours, enabled: false } });
+    expect(plan('medium', { preferences: off })).toEqual({ now: ['email'], escalation: null });
+  });
 });
 
 describe('external message texts', () => {

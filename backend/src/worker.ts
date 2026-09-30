@@ -1,4 +1,5 @@
-// The worker process: turns domain events into notifications and processes them (BullMQ).
+// The worker process: turns domain events into notifications and processes them (BullMQ), sends
+// them on the outside channels, and runs the clock jobs (daily summary, retention cleanup).
 // Runs next to the API (`npm run dev` starts both). On Railway it is its own service, so slow
 // work here never slows down the website.
 import { env } from './config/env.js';
@@ -10,6 +11,8 @@ import { createAdapters } from './channels/index.js';
 import { startDelivery } from './channels/delivery.js';
 import { startNotificationWorker } from './pipeline/notificationWorker.js';
 import { startOutboxRelay } from './pipeline/outboxRelay.js';
+import { UserPreferenceManager } from './preferences/UserPreferenceManager.js';
+import { startScheduledJobs } from './scheduled/scheduledJobs.js';
 
 const connection = queueConnection();
 const queue = createNotificationQueue(connection);
@@ -17,16 +20,19 @@ const queue = createNotificationQueue(connection);
 // External channels get their own Redis connection: sharing one with the notification queue made
 // every in-app alert wait behind channel work (the in-app median rose from ~70 ms to ~130 ms).
 const deliveryConnection = queueConnection();
+const adapters = createAdapters({
+  mode: env.CHANNEL_MODE,
+  logger,
+  mockFailChannels: env.MOCK_FAIL_CHANNELS,
+});
+const preferences = new UserPreferenceManager(prisma, redis, env.QUEUE_PREFIX, logger);
 const delivery = startDelivery({
   prisma,
   connection: deliveryConnection,
   prefix: env.QUEUE_PREFIX,
   logger,
-  adapters: createAdapters({
-    mode: env.CHANNEL_MODE,
-    logger,
-    mockFailChannels: env.MOCK_FAIL_CHANNELS,
-  }),
+  adapters,
+  preferences,
   publicApiUrl: env.PUBLIC_API_URL,
   publicAppUrl: env.PUBLIC_APP_URL,
   windowMinutes: env.ESCALATION_WINDOW_MINUTES,
@@ -44,7 +50,18 @@ const worker = startNotificationWorker({
   dispatch: delivery.dispatch,
 });
 const relay = startOutboxRelay({ prisma, queue, databaseUrl: env.DATABASE_URL, logger });
-await relay.ready;
+
+const scheduledConnection = queueConnection();
+const scheduled = startScheduledJobs({
+  prisma,
+  connection: scheduledConnection,
+  prefix: env.QUEUE_PREFIX,
+  logger,
+  sendEmail: (email) => adapters.email.sendEmail(email),
+  publicAppUrl: env.PUBLIC_APP_URL,
+  onUserDeleted: (userId) => preferences.invalidate(userId),
+});
+await Promise.all([relay.ready, scheduled.ready]);
 logger.info(
   `Notification worker running (channel mode: ${env.CHANNEL_MODE}` +
     (env.MOCK_FAIL_CHANNELS.length
@@ -58,12 +75,14 @@ async function shutdown(signal: string) {
   await relay.stop();
   await worker.close(); // lets the current jobs finish
   await delivery.close();
+  await scheduled.close();
   await queue.close();
   await Promise.allSettled([
     prisma.$disconnect(),
     redis.quit(),
     connection.quit(),
     deliveryConnection.quit(),
+    scheduledConnection.quit(),
   ]);
   process.exit(0);
 }

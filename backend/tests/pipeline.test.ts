@@ -27,6 +27,7 @@ import { startOutboxRelay, type OutboxRelay } from '../src/pipeline/outboxRelay.
 import { attachRealtime } from '../src/realtime/socketServer.js';
 import { startDelivery, type Delivery } from '../src/channels/delivery.js';
 import { createAdapters } from '../src/channels/index.js';
+import { UserPreferenceManager } from '../src/preferences/UserPreferenceManager.js';
 import { startFakeMlService } from './fakeMlService.js';
 import { auth, login, testApp, uniqueEmail } from './helpers.js';
 
@@ -75,6 +76,7 @@ beforeAll(async () => {
     prefix: env.QUEUE_PREFIX,
     logger,
     adapters: createAdapters({ mode: 'mock', logger }),
+    preferences: new UserPreferenceManager(prisma, redis, env.QUEUE_PREFIX),
     publicApiUrl: env.PUBLIC_API_URL,
     publicAppUrl: env.PUBLIC_APP_URL,
     windowMinutes: 10,

@@ -2,6 +2,7 @@
 // opt-outs (STOP). Used by the webhook routes in the API process.
 import type { PrismaClient } from '../generated/prisma/client.js';
 import { requestEscalation } from '../lib/queue.js';
+import { userPreferences } from '../preferences/index.js';
 
 export type ReportOutcome = 'accepted' | 'delivered' | 'read' | 'failed';
 
@@ -71,5 +72,6 @@ export async function setChannelOptOut(
       ...(user.preference && { preference: { update: { channelSettings: settings } } }),
     },
   });
+  await userPreferences.invalidate(user.id);
   return user;
 }

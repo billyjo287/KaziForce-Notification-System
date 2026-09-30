@@ -13,6 +13,43 @@ export interface ChannelSuggestion {
   medianMinutes: number;
 }
 export type PresetName = 'recommended' | 'urgent_only' | 'everything';
+
+/** Which alerts a channel gets. */
+export type Threshold = 'everything' | 'urgent_and_important' | 'urgent_only';
+export type ChannelSettings = Record<ExternalChannel, { enabled: boolean; threshold: Threshold }>;
+
+/** "HH:MM" in Kenya time (Africa/Nairobi). */
+export interface QuietHours {
+  enabled: boolean;
+  start: string;
+  end: string;
+}
+
+/** The notification part of Settings (PRD FR-5), from GET /me/preferences. */
+export interface NotificationPreferences {
+  preset: PresetName | 'custom';
+  /** The person's channels in order (WhatsApp only if they use it). */
+  channelOrder: ExternalChannel[];
+  channelSettings: ChannelSettings;
+  urgentOnBothChannels: boolean;
+  quietHours: QuietHours;
+  dailySummary: boolean;
+  usesWhatsApp: boolean;
+  phoneVerified: boolean;
+  /** Replied STOP (WhatsApp) or opted out with the network (SMS). */
+  optedOut: { whatsapp: boolean; sms: boolean };
+}
+
+/** One change on the settings screen (or its undo). */
+export interface PreferencesChange {
+  channelOrder?: ExternalChannel[];
+  usesWhatsApp?: boolean;
+  urgentOnBothChannels?: boolean;
+  preset?: PresetName;
+  channelSettings?: Partial<Record<ExternalChannel, Partial<ChannelSettings[ExternalChannel]>>>;
+  quietHours?: QuietHours;
+  dailySummary?: boolean;
+}
 export type ApplicationStatus = 'received' | 'reviewed' | 'accepted' | 'rejected';
 
 export interface Skill {
@@ -41,6 +78,8 @@ export interface User {
   skills: Skill[];
   onboardingCompleted: boolean;
   preference: { preset: PresetName | 'custom'; channelOrder: ExternalChannel[] } | null;
+  /** Set while a deletion request waits: the day the account will be deleted (ISO-8601). */
+  deletionScheduledFor: string | null;
 }
 
 export interface Session {

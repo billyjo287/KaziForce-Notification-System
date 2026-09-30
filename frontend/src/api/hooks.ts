@@ -44,7 +44,7 @@ export const useSkills = () =>
 // ---------- My account ----------
 
 /** Mutations on /me return the updated user; keep the login store in step. */
-function useMeMutation<TInput>(request: (input: TInput) => Promise<{ user: User }>) {
+export function useMeMutation<TInput>(request: (input: TInput) => Promise<{ user: User }>) {
   const setUser = useAuth((s) => s.setUser);
   return useMutation({
     mutationFn: request,
@@ -87,6 +87,8 @@ export function useAnswerChannelSuggestion() {
     onSuccess: ({ user }) => {
       setUser(user);
       client.setQueryData(['channelSuggestion'], null);
+      // "Yes" changes the channel order shown under Notifications.
+      void client.invalidateQueries({ queryKey: ['preferences'] });
     },
   });
 }

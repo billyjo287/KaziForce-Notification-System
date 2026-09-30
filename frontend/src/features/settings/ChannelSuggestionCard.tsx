@@ -2,14 +2,9 @@ import { Lightbulb } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAnswerChannelSuggestion, useChannelSuggestion } from '../../api/hooks';
 import { Button } from '../../components/ui/Button';
-import { addPageStrings } from '../../i18n/addPageStrings';
-import suggestionEn from '../../i18n/locales/suggestion.en.json';
-import suggestionSw from '../../i18n/locales/suggestion.sw.json';
 import { useApiErrorMessage } from '../../lib/useApiErrorMessage';
 import { showToast } from '../../stores/toasts';
-
-// Its words arrive with the Settings page (most visits never need them).
-addPageStrings(suggestionEn, suggestionSw);
+import './strings';
 
 /**
  * PRD FR-4b: shown once, when the person clearly opens urgent alerts faster on another channel.

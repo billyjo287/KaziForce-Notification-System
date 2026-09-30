@@ -85,6 +85,15 @@ times and go to SMS. Log in as `worker5@example.com` (Faith) and open Settings t
 one-time "You usually open SMS fastest" suggestion. Real providers: see
 [docs/twilio-whatsapp-templates.md](docs/twilio-whatsapp-templates.md) and `backend/.env.example`.
 
+**Try the notification settings, quiet hours and the daily summary:** log in as a worker or
+employer and open **Settings > Notifications**. Every change saves at once, with **Undo**. During
+quiet hours (21:00-07:00 by default, Kenya time) only urgent alerts leave the app; other emails
+wait until the quiet hours end. The daily summary email goes out at 08:00 Kenya time. To see it
+now, keep `npm run dev` running and type `npm run jobs:run -w backend -- summary` in another
+terminal, then open Mailpit: `worker1@example.com` (Wanjiru) has something to read.
+`npm run jobs:run -w backend -- retention` runs the nightly cleanup (deletes accounts 14 days
+after their owner asked, and delivery logs older than 180 days).
+
 **Try live alerts:** log in as `worker1@example.com` in one browser window and as
 `employer1@example.com` in a private window. When the employer sends that worker a message (or
 posts a job in the worker's area), the alert appears on the worker's screen without refreshing.

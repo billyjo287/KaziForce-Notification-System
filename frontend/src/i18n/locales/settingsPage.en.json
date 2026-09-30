@@ -1,0 +1,98 @@
+{
+  "settings": {
+    "suggestion": {
+      "title": "You usually open {{channel}} fastest",
+      "body_one": "Of your last {{total}} urgent alerts, you opened {{count}} first on {{channel}}, usually within {{minutes}} minutes.",
+      "body_other": "Of your last {{total}} urgent alerts, you opened {{count}} first on {{channel}}, usually within {{minutes}} minutes.",
+      "help": "Using {{channel}} first would get urgent alerts to you sooner. You can change this at any time.",
+      "yes": "Yes, use {{channel}} first",
+      "no": "No, keep {{channel}}",
+      "accepted": "Done. Urgent alerts now go to {{channel}} first.",
+      "declined": "OK. We will keep using {{channel}} first."
+    },
+    "notifications": {
+      "title": "Notifications",
+      "intro": "Choose how and when KaziForce contacts you outside the app. Everything also appears in the app.",
+      "loadError": "We could not load your notification settings.",
+      "undone": "Change undone",
+      "order": {
+        "title": "Where urgent alerts go first",
+        "help": "We send urgent alerts to your first choice. If you do not open one within 10 minutes, we try the next.",
+        "moveUp": "Move {{channel}} up",
+        "moveDown": "Move {{channel}} down",
+        "moved": "Saved: {{channel}} is now choice {{position}}",
+        "needsPhone": "Needs a verified phone number. Add one in Your profile.",
+        "switchedOff": "Switched off under Customise, so we skip it.",
+        "stopped": "You replied STOP, so we skip it. Switch it on under Customise to start again."
+      },
+      "whatsapp": {
+        "label": "I use WhatsApp",
+        "help": "Switch this on only if you use WhatsApp on your phone number."
+      },
+      "both": {
+        "label": "Send urgent alerts on both",
+        "help": "Your first and second choice get urgent alerts at the same time. SMS may cost more."
+      },
+      "presets": {
+        "title": "How much should we tell you?",
+        "help": "Pick one. You can change the details under Customise.",
+        "custom": "You changed some settings under Customise, so none of these is picked."
+      },
+      "customise": {
+        "button": "Customise",
+        "help": "Set each channel, quiet hours and the daily email yourself."
+      },
+      "channel": {
+        "label": "{{channel}} messages",
+        "help": "Switch off to never get messages by {{channel}}.",
+        "what": "What comes by {{channel}}",
+        "whatHelp": "Urgent alerts are jobs and news that cannot wait.",
+        "thresholds": {
+          "everything": "Everything",
+          "urgent_and_important": "Urgent and important",
+          "urgent_only": "Urgent only"
+        }
+      },
+      "quiet": {
+        "label": "Quiet hours",
+        "help": "During these hours only urgent alerts reach you. Other messages wait until they end.",
+        "from": "From",
+        "fromHelp": "When quiet hours start (Kenya time).",
+        "until": "Until",
+        "untilHelp": "When messages start again (Kenya time).",
+        "same": "Choose two different times."
+      },
+      "summary": {
+        "label": "Daily summary email",
+        "help": "At 8:00 in the morning: the less important things from the day before. No news, no email."
+      }
+    },
+    "delete": {
+      "button": "Delete my account",
+      "help": "We delete your account and everything in it after 14 days. You can change your mind until then.",
+      "dialogTitle": "Delete your account?",
+      "dialogBody": "Your profile, alerts, applications and messages will be deleted after 14 days. Until then you can log in and keep your account.",
+      "password": "Your password",
+      "passwordHelp": "To make sure it is really you.",
+      "confirm": "Delete my account",
+      "requested": "We will delete your account on {{date}}.",
+      "pending": "Your account will be deleted on {{date}}.",
+      "pendingHelp": "Changed your mind? Keep your account and everything stays as it is.",
+      "keep": "Keep my account",
+      "kept": "Your account is safe. We will not delete it."
+    }
+  },
+  "channels": {
+    "whatsapp": "WhatsApp",
+    "sms": "SMS",
+    "email": "email"
+  },
+  "channelTitles": {
+    "whatsapp": "WhatsApp",
+    "sms": "SMS",
+    "email": "Email"
+  },
+  "apiErrors": {
+    "password_wrong": "That password is not right."
+  }
+}

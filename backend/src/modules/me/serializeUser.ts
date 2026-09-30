@@ -1,4 +1,5 @@
 import type { Prisma } from '../../generated/prisma/client.js';
+import { deletionDate } from '../../scheduled/retention.js';
 
 /** What we load for "the current user" everywhere. */
 export const userWithProfile = {
@@ -25,5 +26,9 @@ export function serializeUser(user: UserWithProfile) {
     skills: user.skills.map((s) => ({ id: s.id, nameEn: s.nameEn, nameSw: s.nameSw })),
     onboardingCompleted: user.onboardingCompletedAt !== null,
     preference: user.preference,
+    // Set while a deletion request is waiting: the day the account will be deleted.
+    deletionScheduledFor: user.deletionRequestedAt
+      ? deletionDate(user.deletionRequestedAt).toISOString()
+      : null,
   };
 }

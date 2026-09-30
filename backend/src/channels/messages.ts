@@ -92,16 +92,65 @@ export function shortText(summary: string, link: string, priority: Priority, lan
   return text.length <= SMS_MAX ? text : toGsm(`${label}: ${link}`).slice(0, SMS_MAX);
 }
 
-const escapeHtml = (s: string) =>
+export const escapeHtml = (s: string) =>
   s.replace(
     /[&<>"']/g,
     (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!,
   );
 
+const GREEN = '#0b6b45';
+
+/** A big green button that works in every email app (a table cell around a link). */
+export function emailButton(label: string, href: string) {
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="border-radius:10px;background:${GREEN};">
+                  <a href="${escapeHtml(href)}" style="display:inline-block;padding:16px 28px;font-family:Arial,Helvetica,sans-serif;font-size:18px;font-weight:bold;line-height:1.2;color:#ffffff;text-decoration:none;border-radius:10px;">${escapeHtml(label)}</a>
+                </td>
+              </tr>
+            </table>`;
+}
+
 /**
- * The notification email: short, plain language, one big button (PRD FR-4, MEDIUM priority).
- * Built with tables and inline styles, which Gmail (including the phone app) displays reliably.
+ * The frame every KaziForce email shares: one narrow white card on a warm background, built with
+ * tables and inline styles, which Gmail (including the phone app) displays reliably.
+ * `body` is HTML; everything put into it must already be escaped.
  */
+export function emailLayout(input: {
+  language: Language;
+  subject: string;
+  /** The grey line email apps show next to the subject. */
+  preview: string;
+  body: string;
+}) {
+  return `<!doctype html>
+<html lang="${input.language}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${escapeHtml(input.subject)}</title>
+</head>
+<body style="margin:0;padding:0;background:#faf8f5;">
+<div style="display:none;max-height:0;overflow:hidden;">${escapeHtml(input.preview)}</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#faf8f5;">
+  <tr>
+    <td align="center" style="padding:24px 16px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:480px;background:#ffffff;border-radius:12px;">
+        <tr>
+          <td style="padding:28px 24px;font-family:Arial,Helvetica,sans-serif;color:#1c1917;">
+            <p style="margin:0 0 16px;font-size:16px;font-weight:bold;color:${GREEN};">KaziForce</p>
+            ${input.body}
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>`;
+}
+
+/** The notification email: short, plain language, one big button (PRD FR-4, MEDIUM priority). */
 export function emailContent(input: {
   summary: string;
   link: string;
@@ -120,39 +169,13 @@ export function emailContent(input: {
     `${w.settings}: ${input.settingsUrl}`,
   ].join('\n');
 
-  const summary = escapeHtml(input.summary);
-  const html = `<!doctype html>
-<html lang="${input.language}">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${escapeHtml(subject)}</title>
-</head>
-<body style="margin:0;padding:0;background:#faf8f5;">
-<div style="display:none;max-height:0;overflow:hidden;">${summary}</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#faf8f5;">
-  <tr>
-    <td align="center" style="padding:24px 16px;">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:480px;background:#ffffff;border-radius:12px;">
-        <tr>
-          <td style="padding:28px 24px;font-family:Arial,Helvetica,sans-serif;color:#1c1917;">
-            <p style="margin:0 0 16px;font-size:16px;font-weight:bold;color:#0b6b45;">KaziForce</p>
-            <h1 style="margin:0 0 24px;font-size:24px;line-height:1.3;font-weight:bold;">${summary}</h1>
-            <table role="presentation" cellpadding="0" cellspacing="0" border="0">
-              <tr>
-                <td style="border-radius:10px;background:#0b6b45;">
-                  <a href="${escapeHtml(input.link)}" style="display:inline-block;padding:16px 28px;font-family:Arial,Helvetica,sans-serif;font-size:18px;font-weight:bold;line-height:1.2;color:#ffffff;text-decoration:none;border-radius:10px;">${escapeHtml(w.button)}</a>
-                </td>
-              </tr>
-            </table>
-            <p style="margin:28px 0 0;font-size:14px;line-height:1.5;color:#57534e;">${escapeHtml(w.footer)}<br><a href="${escapeHtml(input.settingsUrl)}" style="color:#0b6b45;">${escapeHtml(w.settings)}</a></p>
-          </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-</table>
-</body>
-</html>`;
+  const html = emailLayout({
+    language: input.language,
+    subject,
+    preview: input.summary,
+    body: `<h1 style="margin:0 0 24px;font-size:24px;line-height:1.3;font-weight:bold;">${escapeHtml(input.summary)}</h1>
+            ${emailButton(w.button, input.link)}
+            <p style="margin:28px 0 0;font-size:14px;line-height:1.5;color:#57534e;">${escapeHtml(w.footer)}<br><a href="${escapeHtml(input.settingsUrl)}" style="color:${GREEN};">${escapeHtml(w.settings)}</a></p>`,
+  });
   return { subject, text, html };
 }

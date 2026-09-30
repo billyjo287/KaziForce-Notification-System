@@ -344,6 +344,11 @@ model Notification {
   escalatedAt DateTime?
   escalatedTo Channel?
 
+  // ---- Quiet hours ----
+  // Set when an external send (email, SMS, WhatsApp) waits for the person's quiet hours to end.
+  // Only URGENT gets through during quiet hours; in-app delivery is never held.
+  heldUntil DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -383,6 +388,8 @@ model DeliveryLog {
   @@index([notificationId])
   @@index([channel, status, createdAt])
   @@index([providerMessageId])
+  // The retention job removes rows older than 180 days (DR-4)
+  @@index([createdAt])
 }
 
 // The short link in an SMS, WhatsApp message or email (/o/<token>). Opening it counts as

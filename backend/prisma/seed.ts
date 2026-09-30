@@ -468,6 +468,32 @@ async function main() {
     });
   }
 
+  // Wanjiru: two "for later" job alerts, so her 08:00 daily summary has two groups
+  // (try it now: npm run jobs:run -w backend -- summary, then open Mailpit).
+  for (const [title, hoursAgo] of [
+    ['Shop assistant for the weekend in Westlands', 9],
+    ['Data entry clerk, 3 days in Upper Hill', 15],
+  ] as const) {
+    await prisma.notification.create({
+      data: {
+        ...classified,
+        recipientId: wanjiru.id,
+        recipientRole: 'worker',
+        senderRole: 'system',
+        type: 'job_alert',
+        category: 'new_job',
+        title,
+        message: 'A job that matches your skills. Open it to see the details.',
+        link: '/worker/jobs',
+        predictedPriority: 'low',
+        priorityConfidence: 0.8,
+        spamScore: 0.01,
+        createdAt: ago(hoursAgo * HOUR),
+        deliveries: { create: [inApp(ago(hoursAgo * HOUR))] },
+      },
+    });
+  }
+
   // Spam: fake job asking for a registration fee. Blocked, never delivered, waiting for review.
   await prisma.notification.create({
     data: {
