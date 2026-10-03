@@ -1,0 +1,18 @@
+{
+  "profile": {
+    "title": "Your profile",
+    "name": "Your full name",
+    "location": "Where do you want work?",
+    "locationHelp": "We send you jobs in this place.",
+    "skills": "Your skills",
+    "skillsHelp": "Choose up to 5. We send you jobs that need them.",
+    "skillsCount": "{{count}} of 5 chosen",
+    "skillsFull": "You have chosen 5 skills. Remove one to choose another.",
+    "back": "Back to settings",
+    "phoneTitle": "Phone number",
+    "phoneVerified": "{{phone}} (confirmed)",
+    "phoneNone": "No phone number yet.",
+    "changePhone": "Change number",
+    "addPhone": "Add a phone number"
+  }
+}

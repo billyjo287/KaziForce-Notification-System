@@ -3,7 +3,8 @@
 //   1. Wake up when Postgres signals a new event (instant), or every second anyway (for events
 //      held for Undo, and in case a signal was missed).
 //   2. For each event that is due: in ONE transaction, lock it (so two workers never take the
-//      same event), create its notifications as QUEUED, and mark it processed.
+//      same event), create its notifications as QUEUED, and mark it processed. Four events are
+//      handled at the same time (each loop skips the events another loop has locked).
 //   3. After the transaction is saved, add a "notification.process" job for each notification.
 //
 // If step 3 fails (Redis down), the sweeper re-adds jobs for notifications still QUEUED after
@@ -28,6 +29,8 @@ export interface RelayOptions {
   databaseUrl: string;
   logger: Logger;
   pollMs?: number;
+  /** How many events are turned into notifications at the same time. */
+  concurrency?: number;
 }
 
 interface EventRow {
@@ -44,6 +47,7 @@ export function startOutboxRelay({
   databaseUrl,
   logger,
   pollMs = 1000,
+  concurrency = 4,
 }: RelayOptions) {
   let stopped = false;
   let draining: Promise<void> | null = null;
@@ -134,10 +138,15 @@ export function startOutboxRelay({
       wakeAgain = true;
       return draining;
     }
+    // Several loops side by side: each locks a different event (SKIP LOCKED), so a burst is
+    // handled in parallel. One loop could not keep up at 1,000 a minute (load test: p95 0.8 s).
+    const loop = async () => {
+      while (!stopped && (await processNext()));
+    };
     draining = (async () => {
       do {
         wakeAgain = false;
-        while (!stopped && (await processNext()));
+        await Promise.all(Array.from({ length: concurrency }, loop));
       } while (wakeAgain && !stopped);
     })().finally(() => {
       draining = null;

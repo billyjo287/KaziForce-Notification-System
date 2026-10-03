@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
-import { z } from 'zod';
+import { z } from '../../lib/zod';
 import { usePostJob } from '../../api/hooks';
 import { LocationSelect, SkillSelect } from '../../components/LookupSelects';
 import { BackLink } from '../../components/ui/BackLink';
@@ -17,6 +17,7 @@ import { Textarea } from '../../components/ui/Textarea';
 import { useApiErrorMessage } from '../../lib/useApiErrorMessage';
 import { usePageTitle } from '../../lib/usePageTitle';
 import { showToast } from '../../stores/toasts';
+import './strings';
 
 const schema = z
   .object({

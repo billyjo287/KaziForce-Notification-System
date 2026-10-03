@@ -12,6 +12,9 @@ interface AlertCardProps {
   onOpen: (id: string) => void;
 }
 
+/** A pause for screen readers between the parts of the card (invisible on screen). */
+const Pause = () => <span className="sr-only">. </span>;
+
 /** One alert in the list. The whole card is a single button that opens the details. */
 export const AlertCard = forwardRef<HTMLButtonElement, AlertCardProps>(function AlertCard(
   { alert, selected, onOpen },
@@ -40,25 +43,32 @@ export const AlertCard = forwardRef<HTMLButtonElement, AlertCardProps>(function 
       <span className="flex min-w-0 flex-1 flex-col gap-1.5">
         <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
           <PriorityBadge priority={alert.priority} />
+          <Pause />
           {unread && (
             <span className="inline-flex items-center gap-1.5 font-bold text-primary">
               <span aria-hidden="true" className="size-2.5 rounded-full bg-primary" />
               {t('alerts.new')}
+              <Pause />
             </span>
           )}
         </span>
 
         <span className={`text-lg leading-snug ${unread ? 'font-bold' : 'font-medium'}`}>
           {alert.title}
+          <Pause />
         </span>
 
-        <span className="line-clamp-2 text-ink-muted">{alert.body}</span>
+        <span className="line-clamp-2 text-ink-muted">
+          {alert.body}
+          <Pause />
+        </span>
 
         <span className="mt-1 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
           {showDeadline && alert.deadlineAt && (
             <span className="inline-flex items-center gap-1.5 font-bold text-urgent">
               <Timer aria-hidden="true" className="size-5 shrink-0" />
               {t('alerts.closes', { when: relativeTime(alert.deadlineAt, i18n.language) })}
+              <Pause />
             </span>
           )}
           <span className="text-ink-muted">{relativeTime(alert.createdAt, i18n.language)}</span>

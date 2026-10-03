@@ -22,6 +22,8 @@ export const userRoom = (userId: string) => `user:${userId}`;
 /** Events the server sends to the browser, and the browser sends back. */
 export interface ServerToClientEvents {
   'notification:new': (notification: SerializedNotification) => void;
+  /** Live alerts may have been missed (Redis was briefly down): fetch the list again. */
+  'notifications:resync': () => void;
 }
 export interface ClientToServerEvents {
   /** The browser confirms a live notification arrived (records deliveredAt). */

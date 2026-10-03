@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useSearchParams } from 'react-router';
-import { z } from 'zod';
+import { z } from '../../lib/zod';
 import { Button } from '../../components/ui/Button';
 import { FormAlert } from '../../components/ui/FormAlert';
 import { Input } from '../../components/ui/Input';

@@ -11,7 +11,16 @@ export function testApp(rateLimits: Partial<RateLimitSettings> = {}) {
   return createApp({
     frontendOrigin: 'http://localhost:5173',
     healthChecks: {},
-    rateLimits: { login: 1000, passwordReset: 1000, phoneCode: 1000, ...rateLimits },
+    rateLimits: {
+      login: 1000,
+      passwordReset: 1000,
+      phoneCode: 1000,
+      message: 1000,
+      apply: 1000,
+      postJob: 1000,
+      announce: 1000,
+      ...rateLimits,
+    },
   });
 }
 

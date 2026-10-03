@@ -13,6 +13,7 @@ import { conflict, notFound } from '../../lib/httpError.js';
 import { prisma } from '../../lib/prisma.js';
 import { idParam, parse } from '../../lib/validate.js';
 import { currentUser, requireAuth, requireRole } from '../../middleware/auth.js';
+import { jobDeliveryStatus } from './deliveryStatus.js';
 import { jobInclude, serializeJob } from './serializers.js';
 
 const applicantInclude = {
@@ -100,7 +101,12 @@ export function employerRoutes() {
       include: applicantInclude,
       orderBy: { createdAt: 'asc' },
     });
-    res.json({ job: serializeJob(job), applicants: applicants.map(serializeApplicant) });
+    res.json({
+      job: serializeJob(job),
+      applicants: applicants.map(serializeApplicant),
+      // Did the people this employer contacted get it, and see it?
+      delivery: await jobDeliveryStatus(prisma, id, me.id),
+    });
   });
 
   return router;

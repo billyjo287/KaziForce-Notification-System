@@ -5,6 +5,7 @@ import { decideHeroMode, type HeroEnvironment } from './heroSupport';
 const capable: HeroEnvironment = {
   reducedMotion: false,
   saveData: false,
+  effectiveType: '4g',
   deviceMemory: 8,
   webgl: true,
 };
@@ -14,13 +15,17 @@ describe('decideHeroMode (PRD section 7 fallbacks)', () => {
     expect(decideHeroMode(capable)).toBe('3d');
   });
 
-  it('uses the 3D hero when the browser does not report memory (Safari, Firefox)', () => {
-    expect(decideHeroMode({ ...capable, deviceMemory: undefined })).toBe('3d');
+  it('uses the 3D hero when the browser does not report memory or speed (Safari, Firefox)', () => {
+    expect(decideHeroMode({ ...capable, deviceMemory: undefined, effectiveType: undefined })).toBe(
+      '3d',
+    );
   });
 
   it.each([
     ['reduced motion', { reducedMotion: true }],
     ['Data Saver', { saveData: true }],
+    ['a 3G connection', { effectiveType: '3g' }],
+    ['a 2G connection', { effectiveType: '2g' }],
     ['low device memory', { deviceMemory: 2 }],
     ['no WebGL', { webgl: false }],
   ])('falls back to the still image with %s', (_, change) => {

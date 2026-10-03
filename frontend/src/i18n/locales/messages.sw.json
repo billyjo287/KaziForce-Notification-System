@@ -1,0 +1,19 @@
+{
+  "messages": {
+    "title": "Ujumbe",
+    "emptyTitle": "Bado hakuna ujumbe",
+    "emptyBody": "Ukiomba kazi, au mtu akiomba kazi yako, mnaweza kuandikiana hapa.",
+    "errorTitle": "Hatukuweza kupakia ujumbe wako",
+    "about": "Kuhusu: {{job}}",
+    "you": "Wewe",
+    "noMessages": "Bado hakuna ujumbe. Sema habari!",
+    "label": "Ujumbe wako",
+    "send": "Tuma",
+    "sending": "Inatuma…",
+    "back": "Rudi kwenye ujumbe",
+    "unread_one": "{{count}} mpya",
+    "unread_other": "{{count}} mpya",
+    "sentAt": "Imetumwa {{when}}",
+    "receivedAt": "Imepokelewa {{when}}"
+  }
+}

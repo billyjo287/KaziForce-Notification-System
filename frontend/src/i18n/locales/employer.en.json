@@ -1,0 +1,63 @@
+{
+  "employer": {
+    "myJobs": {
+      "title": "My jobs",
+      "post": "Post a job",
+      "emptyTitle": "You have not posted a job yet",
+      "emptyBody": "Post your first job and the right workers will hear about it.",
+      "applicants_one": "{{count}} applicant",
+      "applicants_other": "{{count}} applicants",
+      "newApplicants_one": "{{count}} new",
+      "newApplicants_other": "{{count}} new",
+      "open": "Open",
+      "seeApplicants": "See applicants",
+      "errorTitle": "We could not load your jobs"
+    },
+    "post": {
+      "title": "Post a job",
+      "intro": "Keep it short and clear.",
+      "jobTitle": "Job title",
+      "jobTitleHelp": "For example: Warehouse packers needed today.",
+      "description": "What will the worker do?",
+      "descriptionHelp": "Hours, place and what to bring.",
+      "location": "Where is the job?",
+      "skill": "Main skill needed",
+      "choose": "Choose…",
+      "pay": "Pay",
+      "payHelp": "Optional. For example: KSh 1,200 per day.",
+      "date": "Closing date",
+      "time": "Closing time",
+      "deadlineHelp": "Applications close at this time.",
+      "urgent": "Is this urgent?",
+      "urgentYes": "Yes, I need someone soon",
+      "urgentYesHelp": "Urgent jobs go straight to workers' phones.",
+      "urgentNo": "No",
+      "submit": "Post the job",
+      "posting": "Posting…",
+      "posted": "Your job is posted."
+    },
+    "applicants": {
+      "title": "Applicants",
+      "back": "Back to my jobs",
+      "emptyTitle": "No applicants yet",
+      "emptyBody": "We will tell you when someone applies.",
+      "accept": "Accept",
+      "reject": "Reject",
+      "acceptedToast": "{{name}} accepted.",
+      "rejectedToast": "{{name}} not selected.",
+      "undone": "Change undone.",
+      "note": "Their note",
+      "skills": "Skills",
+      "from": "Lives in {{place}}",
+      "message": "Message {{name}}",
+      "appliedOn": "Applied {{when}}"
+    },
+    "company": {
+      "title": "Company profile",
+      "name": "Company name",
+      "nameHelp": "Workers see this on your job posts.",
+      "location": "Where is your company?"
+    },
+    "removedReason": "Removed: {{reason}}"
+  }
+}

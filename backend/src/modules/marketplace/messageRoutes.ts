@@ -6,6 +6,7 @@ import { recordEvent } from '../../events/domainEvents.js';
 import type { Prisma } from '../../generated/prisma/client.js';
 import { notFound } from '../../lib/httpError.js';
 import { prisma } from '../../lib/prisma.js';
+import type { RateLimiters } from '../../lib/rateLimits.js';
 import { parse } from '../../lib/validate.js';
 import { currentUser, requireAuth, requireRole } from '../../middleware/auth.js';
 
@@ -50,7 +51,7 @@ const sendSchema = z.object({
   body: z.string().trim().min(1, 'Write a message first').max(1000, 'Use at most 1,000 characters'),
 });
 
-export function messageRoutes() {
+export function messageRoutes(limits: RateLimiters) {
   const router = Router();
   router.use(requireAuth, requireRole('worker', 'business'));
 
@@ -123,7 +124,7 @@ export function messageRoutes() {
     });
   });
 
-  router.post('/:applicationId', async (req, res) => {
+  router.post('/:applicationId', limits.message, async (req, res) => {
     const me = currentUser(req);
     const { applicationId } = parse(params, req.params);
     const { body } = parse(sendSchema, req.body);

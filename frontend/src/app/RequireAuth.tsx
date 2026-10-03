@@ -31,7 +31,7 @@ export function RequireAuth({ role, children }: { role: Role; children: ReactNod
 
 /** For log-in / register pages: people who are already logged in go straight to their side. */
 export function RedirectIfLoggedIn({ children }: { children: ReactNode }) {
-  const status = useRestoreSession();
+  const status = useRestoreSession({ guestPage: true });
   const user = useAuth((s) => s.user);
   if (status === 'unknown') return <PageSkeleton />;
   if (user)

@@ -62,6 +62,22 @@ const scheduled = startScheduledJobs({
   onUserDeleted: (userId) => preferences.invalidate(userId),
 });
 await Promise.all([relay.ready, scheduled.ready]);
+
+// Queued jobs must survive a Redis restart (NFR-3): Redis has to write every change to disk
+// (appendonly) and never throw keys away when full (noeviction). Hosted Redis may differ from
+// docker-compose.yml, so say so loudly. Some hosts do not allow CONFIG: then nothing is checked.
+try {
+  const [, appendonly] = (await redis.config('GET', 'appendonly')) as string[];
+  const [, policy] = (await redis.config('GET', 'maxmemory-policy')) as string[];
+  if (appendonly !== 'yes' || policy !== 'noeviction') {
+    logger.warn(
+      { appendonly, maxmemoryPolicy: policy },
+      'Redis may lose queued jobs on a restart: set appendonly yes and maxmemory-policy noeviction (docs/DEPLOYMENT.md)',
+    );
+  }
+} catch {
+  // CONFIG not allowed on this Redis.
+}
 logger.info(
   `Notification worker running (channel mode: ${env.CHANNEL_MODE}` +
     (env.MOCK_FAIL_CHANNELS.length

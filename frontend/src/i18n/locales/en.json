@@ -10,8 +10,6 @@
     "tryAgain": "Try again",
     "loading": "Loading…",
     "backHome": "Go to the home page",
-    "comingSoonTitle": "Coming soon",
-    "comingSoonBody": "This part of KaziForce is still being built. It will be ready soon.",
     "optional": "optional",
     "pages": "Pages",
     "previous": "Previous",
@@ -154,51 +152,6 @@
     "genericBody": "Please reload the page. If it keeps happening, try again later.",
     "reload": "Reload the page"
   },
-  "landing": {
-    "title": "Job alerts that reach you in time",
-    "nav": {
-      "login": "Log in",
-      "switchTo": "Kiswahili"
-    },
-    "hero": {
-      "title": "Never miss a job that is right for you",
-      "body": "KaziForce sends urgent job alerts straight to your WhatsApp or SMS, and keeps everything else calm and tidy.",
-      "cta": "Get started",
-      "secondary": "See how it works"
-    },
-    "how": {
-      "title": "How KaziForce alerts work",
-      "checkTitle": "We check every alert",
-      "checkBody": "Fake jobs and messages asking you to send money are stopped before they reach you.",
-      "sortTitle": "We sort by urgency",
-      "sortBody": "Each alert is marked Urgent, Important or For later, so you know what to do first.",
-      "sendTitle": "We send it where you look",
-      "sendBody": "Urgent alerts go to WhatsApp or SMS. If you miss one, we try your next choice."
-    },
-    "levels": {
-      "title": "Three levels, easy to tell apart",
-      "body": "Every alert shows a colour, a picture and a word, so you never have to guess.",
-      "urgent": "Act now: jobs that close soon, or a job offer you received.",
-      "medium": "Worth a look today: messages and updates on your applications.",
-      "low": "No rush: tips and news. We also send these in one daily email."
-    },
-    "control": {
-      "title": "You are in control",
-      "channels": "Choose what comes first: WhatsApp, SMS or email.",
-      "quiet": "Quiet hours: we will not disturb you at night, except for urgent job offers.",
-      "notImportant": "Tap \"Not important to me\" to see fewer alerts like it.",
-      "language": "Use KaziForce in English or Kiswahili."
-    },
-    "employers": {
-      "title": "For employers",
-      "body": "Post a job and the right workers hear about it in minutes. You can see when each worker received your message.",
-      "cta": "Post a job"
-    },
-    "footer": {
-      "project": "A student project at Strathmore University, Nairobi.",
-      "privacy": "WhatsApp and SMS alerts never include your personal details."
-    }
-  },
   "apiErrors": {
     "generic": "Something went wrong. Please try again.",
     "network": "We cannot reach KaziForce. Check your internet connection and try again.",
@@ -298,48 +251,6 @@
       "body": "You are logged in."
     }
   },
-  "onboarding": {
-    "step": "Step {{step}} of 3",
-    "skip": "Skip for now",
-    "phone": {
-      "title": "Your phone number",
-      "intro": "We send urgent job alerts here, so you never miss one.",
-      "label": "Mobile number",
-      "help": "Kenyan number, for example 0712 345 678.",
-      "consent": "I agree to receive WhatsApp and SMS messages from KaziForce about jobs and my account.",
-      "consentHelp": "You can change this at any time in Settings.",
-      "send": "Send me a code",
-      "codeTitle": "Enter the code",
-      "codeIntro": "We sent a 6-digit code to {{phone}}.",
-      "codeLabel": "6-digit code",
-      "verify": "Confirm",
-      "resend": "Send a new code",
-      "codeSent": "We sent a new code.",
-      "changeNumber": "Use a different number",
-      "verified": "Your number {{phone}} is confirmed."
-    },
-    "questions": {
-      "title": "How should we reach you?",
-      "whatsapp": "Do you use WhatsApp on this number?",
-      "yes": "Yes",
-      "no": "No",
-      "checksMost": "Where do you check messages most?",
-      "channelWhatsapp": "WhatsApp",
-      "channelSms": "SMS (text messages)",
-      "channelEmail": "Email"
-    },
-    "preset": {
-      "title": "How much should we tell you?",
-      "intro": "You can change this later in Settings.",
-      "recommended": "Recommended",
-      "recommendedHelp": "Urgent jobs by WhatsApp or SMS, important news by email, the rest in the app.",
-      "urgent_only": "Only urgent things",
-      "urgent_onlyHelp": "We only contact you outside the app for urgent jobs.",
-      "everything": "Tell me everything",
-      "everythingHelp": "Every alert also comes to you by email.",
-      "finish": "Finish"
-    }
-  },
   "applicationStatus": {
     "worker": {
       "received": "Sent, waiting",
@@ -398,100 +309,6 @@
       "findJobs": "Find jobs",
       "appliedOn": "Applied {{when}}"
     }
-  },
-  "employer": {
-    "myJobs": {
-      "title": "My jobs",
-      "post": "Post a job",
-      "emptyTitle": "You have not posted a job yet",
-      "emptyBody": "Post your first job and the right workers will hear about it.",
-      "applicants_one": "{{count}} applicant",
-      "applicants_other": "{{count}} applicants",
-      "newApplicants_one": "{{count}} new",
-      "newApplicants_other": "{{count}} new",
-      "open": "Open",
-      "seeApplicants": "See applicants",
-      "errorTitle": "We could not load your jobs"
-    },
-    "post": {
-      "title": "Post a job",
-      "intro": "Keep it short and clear.",
-      "jobTitle": "Job title",
-      "jobTitleHelp": "For example: Warehouse packers needed today.",
-      "description": "What will the worker do?",
-      "descriptionHelp": "Hours, place and what to bring.",
-      "location": "Where is the job?",
-      "skill": "Main skill needed",
-      "choose": "Choose…",
-      "pay": "Pay",
-      "payHelp": "Optional. For example: KSh 1,200 per day.",
-      "date": "Closing date",
-      "time": "Closing time",
-      "deadlineHelp": "Applications close at this time.",
-      "urgent": "Is this urgent?",
-      "urgentYes": "Yes, I need someone soon",
-      "urgentYesHelp": "Urgent jobs go straight to workers' phones.",
-      "urgentNo": "No",
-      "submit": "Post the job",
-      "posting": "Posting…",
-      "posted": "Your job is posted."
-    },
-    "applicants": {
-      "title": "Applicants",
-      "back": "Back to my jobs",
-      "emptyTitle": "No applicants yet",
-      "emptyBody": "We will tell you when someone applies.",
-      "accept": "Accept",
-      "reject": "Reject",
-      "acceptedToast": "{{name}} accepted.",
-      "rejectedToast": "{{name}} not selected.",
-      "undone": "Change undone.",
-      "note": "Their note",
-      "skills": "Skills",
-      "from": "Lives in {{place}}",
-      "message": "Message {{name}}",
-      "appliedOn": "Applied {{when}}"
-    },
-    "company": {
-      "title": "Company profile",
-      "name": "Company name",
-      "nameHelp": "Workers see this on your job posts.",
-      "location": "Where is your company?"
-    },
-    "removedReason": "Removed: {{reason}}"
-  },
-  "profile": {
-    "title": "Your profile",
-    "name": "Your full name",
-    "location": "Where do you want work?",
-    "locationHelp": "We send you jobs in this place.",
-    "skills": "Your skills",
-    "skillsHelp": "Choose up to 5. We send you jobs that need them.",
-    "skillsCount": "{{count}} of 5 chosen",
-    "skillsFull": "You have chosen 5 skills. Remove one to choose another.",
-    "back": "Back to settings",
-    "phoneTitle": "Phone number",
-    "phoneVerified": "{{phone}} (confirmed)",
-    "phoneNone": "No phone number yet.",
-    "changePhone": "Change number",
-    "addPhone": "Add a phone number"
-  },
-  "messages": {
-    "title": "Messages",
-    "emptyTitle": "No messages yet",
-    "emptyBody": "When you apply for a job, or someone applies for yours, you can write to each other here.",
-    "errorTitle": "We could not load your messages",
-    "about": "About: {{job}}",
-    "you": "You",
-    "noMessages": "No messages yet. Say hello!",
-    "label": "Your message",
-    "send": "Send",
-    "sending": "Sending…",
-    "back": "Back to messages",
-    "unread_one": "{{count}} new",
-    "unread_other": "{{count}} new",
-    "sentAt": "Sent {{when}}",
-    "receivedAt": "Received {{when}}"
   },
   "theme": {
     "label": "Screen colours",

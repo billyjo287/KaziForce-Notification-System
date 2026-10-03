@@ -56,18 +56,17 @@ export const NAV: Record<Role, RoleNav> = {
   admin: {
     basePath: '/admin',
     items: [
-      { key: 'users', path: 'users', icon: Users },
-      { key: 'adminJobs', path: 'jobs', icon: Briefcase },
-      { key: 'auditLog', path: 'audit-log', icon: ScrollText },
-      // Built in Phase 7 (placeholders for now).
       { key: 'overview', path: 'overview', icon: LayoutDashboard },
       { key: 'spam', path: 'spam', icon: ShieldAlert },
+      { key: 'users', path: 'users', icon: Users },
+      { key: 'adminJobs', path: 'jobs', icon: Briefcase },
       { key: 'deliveryLogs', path: 'delivery-logs', icon: Send },
       { key: 'announcements', path: 'announcements', icon: Megaphone },
       { key: 'models', path: 'models', icon: Cpu },
+      { key: 'auditLog', path: 'audit-log', icon: ScrollText },
       { key: 'settings', path: 'settings', icon: Settings },
     ],
-    // Three pages + "More" = 4 items.
-    bottomBar: ['users', 'adminJobs', 'auditLog'],
+    // Three pages + "More" = 4 items: the ones an admin checks every day.
+    bottomBar: ['overview', 'spam', 'users'],
   },
 };

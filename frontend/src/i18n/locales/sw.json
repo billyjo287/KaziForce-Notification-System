@@ -10,8 +10,6 @@
     "tryAgain": "Jaribu tena",
     "loading": "Inapakia…",
     "backHome": "Nenda ukurasa wa mwanzo",
-    "comingSoonTitle": "Inakuja hivi karibuni",
-    "comingSoonBody": "Sehemu hii ya KaziForce bado inajengwa. Itakuwa tayari hivi karibuni.",
     "optional": "si lazima",
     "pages": "Kurasa",
     "previous": "Iliyotangulia",
@@ -154,51 +152,6 @@
     "genericBody": "Tafadhali pakia ukurasa upya. Tatizo likiendelea, jaribu tena baadaye.",
     "reload": "Pakia ukurasa upya"
   },
-  "landing": {
-    "title": "Arifa za kazi zinazokufikia kwa wakati",
-    "nav": {
-      "login": "Ingia",
-      "switchTo": "English"
-    },
-    "hero": {
-      "title": "Usikose kazi inayokufaa",
-      "body": "KaziForce hutuma arifa za kazi za dharura moja kwa moja kwenye WhatsApp au SMS yako, na hupanga mengine yote kwa utulivu.",
-      "cta": "Anza sasa",
-      "secondary": "Ona jinsi inavyofanya kazi"
-    },
-    "how": {
-      "title": "Jinsi arifa za KaziForce zinavyofanya kazi",
-      "checkTitle": "Tunakagua kila arifa",
-      "checkBody": "Kazi bandia na ujumbe unaokuomba kutuma pesa huzuiwa kabla ya kukufikia.",
-      "sortTitle": "Tunapanga kwa uharaka",
-      "sortBody": "Kila arifa huwekwa alama ya Dharura, Muhimu au Baadaye, ili ujue cha kufanya kwanza.",
-      "sendTitle": "Tunaituma unapoangalia",
-      "sendBody": "Arifa za dharura huenda kwenye WhatsApp au SMS. Ukikosa moja, tunajaribu chaguo lako linalofuata."
-    },
-    "levels": {
-      "title": "Viwango vitatu, rahisi kutofautisha",
-      "body": "Kila arifa ina rangi, picha na neno, kwa hivyo hutahitaji kubahatisha.",
-      "urgent": "Chukua hatua sasa: kazi zinazofungwa hivi karibuni, au ofa ya kazi uliyopokea.",
-      "medium": "Zinafaa kuangaliwa leo: ujumbe na taarifa kuhusu maombi yako.",
-      "low": "Hakuna haraka: vidokezo na habari. Tunazituma pia kwenye barua pepe moja ya kila siku."
-    },
-    "control": {
-      "title": "Wewe ndiye mwenye udhibiti",
-      "channels": "Chagua kinachokuja kwanza: WhatsApp, SMS au barua pepe.",
-      "quiet": "Saa za utulivu: hatutakusumbua usiku, isipokuwa kwa ofa za kazi za dharura.",
-      "notImportant": "Gusa \"Si muhimu kwangu\" ili uone arifa chache kama hiyo.",
-      "language": "Tumia KaziForce kwa Kiingereza au Kiswahili."
-    },
-    "employers": {
-      "title": "Kwa waajiri",
-      "body": "Chapisha kazi na wafanyakazi wanaofaa wanapata habari ndani ya dakika chache. Unaweza kuona kila mfanyakazi alipopokea ujumbe wako.",
-      "cta": "Chapisha kazi"
-    },
-    "footer": {
-      "project": "Mradi wa mwanafunzi katika Chuo Kikuu cha Strathmore, Nairobi.",
-      "privacy": "Arifa za WhatsApp na SMS hazina taarifa zako binafsi kamwe."
-    }
-  },
   "apiErrors": {
     "generic": "Kuna tatizo. Tafadhali jaribu tena.",
     "network": "Hatuwezi kufikia KaziForce. Angalia muunganisho wako wa intaneti kisha ujaribu tena.",
@@ -298,48 +251,6 @@
       "body": "Umeingia kwenye akaunti yako."
     }
   },
-  "onboarding": {
-    "step": "Hatua {{step}} kati ya 3",
-    "skip": "Ruka kwa sasa",
-    "phone": {
-      "title": "Nambari yako ya simu",
-      "intro": "Tunatuma arifa za kazi za dharura hapa, ili usikose hata moja.",
-      "label": "Nambari ya simu",
-      "help": "Nambari ya Kenya, kwa mfano 0712 345 678.",
-      "consent": "Nakubali kupokea ujumbe wa WhatsApp na SMS kutoka KaziForce kuhusu kazi na akaunti yangu.",
-      "consentHelp": "Unaweza kubadilisha hili wakati wowote kwenye Mipangilio.",
-      "send": "Nitumie msimbo",
-      "codeTitle": "Andika msimbo",
-      "codeIntro": "Tumetuma msimbo wa tarakimu 6 kwa {{phone}}.",
-      "codeLabel": "Msimbo wa tarakimu 6",
-      "verify": "Thibitisha",
-      "resend": "Tuma msimbo mpya",
-      "codeSent": "Tumetuma msimbo mpya.",
-      "changeNumber": "Tumia nambari nyingine",
-      "verified": "Nambari yako {{phone}} imethibitishwa."
-    },
-    "questions": {
-      "title": "Tukufikie vipi?",
-      "whatsapp": "Je, unatumia WhatsApp kwenye nambari hii?",
-      "yes": "Ndiyo",
-      "no": "Hapana",
-      "checksMost": "Unaangalia ujumbe wapi zaidi?",
-      "channelWhatsapp": "WhatsApp",
-      "channelSms": "SMS (ujumbe mfupi)",
-      "channelEmail": "Barua pepe"
-    },
-    "preset": {
-      "title": "Tukueleze kiasi gani?",
-      "intro": "Unaweza kubadilisha hili baadaye kwenye Mipangilio.",
-      "recommended": "Inayopendekezwa",
-      "recommendedHelp": "Kazi za dharura kwa WhatsApp au SMS, habari muhimu kwa barua pepe, zingine kwenye programu.",
-      "urgent_only": "Mambo ya dharura tu",
-      "urgent_onlyHelp": "Tunakutafuta nje ya programu kwa kazi za dharura tu.",
-      "everything": "Niambie kila kitu",
-      "everythingHelp": "Kila arifa inakufikia pia kwa barua pepe.",
-      "finish": "Maliza"
-    }
-  },
   "applicationStatus": {
     "worker": {
       "received": "Imetumwa, inasubiri",
@@ -398,100 +309,6 @@
       "findJobs": "Tafuta kazi",
       "appliedOn": "Uliomba {{when}}"
     }
-  },
-  "employer": {
-    "myJobs": {
-      "title": "Kazi zangu",
-      "post": "Chapisha kazi",
-      "emptyTitle": "Bado hujachapisha kazi",
-      "emptyBody": "Chapisha kazi yako ya kwanza na wafanyakazi wanaofaa watapata habari.",
-      "applicants_one": "Mwombaji {{count}}",
-      "applicants_other": "Waombaji {{count}}",
-      "newApplicants_one": "{{count}} mpya",
-      "newApplicants_other": "{{count}} wapya",
-      "open": "Wazi",
-      "seeApplicants": "Tazama waombaji",
-      "errorTitle": "Hatukuweza kupakia kazi zako"
-    },
-    "post": {
-      "title": "Chapisha kazi",
-      "intro": "Iwe fupi na wazi.",
-      "jobTitle": "Jina la kazi",
-      "jobTitleHelp": "Kwa mfano: Wafungaji wa ghala wanahitajika leo.",
-      "description": "Mfanyakazi atafanya nini?",
-      "descriptionHelp": "Saa, mahali na cha kuleta.",
-      "location": "Kazi iko wapi?",
-      "skill": "Ujuzi mkuu unaohitajika",
-      "choose": "Chagua…",
-      "pay": "Malipo",
-      "payHelp": "Si lazima. Kwa mfano: KSh 1,200 kwa siku.",
-      "date": "Tarehe ya kufunga",
-      "time": "Saa ya kufunga",
-      "deadlineHelp": "Maombi yanafungwa wakati huu.",
-      "urgent": "Je, ni ya dharura?",
-      "urgentYes": "Ndiyo, namhitaji mtu haraka",
-      "urgentYesHelp": "Kazi za dharura hutumwa moja kwa moja kwenye simu za wafanyakazi.",
-      "urgentNo": "Hapana",
-      "submit": "Chapisha kazi",
-      "posting": "Inachapisha…",
-      "posted": "Kazi yako imechapishwa."
-    },
-    "applicants": {
-      "title": "Waombaji",
-      "back": "Rudi kwenye kazi zangu",
-      "emptyTitle": "Bado hakuna waombaji",
-      "emptyBody": "Tutakujulisha mtu akiomba.",
-      "accept": "Kubali",
-      "reject": "Kataa",
-      "acceptedToast": "{{name}} amekubaliwa.",
-      "rejectedToast": "{{name}} hakuchaguliwa.",
-      "undone": "Mabadiliko yametenduliwa.",
-      "note": "Ujumbe wake",
-      "skills": "Ujuzi",
-      "from": "Anaishi {{place}}",
-      "message": "Mwandikie {{name}}",
-      "appliedOn": "Aliomba {{when}}"
-    },
-    "company": {
-      "title": "Wasifu wa kampuni",
-      "name": "Jina la kampuni",
-      "nameHelp": "Wafanyakazi wanaona hili kwenye matangazo yako ya kazi.",
-      "location": "Kampuni yako iko wapi?"
-    },
-    "removedReason": "Imeondolewa: {{reason}}"
-  },
-  "profile": {
-    "title": "Wasifu wako",
-    "name": "Jina lako kamili",
-    "location": "Unataka kazi wapi?",
-    "locationHelp": "Tunakutumia kazi za mahali hapa.",
-    "skills": "Ujuzi wako",
-    "skillsHelp": "Chagua hadi 5. Tunakutumia kazi zinazouhitaji.",
-    "skillsCount": "{{count}} kati ya 5 zimechaguliwa",
-    "skillsFull": "Umechagua ujuzi 5. Ondoa mmoja ili uchague mwingine.",
-    "back": "Rudi kwenye mipangilio",
-    "phoneTitle": "Nambari ya simu",
-    "phoneVerified": "{{phone}} (imethibitishwa)",
-    "phoneNone": "Bado hakuna nambari ya simu.",
-    "changePhone": "Badilisha nambari",
-    "addPhone": "Ongeza nambari ya simu"
-  },
-  "messages": {
-    "title": "Ujumbe",
-    "emptyTitle": "Bado hakuna ujumbe",
-    "emptyBody": "Ukiomba kazi, au mtu akiomba kazi yako, mnaweza kuandikiana hapa.",
-    "errorTitle": "Hatukuweza kupakia ujumbe wako",
-    "about": "Kuhusu: {{job}}",
-    "you": "Wewe",
-    "noMessages": "Bado hakuna ujumbe. Sema habari!",
-    "label": "Ujumbe wako",
-    "send": "Tuma",
-    "sending": "Inatuma…",
-    "back": "Rudi kwenye ujumbe",
-    "unread_one": "{{count}} mpya",
-    "unread_other": "{{count}} mpya",
-    "sentAt": "Imetumwa {{when}}",
-    "receivedAt": "Imepokelewa {{when}}"
   },
   "theme": {
     "label": "Mwonekano wa skrini",

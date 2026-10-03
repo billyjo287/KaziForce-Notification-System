@@ -14,6 +14,12 @@ import { relativeTime } from '../../lib/relativeTime';
 import { useApiErrorMessage } from '../../lib/useApiErrorMessage';
 import { usePageTitle } from '../../lib/usePageTitle';
 import { sidePath, useAuth } from '../../stores/auth';
+import { addPageStrings } from '../../i18n/addPageStrings';
+import messagesEn from '../../i18n/locales/messages.en.json';
+import messagesSw from '../../i18n/locales/messages.sw.json';
+
+// The messages pages' words arrive with them.
+addPageStrings(messagesEn, messagesSw);
 
 function useBasePath() {
   const role = useAuth((s) => s.user?.role ?? 'worker');

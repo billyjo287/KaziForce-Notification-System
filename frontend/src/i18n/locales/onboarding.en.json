@@ -1,0 +1,44 @@
+{
+  "onboarding": {
+    "step": "Step {{step}} of 3",
+    "skip": "Skip for now",
+    "phone": {
+      "title": "Your phone number",
+      "intro": "We send urgent job alerts here, so you never miss one.",
+      "label": "Mobile number",
+      "help": "Kenyan number, for example 0712 345 678.",
+      "consent": "I agree to receive WhatsApp and SMS messages from KaziForce about jobs and my account.",
+      "consentHelp": "You can change this at any time in Settings.",
+      "send": "Send me a code",
+      "codeTitle": "Enter the code",
+      "codeIntro": "We sent a 6-digit code to {{phone}}.",
+      "codeLabel": "6-digit code",
+      "verify": "Confirm",
+      "resend": "Send a new code",
+      "codeSent": "We sent a new code.",
+      "changeNumber": "Use a different number",
+      "verified": "Your number {{phone}} is confirmed."
+    },
+    "questions": {
+      "title": "How should we reach you?",
+      "whatsapp": "Do you use WhatsApp on this number?",
+      "yes": "Yes",
+      "no": "No",
+      "checksMost": "Where do you check messages most?",
+      "channelWhatsapp": "WhatsApp",
+      "channelSms": "SMS (text messages)",
+      "channelEmail": "Email"
+    },
+    "preset": {
+      "title": "How much should we tell you?",
+      "intro": "You can change this later in Settings.",
+      "recommended": "Recommended",
+      "recommendedHelp": "Urgent jobs by WhatsApp or SMS, important news by email, the rest in the app.",
+      "urgent_only": "Only urgent things",
+      "urgent_onlyHelp": "We only contact you outside the app for urgent jobs.",
+      "everything": "Tell me everything",
+      "everythingHelp": "Every alert also comes to you by email.",
+      "finish": "Finish"
+    }
+  }
+}

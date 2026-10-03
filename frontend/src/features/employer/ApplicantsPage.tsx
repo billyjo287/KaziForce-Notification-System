@@ -13,8 +13,10 @@ import { relativeTime } from '../../lib/relativeTime';
 import { useApiErrorMessage } from '../../lib/useApiErrorMessage';
 import { usePageTitle } from '../../lib/usePageTitle';
 import { showToast } from '../../stores/toasts';
-import type { Applicant } from '../../types/api';
+import type { Applicant, JobDelivery } from '../../types/api';
 import { JobCard } from '../jobs/JobCard';
+import { ApplicantDelivery, JobAlertReach } from './DeliveryStatus';
+import './strings';
 
 /** One job's applicants: Accept / Reject in one tap each, with Undo. */
 export default function ApplicantsPage() {
@@ -46,6 +48,7 @@ export default function ApplicantsPage() {
         <>
           <h1 className="sr-only">{`${t('employer.applicants.title')}: ${data.job.title}`}</h1>
           <JobCard job={data.job} />
+          <JobAlertReach jobAlert={data.delivery.jobAlert} />
           <h2 className="mt-8 mb-4 flex items-center gap-2 text-2xl font-bold">
             <Users aria-hidden="true" className="size-6" />
             {t('employer.applicants.title')} ({data.applicants.length})
@@ -60,7 +63,11 @@ export default function ApplicantsPage() {
             <ul className="flex flex-col gap-3">
               {data.applicants.map((applicant) => (
                 <li key={applicant.id}>
-                  <ApplicantCard jobId={id} applicant={applicant} />
+                  <ApplicantCard
+                    jobId={id}
+                    applicant={applicant}
+                    delivery={data.delivery.applicants[applicant.worker.id]}
+                  />
                 </li>
               ))}
             </ul>
@@ -71,7 +78,15 @@ export default function ApplicantsPage() {
   );
 }
 
-function ApplicantCard({ jobId, applicant }: { jobId: string; applicant: Applicant }) {
+function ApplicantCard({
+  jobId,
+  applicant,
+  delivery,
+}: {
+  jobId: string;
+  applicant: Applicant;
+  delivery: JobDelivery['applicants'][string] | undefined;
+}) {
   const { t, i18n } = useTranslation();
   const skillName = useSkillName();
   const setStatus = useSetApplicationStatus(jobId);
@@ -133,6 +148,7 @@ function ApplicantCard({ jobId, applicant }: { jobId: string; applicant: Applica
           {applicant.note}
         </blockquote>
       )}
+      <ApplicantDelivery status={delivery} />
       <div className="flex flex-wrap gap-3">
         {!decided && (
           <>

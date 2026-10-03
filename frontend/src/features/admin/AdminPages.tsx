@@ -1,7 +1,7 @@
-import { CloudOff, ScrollText, Search, SearchX, ShieldAlert } from 'lucide-react';
+import { ScrollText, Search, SearchX, ShieldAlert } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useParams, useSearchParams } from 'react-router';
+import { Link, useParams } from 'react-router';
 import {
   useAdminJobs,
   useAdminUser,
@@ -19,9 +19,6 @@ import { Input } from '../../components/ui/Input';
 import { Pagination } from '../../components/ui/Pagination';
 import { Select } from '../../components/ui/Select';
 import { CardListSkeleton } from '../../components/ui/Skeleton';
-import { addPageStrings } from '../../i18n/addPageStrings';
-import adminEn from '../../i18n/locales/admin.en.json';
-import adminSw from '../../i18n/locales/admin.sw.json';
 import { formatPhone } from '../../lib/phone';
 import { relativeTime } from '../../lib/relativeTime';
 import { useApiErrorMessage } from '../../lib/useApiErrorMessage';
@@ -30,28 +27,9 @@ import { showToast } from '../../stores/toasts';
 import type { Role } from '../../types/api';
 import { JobCard } from '../jobs/JobCard';
 import { ReasonDialog } from './ReasonDialog';
-
-// The admin pages' words arrive with these pages (workers and employers never need them).
-addPageStrings(adminEn, adminSw);
-
-const ANY = 'any';
-
-function LoadError({ title, onRetry }: { title: string; onRetry: () => void }) {
-  const { t } = useTranslation();
-  return (
-    <EmptyState
-      role="alert"
-      icon={CloudOff}
-      title={title}
-      body={t('apiErrors.network')}
-      action={
-        <Button variant="secondary" onClick={onRetry}>
-          {t('common.tryAgain')}
-        </Button>
-      }
-    />
-  );
-}
+import { ANY, useParamSetter } from './params';
+import { LoadError } from './shared';
+import '../employer/strings';
 
 /** Search box that only searches when the button is pressed (fewer requests on slow data). */
 function SearchForm({
@@ -91,20 +69,6 @@ function SearchForm({
       </Button>
     </form>
   );
-}
-
-function useParamSetter() {
-  const [params, setParams] = useSearchParams();
-  return {
-    params,
-    set: (key: string, value: string | undefined) => {
-      const next = new URLSearchParams(params);
-      if (value) next.set(key, value);
-      else next.delete(key);
-      if (key !== 'page') next.delete('page');
-      setParams(next);
-    },
-  };
 }
 
 // ---------- Users ----------

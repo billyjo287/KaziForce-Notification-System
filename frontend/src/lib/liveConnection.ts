@@ -56,6 +56,9 @@ export function startLiveConnection(handlers: LiveHandlers): () => void {
       handlers.onConnect();
     });
 
+    // The server lost live messages for a moment (Redis restart): catch up like after a reconnect.
+    s.on('notifications:resync', () => handlers.onConnect());
+
     s.on('notification:new', (notification: ApiNotification) => {
       // Tell the server it arrived (records the delivery time).
       s.emit('notification:received', { id: notification.id });

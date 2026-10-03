@@ -1,0 +1,19 @@
+{
+  "messages": {
+    "title": "Messages",
+    "emptyTitle": "No messages yet",
+    "emptyBody": "When you apply for a job, or someone applies for yours, you can write to each other here.",
+    "errorTitle": "We could not load your messages",
+    "about": "About: {{job}}",
+    "you": "You",
+    "noMessages": "No messages yet. Say hello!",
+    "label": "Your message",
+    "send": "Send",
+    "sending": "Sending…",
+    "back": "Back to messages",
+    "unread_one": "{{count}} new",
+    "unread_other": "{{count}} new",
+    "sentAt": "Sent {{when}}",
+    "receivedAt": "Received {{when}}"
+  }
+}

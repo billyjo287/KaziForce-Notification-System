@@ -1,0 +1,47 @@
+{
+  "landing": {
+    "title": "Job alerts that reach you in time",
+    "nav": {
+      "login": "Log in",
+      "switchTo": "Kiswahili"
+    },
+    "hero": {
+      "title": "Never miss a job that is right for you",
+      "body": "KaziForce sends urgent job alerts straight to your WhatsApp or SMS, and keeps everything else calm and tidy.",
+      "cta": "Get started",
+      "secondary": "See how it works"
+    },
+    "how": {
+      "title": "How KaziForce alerts work",
+      "checkTitle": "We check every alert",
+      "checkBody": "Fake jobs and messages asking you to send money are stopped before they reach you.",
+      "sortTitle": "We sort by urgency",
+      "sortBody": "Each alert is marked Urgent, Important or For later, so you know what to do first.",
+      "sendTitle": "We send it where you look",
+      "sendBody": "Urgent alerts go to WhatsApp or SMS. If you miss one, we try your next choice."
+    },
+    "levels": {
+      "title": "Three levels, easy to tell apart",
+      "body": "Every alert shows a colour, a picture and a word, so you never have to guess.",
+      "urgent": "Act now: jobs that close soon, or a job offer you received.",
+      "medium": "Worth a look today: messages and updates on your applications.",
+      "low": "No rush: tips and news. We also send these in one daily email."
+    },
+    "control": {
+      "title": "You are in control",
+      "channels": "Choose what comes first: WhatsApp, SMS or email.",
+      "quiet": "Quiet hours: we will not disturb you at night, except for urgent job offers.",
+      "notImportant": "Tap \"Not important to me\" to see fewer alerts like it.",
+      "language": "Use KaziForce in English or Kiswahili."
+    },
+    "employers": {
+      "title": "For employers",
+      "body": "Post a job and the right workers hear about it in minutes. You can see when each worker received your message.",
+      "cta": "Post a job"
+    },
+    "footer": {
+      "project": "A student project at Strathmore University, Nairobi.",
+      "privacy": "WhatsApp and SMS alerts never include your personal details."
+    }
+  }
+}

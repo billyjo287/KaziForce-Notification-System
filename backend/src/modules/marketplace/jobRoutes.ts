@@ -5,6 +5,7 @@ import { recordEvent } from '../../events/domainEvents.js';
 import type { Prisma } from '../../generated/prisma/client.js';
 import { badRequest, conflict, notFound } from '../../lib/httpError.js';
 import { prisma } from '../../lib/prisma.js';
+import type { RateLimiters } from '../../lib/rateLimits.js';
 import { PAGE_SIZE, idParam, pageQuery, parse } from '../../lib/validate.js';
 import { currentUser, requireAuth, requireRole } from '../../middleware/auth.js';
 import { jobInclude, serializeJob } from './serializers.js';
@@ -32,7 +33,7 @@ const applySchema = z.object({ note: z.string().trim().max(500).optional() });
 /** Open jobs whose deadline has not passed. */
 const openJobs = (): Prisma.JobWhereInput => ({ status: 'open', deadline: { gt: new Date() } });
 
-export function jobRoutes() {
+export function jobRoutes(limits: RateLimiters) {
   const router = Router();
   router.use(requireAuth);
 
@@ -94,7 +95,7 @@ export function jobRoutes() {
   });
 
   // Post a job on one page (employers).
-  router.post('/', requireRole('business'), async (req, res) => {
+  router.post('/', requireRole('business'), limits.postJob, async (req, res) => {
     const me = currentUser(req);
     const input = parse(postJobSchema, req.body);
     const deadline = new Date(input.deadline);
@@ -138,7 +139,7 @@ export function jobRoutes() {
   });
 
   // One-tap apply with an optional short note (workers).
-  router.post('/:id/apply', requireRole('worker'), async (req, res) => {
+  router.post('/:id/apply', requireRole('worker'), limits.apply, async (req, res) => {
     const me = currentUser(req);
     const { id } = parse(idParam, req.params);
     const { note } = parse(applySchema, req.body ?? {});

@@ -63,7 +63,7 @@ export default function UiKitPage() {
             <Button variant="secondary">{t('uiKit.secondary')}</Button>
             <Button variant="ghost">{t('uiKit.ghost')}</Button>
             <Button variant="danger">{t('uiKit.danger')}</Button>
-            <Button size="lg">{t('landing.hero.cta')}</Button>
+            <Button size="lg">{t('common.continue')}</Button>
           </div>
         </Section>
 

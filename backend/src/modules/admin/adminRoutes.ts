@@ -6,6 +6,7 @@ import { recordEvent } from '../../events/domainEvents.js';
 import type { Prisma } from '../../generated/prisma/client.js';
 import { badRequest, notFound } from '../../lib/httpError.js';
 import { prisma } from '../../lib/prisma.js';
+import type { RateLimiters } from '../../lib/rateLimits.js';
 import { redis } from '../../lib/redis.js';
 import { PAGE_SIZE, idParam, pageQuery, parse } from '../../lib/validate.js';
 import { currentUser, requireAuth, requireRole } from '../../middleware/auth.js';
@@ -46,7 +47,7 @@ const userListSelect = {
   location: { select: { name: true } },
 } satisfies Prisma.UserSelect;
 
-export function adminRoutes() {
+export function adminRoutes(limits: RateLimiters) {
   const router = Router();
   router.use(requireAuth, requireRole('admin'));
 
@@ -275,7 +276,7 @@ export function adminRoutes() {
   });
 
   // ---------- Announcements (PRD FR-2.4; the page to write them arrives in Phase 7) ----------
-  router.post('/announcements', async (req, res) => {
+  router.post('/announcements', limits.announce, async (req, res) => {
     const admin = currentUser(req);
     const input = parse(announcementSchema, req.body);
     const event = await prisma.$transaction(async (tx) => {

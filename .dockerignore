@@ -1,0 +1,14 @@
+# Keep the Docker build context small and free of secrets (builds run from the repository root).
+**/node_modules
+**/dist
+**/.env
+**/.env.*
+!**/.env.example
+.git
+loadtest/data
+frontend/test-results
+frontend/playwright-report
+ml-service/.venv
+ml-service/data
+ml-service/models/*.joblib
+**/__pycache__

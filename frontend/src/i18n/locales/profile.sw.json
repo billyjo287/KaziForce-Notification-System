@@ -1,0 +1,18 @@
+{
+  "profile": {
+    "title": "Wasifu wako",
+    "name": "Jina lako kamili",
+    "location": "Unataka kazi wapi?",
+    "locationHelp": "Tunakutumia kazi za mahali hapa.",
+    "skills": "Ujuzi wako",
+    "skillsHelp": "Chagua hadi 5. Tunakutumia kazi zinazouhitaji.",
+    "skillsCount": "{{count}} kati ya 5 zimechaguliwa",
+    "skillsFull": "Umechagua ujuzi 5. Ondoa mmoja ili uchague mwingine.",
+    "back": "Rudi kwenye mipangilio",
+    "phoneTitle": "Nambari ya simu",
+    "phoneVerified": "{{phone}} (imethibitishwa)",
+    "phoneNone": "Bado hakuna nambari ya simu.",
+    "changePhone": "Badilisha nambari",
+    "addPhone": "Ongeza nambari ya simu"
+  }
+}

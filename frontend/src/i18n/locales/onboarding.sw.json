@@ -1,0 +1,44 @@
+{
+  "onboarding": {
+    "step": "Hatua {{step}} kati ya 3",
+    "skip": "Ruka kwa sasa",
+    "phone": {
+      "title": "Nambari yako ya simu",
+      "intro": "Tunatuma arifa za kazi za dharura hapa, ili usikose hata moja.",
+      "label": "Nambari ya simu",
+      "help": "Nambari ya Kenya, kwa mfano 0712 345 678.",
+      "consent": "Nakubali kupokea ujumbe wa WhatsApp na SMS kutoka KaziForce kuhusu kazi na akaunti yangu.",
+      "consentHelp": "Unaweza kubadilisha hili wakati wowote kwenye Mipangilio.",
+      "send": "Nitumie msimbo",
+      "codeTitle": "Andika msimbo",
+      "codeIntro": "Tumetuma msimbo wa tarakimu 6 kwa {{phone}}.",
+      "codeLabel": "Msimbo wa tarakimu 6",
+      "verify": "Thibitisha",
+      "resend": "Tuma msimbo mpya",
+      "codeSent": "Tumetuma msimbo mpya.",
+      "changeNumber": "Tumia nambari nyingine",
+      "verified": "Nambari yako {{phone}} imethibitishwa."
+    },
+    "questions": {
+      "title": "Tukufikie vipi?",
+      "whatsapp": "Je, unatumia WhatsApp kwenye nambari hii?",
+      "yes": "Ndiyo",
+      "no": "Hapana",
+      "checksMost": "Unaangalia ujumbe wapi zaidi?",
+      "channelWhatsapp": "WhatsApp",
+      "channelSms": "SMS (ujumbe mfupi)",
+      "channelEmail": "Barua pepe"
+    },
+    "preset": {
+      "title": "Tukueleze kiasi gani?",
+      "intro": "Unaweza kubadilisha hili baadaye kwenye Mipangilio.",
+      "recommended": "Inayopendekezwa",
+      "recommendedHelp": "Kazi za dharura kwa WhatsApp au SMS, habari muhimu kwa barua pepe, zingine kwenye programu.",
+      "urgent_only": "Mambo ya dharura tu",
+      "urgent_onlyHelp": "Tunakutafuta nje ya programu kwa kazi za dharura tu.",
+      "everything": "Niambie kila kitu",
+      "everythingHelp": "Kila arifa inakufikia pia kwa barua pepe.",
+      "finish": "Maliza"
+    }
+  }
+}

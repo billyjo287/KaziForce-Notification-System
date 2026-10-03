@@ -131,6 +131,16 @@ export interface Applicant {
   messageCount: number;
 }
 
+/** How far one alert got: the furthest step, in plain words on screen. */
+export type DeliveryState = 'seen' | 'delivered' | 'sent' | 'waiting' | 'not_delivered';
+
+/** For an employer's job: did the people they contacted get it? (numbers only for job alerts) */
+export interface JobDelivery {
+  jobAlert: Record<DeliveryState, number> & { total: number };
+  /** By worker id: their latest status update and message from this employer. */
+  applicants: Record<string, { statusUpdate: DeliveryState | null; message: DeliveryState | null }>;
+}
+
 export interface Conversation {
   applicationId: string;
   job: { id: string; title: string };

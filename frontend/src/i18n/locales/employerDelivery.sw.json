@@ -1,0 +1,26 @@
+{
+  "employer": {
+    "delivery": {
+      "title": "Nani alipata tangazo lako la kazi",
+      "help": "Tulituma kazi yako kwa wafanyakazi wa eneo moja au wenye ujuzi huo.",
+      "seenBy": "Imeonwa na wafanyakazi {{seen}} kati ya {{total}}",
+      "none": "Hakuna mfanyakazi aliyelingana na kazi hii bado, kwa hivyo hakuna arifa iliyotumwa.",
+      "states": {
+        "seen": "Imeonwa",
+        "delivered": "Imefika, haijafunguliwa",
+        "sent": "Imetumwa",
+        "waiting": "Inasubiri kutumwa",
+        "not_delivered": "Haikufika"
+      },
+      "decision": "Taarifa yako ya mwisho: {{state}}",
+      "message": "Ujumbe wako wa mwisho: {{state}}",
+      "short": {
+        "seen": "imeonwa",
+        "delivered": "imefika, haijafunguliwa",
+        "sent": "imetumwa",
+        "waiting": "inasubiri kutumwa",
+        "not_delivered": "haikufika"
+      }
+    }
+  }
+}

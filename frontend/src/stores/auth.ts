@@ -22,6 +22,28 @@ interface AuthState {
   clear: (notice?: AuthNotice) => void;
 }
 
+/**
+ * "This browser was logged in": not a secret (the login itself is in an httpOnly cookie), only a
+ * hint that lets the log-in and sign-up pages skip asking the server on a first visit (one
+ * round trip less on a slow phone). Pages that need a login always ask.
+ */
+const SIGNED_IN_HINT = 'kf.signedIn';
+export function hasSignedInHint(): boolean {
+  try {
+    return localStorage.getItem(SIGNED_IN_HINT) === '1';
+  } catch {
+    return true; // storage blocked: ask the server, as before
+  }
+}
+function setSignedInHint(on: boolean) {
+  try {
+    if (on) localStorage.setItem(SIGNED_IN_HINT, '1');
+    else localStorage.removeItem(SIGNED_IN_HINT);
+  } catch {
+    // storage blocked: nothing to remember
+  }
+}
+
 export const useAuth = create<AuthState>()((set) => ({
   status: 'unknown',
   accessToken: null,
@@ -31,19 +53,22 @@ export const useAuth = create<AuthState>()((set) => ({
   setSession: ({ accessToken, user }) => {
     // The account's saved language wins on every device.
     if (user.language !== i18n.language) void i18n.changeLanguage(user.language);
+    setSignedInHint(true);
     set({ status: 'user', accessToken, user, notice: null });
   },
   setUser: (user) => set({ user }),
   setJustLoggedIn: (justLoggedIn) => set({ justLoggedIn }),
   clearNotice: () => set({ notice: null }),
-  clear: (notice = null) =>
-    set({ status: 'guest', accessToken: null, user: null, notice, justLoggedIn: false }),
+  clear: (notice = null) => {
+    setSignedInHint(false);
+    set({ status: 'guest', accessToken: null, user: null, notice, justLoggedIn: false });
+  },
 }));
 
 /** Where each side starts after logging in. */
 export function homePath(role: Role): string {
   if (role === 'business') return '/employer/alerts';
-  if (role === 'admin') return '/admin/users';
+  if (role === 'admin') return '/admin/overview';
   return '/worker/alerts';
 }
 

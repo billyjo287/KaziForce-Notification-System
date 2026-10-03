@@ -1,0 +1,47 @@
+{
+  "landing": {
+    "title": "Arifa za kazi zinazokufikia kwa wakati",
+    "nav": {
+      "login": "Ingia",
+      "switchTo": "English"
+    },
+    "hero": {
+      "title": "Usikose kazi inayokufaa",
+      "body": "KaziForce hutuma arifa za kazi za dharura moja kwa moja kwenye WhatsApp au SMS yako, na hupanga mengine yote kwa utulivu.",
+      "cta": "Anza sasa",
+      "secondary": "Ona jinsi inavyofanya kazi"
+    },
+    "how": {
+      "title": "Jinsi arifa za KaziForce zinavyofanya kazi",
+      "checkTitle": "Tunakagua kila arifa",
+      "checkBody": "Kazi bandia na ujumbe unaokuomba kutuma pesa huzuiwa kabla ya kukufikia.",
+      "sortTitle": "Tunapanga kwa uharaka",
+      "sortBody": "Kila arifa huwekwa alama ya Dharura, Muhimu au Baadaye, ili ujue cha kufanya kwanza.",
+      "sendTitle": "Tunaituma unapoangalia",
+      "sendBody": "Arifa za dharura huenda kwenye WhatsApp au SMS. Ukikosa moja, tunajaribu chaguo lako linalofuata."
+    },
+    "levels": {
+      "title": "Viwango vitatu, rahisi kutofautisha",
+      "body": "Kila arifa ina rangi, picha na neno, kwa hivyo hutahitaji kubahatisha.",
+      "urgent": "Chukua hatua sasa: kazi zinazofungwa hivi karibuni, au ofa ya kazi uliyopokea.",
+      "medium": "Zinafaa kuangaliwa leo: ujumbe na taarifa kuhusu maombi yako.",
+      "low": "Hakuna haraka: vidokezo na habari. Tunazituma pia kwenye barua pepe moja ya kila siku."
+    },
+    "control": {
+      "title": "Wewe ndiye mwenye udhibiti",
+      "channels": "Chagua kinachokuja kwanza: WhatsApp, SMS au barua pepe.",
+      "quiet": "Saa za utulivu: hatutakusumbua usiku, isipokuwa kwa ofa za kazi za dharura.",
+      "notImportant": "Gusa \"Si muhimu kwangu\" ili uone arifa chache kama hiyo.",
+      "language": "Tumia KaziForce kwa Kiingereza au Kiswahili."
+    },
+    "employers": {
+      "title": "Kwa waajiri",
+      "body": "Chapisha kazi na wafanyakazi wanaofaa wanapata habari ndani ya dakika chache. Unaweza kuona kila mfanyakazi alipopokea ujumbe wako.",
+      "cta": "Chapisha kazi"
+    },
+    "footer": {
+      "project": "Mradi wa mwanafunzi katika Chuo Kikuu cha Strathmore, Nairobi.",
+      "privacy": "Arifa za WhatsApp na SMS hazina taarifa zako binafsi kamwe."
+    }
+  }
+}

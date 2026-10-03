@@ -40,6 +40,12 @@ async function clear() {
 }
 
 async function main() {
+  // This script DELETES everything first: never on a real database by accident.
+  if (process.env.NODE_ENV === 'production' && process.env.ALLOW_SAMPLE_DATA !== 'yes') {
+    throw new Error(
+      'Refusing to replace a production database with sample data. Use npm run db:bootstrap.',
+    );
+  }
   await clear();
 
   // ---------- Lookup lists ----------

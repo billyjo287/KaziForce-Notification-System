@@ -20,6 +20,7 @@ import type {
   QuietHours,
   Threshold,
 } from '../../types/api';
+import '../onboarding/strings';
 import './strings';
 
 const ICONS = { whatsapp: MessageCircle, sms: MessageSquare, email: Mail };

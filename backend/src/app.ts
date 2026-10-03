@@ -11,6 +11,8 @@ import {
   type RateLimitSettings,
 } from './lib/rateLimits.js';
 import { adminRoutes } from './modules/admin/adminRoutes.js';
+import { monitoringRoutes } from './modules/admin/monitoringRoutes.js';
+import { reviewRoutes } from './modules/admin/reviewRoutes.js';
 import { authRoutes } from './modules/auth/authRoutes.js';
 import { applicationRoutes, employerRoutes } from './modules/marketplace/applicationRoutes.js';
 import { jobRoutes } from './modules/marketplace/jobRoutes.js';
@@ -27,19 +29,61 @@ export interface AppOptions {
   logger?: Logger;
   /** Tests pass their own limits; each app gets its own counters. */
   rateLimits?: Partial<RateLimitSettings>;
+  trustProxyHops?: number;
+}
+
+/** An address without its secret parts, for the logs. */
+export function safeUrl(url: string) {
+  return url
+    .replace(/(\/webhooks\/africastalking\/)[^/?]+/, '$1[hidden]')
+    .replace(/^(\/o\/)[^/?]+/, '$1[hidden]')
+    .replace(/([?&](token|code)=)[^&]+/g, '$1[hidden]');
 }
 
 /** Builds the Express app. Dependencies are passed in so tests can swap them for fakes. */
-export function createApp({ frontendOrigin, healthChecks, logger, rateLimits }: AppOptions) {
+export function createApp({
+  frontendOrigin,
+  healthChecks,
+  logger,
+  rateLimits,
+  trustProxyHops = 1,
+}: AppOptions) {
   const app = express();
   const limits = createRateLimiters({ ...DEFAULT_RATE_LIMITS, ...rateLimits });
 
-  app.set('trust proxy', 1); // Railway/Vercel put one proxy in front; needed for correct IPs
+  // How many proxies stand between the visitor and us (Railway's edge = 1; Vercel forwarding
+  // /api to Railway = 2). Needed to see each visitor's real address for the rate limits.
+  app.set('trust proxy', trustProxyHops);
   app.use(helmet());
-  app.use(cors({ origin: frontendOrigin, credentials: true }));
+  app.use(
+    cors({
+      origin: frontendOrigin,
+      credentials: true,
+      // Lets the website read a download's file name (the admin's training data CSV).
+      exposedHeaders: ['Content-Disposition'],
+    }),
+  );
   app.use(express.json({ limit: '100kb' }));
   app.use(cookieParser());
-  if (logger) app.use(pinoHttp({ logger }));
+  if (logger) {
+    app.use(
+      pinoHttp({
+        logger,
+        // Health checks come every few seconds from the host: not worth a log line each.
+        autoLogging: { ignore: (req) => req.url === '/health' },
+        // Only what helps to find a problem: no headers (login tokens, cookies) and no secrets
+        // in addresses (the Africa's Talking webhook path contains one; tracked-link codes).
+        serializers: {
+          req: (req: { id: unknown; method: string; url: string }) => ({
+            id: req.id,
+            method: req.method,
+            url: safeUrl(req.url),
+          }),
+          res: (res: { statusCode: number }) => ({ statusCode: res.statusCode }),
+        },
+      }),
+    );
+  }
 
   app.use(healthRouter(healthChecks));
   // Tracked links in SMS / WhatsApp / email, and the providers' delivery reports.
@@ -50,12 +94,14 @@ export function createApp({ frontendOrigin, healthChecks, logger, rateLimits }: 
   api.use('/auth', authRoutes(limits));
   api.use('/me', meRoutes(limits));
   api.use(lookupRoutes());
-  api.use('/jobs', jobRoutes());
+  api.use('/jobs', jobRoutes(limits));
   api.use('/employer', employerRoutes());
   api.use('/applications', applicationRoutes());
-  api.use('/conversations', messageRoutes());
+  api.use('/conversations', messageRoutes(limits));
   api.use('/notifications', notificationRoutes());
-  api.use('/admin', adminRoutes());
+  api.use('/admin', adminRoutes(limits));
+  api.use('/admin', reviewRoutes());
+  api.use('/admin', monitoringRoutes());
   app.use('/api', api);
 
   app.use((_req, res) => {

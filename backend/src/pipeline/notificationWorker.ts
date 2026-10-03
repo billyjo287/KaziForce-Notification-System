@@ -1,6 +1,7 @@
 // The BullMQ worker for "notification.process" jobs (pipeline order, CLAUDE.md section 5):
 //   QUEUED -> processing -> classify (ML service /predict, or the same rules in Node if it does
-//   not answer within 500 ms) -> spam? BLOCKED (never delivered; waits for admin review)
+//   not answer within 500 ms) -> spam? BLOCKED (never delivered; waits for admin review;
+//   an admin can release it, and then it comes back here and skips the classification)
 //          -> in-app delivery: DeliveryLog row + live push to the user's Socket.IO room -> SENT
 //          -> external channels (channels/delivery.ts): WhatsApp / SMS / email by priority and
 //             the person's preferences, with the urgent safety net.
@@ -8,7 +9,7 @@ import { Worker } from 'bullmq';
 import type { Redis } from 'ioredis';
 import type { Logger } from 'pino';
 import type { PrismaClient } from '../generated/prisma/client.js';
-import { NOTIFICATION_QUEUE, type ProcessJobData } from '../lib/queue.js';
+import { NOTIFICATION_QUEUE, idleFriendly, type ProcessJobData } from '../lib/queue.js';
 import { notificationInclude, serializeNotification } from '../modules/notifications/serialize.js';
 import { InAppAdapter } from '../channels/InAppAdapter.js';
 import { classify } from './classify.js';
@@ -55,37 +56,43 @@ export function startNotificationWorker({
     if (claimed.count === 0) return 'skipped';
 
     const input = await prisma.notification.findUniqueOrThrow({ where: { id } });
-    const verdict = await classify(input, { mlServiceUrl, timeoutMs: mlTimeoutMs });
-    if (verdict.fallbackReason && !mlDown) {
-      mlDown = true;
-      logger.warn(
-        { reason: verdict.fallbackReason, url: mlServiceUrl },
-        'ML service unavailable: using the built-in rules (rules_fallback) until it is back',
+    // Released by an admin from the spam review ("not spam"): deliver it with the verdict it
+    // already has (kept as the model's answer, a training label next to the correction).
+    const released = input.correctedSpam === false && input.modelVersion !== null;
+    let classification = {};
+    if (!released) {
+      const verdict = await classify(input, { mlServiceUrl, timeoutMs: mlTimeoutMs });
+      if (verdict.fallbackReason && !mlDown) {
+        mlDown = true;
+        logger.warn(
+          { reason: verdict.fallbackReason, url: mlServiceUrl },
+          'ML service unavailable: using the built-in rules (rules_fallback) until it is back',
+        );
+      } else if (!verdict.fallbackReason && mlDown) {
+        mlDown = false;
+        logger.info('ML service is answering again');
+      }
+      await registerModel(verdict.modelVersion).catch((error: unknown) =>
+        logger.warn({ err: error }, 'Could not register the model version'),
       );
-    } else if (!verdict.fallbackReason && mlDown) {
-      mlDown = false;
-      logger.info('ML service is answering again');
-    }
-    await registerModel(verdict.modelVersion).catch((error: unknown) =>
-      logger.warn({ err: error }, 'Could not register the model version'),
-    );
-    const classification = {
-      predictedPriority: verdict.priority,
-      priorityConfidence: verdict.priorityConfidence,
-      isSpam: verdict.isSpam,
-      spamScore: verdict.spamScore,
-      modelVersion: verdict.modelVersion,
-      predictionSource: verdict.predictionSource,
-      explanation: verdict.explanation,
-    };
+      classification = {
+        predictedPriority: verdict.priority,
+        priorityConfidence: verdict.priorityConfidence,
+        isSpam: verdict.isSpam,
+        spamScore: verdict.spamScore,
+        modelVersion: verdict.modelVersion,
+        predictionSource: verdict.predictionSource,
+        explanation: verdict.explanation,
+      };
 
-    if (verdict.isSpam) {
-      // Never delivered to anyone; waits in the admin's spam review list.
-      await prisma.notification.update({
-        where: { id },
-        data: { ...classification, status: 'blocked' },
-      });
-      return 'blocked';
+      if (verdict.isSpam) {
+        // Never delivered to anyone; waits in the admin's spam review list.
+        await prisma.notification.update({
+          where: { id },
+          data: { ...classification, status: 'blocked' },
+        });
+        return 'blocked';
+      }
     }
 
     const sentAt = new Date();
@@ -124,7 +131,7 @@ export function startNotificationWorker({
   const worker = new Worker<ProcessJobData>(
     NOTIFICATION_QUEUE,
     (job) => processNotification(job.data.notificationId),
-    { connection, prefix, concurrency },
+    { connection, prefix, concurrency, ...idleFriendly() },
   );
 
   worker.on('failed', (job, error) => {

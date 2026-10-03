@@ -15,6 +15,7 @@ import { homePath, useAuth } from '../../stores/auth';
 import type { ExternalChannel, PresetName } from '../../types/api';
 import { AuthLayout } from '../auth/AuthLayout';
 import { PhoneVerification } from './PhoneVerification';
+import './strings';
 
 type Step = 'phone' | 'questions' | 'preset';
 

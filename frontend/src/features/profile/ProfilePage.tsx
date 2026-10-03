@@ -16,6 +16,13 @@ import { sidePath, useAuth } from '../../stores/auth';
 import { showToast } from '../../stores/toasts';
 import type { User } from '../../types/api';
 import { PhoneVerification } from '../onboarding/PhoneVerification';
+import { addPageStrings } from '../../i18n/addPageStrings';
+import profileEn from '../../i18n/locales/profile.en.json';
+import profileSw from '../../i18n/locales/profile.sw.json';
+import '../employer/strings';
+
+// The profile page's words arrive with it.
+addPageStrings(profileEn, profileSw);
 
 const MAX_SKILLS = 5;
 

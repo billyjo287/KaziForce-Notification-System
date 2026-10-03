@@ -91,6 +91,22 @@ export async function attachRealtime(
   });
 
   const channel = realtimeChannel(prefix);
+
+  // Redis keeps no copy of live messages: anything published while this subscription was down
+  // is gone (resilience test: 59 of 9,975 alerts during a Redis restart). When it is back, every
+  // open page fetches its list again, exactly as after its own reconnect.
+  let lostConnection = false;
+  subscriber.on('error', () => {
+    lostConnection = true;
+  });
+  subscriber.on('ready', () => {
+    if (!lostConnection) return;
+    lostConnection = false;
+    // A moment later, so the subscription is restored before the pages ask.
+    setTimeout(() => io.emit('notifications:resync'), 1000);
+    logger.info('Live updates back after a Redis outage: asked open pages to catch up');
+  });
+
   subscriber.on('message', (from, raw) => {
     if (from !== channel) return;
     let message: BusMessage;

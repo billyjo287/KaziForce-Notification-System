@@ -9,6 +9,7 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { CardListSkeleton } from '../../components/ui/Skeleton';
 import { usePageTitle } from '../../lib/usePageTitle';
 import { JobCard } from '../jobs/JobCard';
+import './strings';
 
 /** Employer "My jobs" with a large "Post a job" button (PRD section 8). */
 export default function MyJobsPage() {

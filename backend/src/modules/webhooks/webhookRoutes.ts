@@ -10,12 +10,14 @@
 // so their address contains a secret (AFRICASTALKING_WEBHOOK_SECRET) instead.
 import { timingSafeEqual } from 'node:crypto';
 import express, { Router, type Request } from 'express';
+import { z } from 'zod';
 import { env } from '../../config/env.js';
 import { applyDeliveryReport, setChannelOptOut } from '../../channels/reports.js';
 import { openTrackedLink } from '../../channels/trackedLinks.js';
 import { isValidTwilioSignature } from '../../channels/twilioSignature.js';
 import { forbidden } from '../../lib/httpError.js';
 import { prisma } from '../../lib/prisma.js';
+import { parse } from '../../lib/validate.js';
 
 const STOP_WORDS = new Set([
   'STOP',
@@ -82,6 +84,20 @@ function africasTalkingOutcome(status: string | undefined) {
   return 'accepted' as const; // Sent, Submitted, Buffered: still on its way
 }
 
+// Africa's Talking form fields: checked like every other input (a repeated field would arrive
+// as a list; anything unexpected is refused with 400).
+const atDelivery = z.object({
+  id: z.string().max(100).optional(),
+  status: z.string().max(40).optional(),
+  failureReason: z.string().max(200).optional(),
+});
+const atOptOut = z.object({
+  phoneNumber: z
+    .string()
+    .regex(/^\+\d{8,15}$/)
+    .optional(),
+});
+
 export function linkRoutes() {
   const router = Router();
   router.get('/o/:token', async (req, res) => {
@@ -130,7 +146,7 @@ export function webhookRoutes() {
 
   router.post('/africastalking/:secret/delivery', async (req, res) => {
     requireAfricasTalkingSecret(req.params.secret);
-    const body = req.body as Record<string, string | undefined>;
+    const body = parse(atDelivery, req.body);
     if (body.id) {
       const outcome = africasTalkingOutcome(body.status);
       const error = body.failureReason ? `Africa's Talking: ${body.failureReason}` : undefined;
@@ -141,7 +157,7 @@ export function webhookRoutes() {
 
   router.post('/africastalking/:secret/optout', async (req, res) => {
     requireAfricasTalkingSecret(req.params.secret);
-    const phone = (req.body as Record<string, string | undefined>).phoneNumber;
+    const phone = parse(atOptOut, req.body).phoneNumber;
     if (phone) await setChannelOptOut(prisma, phone, 'sms', true);
     res.status(204).end();
   });

@@ -1,12 +1,11 @@
 // The frame of each logged-in side (guard + app shell) and the Alerts pages.
 // Loaded as its own download, so visitors of the public landing page never pay for it.
 // Other pages are separate downloads too (see router.tsx).
-import { Outlet, useMatches } from 'react-router';
+import { Outlet } from 'react-router';
 import { AppShell } from '../components/shell/AppShell';
 import { AlertsPage } from '../features/alerts/AlertsPage';
 import { useUnreadCount } from '../features/alerts/useAlerts';
 import { useLiveAlerts } from '../features/alerts/useLiveAlerts';
-import { ComingSoonPage } from '../pages/ComingSoonPage';
 import { RequireAuth } from './RequireAuth';
 
 function AlertsSideShell({ role }: { role: 'worker' | 'business' }) {
@@ -42,9 +41,3 @@ export const AdminLayout = () => (
 
 export const WorkerAlerts = () => <AlertsPage role="worker" />;
 export const EmployerAlerts = () => <AlertsPage role="business" />;
-
-/** Pages that arrive in later phases (see docs/ROADMAP.md); the title comes from the route. */
-export function ComingSoon() {
-  const handle = useMatches().at(-1)?.handle as { titleKey?: string } | undefined;
-  return <ComingSoonPage titleKey={handle?.titleKey ?? 'common.comingSoonTitle'} />;
-}

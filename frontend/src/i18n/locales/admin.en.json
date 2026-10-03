@@ -63,8 +63,181 @@
         "user_suspended": "Suspended an account",
         "user_reactivated": "Reactivated an account",
         "job_removed": "Removed a job",
-        "announcement_sent": "Sent an announcement"
+        "announcement_sent": "Sent an announcement",
+        "notification_released": "Delivered an alert that was blocked as spam",
+        "notification_spam_confirmed": "Confirmed an alert is spam",
+        "notification_priority_corrected": "Corrected the priority of an alert",
+        "export_training_data": "Downloaded training data"
       }
+    },
+    "channels": {
+      "in_app": "In the app",
+      "whatsapp": "WhatsApp",
+      "sms": "SMS",
+      "email": "Email"
+    },
+    "deliveryStatus": {
+      "pending": "Still trying",
+      "sent": "Sent",
+      "delivered": "Delivered",
+      "failed": "Failed"
+    },
+    "overview": {
+      "title": "Overview",
+      "intro": "How notifications are doing right now. This page updates itself every 30 seconds.",
+      "updated": "Updated {{when}}",
+      "errorTitle": "We could not load the overview",
+      "tiles": {
+        "notifications": "Alerts created today",
+        "spamBlocked": "Spam blocked today",
+        "failed": "Failed deliveries (last 24 hours)",
+        "spamWaiting": "Waiting for spam review",
+        "held": "Held until quiet hours end"
+      },
+      "review": "Review them",
+      "rates": {
+        "title": "Messages that got through",
+        "help": "Each message counts once: if a retry got it through, it counts as a success.",
+        "period": "Time",
+        "last24h": "Last 24 hours",
+        "last7d": "Last 7 days",
+        "detail": "{{delivered}} of {{total}} got through",
+        "failed": "{{count}} failed",
+        "pending": "{{count}} still trying",
+        "none": "Nothing sent yet",
+        "meter": "{{channel}}: {{percent}} got through"
+      },
+      "queues": {
+        "title": "Waiting in the queues",
+        "help": "“Planned for later” is normal: retries, urgent safety-net checks and quiet hours.",
+        "queue": "Queue",
+        "waiting": "Waiting now",
+        "scheduled": "Planned for later",
+        "failed": "Gave up",
+        "error": "We could not read the queues. Check that Redis is running.",
+        "names": {
+          "notifications": "New alerts being sorted",
+          "channel-whatsapp": "WhatsApp messages",
+          "channel-sms": "SMS messages",
+          "channel-email": "Emails",
+          "escalation": "Urgent safety-net checks",
+          "held": "Held for quiet hours"
+        }
+      },
+      "failures": {
+        "title": "Latest failed deliveries",
+        "none": "No failed deliveries in the last 24 hours.",
+        "all": "See all failed deliveries"
+      }
+    },
+    "logs": {
+      "title": "Delivery logs",
+      "intro": "Every try to send an alert, newest first. One alert can have several tries.",
+      "channel": "Channel",
+      "status": "Result",
+      "from": "From",
+      "fromHelp": "The first day to show (Kenya time).",
+      "to": "Until",
+      "toHelp": "The last day to show (Kenya time).",
+      "clear": "Clear filters",
+      "to_person": "To {{name}}",
+      "try": "Try {{count}}",
+      "safetyNet": "Safety net",
+      "opened": "Opened {{when}}",
+      "errorTitle": "We could not load the delivery logs",
+      "emptyTitle": "No deliveries match these filters",
+      "emptyBody": "Try another channel, result or date.",
+      "correct": "Correct priority",
+      "corrected": "Corrected by an admin"
+    },
+    "correct": {
+      "title": "What should the priority of “{{title}}” be?",
+      "body": "Your answer is saved to teach the future model. It does not resend the alert.",
+      "save": "Save priority",
+      "saved": "Priority saved"
+    },
+    "spam": {
+      "title": "Spam review",
+      "intro": "Alerts we stopped because they looked like spam or fraud. Nobody has seen them. Decide for each one.",
+      "from": "From {{name}}",
+      "fromSystem": "From KaziForce",
+      "to": "To {{name}}",
+      "score": "Spam score: {{percent}}",
+      "why": "Why: {{reasons}}",
+      "confirm": "Yes, it is spam",
+      "release": "Not spam: deliver it",
+      "confirmed": "Kept blocked. Thank you.",
+      "releaseTitle": "Deliver “{{title}}” to {{name}}?",
+      "releaseBody": "It will be sent now. Choose how important it is.",
+      "releasePriority": "Priority",
+      "releaseConfirm": "Deliver now",
+      "released": "Delivered to {{name}}.",
+      "errorTitle": "We could not load the spam review",
+      "emptyTitle": "Nothing to review",
+      "emptyBody": "When an alert looks like spam, it waits here for you."
+    },
+    "announce": {
+      "title": "Announcements",
+      "intro": "Send news to everyone, or only to workers or employers. It arrives in the app, usually as “For later”.",
+      "audience": "Who should get it?",
+      "audiences": {
+        "everyone": "Everyone",
+        "worker": "Workers only",
+        "business": "Employers only"
+      },
+      "reach_one": "Reaches {{count}} person.",
+      "reach_other": "Reaches {{count}} people.",
+      "reachLoading": "Counting…",
+      "titleLabel": "Title",
+      "titleHelp": "Short and clear, for example “New: choose how we contact you”.",
+      "message": "Message",
+      "messageHelp": "Plain words. At most 1,000 characters.",
+      "left": "{{count}} characters left",
+      "preview": "Preview: how it will look",
+      "previewEmpty": "Your announcement",
+      "send_one": "Send to {{count}} person",
+      "send_other": "Send to {{count}} people",
+      "confirmTitle": "Send this announcement?",
+      "confirmBody": "It cannot be taken back once it is sent.",
+      "confirm": "Send it",
+      "sent": "Sent. It is on its way.",
+      "sender": "KaziForce"
+    },
+    "models": {
+      "title": "Model versions",
+      "intro": "The classifiers that decide how urgent each alert is and whether it is spam. One is in use at a time.",
+      "active": "In use",
+      "algorithms": {
+        "rules": "Rules (no training)",
+        "unknown": "Unknown"
+      },
+      "classified": "Alerts classified",
+      "fallback": "Answered by the backup rules",
+      "fallbackHelp": "The ML service was slow or down, so the built-in rules answered.",
+      "corrected": "Corrected by an admin",
+      "since": "In use since",
+      "trained": "Trained",
+      "metrics": "Test scores",
+      "noMetrics": "No test scores yet. They are added when a model is trained.",
+      "errorTitle": "We could not load the model versions",
+      "emptyTitle": "No model versions yet",
+      "emptyBody": "The first one appears when the first alert is classified."
+    },
+    "export": {
+      "title": "Training data",
+      "body": "Download every alert as a spreadsheet (CSV) for training models. Names, phone numbers and emails are removed, and people get random codes that change with every download.",
+      "from": "From",
+      "fromHelp": "Leave empty to start at the beginning.",
+      "to": "Until",
+      "toHelp": "Leave empty to include today.",
+      "button": "Download training data (CSV)",
+      "busy": "Preparing the file…",
+      "done": "Download ready"
+    },
+    "priorityHelp": {
+      "urgent": "Cannot wait: sent by WhatsApp or SMS at once.",
+      "medium": "Worth knowing today: in the app and by email.",
+      "low": "Can wait: in the app and in the daily summary."
     }
   }
 }

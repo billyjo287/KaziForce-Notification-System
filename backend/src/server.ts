@@ -12,6 +12,7 @@ const app = createApp({
   frontendOrigin: env.FRONTEND_ORIGIN,
   logger,
   rateLimits: { login: env.LOGIN_RATE_LIMIT },
+  trustProxyHops: env.TRUST_PROXY_HOPS,
   healthChecks: {
     database: () => prisma.$queryRaw`SELECT 1`,
     redis: () => redis.ping(),
@@ -22,7 +23,7 @@ const server = app.listen(env.PORT, () => {
   logger.info(`API running on http://localhost:${env.PORT} (channel mode: ${env.CHANNEL_MODE})`);
 });
 
-const subscriber = new Redis(env.REDIS_URL);
+const subscriber = new Redis(env.REDIS_URL, { family: 0 });
 const realtime = await attachRealtime(server, {
   frontendOrigin: env.FRONTEND_ORIGIN,
   prisma,

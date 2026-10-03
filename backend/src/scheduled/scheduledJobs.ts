@@ -9,6 +9,7 @@ import type { Redis } from 'ioredis';
 import type { Logger } from 'pino';
 import type { EmailContent } from '../channels/EmailAdapter.js';
 import type { PrismaClient } from '../generated/prisma/client.js';
+import { idleFriendly } from '../lib/queue.js';
 import { TIMEZONE } from '../preferences/quietHours.js';
 import { buildSummaryFor, summaryRecipients } from './dailySummary.js';
 import { runRetention } from './retention.js';
@@ -97,7 +98,12 @@ export function startScheduledJobs(options: ScheduledJobsOptions) {
     }
   }
 
-  const worker = new Worker(SCHEDULED_QUEUE, process, { connection, prefix, concurrency: 5 });
+  const worker = new Worker(SCHEDULED_QUEUE, process, {
+    connection,
+    prefix,
+    concurrency: 5,
+    ...idleFriendly(),
+  });
   worker.on('error', (error) => logger.error({ err: error }, 'Scheduled jobs worker error'));
 
   const ready =

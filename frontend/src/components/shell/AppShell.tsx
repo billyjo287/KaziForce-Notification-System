@@ -55,7 +55,7 @@ export function AppShell({ role, unreadCount, children }: AppShellProps) {
   const href = (item: NavItem) => `${nav.basePath}/${item.path}`;
   const accessibleLabel = (item: NavItem) =>
     item.showsUnread && unreadCount > 0
-      ? `${t(`nav.${item.key}`)}, ${t('nav.unreadCount', { count: unreadCount })}`
+      ? `${t(`nav.${item.key}`)} ${t('nav.unreadCount', { count: unreadCount })}`
       : t(`nav.${item.key}`);
 
   const bottomItems = nav.items.filter((item) => nav.bottomBar.includes(item.key));
@@ -251,13 +251,15 @@ function BottomItemContent({
           className={`size-6 ${active ? 'text-primary' : ''}`}
           strokeWidth={active ? 2.5 : 2}
         />
-        {unreadCount > 0 && (
-          <span className="absolute -top-2 -right-3">
-            <UnreadBubble count={unreadCount} />
-          </span>
-        )}
       </span>
       <span>{t(`nav.${item.key}`)}</span>
+      {/* After the word in reading order ("Alerts 5", matching the spoken "Alerts 5 unread":
+          WCAG 2.5.3), but drawn at the icon's top right as before. */}
+      {unreadCount > 0 && (
+        <span className="absolute top-0.5 left-1/2">
+          <UnreadBubble count={unreadCount} />
+        </span>
+      )}
     </>
   );
 }

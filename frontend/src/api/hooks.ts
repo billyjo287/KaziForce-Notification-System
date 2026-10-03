@@ -13,6 +13,7 @@ import type {
   Conversation,
   ExternalChannel,
   Job,
+  JobDelivery,
   MyApplication,
   Page,
   Place,
@@ -190,7 +191,11 @@ export const useEmployerJob = (id: string) =>
   useQuery({
     queryKey: ['employerJob', id],
     queryFn: async () =>
-      (await api.get<{ job: Job; applicants: Applicant[] }>(`/employer/jobs/${id}`)).data,
+      (
+        await api.get<{ job: Job; applicants: Applicant[]; delivery: JobDelivery }>(
+          `/employer/jobs/${id}`,
+        )
+      ).data,
   });
 
 export function useSetApplicationStatus(jobId: string) {

@@ -30,6 +30,13 @@ Docker runs the supporting services for you:
 **No API keys are needed.** `CHANNEL_MODE=mock` (the default) means WhatsApp, SMS and email are
 only logged, never really sent.
 
+## Documents
+
+- **Put it online:** [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) (Vercel, Railway, Supabase, step by step)
+- **User guides:** [workers](docs/guides/worker.md) · [employers](docs/guides/employer.md) · [admins](docs/guides/admin.md)
+- **For the thesis:** [technical overview](docs/technical-overview.md) ·
+  [performance and resilience](docs/performance.md) · [accessibility and page speed](docs/accessibility.md)
+
 ## 1. Install these first (once per computer)
 
 1. **Node.js 24 LTS** (at least 22.22) with **npm 11.20 or newer**: https://nodejs.org. Check with
@@ -93,6 +100,13 @@ now, keep `npm run dev` running and type `npm run jobs:run -w backend -- summary
 terminal, then open Mailpit: `worker1@example.com` (Wanjiru) has something to read.
 `npm run jobs:run -w backend -- retention` runs the nightly cleanup (deletes accounts 14 days
 after their owner asked, and delivery logs older than 180 days).
+
+**Try the admin pages:** log in as the admin (see below). The **Overview** shows today's numbers,
+how many messages got through on each channel, and the queues. **Spam review** lets you keep a
+blocked alert blocked or deliver it with the right priority (`npm run db:seed -w backend` brings
+back the sample scam). **Delivery logs** lists every try, with filters. **Announcements** shows a
+preview before sending. **Model versions** has the anonymised training data download (CSV: no
+names, phone numbers or emails). Employers see "Who got your job alert" on each job's page.
 
 **Try live alerts:** log in as `worker1@example.com` in one browser window and as
 `employer1@example.com` in a private window. When the employer sends that worker a message (or
@@ -168,6 +182,13 @@ pytest                # tests
 
 GitHub Actions runs all of these automatically on every push
 ([.github/workflows/ci.yml](.github/workflows/ci.yml)).
+
+**Load test (1,000 alerts a minute for 10 minutes, Windows):** with Docker running,
+`npm run build -w backend`, then `.\loadtest
+un.ps1` (`-Duration 1m` for a short rehearsal,
+`-Chaos` to restart Redis and Postgres in the middle). It uses its own database and k6 from
+Docker; results in `loadtest\data
+eport.txt`. Method and results: [docs/performance.md](docs/performance.md).
 
 ## 5. Useful database commands
 

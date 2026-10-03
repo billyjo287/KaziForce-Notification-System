@@ -1,7 +1,11 @@
 import '@testing-library/jest-dom/vitest';
-import { cleanup } from '@testing-library/react';
+import { cleanup, configure } from '@testing-library/react';
 import { afterEach } from 'vitest';
 import '../i18n';
+
+// "findBy..." waits up to 5 s (not 1 s): with every test file running at once on a laptop, a
+// page can take longer than a second to appear without anything being wrong.
+configure({ asyncUtilTimeout: 5000 });
 
 // jsdom (the fake browser used by unit tests) lacks a few browser features that Motion and
 // Radix use. Minimal stand-ins:

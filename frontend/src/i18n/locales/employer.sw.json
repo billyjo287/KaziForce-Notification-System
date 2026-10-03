@@ -1,0 +1,63 @@
+{
+  "employer": {
+    "myJobs": {
+      "title": "Kazi zangu",
+      "post": "Chapisha kazi",
+      "emptyTitle": "Bado hujachapisha kazi",
+      "emptyBody": "Chapisha kazi yako ya kwanza na wafanyakazi wanaofaa watapata habari.",
+      "applicants_one": "Mwombaji {{count}}",
+      "applicants_other": "Waombaji {{count}}",
+      "newApplicants_one": "{{count}} mpya",
+      "newApplicants_other": "{{count}} wapya",
+      "open": "Wazi",
+      "seeApplicants": "Tazama waombaji",
+      "errorTitle": "Hatukuweza kupakia kazi zako"
+    },
+    "post": {
+      "title": "Chapisha kazi",
+      "intro": "Iwe fupi na wazi.",
+      "jobTitle": "Jina la kazi",
+      "jobTitleHelp": "Kwa mfano: Wafungaji wa ghala wanahitajika leo.",
+      "description": "Mfanyakazi atafanya nini?",
+      "descriptionHelp": "Saa, mahali na cha kuleta.",
+      "location": "Kazi iko wapi?",
+      "skill": "Ujuzi mkuu unaohitajika",
+      "choose": "Chagua…",
+      "pay": "Malipo",
+      "payHelp": "Si lazima. Kwa mfano: KSh 1,200 kwa siku.",
+      "date": "Tarehe ya kufunga",
+      "time": "Saa ya kufunga",
+      "deadlineHelp": "Maombi yanafungwa wakati huu.",
+      "urgent": "Je, ni ya dharura?",
+      "urgentYes": "Ndiyo, namhitaji mtu haraka",
+      "urgentYesHelp": "Kazi za dharura hutumwa moja kwa moja kwenye simu za wafanyakazi.",
+      "urgentNo": "Hapana",
+      "submit": "Chapisha kazi",
+      "posting": "Inachapisha…",
+      "posted": "Kazi yako imechapishwa."
+    },
+    "applicants": {
+      "title": "Waombaji",
+      "back": "Rudi kwenye kazi zangu",
+      "emptyTitle": "Bado hakuna waombaji",
+      "emptyBody": "Tutakujulisha mtu akiomba.",
+      "accept": "Kubali",
+      "reject": "Kataa",
+      "acceptedToast": "{{name}} amekubaliwa.",
+      "rejectedToast": "{{name}} hakuchaguliwa.",
+      "undone": "Mabadiliko yametenduliwa.",
+      "note": "Ujumbe wake",
+      "skills": "Ujuzi",
+      "from": "Anaishi {{place}}",
+      "message": "Mwandikie {{name}}",
+      "appliedOn": "Aliomba {{when}}"
+    },
+    "company": {
+      "title": "Wasifu wa kampuni",
+      "name": "Jina la kampuni",
+      "nameHelp": "Wafanyakazi wanaona hili kwenye matangazo yako ya kazi.",
+      "location": "Kampuni yako iko wapi?"
+    },
+    "removedReason": "Imeondolewa: {{reason}}"
+  }
+}

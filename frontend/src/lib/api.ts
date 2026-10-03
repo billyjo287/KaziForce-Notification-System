@@ -6,8 +6,15 @@ import type { Session } from '../types/api';
 
 export const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
 
+/**
+ * In production the website forwards /api to the backend (vercel.json), so the login cookie
+ * belongs to the website's own address: browsers that block other sites' cookies (Safari)
+ * keep people logged in. Live alerts still connect to API_URL directly (they use the token).
+ */
+const REST_BASE = import.meta.env.VITE_SAME_ORIGIN_API === 'true' ? '/api' : `${API_URL}/api`;
+
 export const api = axios.create({
-  baseURL: `${API_URL}/api`,
+  baseURL: REST_BASE,
   withCredentials: true, // send the refresh cookie
   timeout: 20_000,
   // The backend refuses cookie requests without this header (protection against other sites).

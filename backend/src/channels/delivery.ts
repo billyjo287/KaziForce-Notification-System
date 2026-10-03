@@ -21,6 +21,7 @@ import {
   HELD_JOB,
   HELD_QUEUE,
   channelQueueName,
+  idleFriendly,
   type ChannelJobData,
   type EscalationJobData,
   type HeldJobData,
@@ -273,7 +274,12 @@ export function startDelivery(options: DeliveryOptions) {
     }
   }
 
-  const workerOptions = { connection, prefix, concurrency: options.concurrency ?? 10 };
+  const workerOptions = {
+    connection,
+    prefix,
+    concurrency: options.concurrency ?? 10,
+    ...idleFriendly(),
+  };
   const workers = [
     ...channels.map((c) => new Worker<ChannelJobData>(channelQueueName(c), send, workerOptions)),
     new Worker<EscalationJobData>(

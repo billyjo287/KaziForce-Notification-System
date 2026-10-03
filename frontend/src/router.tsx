@@ -13,13 +13,6 @@ const admin = () => import('./features/admin/AdminPages');
 const messages = () => import('./features/messages/MessagesPages');
 const passwordPages = () => import('./features/auth/PasswordResetPages');
 
-/** A page that arrives in a later phase; its title comes from the route's handle. */
-const comingSoon = (path: string, titleKey: string): RouteObject => ({
-  path,
-  handle: { titleKey },
-  lazy: async () => ({ Component: (await app()).ComingSoon }),
-});
-
 const settingsRoute: RouteObject = {
   path: 'settings',
   lazy: async () => ({
@@ -141,16 +134,41 @@ export const router = createBrowserRouter([
         path: 'admin',
         lazy: async () => ({ Component: (await app()).AdminLayout }),
         children: [
-          { index: true, element: <Navigate to="users" replace /> },
+          { index: true, element: <Navigate to="overview" replace /> },
+          {
+            path: 'overview',
+            lazy: async () => ({
+              Component: (await import('./features/admin/OverviewPage')).default,
+            }),
+          },
+          {
+            path: 'delivery-logs',
+            lazy: async () => ({
+              Component: (await import('./features/admin/DeliveryLogsPage')).default,
+            }),
+          },
+          {
+            path: 'spam',
+            lazy: async () => ({
+              Component: (await import('./features/admin/SpamReviewPage')).default,
+            }),
+          },
+          {
+            path: 'announcements',
+            lazy: async () => ({
+              Component: (await import('./features/admin/AnnouncementsPage')).default,
+            }),
+          },
+          {
+            path: 'models',
+            lazy: async () => ({
+              Component: (await import('./features/admin/ModelsPage')).default,
+            }),
+          },
           { path: 'users', lazy: async () => ({ Component: (await admin()).UsersPage }) },
           { path: 'users/:id', lazy: async () => ({ Component: (await admin()).UserDetailPage }) },
           { path: 'jobs', lazy: async () => ({ Component: (await admin()).AdminJobsPage }) },
           { path: 'audit-log', lazy: async () => ({ Component: (await admin()).AuditLogPage }) },
-          comingSoon('overview', 'nav.overview'),
-          comingSoon('spam', 'nav.spam'),
-          comingSoon('delivery-logs', 'nav.deliveryLogs'),
-          comingSoon('announcements', 'nav.announcements'),
-          comingSoon('models', 'nav.models'),
           settingsRoute,
         ],
       },

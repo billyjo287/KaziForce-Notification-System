@@ -43,3 +43,6 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 *.log
+
+# Load test output (contains login tokens for the test accounts)
+loadtest/data/

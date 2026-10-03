@@ -13,6 +13,14 @@ const envSchema = z.object({
   PUBLIC_APP_URL: z.url().default('http://localhost:5173'),
   APP_TIMEZONE: z.string().default('Africa/Nairobi'),
   DATABASE_URL: z.url(),
+  // Database connections each process may open at once (Prisma's pool). The worker needs more
+  // than the default 10 at high load; keep the total under your database's connection limit.
+  // Proxies in front of the API: 1 on Railway; 2 when Vercel forwards /api to it.
+  TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(1),
+  // BullMQ idle polling (docs/DEPLOYMENT.md section 8). BullMQ's defaults are 5 and 30.
+  QUEUE_DRAIN_DELAY_SECONDS: z.coerce.number().int().min(1).max(300).default(30),
+  QUEUE_STALLED_CHECK_SECONDS: z.coerce.number().int().min(10).max(3600).default(120),
+  DATABASE_POOL_MAX: z.coerce.number().int().min(2).max(100).default(10),
   REDIS_URL: z.url(),
   // Name prefix for the queues and live-update channel in Redis, so tests never mix with dev.
   QUEUE_PREFIX: z
@@ -69,6 +77,15 @@ const envSchema = z.object({
 
 /** Outside mock mode every provider needs its keys: say which are missing, all at once. */
 const withProviderKeys = envSchema.superRefine((v, ctx) => {
+  // Production must never run with the example secret from .env.example (anyone could forge a
+  // login token with it).
+  if (v.NODE_ENV === 'production' && /change-me/i.test(v.JWT_ACCESS_SECRET)) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['JWT_ACCESS_SECRET'],
+      message: 'Set a new random secret for production (see .env.example)',
+    });
+  }
   if (v.CHANNEL_MODE === 'mock') return;
   const required: (keyof typeof v)[] = [
     'TWILIO_ACCOUNT_SID',
@@ -89,7 +106,11 @@ const withProviderKeys = envSchema.superRefine((v, ctx) => {
   }
 });
 
-const parsed = withProviderKeys.safeParse(process.env);
+/** Checks a set of settings (exported so the production rules can be tested). */
+export const validateEnv = (source: Record<string, string | undefined>) =>
+  withProviderKeys.safeParse(source);
+
+const parsed = validateEnv(process.env);
 
 if (!parsed.success) {
   console.error('Invalid environment variables. Check backend/.env against backend/.env.example:');

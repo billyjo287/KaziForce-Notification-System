@@ -63,8 +63,181 @@
         "user_suspended": "Alisimamisha akaunti",
         "user_reactivated": "Aliwasha tena akaunti",
         "job_removed": "Aliondoa kazi",
-        "announcement_sent": "Ametuma tangazo"
+        "announcement_sent": "Ametuma tangazo",
+        "notification_released": "Alipeleka arifa iliyozuiwa kama taka",
+        "notification_spam_confirmed": "Alithibitisha kwamba arifa ni taka",
+        "notification_priority_corrected": "Alisahihisha kipaumbele cha arifa",
+        "export_training_data": "Alipakua data ya mafunzo"
       }
+    },
+    "channels": {
+      "in_app": "Kwenye programu",
+      "whatsapp": "WhatsApp",
+      "sms": "SMS",
+      "email": "Barua pepe"
+    },
+    "deliveryStatus": {
+      "pending": "Bado tunajaribu",
+      "sent": "Imetumwa",
+      "delivered": "Imefika",
+      "failed": "Imeshindikana"
+    },
+    "overview": {
+      "title": "Muhtasari",
+      "intro": "Hali ya arifa kwa sasa. Ukurasa huu hujisasisha kila sekunde 30.",
+      "updated": "Imesasishwa {{when}}",
+      "errorTitle": "Hatukuweza kupakia muhtasari",
+      "tiles": {
+        "notifications": "Arifa zilizoundwa leo",
+        "spamBlocked": "Taka zilizozuiwa leo",
+        "failed": "Zilizoshindwa kufika (saa 24 zilizopita)",
+        "spamWaiting": "Zinasubiri ukaguzi wa taka",
+        "held": "Zimeshikiliwa hadi saa za utulivu ziishe"
+      },
+      "review": "Zikague",
+      "rates": {
+        "title": "Ujumbe uliofika",
+        "help": "Kila ujumbe unahesabiwa mara moja: jaribio la marudio likifaulu, unahesabiwa kuwa umefika.",
+        "period": "Muda",
+        "last24h": "Saa 24 zilizopita",
+        "last7d": "Siku 7 zilizopita",
+        "detail": "{{delivered}} kati ya {{total}} zimefika",
+        "failed": "{{count}} zimeshindikana",
+        "pending": "{{count}} bado zinajaribiwa",
+        "none": "Hakuna kilichotumwa bado",
+        "meter": "{{channel}}: {{percent}} zimefika"
+      },
+      "queues": {
+        "title": "Zinazosubiri kwenye foleni",
+        "help": "“Zimepangwa baadaye” ni kawaida: marudio, ukaguzi wa dharura na saa za utulivu.",
+        "queue": "Foleni",
+        "waiting": "Zinasubiri sasa",
+        "scheduled": "Zimepangwa baadaye",
+        "failed": "Zimeachwa",
+        "error": "Hatukuweza kusoma foleni. Hakikisha Redis inafanya kazi.",
+        "names": {
+          "notifications": "Arifa mpya zinapangwa",
+          "channel-whatsapp": "Ujumbe wa WhatsApp",
+          "channel-sms": "Ujumbe wa SMS",
+          "channel-email": "Barua pepe",
+          "escalation": "Ukaguzi wa dharura",
+          "held": "Zimeshikiliwa kwa saa za utulivu"
+        }
+      },
+      "failures": {
+        "title": "Zilizoshindwa kufika hivi karibuni",
+        "none": "Hakuna zilizoshindwa katika saa 24 zilizopita.",
+        "all": "Ona zote zilizoshindwa"
+      }
+    },
+    "logs": {
+      "title": "Kumbukumbu za utumaji",
+      "intro": "Kila jaribio la kutuma arifa, za karibuni kwanza. Arifa moja inaweza kuwa na majaribio kadhaa.",
+      "channel": "Njia",
+      "status": "Matokeo",
+      "from": "Kuanzia",
+      "fromHelp": "Siku ya kwanza ya kuonyesha (saa za Kenya).",
+      "to": "Hadi",
+      "toHelp": "Siku ya mwisho ya kuonyesha (saa za Kenya).",
+      "clear": "Ondoa vichujio",
+      "to_person": "Kwa {{name}}",
+      "try": "Jaribio {{count}}",
+      "safetyNet": "Njia ya akiba",
+      "opened": "Ilifunguliwa {{when}}",
+      "errorTitle": "Hatukuweza kupakia kumbukumbu za utumaji",
+      "emptyTitle": "Hakuna utumaji unaolingana na vichujio hivi",
+      "emptyBody": "Jaribu njia, matokeo au tarehe nyingine.",
+      "correct": "Sahihisha kipaumbele",
+      "corrected": "Kimesahihishwa na msimamizi"
+    },
+    "correct": {
+      "title": "Kipaumbele cha “{{title}}” kiwe kipi?",
+      "body": "Jibu lako linahifadhiwa ili kufundisha modeli ya baadaye. Halitumi arifa tena.",
+      "save": "Hifadhi kipaumbele",
+      "saved": "Kipaumbele kimehifadhiwa"
+    },
+    "spam": {
+      "title": "Ukaguzi wa taka",
+      "intro": "Arifa tulizozuia kwa sababu zilionekana kuwa taka au ulaghai. Hakuna aliyeziona. Amua kwa kila moja.",
+      "from": "Kutoka kwa {{name}}",
+      "fromSystem": "Kutoka KaziForce",
+      "to": "Kwa {{name}}",
+      "score": "Alama ya taka: {{percent}}",
+      "why": "Sababu: {{reasons}}",
+      "confirm": "Ndiyo, ni taka",
+      "release": "Si taka: ipeleke",
+      "confirmed": "Imebaki imezuiwa. Asante.",
+      "releaseTitle": "Peleka “{{title}}” kwa {{name}}?",
+      "releaseBody": "Itatumwa sasa. Chagua umuhimu wake.",
+      "releasePriority": "Kipaumbele",
+      "releaseConfirm": "Peleka sasa",
+      "released": "Imepelekwa kwa {{name}}.",
+      "errorTitle": "Hatukuweza kupakia ukaguzi wa taka",
+      "emptyTitle": "Hakuna cha kukagua",
+      "emptyBody": "Arifa ikionekana kuwa taka, itakusubiri hapa."
+    },
+    "announce": {
+      "title": "Matangazo",
+      "intro": "Tuma habari kwa kila mtu, au kwa wafanyakazi au waajiri pekee. Inafika kwenye programu, kwa kawaida kama “Baadaye”.",
+      "audience": "Nani aipate?",
+      "audiences": {
+        "everyone": "Kila mtu",
+        "worker": "Wafanyakazi pekee",
+        "business": "Waajiri pekee"
+      },
+      "reach_one": "Inamfikia mtu {{count}}.",
+      "reach_other": "Inawafikia watu {{count}}.",
+      "reachLoading": "Tunahesabu…",
+      "titleLabel": "Kichwa",
+      "titleHelp": "Kifupi na wazi, kwa mfano “Mpya: chagua jinsi tunavyokufikia”.",
+      "message": "Ujumbe",
+      "messageHelp": "Maneno rahisi. Herufi 1,000 kwa zaidi.",
+      "left": "Zimebaki herufi {{count}}",
+      "preview": "Onyesho: itakavyoonekana",
+      "previewEmpty": "Tangazo lako",
+      "send_one": "Tuma kwa mtu {{count}}",
+      "send_other": "Tuma kwa watu {{count}}",
+      "confirmTitle": "Utume tangazo hili?",
+      "confirmBody": "Haliwezi kurudishwa likishatumwa.",
+      "confirm": "Litume",
+      "sent": "Limetumwa. Liko njiani.",
+      "sender": "KaziForce"
+    },
+    "models": {
+      "title": "Matoleo ya modeli",
+      "intro": "Vipangaji vinavyoamua uharaka wa kila arifa na kama ni taka. Kimoja kinatumika kwa wakati mmoja.",
+      "active": "Kinatumika",
+      "algorithms": {
+        "rules": "Kanuni (bila mafunzo)",
+        "unknown": "Haijulikani"
+      },
+      "classified": "Arifa zilizopangwa",
+      "fallback": "Zilijibiwa na kanuni za akiba",
+      "fallbackHelp": "Huduma ya ML ilichelewa au haikufanya kazi, kwa hivyo kanuni za ndani zilijibu.",
+      "corrected": "Zilizosahihishwa na msimamizi",
+      "since": "Kinatumika tangu",
+      "trained": "Kilifunzwa",
+      "metrics": "Alama za majaribio",
+      "noMetrics": "Hakuna alama za majaribio bado. Zinaongezwa modeli inapofunzwa.",
+      "errorTitle": "Hatukuweza kupakia matoleo ya modeli",
+      "emptyTitle": "Hakuna matoleo ya modeli bado",
+      "emptyBody": "La kwanza linaonekana arifa ya kwanza inapopangwa."
+    },
+    "export": {
+      "title": "Data ya mafunzo",
+      "body": "Pakua kila arifa kama jedwali (CSV) kwa ajili ya kufunza modeli. Majina, nambari za simu na barua pepe zinaondolewa, na watu wanapewa misimbo ya nasibu inayobadilika kila upakuaji.",
+      "from": "Kuanzia",
+      "fromHelp": "Acha wazi ili kuanza mwanzo kabisa.",
+      "to": "Hadi",
+      "toHelp": "Acha wazi ili kujumuisha leo.",
+      "button": "Pakua data ya mafunzo (CSV)",
+      "busy": "Tunatayarisha faili…",
+      "done": "Upakuaji uko tayari"
+    },
+    "priorityHelp": {
+      "urgent": "Haiwezi kusubiri: inatumwa kwa WhatsApp au SMS mara moja.",
+      "medium": "Inafaa kujua leo: kwenye programu na kwa barua pepe.",
+      "low": "Inaweza kusubiri: kwenye programu na kwenye muhtasari wa kila siku."
     }
   }
 }

@@ -150,6 +150,8 @@ test('a suspended user cannot log in and is told why', async ({ page, browser },
   test.skip(testInfo.project.name !== 'desktop-1440', 'one run is enough');
   const admin = await person(browser, testInfo);
   await logIn(admin, 'admin@example.com');
+  // Admins start on the Overview; users are one page further.
+  await admin.goto('/admin/users');
   await admin.getByLabel('Search').fill('worker6@example.com');
   await admin.getByRole('button', { name: 'Search' }).click();
   await admin.getByRole('link', { name: 'Joseph Mutua' }).click();

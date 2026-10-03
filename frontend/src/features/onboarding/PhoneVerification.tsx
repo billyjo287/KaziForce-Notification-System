@@ -8,6 +8,7 @@ import { Input } from '../../components/ui/Input';
 import { formatPhone, normalizeKenyanPhone } from '../../lib/phone';
 import { useApiErrorMessage } from '../../lib/useApiErrorMessage';
 import type { User } from '../../types/api';
+import './strings';
 
 interface PhoneVerificationProps {
   onVerified: (user: User) => void;

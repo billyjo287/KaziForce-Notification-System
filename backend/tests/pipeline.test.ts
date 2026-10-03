@@ -541,6 +541,18 @@ describe('interaction tracking', () => {
 });
 
 describe('reliability', () => {
+  it('after the live-update connection to Redis comes back, open pages are asked to catch up', async () => {
+    const worker = await makeUser('worker');
+    const socket = await openSocket(worker.token);
+    const resync = new Promise<void>((resolve) => socket.once('notifications:resync', resolve));
+    // What ioredis reports when Redis restarts: an error, then ready again.
+    subscriber.emit('error', new Error('Test: Redis restarted'));
+    subscriber.emit('ready');
+    await expect(
+      Promise.race([resync, new Promise((_, reject) => setTimeout(reject, 4000))]),
+    ).resolves.toBeUndefined();
+  });
+
   it('the sweeper re-queues notifications left in QUEUED (e.g. Redis was down)', async () => {
     const worker = await makeUser('worker');
     const socket = await openSocket(worker.token);

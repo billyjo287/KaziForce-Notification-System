@@ -19,6 +19,12 @@ import { buttonClasses } from '../../components/ui/buttonStyles';
 import { usePageTitle } from '../../lib/usePageTitle';
 import { Hero } from './Hero';
 import { useScrollReveal } from './useScrollReveal';
+import { addPageStrings } from '../../i18n/addPageStrings';
+import landingEn from '../../i18n/locales/landing.en.json';
+import landingSw from '../../i18n/locales/landing.sw.json';
+
+// The landing page's words arrive with it: logged-in pages never download them.
+addPageStrings(landingEn, landingSw);
 
 const STEPS: { key: 'check' | 'sort' | 'send'; icon: LucideIcon }[] = [
   { key: 'check', icon: ShieldCheck },

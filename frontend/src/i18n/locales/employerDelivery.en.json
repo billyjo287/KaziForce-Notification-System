@@ -1,0 +1,26 @@
+{
+  "employer": {
+    "delivery": {
+      "title": "Who got your job alert",
+      "help": "We sent your job to workers in the same place or with the same skill.",
+      "seenBy": "Seen by {{seen}} of {{total}} workers",
+      "none": "No workers matched this job yet, so no alert was sent.",
+      "states": {
+        "seen": "Seen",
+        "delivered": "Delivered, not opened yet",
+        "sent": "Sent",
+        "waiting": "Waiting to be sent",
+        "not_delivered": "Not delivered"
+      },
+      "decision": "Your latest update: {{state}}",
+      "message": "Your last message: {{state}}",
+      "short": {
+        "seen": "seen",
+        "delivered": "delivered, not opened yet",
+        "sent": "sent",
+        "waiting": "waiting to be sent",
+        "not_delivered": "not delivered"
+      }
+    }
+  }
+}

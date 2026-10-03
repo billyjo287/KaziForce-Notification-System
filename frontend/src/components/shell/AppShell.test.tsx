@@ -17,7 +17,7 @@ describe('AppShell', () => {
     const links = within(menu!).getAllByRole('link');
 
     expect(links.map((l) => l.getAttribute('aria-label'))).toEqual([
-      'Alerts, 3 unread',
+      'Alerts 3 unread',
       'Jobs',
       'Messages',
       'Settings',
