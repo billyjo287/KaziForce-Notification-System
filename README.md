@@ -89,8 +89,8 @@ your computer. WhatsApp and SMS messages are printed in the `worker` terminal li
 that link to count as "opened"), and emails land in Mailpit. To watch the safety net, set
 `MOCK_FAIL_CHANNELS=whatsapp` in `backend/.env` and restart: urgent alerts then try WhatsApp 3
 times and go to SMS. Log in as `worker5@example.com` (Faith) and open Settings to see the
-one-time "You usually open SMS fastest" suggestion. Real providers: see
-[docs/twilio-whatsapp-templates.md](docs/twilio-whatsapp-templates.md) and `backend/.env.example`.
+one-time "You usually open SMS fastest" suggestion. **Real providers on your computer**
+(Twilio, Africa's Talking and Resend test accounts): [docs/sandbox-test.md](docs/sandbox-test.md).
 
 **Try the notification settings, quiet hours and the daily summary:** log in as a worker or
 employer and open **Settings > Notifications**. Every change saves at once, with **Undo**. During

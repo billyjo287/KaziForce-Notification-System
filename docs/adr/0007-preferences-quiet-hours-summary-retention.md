@@ -59,6 +59,12 @@ scheduled cleanup job). CLAUDE.md decision 8: Africa/Nairobi for quiet hours and
    pending, nothing is sent outside the app. Deleting the user row removes everything that is
    theirs through database cascades (preferences, notifications and delivery logs, jobs,
    applications, messages, sessions). Admin accounts cannot be deleted this way.
+   Alerts the person sent to **other** people stay (they are the other person's history and
+   training data), but just before deletion their name in them (full name, name parts of 4+
+   letters, company name; whole words) becomes "a former user" / "mtumiaji wa zamani" in the
+   recipient's language, and chat-message alerts lose their words ("This message was removed
+   because its sender deleted their account."), since the messages themselves are deleted.
+   (Added after Phase 8; `forgetSender` in `scheduled/retention.ts`.)
 8. **Retention job** (`retention`, 03:30 Nairobi): deletes due accounts; delivery logs older than
    180 days; expired tracked links; domain events finished more than 30 days ago (their payloads
    can contain names); expired sessions and sessions revoked more than 30 days ago; used or
@@ -81,6 +87,5 @@ scheduled cleanup job). CLAUDE.md decision 8: Africa/Nairobi for quiet hours and
 
 - Per-user time zones: everyone is in Kenya for now (CLAUDE.md decision 8).
 - Admin view of held alerts and summary counts: Phase 7 dashboard (`heldUntil` is stored).
-- Names in other people's notification titles are kept after an account is deleted (e.g. "New
-  message from Wanjiru" in the employer's alert list); anonymising those is a Phase 8 privacy
-  pass item.
+- ~~Names in other people's notification titles after an account is deleted~~: done, see
+  decision 7.

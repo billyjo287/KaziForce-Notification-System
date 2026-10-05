@@ -1,4 +1,4 @@
-# Accessibility and page speed (Phase 8)
+# Accessibility and page speed (Phase 8, updated after it)
 
 Target: WCAG 2.2 level AA and the PRD's rule that a 70-year-old on a mid-range Android phone on
 a slow connection can use every screen without help (PRD sections 2, 6 and NFR-4).
@@ -52,6 +52,8 @@ The site is served over HTTP/2 (as Vercel does) for the main numbers. "Slow 4G" 
 standard mobile profile (150 ms per round trip, 1.6 Mbit/s, CPU 4× slower); "Fast 3G" is the
 profile named in the PRD (562 ms per round trip, 1.4 Mbit/s, CPU 4× slower).
 
+**Phase 8** (the website drawn only by JavaScript):
+
 | Page | Profile | Performance | LCP | First paint | Blocking time |
 | --- | --- | ---: | ---: | ---: | ---: |
 | Landing | Slow 4G | 74 | **2.35 s** | 1.69 s | 1,141 ms |
@@ -64,19 +66,36 @@ profile named in the PRD (562 ms per round trip, 1.4 Mbit/s, CPU 4× slower).
 which is slower than production: the page needs about 30 small files, and HTTP/1.1 fetches
 6 at a time. Measure it again after deploying (section below).
 
-**Improvements made:** the log-in and sign-up pages no longer wait for the server to ask "is
-this person logged in?" when the browser has never logged in (one round trip less); the main
-font is requested with the page instead of after the stylesheet; the 3D hero on the landing
-page now shows the still picture on 2G and 3G connections (it was downloading 130 KB and
-keeping a slow phone busy for over a second).
+**Improvements made in Phase 8:** the log-in and sign-up pages no longer wait for the server to
+ask "is this person logged in?" when the browser has never logged in (one round trip less); the
+main font is requested with the page instead of after the stylesheet; the 3D hero on the landing
+page now shows the still picture on 2G and 3G connections (it was downloading 130 KB and keeping
+a slow phone busy for over a second).
 
-**Not met:** the PRD target "LCP under 2.5 s on Fast 3G". The site is drawn by JavaScript in
-the browser: before anything can be shown, the phone needs the page, the app and then the screen's own code (about 230 KB
-compressed in all for the log-in page, in two waves of downloads). At 562 ms
-per round trip, the round trips alone take about 2.8 s. Meeting it would need the first screen
-sent as ready-made HTML (server-side rendering or pre-rendering the landing and log-in pages),
-a bigger change than this phase; it is listed in the thesis as future work. On Lighthouse's
-standard mobile profile the logged-out pages meet 2.5 s.
+**After Phase 8: ready-made pages** ([ADR 0010](adr/0010-ready-made-guest-pages.md)). The
+landing, log-in and sign-up pages are now sent as finished HTML with their styles inside, and the
+app downloads after the page is on screen. Fast 3G, two ways of measuring:
+
+| Page | LCP, Chrome's own throttling: before → after | LCP, Lighthouse simulation: before → after | Performance (Chrome throttling) |
+| --- | ---: | ---: | ---: |
+| Landing | 4.14 s → **1.13 s** | 5.41 s → 4.52 s | 78 → 81 |
+| Log in | 4.40 s → **1.32 s** | 5.24 s → 3.98 s | 76 → 86 |
+| Sign up | 4.14 s → **1.15 s** | — → 4.01 s | 78 → 82 |
+
+- **Chrome's own throttling** (`--throttling-method=devtools`, what DevTools' "Fast 3G" does):
+  the browser delays every request by 562 ms and limits the speed. **The target (LCP under
+  2.5 s) is met on all three pages.** It does not slow down opening the connection itself.
+- **Lighthouse's simulation** (its default) adds opening a new secure connection (about four
+  round trips: 2.25 s before the first byte) and counts the font as if it blocked the text
+  (our font is set to show text at once in the phone's own font, then swap). Under this model
+  a stripped page with no font and no app still measures **2.9 s**, so 2.5 s cannot be reached
+  on a first visit by any page; ours went from 5.2–5.4 s to 4.0–4.5 s.
+- **On a real phone's first visit** expect roughly the first figure plus the connection:
+  about 3 s. Visits after that reuse the browser's cached files and, often, the connection.
+- The time until the page fully responds is about the same as before (4.3–4.5 s with Chrome
+  throttling), but people can read and start typing about 3 seconds earlier; anything typed or
+  pressed meanwhile is kept.
+- Lighthouse accessibility and best practices stay at 100; no layout shift (CLS 0–0.02).
 
 **After deploying**, run Google's PageSpeed Insights (https://pagespeed.web.dev) on the real
 addresses (landing, log in): that measures the real Vercel servers, HTTP/2 or HTTP/3 and

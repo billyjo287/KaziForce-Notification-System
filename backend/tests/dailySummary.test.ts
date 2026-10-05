@@ -9,7 +9,8 @@ import { closeApiQueues, queueConnection } from '../src/lib/queue.js';
 import { redis } from '../src/lib/redis.js';
 import { PRESETS } from '../src/modules/me/presets.js';
 import { groupForSummary, summaryEmail, type SummaryItem } from '../src/scheduled/dailySummary.js';
-import { runRetention } from '../src/scheduled/retention.js';
+import { messageText, newApplicantText } from '../src/pipeline/templates.js';
+import { replaceName, runRetention } from '../src/scheduled/retention.js';
 import { startScheduledJobs } from '../src/scheduled/scheduledJobs.js';
 import { PASSWORD, auth, testApp, uniqueEmail } from './helpers.js';
 
@@ -321,6 +322,82 @@ describe('account deletion', () => {
     expect(await prisma.notification.findUnique({ where: { id: n.id } })).toBeNull();
     expect(await prisma.deliveryLog.count({ where: { notificationId: n.id } })).toBe(0);
     expect(await prisma.user.findUnique({ where: { id: waiting.id } })).not.toBeNull();
+  });
+
+  it('replaces a name with "a former user", whole words only, capitalised at a sentence start', () => {
+    const wanjiru = { name: 'Wanjiru Kamau', companyName: null };
+    expect(replaceName(messageText('en', 'Wanjiru Kamau', 'Hi').title, wanjiru, 'en')).toBe(
+      'New message from a former user',
+    );
+    expect(
+      replaceName(newApplicantText('en', 'Wanjiru Kamau', 'Cook').message, wanjiru, 'en'),
+    ).toBe('A former user applied for "Cook".');
+    expect(replaceName(messageText('sw', 'Wanjiru Kamau', 'Hi').title, wanjiru, 'sw')).toBe(
+      'Ujumbe mpya kutoka kwa mtumiaji wa zamani',
+    );
+    // Parts of the name on their own, and the company; "Kamaunet" is a different word.
+    const mwangi = { name: 'Peter Mwangi', companyName: 'Mwangi Logistics' };
+    expect(
+      replaceName('Mwangi Logistics needs drivers. Ask Peter or Kamaunet.', mwangi, 'en'),
+    ).toBe('A former user needs drivers. Ask a former user or Kamaunet.');
+  });
+
+  it('alerts the deleted person sent to others keep no name and no message words', async () => {
+    const leaving = await prisma.user.create({
+      data: {
+        email: uniqueEmail('leaving'),
+        passwordHash: 'not-used',
+        name: 'Achieng Otieno',
+        role: 'business',
+        companyName: 'Achieng Cleaners',
+        deletionRequestedAt: new Date(Date.now() - 15 * DAY),
+      },
+    });
+    const english = await person();
+    const kiswahili = await person({ language: 'sw' });
+    const sent = (
+      recipientId: string,
+      type: 'message' | 'status_update',
+      title: string,
+      message: string,
+    ) =>
+      prisma.notification.create({
+        data: {
+          recipientId,
+          recipientRole: 'worker',
+          senderId: leaving.id,
+          senderRole: 'business',
+          type,
+          category: type,
+          title,
+          message,
+          status: 'sent',
+        },
+      });
+    const chat = await sent(
+      english.id,
+      'message',
+      'New message from Achieng Cleaners',
+      'Call me on 0712345678',
+    );
+    const status = await sent(
+      kiswahili.id,
+      'status_update',
+      'Ombi lako limekubaliwa',
+      'Achieng Cleaners wamekubali ombi lako la "Cleaner".',
+    );
+
+    await runRetention(prisma, new Date());
+
+    expect(await prisma.user.findUnique({ where: { id: leaving.id } })).toBeNull();
+    const chatAfter = await prisma.notification.findUniqueOrThrow({ where: { id: chat.id } });
+    expect(chatAfter.title).toBe('New message from a former user');
+    expect(chatAfter.message).toBe(
+      'This message was removed because its sender deleted their account.',
+    );
+    expect(chatAfter.senderId).toBeNull();
+    const statusAfter = await prisma.notification.findUniqueOrThrow({ where: { id: status.id } });
+    expect(statusAfter.message).toBe('Mtumiaji wa zamani wamekubali ombi lako la "Cleaner".');
   });
 
   it('delivery logs go after 180 days; notifications are kept (at least 90 days)', async () => {

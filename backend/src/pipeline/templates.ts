@@ -118,3 +118,16 @@ export function messageText(language: Language, sender: string, body: string): T
     message: body,
   };
 }
+
+/** Stands in for the name of someone who deleted their account (ADR 0007). */
+export function formerUserText(language: Language) {
+  return language === 'sw'
+    ? {
+        name: 'mtumiaji wa zamani',
+        removedMessage: 'Ujumbe huu uliondolewa kwa sababu mtumaji alifuta akaunti yake.',
+      }
+    : {
+        name: 'a former user',
+        removedMessage: 'This message was removed because its sender deleted their account.',
+      };
+}

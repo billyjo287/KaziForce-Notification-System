@@ -56,11 +56,12 @@ export class WhatsAppAdapter extends ChannelAdapter {
     if (!accountSid || !authToken || !from) {
       throw new SendError('Twilio is not configured', false);
     }
-    const form = new URLSearchParams({
-      To: `whatsapp:${message.to}`,
-      From: from,
-      StatusCallback: statusCallbackUrl,
-    });
+    const form = new URLSearchParams({ To: `whatsapp:${message.to}`, From: from });
+    // Twilio cannot reach this computer's own address: then the message is sent without
+    // delivery reports (sandbox testing without a tunnel such as ngrok).
+    if (!/^https?:\/\/(localhost|127\.0\.0\.1)(:|\/)/.test(statusCallbackUrl)) {
+      form.set('StatusCallback', statusCallbackUrl);
+    }
     const template = templates[message.language];
     if (template) {
       form.set('ContentSid', template);

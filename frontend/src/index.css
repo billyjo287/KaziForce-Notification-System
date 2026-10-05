@@ -304,3 +304,9 @@ html[data-reduce-motion='true'] .kf-logo * {
 html[data-reduce-motion='true'] .kf-countdown {
   display: none;
 }
+
+/* Ready-made copy of the page (scripts/prerender.mjs) that is not right for this visit: the app
+   draws the page instead (see the script in index.html). */
+html[data-prerender='off'] [data-prerendered] {
+  display: none;
+}

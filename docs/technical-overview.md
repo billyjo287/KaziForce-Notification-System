@@ -99,6 +99,8 @@ changes nothing outside `ml-service/`.
   Security Policy and HSTS on the website.
 - Consent before any SMS/WhatsApp; STOP replies honoured; account deletion within 14 days
   (with a way back) by a nightly retention job, which also removes delivery logs after 180 days.
+  In alerts the deleted person sent to others, their name becomes "a former user" and chat
+  messages lose their words.
 - Secrets only in environment variables; production refuses example secrets; logs never contain
   tokens, cookies or webhook secrets. Dependency audits (npm, pip) and a secret scan: clean.
   (ADR 0003, 0007, 0009.)
@@ -112,7 +114,8 @@ and undo instead of scary confirmations. Settings show three presets first and t
 behind "Customise". Checked with axe on every page (phone and desktop, light and dark,
 English and Kiswahili), keyboard-only and 200% zoom tests, and Lighthouse on a throttled
 mobile profile ([accessibility.md](accessibility.md)). The app shell stays under 200 KB of
-compressed JavaScript; other pages load on demand.
+compressed JavaScript; other pages load on demand. The pages before logging in arrive as
+ready-made HTML, readable before the app has downloaded (ADR 0010).
 
 ## 5.7 Testing
 
@@ -138,7 +141,7 @@ above except load, the end-to-end browser tests, the bundle-size check and the p
 | NFR-3 nothing lost | no queued job lost | Redis and Postgres restarted under load: 9,975 of 9,975 accepted messages delivered |
 | NFR-3 recovery | < 30 s | Redis 3.1 s, Postgres 1.6 s |
 | NFR-1 app shell size | ≤ ~200 KB gzipped | 199.7 KB |
-| NFR-1 page load (LCP) | < 2.5 s on "Fast 3G" | 2.35–2.41 s on Lighthouse's standard mobile profile (landing, log in); 5.2–5.4 s on Fast 3G: **not met** ([accessibility.md](accessibility.md)) |
+| NFR-1 page load (LCP) | < 2.5 s on "Fast 3G" | Landing, log in, sign up: **1.1–1.3 s** with Chrome's Fast 3G throttling (was 4.1–4.4 s): met. Lighthouse's simulation, which adds opening a new connection: 4.0–4.5 s (was 5.2–5.4 s; its floor for any page is 2.9 s). Slow 4G: 2.35–2.41 s ([accessibility.md](accessibility.md), ADR 0010) |
 | NFR-4 accessibility | WCAG 2.2 AA | axe: no serious issues on any page; Lighthouse accessibility 100; keyboard-only and 200% zoom tests pass |
 
 Two bottlenecks were found and fixed by the load test (database connection pool; one-at-a-time
@@ -154,9 +157,10 @@ Migrations and a safe bootstrap run before each API deploy. Step by step:
 
 ## 5.10 Limitations and future work
 
-- Page load on slow 3G: the first screen is drawn by JavaScript in the browser, so it waits for
-  the app to download (5.2–5.4 s on the PRD's Fast 3G profile). Sending the landing and log-in
-  pages as ready-made HTML (pre-rendering or server-side rendering) is the next step.
+- Page load on slow 3G: the landing, log-in and sign-up pages are now sent as ready-made HTML
+  (ADR 0010). A first visit on a real Fast 3G phone still spends about 1.7 s opening the
+  connection, and Kiswahili visitors' first visit is drawn by the app as before. The logged-in
+  pages are drawn by the app (they need the person's data anyway).
 
 - The classifier is rule-based (v0). Phase 9 trains models on synthetic and collected data and
   swaps them in behind the same `/predict` contract.

@@ -1,9 +1,10 @@
 // Phase 5 rules without a database: the channel router (PRD FR-4), the external message texts,
 // and the Twilio webhook signature.
 import pino from 'pino';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { Recipient } from '../src/channels/ChannelAdapter.js';
 import { createAdapters } from '../src/channels/index.js';
+import { WhatsAppAdapter } from '../src/channels/WhatsAppAdapter.js';
 import {
   SMS_MAX,
   emailContent,
@@ -226,5 +227,46 @@ describe('Twilio webhook signature', () => {
     ).toBe(false);
     expect(isValidTwilioSignature('other-token', url, params, signature)).toBe(false);
     expect(isValidTwilioSignature('secret-token', url, params, undefined)).toBe(false);
+  });
+});
+
+describe('WhatsApp through Twilio (sandbox)', () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  async function sentForm(statusCallbackUrl: string) {
+    const fetchMock = vi.fn(async () => Response.json({ sid: 'SM123' }));
+    vi.stubGlobal('fetch', fetchMock);
+    const adapter = new WhatsAppAdapter(
+      { mode: 'sandbox', logger: pino({ level: 'silent' }) },
+      {
+        accountSid: 'AC1',
+        authToken: 't',
+        from: 'whatsapp:+14155238886',
+        templates: {},
+        statusCallbackUrl,
+      },
+    );
+    const result = await adapter.send({
+      notificationId: 'n1',
+      to: '+254712345678',
+      language: 'en',
+      text: 'KaziForce (Urgent): New job. Open: https://x/o/abc',
+      summary: 'New job',
+      link: 'https://x/o/abc',
+    });
+    expect(result.providerMessageId).toBe('SM123');
+    return (fetchMock.mock.calls[0] as unknown as [string, { body: URLSearchParams }])[1].body;
+  }
+
+  it('asks for delivery reports at a public address', async () => {
+    const form = await sentForm('https://abc.ngrok.app/webhooks/twilio/status');
+    expect(form.get('StatusCallback')).toBe('https://abc.ngrok.app/webhooks/twilio/status');
+    expect(form.get('To')).toBe('whatsapp:+254712345678');
+  });
+
+  it('still sends from a computer Twilio cannot reach (no tunnel), without delivery reports', async () => {
+    const form = await sentForm('http://localhost:4000/webhooks/twilio/status');
+    expect(form.has('StatusCallback')).toBe(false);
+    expect(form.get('Body')).toContain('KaziForce (Urgent)');
   });
 });

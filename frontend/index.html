@@ -7,6 +7,95 @@
     <meta name="theme-color" content="#0b6b45" />
     <meta name="description" content="KaziForce: job alerts that reach you on time." />
     <title>KaziForce</title>
+    <!-- Runs before anything is drawn (allowed by its hash in the Content Security Policy, see
+         vite.config.ts). 1) The person's colours and text size, so a dark page never flashes
+         white. 2) Pages sent as ready-made HTML (scripts/prerender.mjs, ADR 0010): hide the copy
+         when it is not right for this visit (another address, Kiswahili, already logged in);
+         until the app arrives, forms never send and the last button pressed is remembered.
+         3) On those pages, the app is downloaded after the page is on screen. -->
+    <script>
+      (function () {
+        var html = document.documentElement;
+        var query = new URLSearchParams(location.search);
+        var store = function (key) {
+          try {
+            return localStorage.getItem(key);
+          } catch (e) {
+            return 'blocked';
+          }
+        };
+        var settings = {};
+        try {
+          settings = JSON.parse(store('kf.settings')).state || {};
+        } catch (e) {}
+        var theme = query.get('theme') || settings.theme;
+        if (theme === 'dark' || theme === 'light') html.dataset.theme = theme;
+        if (settings.textSize) html.dataset.textSize = settings.textSize;
+        if (settings.reduceMotion) html.dataset.reduceMotion = 'true';
+
+        var copy = document.querySelector('meta[name="kf-prerendered"]');
+        if (!copy) return;
+        var path = location.pathname.replace(/\/+$/, '') || '/';
+        var language = query.get('lang') || store('kf.language');
+        var signedIn = store('kf.signedIn');
+        if (
+          path !== copy.content ||
+          language === 'sw' ||
+          (path !== '/' && (signedIn === '1' || signedIn === 'blocked'))
+        ) {
+          html.dataset.prerender = 'off';
+        }
+
+        // The app's code is in <template id="kf-app"> at the end of the page. With the copy on
+        // screen, start it only once the browser reports the page as drawn, so it never delays
+        // the first picture; without, as soon as the page is read.
+        var started = false;
+        var startApp = function () {
+          var app = document.getElementById('kf-app');
+          if (!app && document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', startApp); // drawn before fully read
+          }
+          if (started || !app) return;
+          started = true;
+          document.head.appendChild(document.importNode(app.content, true));
+        };
+        var canWatchPaint =
+          window.PerformanceObserver &&
+          (PerformanceObserver.supportedEntryTypes || []).indexOf('paint') >= 0;
+        if (html.dataset.prerender !== 'off' && canWatchPaint) {
+          new PerformanceObserver(function (list, observer) {
+            list.getEntries().forEach(function (entry) {
+              if (entry.name !== 'first-contentful-paint') return;
+              observer.disconnect();
+              setTimeout(startApp);
+            });
+          }).observe({ type: 'paint', buffered: true });
+        }
+        document.addEventListener('DOMContentLoaded', function () {
+          // A tab opened in the background draws nothing until it is shown: start anyway.
+          setTimeout(startApp, html.dataset.prerender !== 'off' && canWatchPaint ? 3000 : 0);
+        });
+        if (html.dataset.prerender === 'off') return;
+
+        document.addEventListener(
+          'submit',
+          function (event) {
+            if (event.target.closest('[data-prerendered]')) event.preventDefault();
+          },
+          true,
+        );
+        document.addEventListener(
+          'click',
+          function (event) {
+            var button = event.target.closest && event.target.closest('[data-prerendered] button');
+            if (!button) return;
+            var buttons = document.querySelectorAll('[data-prerendered] button');
+            window.kfPendingPress = Array.prototype.indexOf.call(buttons, button);
+          },
+          true,
+        );
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { loadEnv, type Plugin } from 'vite';
@@ -8,33 +9,45 @@ import { defineConfig } from 'vitest/config';
  * our own address; the browser may only talk to our API. Added to index.html at build time,
  * because the API address is only known then (VITE_API_URL). Styles allow 'unsafe-inline'
  * because the dialog library adds a small <style> tag. frame-ancestors cannot be set in a
- * <meta> tag: vercel.json sends X-Frame-Options: DENY instead.
+ * <meta> tag: vercel.json sends X-Frame-Options: DENY instead. The one small script written
+ * inside index.html is allowed by its fingerprint (hash), so changing it updates the policy.
  */
 function contentSecurityPolicy(apiUrl: string): Plugin {
   const api = new URL(apiUrl).origin;
   const socket = api.replace(/^http/, 'ws');
-  const policy = [
-    "default-src 'self'",
-    "script-src 'self'",
-    "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: blob:",
-    "font-src 'self'",
-    `connect-src 'self' ${api} ${socket}`,
-    "worker-src 'self' blob:",
-    "object-src 'none'",
-    "base-uri 'self'",
-    "form-action 'self'",
-  ].join('; ');
+  const policy = (inlineScripts: string[]) =>
+    [
+      "default-src 'self'",
+      ["script-src 'self'", ...inlineScripts].join(' '),
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: blob:",
+      "font-src 'self'",
+      `connect-src 'self' ${api} ${socket}`,
+      "worker-src 'self' blob:",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+    ].join('; ');
   return {
     name: 'kaziforce-csp',
     apply: 'build',
-    transformIndexHtml: () => [
-      {
-        tag: 'meta',
-        attrs: { 'http-equiv': 'Content-Security-Policy', content: policy },
-        injectTo: 'head-prepend',
+    transformIndexHtml: {
+      order: 'post',
+      handler: (html) => {
+        const hashes = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(
+          // Browsers read Windows line endings as plain ones before checking the fingerprint.
+          ([, code]) =>
+            `'sha256-${createHash('sha256').update(code!.replace(/\r\n?/g, '\n')).digest('base64')}'`,
+        );
+        return [
+          {
+            tag: 'meta',
+            attrs: { 'http-equiv': 'Content-Security-Policy', content: policy(hashes) },
+            injectTo: 'head-prepend',
+          },
+        ];
       },
-    ],
+    },
   };
 }
 
@@ -103,16 +116,24 @@ function bundleReport(): Plugin {
   };
 }
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ mode, isSsrBuild }) => ({
   plugins: [
     react(),
     tailwindcss(),
-    bundleReport(),
-    preloadMainFont(),
-    contentSecurityPolicy(
-      loadEnv(mode, process.cwd(), 'VITE_').VITE_API_URL ?? 'http://localhost:4000',
-    ),
+    // The website's own build only; not the build-time copy of the pages (scripts/prerender.mjs).
+    ...(isSsrBuild
+      ? []
+      : [
+          bundleReport(),
+          preloadMainFont(),
+          contentSecurityPolicy(
+            loadEnv(mode, process.cwd(), 'VITE_').VITE_API_URL ?? 'http://localhost:4000',
+          ),
+        ]),
   ],
+  // The build-time copy runs in Node: bundle every library into it, so Node never has to load
+  // a library written only for browsers or bundlers.
+  ssr: { noExternal: true },
   server: { port: 5173, strictPort: true },
   preview: { port: 4173, strictPort: true },
   build: {

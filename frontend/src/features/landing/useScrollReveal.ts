@@ -15,7 +15,12 @@ export function useScrollReveal(scope: RefObject<HTMLElement | null>) {
     if (!scope.current || prefersReducedMotion()) return;
 
     const context = gsap.context(() => {
-      const elements = gsap.utils.toArray<HTMLElement>('[data-reveal]');
+      // Only what is still below the screen: anything the person can already see (for example
+      // on the ready-made copy of the page, ADR 0010) never blinks out and back in.
+      const elements = gsap.utils
+        .toArray<HTMLElement>('[data-reveal]')
+        .filter((element) => element.getBoundingClientRect().top > window.innerHeight);
+      if (!elements.length) return;
       gsap.set(elements, { opacity: 0, y: 24 });
       ScrollTrigger.batch(elements, {
         start: 'top 90%',

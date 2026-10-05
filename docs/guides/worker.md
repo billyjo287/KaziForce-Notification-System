@@ -80,7 +80,7 @@ Every change saves at once. If you change something by mistake, tap **Undo**.
   phone.
 - **Delete my account** (in Settings) deletes your account and everything in it after 14 days.
   We email you to confirm. If you change your mind, log in before then and tap **Keep my
-  account**.
+  account**. In alerts other people got from you, your name is then shown as "a former user".
 
 ## Need help?
 

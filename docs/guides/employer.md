@@ -60,4 +60,5 @@ summary email, language, text size and screen colours. See the
   that look like this, and an admin may suspend the account.
 - An admin can remove a job that breaks the rules; you will see the reason under **My jobs**.
 - **Delete my account** (in Settings) deletes your account, your jobs and your messages after
-  14 days. You can cancel by logging in before then.
+  14 days. You can cancel by logging in before then. In alerts other people got from you, your
+  name is then shown as "a former user".
