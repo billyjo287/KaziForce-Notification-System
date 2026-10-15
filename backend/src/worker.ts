@@ -1,6 +1,6 @@
 // The worker process: turns domain events into notifications and processes them (BullMQ), sends
 // them on the outside channels, and runs the clock jobs (daily summary, retention cleanup).
-// Runs next to the API (`npm run dev` starts both). On Railway it is its own service, so slow
+// Runs next to the API (`npm run dev` starts both). On the server it is its own container, so slow
 // work here never slows down the website.
 import { env } from './config/env.js';
 import { logger } from './lib/logger.js';

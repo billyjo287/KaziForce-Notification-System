@@ -51,8 +51,8 @@ export function createApp({
   const app = express();
   const limits = createRateLimiters({ ...DEFAULT_RATE_LIMITS, ...rateLimits });
 
-  // How many proxies stand between the visitor and us (Railway's edge = 1; Vercel forwarding
-  // /api to Railway = 2). Needed to see each visitor's real address for the rate limits.
+  // How many proxies stand between the visitor and us (Caddy on the server = 1; Vercel
+  // forwarding /api to the server = 2). Needed to see each visitor's real address for the rate limits.
   app.set('trust proxy', trustProxyHops);
   app.use(helmet());
   app.use(

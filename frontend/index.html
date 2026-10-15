@@ -8,7 +8,7 @@
     <meta name="description" content="KaziForce: job alerts that reach you on time." />
     <title>KaziForce</title>
     <!-- Runs before anything is drawn (allowed by its hash in the Content Security Policy, see
-         vite.config.ts). 1) The person's colours and text size, so a dark page never flashes
+         vite.config.ts). 1) The person's colours, text size and letter style, so a dark page never flashes
          white. 2) Pages sent as ready-made HTML (scripts/prerender.mjs, ADR 0010): hide the copy
          when it is not right for this visit (another address, Kiswahili, already logged in);
          until the app arrives, forms never send and the last button pressed is remembered.
@@ -31,6 +31,7 @@
         var theme = query.get('theme') || settings.theme;
         if (theme === 'dark' || theme === 'light') html.dataset.theme = theme;
         if (settings.textSize) html.dataset.textSize = settings.textSize;
+        if (settings.font) html.dataset.font = settings.font;
         if (settings.reduceMotion) html.dataset.reduceMotion = 'true';
 
         var copy = document.querySelector('meta[name="kf-prerendered"]');

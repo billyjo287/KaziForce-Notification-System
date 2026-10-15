@@ -32,7 +32,7 @@ const realtime = await attachRealtime(server, {
   prefix: env.QUEUE_PREFIX,
 });
 
-// Close connections cleanly when stopped (Ctrl+C locally, or a redeploy on Railway).
+// Close connections cleanly when stopped (Ctrl+C locally, or an update on the server).
 async function shutdown(signal: string) {
   logger.info(`${signal} received, shutting down`);
   await realtime.close(); // also stops the HTTP server

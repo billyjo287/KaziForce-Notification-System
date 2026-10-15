@@ -16,22 +16,33 @@ import { DeleteAccount } from './DeleteAccount';
 import { NotificationSettings } from './NotificationSettings';
 import { usePageTitle } from '../../lib/usePageTitle';
 import { sidePath, useAuth } from '../../stores/auth';
-import { useSettings, type TextSize, type Theme } from '../../stores/settings';
+import { useSettings, type Font, type TextSize, type Theme } from '../../stores/settings';
 import { showToast } from '../../stores/toasts';
+import './strings';
 
 const TEXT_SIZES: TextSize[] = ['normal', 'large'];
 const THEMES: Theme[] = ['light', 'dark', 'system'];
+/** Each choice is shown in its own letters (the font names match index.css). */
+const FONTS: { value: Font; family: string }[] = [
+  { value: 'atkinson', family: "'Atkinson Hyperlegible Next Variable'" },
+  { value: 'lexend', family: "'Lexend Variable'" },
+  { value: 'andika', family: "'Andika'" },
+  { value: 'opendyslexic', family: "'OpenDyslexic'" },
+  { value: 'system', family: 'system-ui' },
+];
 
 /**
  * Settings shared by all three sides: notifications (workers and employers), profile link,
- * language, text size, reduce motion, logging out (here or on every device) and deleting the
+ * language, text size, letter style, reduce motion, logging out (here or on every device) and deleting the
  * account.
  */
 export function SettingsPage() {
   const { t, i18n } = useTranslation();
   usePageTitle(t('settings.title'));
-  const { theme, textSize, reduceMotion, setTheme, setTextSize, setReduceMotion } = useSettings();
+  const { theme, textSize, font, reduceMotion, setTheme, setTextSize, setFont, setReduceMotion } =
+    useSettings();
   const textSizeId = useId();
+  const fontId = useId();
   const user = useAuth((s) => s.user);
   const updateLanguage = useUpdateLanguage();
   const { logOut, busy } = useLogOut();
@@ -119,6 +130,40 @@ export function SettingsPage() {
                   />
                   <span className={size === 'large' ? 'text-xl' : ''}>
                     {t(`settings.textSize.${size}`)}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          {/* Letter style: a short list, each choice written in its own letters. */}
+          <fieldset aria-describedby={`${fontId}-help`}>
+            <legend className="text-lg font-bold">{t('settings.font.label')}</legend>
+            <HelpText id={`${fontId}-help`}>{t('settings.font.help')}</HelpText>
+            <div className="mt-3 flex flex-col gap-3">
+              {FONTS.map(({ value, family }) => (
+                <label
+                  key={value}
+                  className="flex min-h-12 cursor-pointer items-start gap-3 rounded-xl border-2 border-line-strong bg-surface px-4 py-3 has-checked:border-primary has-checked:bg-primary-soft has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-focus"
+                >
+                  <input
+                    type="radio"
+                    name="font"
+                    value={value}
+                    checked={font === value}
+                    onChange={() => {
+                      setFont(value);
+                      confirm();
+                    }}
+                    className="mt-1 size-5 shrink-0 accent-(--kf-primary) focus-visible:outline-none"
+                  />
+                  <span className="flex flex-col" style={{ fontFamily: family }}>
+                    <span className="text-lg font-bold">
+                      {t(`settings.font.options.${value}.name`)}
+                    </span>
+                    <span className="text-ink-muted">
+                      {t(`settings.font.options.${value}.help`)}
+                    </span>
                   </span>
                 </label>
               ))}

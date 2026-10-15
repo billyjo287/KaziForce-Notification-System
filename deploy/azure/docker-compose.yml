@@ -1,0 +1,117 @@
+# Production on ONE Azure virtual machine (ADR 0011). Runs the API, the worker, the ML service
+# and Redis, with Caddy in front for HTTPS. Postgres is Supabase; the website is Vercel.
+# Settings: deploy/azure/.env on the server (copy .env.example; never committed).
+# Start or update: deploy/azure/update.sh (see docs/DEPLOYMENT.md).
+name: kaziforce
+
+# Addresses of the private services, the same for every backend container.
+x-backend-env: &backend-env
+  REDIS_URL: redis://redis:6379
+  ML_SERVICE_URL: http://ml-service:8000
+
+x-backend: &backend
+  build:
+    context: ../..
+    dockerfile: backend/Dockerfile
+  image: kaziforce-backend
+  env_file: .env
+  environment: *backend-env
+  restart: unless-stopped
+  depends_on:
+    redis:
+      condition: service_healthy
+
+services:
+  # Web address with HTTPS (a free certificate from Let's Encrypt, renewed on its own).
+  # The only part reachable from the internet: ports 80 and 443.
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+      - '443:443/udp'
+    environment:
+      API_DOMAIN: ${API_DOMAIN:?Set API_DOMAIN in deploy/azure/.env}
+      ACME_EMAIL: ${ACME_EMAIL:?Set ACME_EMAIL in deploy/azure/.env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      api:
+        condition: service_healthy
+
+  # Runs once before the API starts: database tables (migrations), places, skills and the admin
+  # account (prisma/bootstrap.ts). Never adds sample people, never deletes anything.
+  migrate:
+    <<: *backend
+    restart: 'no'
+    command: ['npm', 'run', 'db:release']
+
+  api:
+    <<: *backend
+    command: ['node', 'dist/server.js']
+    environment:
+      <<: *backend-env
+      DATABASE_POOL_MAX: '8'
+    depends_on:
+      redis:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://localhost:4000/health').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  worker:
+    <<: *backend
+    command: ['node', 'dist/worker.js']
+    environment:
+      <<: *backend-env
+      # The load test showed 10 database connections are too few at 1,000 alerts a minute.
+      DATABASE_POOL_MAX: '20'
+    depends_on:
+      redis:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+      ml-service:
+        condition: service_started
+
+  # Private: only the worker calls it (no port open to the internet).
+  ml-service:
+    build: ../../ml-service
+    image: kaziforce-ml-service
+    restart: unless-stopped
+    environment:
+      CLASSIFIER: rules
+      LOG_LEVEL: info
+
+  # Job queues. Private (no port open to the internet). appendonly = every change written to
+  # disk, so queued jobs survive a restart; noeviction = never drop jobs when memory is full.
+  redis:
+    image: redis:8-alpine
+    restart: unless-stopped
+    command: ['redis-server', '--appendonly', 'yes', '--maxmemory-policy', 'noeviction']
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  caddy-data:
+  caddy-config:
+  redis-data:

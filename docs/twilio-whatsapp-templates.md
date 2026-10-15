@@ -25,7 +25,7 @@ karibu nawe", `{{2}}` = `k7Qp2xZa`.
   job details: a lost or stolen phone reveals little (PRD FR-4).
 - `{{2}}` is the tracked-link code. Opening it counts as "opened" for that alert (stopping the
   urgent escalation), then asks the person to log in and shows the alert.
-- `<your API domain>` is `PUBLIC_API_URL` (the backend on Railway), because `/o/...` is served
+- `<your API domain>` is `PUBLIC_API_URL` (the backend server), because `/o/...` is served
   by the backend.
 
 When both are approved, copy their Content SIDs (they start with `HX`) into `backend/.env`:

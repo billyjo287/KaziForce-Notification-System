@@ -15,7 +15,7 @@ const envSchema = z.object({
   DATABASE_URL: z.url(),
   // Database connections each process may open at once (Prisma's pool). The worker needs more
   // than the default 10 at high load; keep the total under your database's connection limit.
-  // Proxies in front of the API: 1 on Railway; 2 when Vercel forwards /api to it.
+  // Proxies in front of the API: 1 (Caddy on the server); 2 when Vercel forwards /api to it.
   TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(1),
   // BullMQ idle polling (docs/DEPLOYMENT.md section 8). BullMQ's defaults are 5 and 30.
   QUEUE_DRAIN_DELAY_SECONDS: z.coerce.number().int().min(1).max(300).default(30),

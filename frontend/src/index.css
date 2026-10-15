@@ -1,5 +1,13 @@
 @import 'tailwindcss';
 @import '@fontsource-variable/atkinson-hyperlegible-next';
+/* The other letter styles people can choose in Settings. Only the chosen one is downloaded:
+   browsers fetch a font file when text actually uses it. Latin letters only (English and
+   Kiswahili). */
+@import '@fontsource-variable/lexend';
+@import '@fontsource/andika/latin-400.css';
+@import '@fontsource/andika/latin-700.css';
+@import '@fontsource/opendyslexic/latin-400.css';
+@import '@fontsource/opendyslexic/latin-700.css';
 
 /* ==========================================================================
    KaziForce design tokens ("calm notice board").
@@ -10,6 +18,9 @@
 
 :root {
   color-scheme: light;
+
+  /* Letter style: Settings > Display (data-font on <html>). */
+  --kf-font: 'Atkinson Hyperlegible Next Variable';
 
   --kf-canvas: #faf8f5; /* page background: warm off-white, softer than pure white */
   --kf-surface: #ffffff; /* cards, sidebar, panels */
@@ -93,9 +104,22 @@
   --kf-later-bar: #98a2b3;
 }
 
+html[data-font='lexend'] {
+  --kf-font: 'Lexend Variable';
+}
+html[data-font='andika'] {
+  --kf-font: 'Andika';
+}
+html[data-font='opendyslexic'] {
+  --kf-font: 'OpenDyslexic';
+}
+html[data-font='system'] {
+  --kf-font: system-ui;
+}
+
 /* Expose the variables as Tailwind utilities: bg-canvas, text-ink, border-line-strong, ... */
 @theme inline {
-  --font-sans: 'Atkinson Hyperlegible Next Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--kf-font), ui-sans-serif, system-ui, sans-serif;
 
   --color-canvas: var(--kf-canvas);
   --color-surface: var(--kf-surface);

@@ -35,9 +35,9 @@ matching algorithms are out of scope (ADR 0001, decision 9).
 ```
 
 Four deployable parts: the website (static files on Vercel), the API and the worker (one Node
-image, two processes on Railway), and the ML service (Python, Railway, private network).
-PostgreSQL (Supabase) holds all records; Redis (Railway) holds the job queues and carries live
-updates between the worker and the API (ADR 0001, 0004, 0009).
+image, two processes), and the ML service (Python, private network); the last three run with
+Redis on one Azure virtual machine. PostgreSQL (Supabase) holds all records; Redis holds the job
+queues and carries live updates between the worker and the API (ADR 0001, 0004, 0009, 0011).
 
 **Technology** (fixed by the approved proposal): React 19 + Vite + TypeScript, Tailwind CSS,
 TanStack Query, Radix UI, i18next (English and Kiswahili); Node.js + Express 5 + TypeScript,
@@ -119,12 +119,12 @@ ready-made HTML, readable before the app has downloaded (ADR 0010).
 
 ## 5.7 Testing
 
-| Level | Tool | Count (Phase 8) |
+| Level | Tool | Count |
 | --- | --- | ---: |
-| Backend unit and integration (real Postgres and Redis) | Vitest + Supertest | 173 |
-| Frontend components | Vitest + Testing Library | 80 |
+| Backend unit and integration (real Postgres and Redis) | Vitest + Supertest | 177 |
+| Frontend components | Vitest + Testing Library | 84 |
 | ML service | pytest | 56 |
-| End to end, phone (360 px) and desktop (1440 px), with axe | Playwright | 94 (+8 run on one screen size only) |
+| End to end, phone (360 px) and desktop (1440 px), with axe | Playwright | 106 (+8 run on one screen size only) |
 | Load and resilience | k6 + Socket.IO listeners | 2 runs of 10,000 |
 
 Continuous integration (GitHub Actions) runs formatting, lint and type checks, every test suite
@@ -141,7 +141,7 @@ above except load, the end-to-end browser tests, the bundle-size check and the p
 | NFR-3 nothing lost | no queued job lost | Redis and Postgres restarted under load: 9,975 of 9,975 accepted messages delivered |
 | NFR-3 recovery | < 30 s | Redis 3.1 s, Postgres 1.6 s |
 | NFR-1 app shell size | ≤ ~200 KB gzipped | 199.7 KB |
-| NFR-1 page load (LCP) | < 2.5 s on "Fast 3G" | Landing, log in, sign up: **1.1–1.3 s** with Chrome's Fast 3G throttling (was 4.1–4.4 s): met. Lighthouse's simulation, which adds opening a new connection: 4.0–4.5 s (was 5.2–5.4 s; its floor for any page is 2.9 s). Slow 4G: 2.35–2.41 s ([accessibility.md](accessibility.md), ADR 0010) |
+| NFR-1 page load (LCP) | < 2.5 s on "Fast 3G" | Landing, log in, sign up: **1.1–1.3 s** with Chrome's Fast 3G throttling (was 4.1–4.4 s): met. Lighthouse's simulation, which adds opening a new connection: 4.0–4.5 s (was 5.2–5.4 s; its floor for any page is 2.9 s). Slow 4G: 1.1–1.4 s ([accessibility.md](accessibility.md), ADR 0010) |
 | NFR-4 accessibility | WCAG 2.2 AA | axe: no serious issues on any page; Lighthouse accessibility 100; keyboard-only and 200% zoom tests pass |
 
 Two bottlenecks were found and fixed by the load test (database connection pool; one-at-a-time
@@ -150,9 +150,10 @@ idle Redis traffic was reduced by 77% (performance.md; DEPLOYMENT.md, section 8)
 
 ## 5.9 Deployment
 
-Vercel (website), Railway (API, worker, ML service, Redis), Supabase (Postgres through its
-session pooler). The website forwards `/api` to Railway so the login cookie is first-party.
-Migrations and a safe bootstrap run before each API deploy. Step by step:
+Vercel (website), one Azure for Students virtual machine running Docker (Caddy for HTTPS, API,
+worker, ML service, Redis), Supabase (Postgres through its session pooler); all free (ADR 0011).
+The website forwards `/api` to the server so the login cookie is first-party. Migrations and a
+safe bootstrap run before the API starts; an update is one command. Step by step:
 [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## 5.10 Limitations and future work

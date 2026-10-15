@@ -80,6 +80,32 @@
       "pendingHelp": "Changed your mind? Keep your account and everything stays as it is.",
       "keep": "Keep my account",
       "kept": "Your account is safe. We will not delete it."
+    },
+    "font": {
+      "label": "Letter style",
+      "help": "Choose the letters that are easiest for you to read. This phone or computer remembers it.",
+      "options": {
+        "atkinson": {
+          "name": "Atkinson Hyperlegible",
+          "help": "Clear letters that are hard to mix up. The usual style."
+        },
+        "lexend": {
+          "name": "Lexend",
+          "help": "Wide, simple letters made for easy reading."
+        },
+        "andika": {
+          "name": "Andika",
+          "help": "Letters made for new readers, like in school books."
+        },
+        "opendyslexic": {
+          "name": "OpenDyslexic",
+          "help": "Heavy letters that help some people with dyslexia. A bigger download."
+        },
+        "system": {
+          "name": "Your phone's own letters",
+          "help": "The letters your phone or computer already uses. Nothing to download."
+        }
+      }
     }
   },
   "channels": {

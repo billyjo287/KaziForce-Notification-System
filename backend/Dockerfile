@@ -1,5 +1,6 @@
-# The backend image: ONE image for both Railway services, the API (npm start) and the worker
-# (npm run start:worker). Build from the REPOSITORY ROOT (npm workspaces share one lockfile):
+# The backend image: ONE image for the API (node dist/server.js), the worker (node
+# dist/worker.js) and the database set-up (npm run db:release). Build from the REPOSITORY ROOT
+# (npm workspaces share one lockfile):
 #   docker build -f backend/Dockerfile -t kaziforce-backend .
 FROM node:22-alpine AS build
 WORKDIR /app
@@ -48,5 +49,5 @@ COPY --from=build /app/backend/prisma.config.ts backend/
 WORKDIR /app/backend
 USER node
 EXPOSE 4000
-# The API by default; the worker service overrides the start command (railway.worker.json).
+# The API by default; deploy/azure/docker-compose.yml sets the command for each container.
 CMD ["node", "dist/server.js"]

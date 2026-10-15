@@ -63,3 +63,57 @@ test.describe('Notification settings', () => {
     await expect(page.getByRole('button', { name: 'Delete my account' })).toBeVisible();
   });
 });
+
+test.describe('Letter style', () => {
+  test('each choice applies at once, survives a reload and fits the screen', async ({ page }) => {
+    await logIn(page, WHO);
+    await page.goto('/worker/settings?theme=light');
+    const choices = page.getByRole('group', { name: 'Letter style' });
+    const fonts = {
+      Lexend: 'lexend',
+      Andika: 'andika',
+      OpenDyslexic: 'opendyslexic',
+      "Your phone's own letters": 'system',
+    };
+    for (const [name, value] of Object.entries(fonts)) {
+      await choices.getByRole('radio', { name: new RegExp(`^${name}`) }).check();
+      await expect(page.locator('html')).toHaveAttribute('data-font', value);
+    }
+
+    // The widest letters: still no sideways scrolling, also on the Alerts page after a reload.
+    await choices.getByRole('radio', { name: /^OpenDyslexic/ }).check();
+    await expectNoSeriousA11yIssues(page);
+    await expectNoHorizontalScroll(page);
+    await page.goto('/worker/alerts');
+    await expect(page.locator('html')).toHaveAttribute('data-font', 'opendyslexic');
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    expect(
+      await page.evaluate(() => document.fonts.check('16px OpenDyslexic')),
+      'OpenDyslexic downloaded and used',
+    ).toBe(true);
+    await expectNoHorizontalScroll(page);
+
+    // Back to the usual style for the other tests.
+    await page.goto('/worker/settings');
+    await choices.getByRole('radio', { name: /^Atkinson Hyperlegible/ }).check();
+    await expect(page.locator('html')).toHaveAttribute('data-font', 'atkinson');
+  });
+
+  test('the ready-made log-in page uses the chosen letters from the first picture', async ({
+    page,
+  }) => {
+    await page.addInitScript(() =>
+      localStorage.setItem(
+        'kf.settings',
+        JSON.stringify({ state: { theme: 'system', textSize: 'normal', font: 'andika' } }),
+      ),
+    );
+    await page.route('**/assets/*.js', () => new Promise(() => {})); // the app never arrives
+    await page.goto('/login', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('[data-prerendered]')).toBeVisible();
+    await expect(page.locator('html')).toHaveAttribute('data-font', 'andika');
+    expect(await page.evaluate(() => getComputedStyle(document.body).fontFamily)).toMatch(
+      /^Andika/,
+    );
+  });
+});

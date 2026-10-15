@@ -32,7 +32,7 @@ export interface ProcessJobData {
  * wait while Redis is briefly down instead of failing, so no queued job is lost (NFR-3).
  */
 export function queueConnection(url = env.REDIS_URL) {
-  // family 0: the address may be IPv4 or IPv6 (Railway's private network; docs/DEPLOYMENT.md).
+  // family 0: the address may be IPv4 or IPv6 (whichever the network offers).
   return new Redis(url, { maxRetriesPerRequest: null, family: 0 });
 }
 

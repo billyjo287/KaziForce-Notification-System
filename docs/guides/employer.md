@@ -51,7 +51,7 @@ The **Alerts** page tells you when someone applies or writes to you. Every alert
 ## 6. Settings
 
 Settings are the same as for workers: where urgent alerts go first, quiet hours, the daily
-summary email, language, text size and screen colours. See the
+summary email, language, text size, letter style and screen colours. See the
 [worker guide](worker.md#5-settings).
 
 ## Good to know

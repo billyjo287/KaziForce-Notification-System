@@ -95,6 +95,8 @@ app downloads after the page is on screen. Fast 3G, two ways of measuring:
 - The time until the page fully responds is about the same as before (4.3–4.5 s with Chrome
   throttling), but people can read and start typing about 3 seconds earlier; anything typed or
   pressed meanwhile is kept.
+- On Lighthouse's standard mobile profile (Slow 4G) the same pages now appear in **1.1–1.4 s**
+  (landing 1.31 s, log in 1.11 s, sign up 1.37 s; Phase 8: 2.35–2.41 s).
 - Lighthouse accessibility and best practices stay at 100; no layout shift (CLS 0–0.02).
 
 **After deploying**, run Google's PageSpeed Insights (https://pagespeed.web.dev) on the real

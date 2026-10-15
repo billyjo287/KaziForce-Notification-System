@@ -80,6 +80,32 @@
       "pendingHelp": "Umebadilisha nia? Hifadhi akaunti yako na kila kitu kinabaki kama kilivyo.",
       "keep": "Hifadhi akaunti yangu",
       "kept": "Akaunti yako iko salama. Hatutaifuta."
+    },
+    "font": {
+      "label": "Mtindo wa herufi",
+      "help": "Chagua herufi zilizo rahisi zaidi kwako kusoma. Simu au kompyuta hii itakumbuka.",
+      "options": {
+        "atkinson": {
+          "name": "Atkinson Hyperlegible",
+          "help": "Herufi wazi ambazo ni vigumu kuchanganya. Mtindo wa kawaida."
+        },
+        "lexend": {
+          "name": "Lexend",
+          "help": "Herufi pana na rahisi, zilizotengenezwa ili kusoma kuwe rahisi."
+        },
+        "andika": {
+          "name": "Andika",
+          "help": "Herufi zilizotengenezwa kwa wasomaji wapya, kama za vitabu vya shule."
+        },
+        "opendyslexic": {
+          "name": "OpenDyslexic",
+          "help": "Herufi nzito zinazosaidia baadhi ya watu wenye disleksia. Upakuaji mkubwa zaidi."
+        },
+        "system": {
+          "name": "Herufi za simu yako",
+          "help": "Herufi ambazo simu au kompyuta yako tayari inatumia. Hakuna cha kupakua."
+        }
+      }
     }
   },
   "channels": {

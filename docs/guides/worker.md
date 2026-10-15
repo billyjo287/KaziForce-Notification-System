@@ -67,6 +67,10 @@ Open **Settings** to change:
     before. No news, no email.
 - **Language** (English or Kiswahili), **Text size** (Normal or Large), **Screen colours**
   (light, dark or the same as your phone) and **Reduce motion**.
+- **Letter style**: the letters that are easiest for you to read. Atkinson Hyperlegible (the
+  usual style), Lexend, Andika (made for new readers), OpenDyslexic (for some people with
+  dyslexia; a bigger download) or your phone's own letters. This phone or computer remembers
+  your choice.
 
 Every change saves at once. If you change something by mistake, tap **Undo**.
 

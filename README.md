@@ -32,7 +32,7 @@ only logged, never really sent.
 
 ## Documents
 
-- **Put it online:** [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) (Vercel, Railway, Supabase, step by step)
+- **Put it online:** [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) (Vercel, Azure for Students, Supabase: free, step by step)
 - **User guides:** [workers](docs/guides/worker.md) · [employers](docs/guides/employer.md) · [admins](docs/guides/admin.md)
 - **For the thesis:** [technical overview](docs/technical-overview.md) ·
   [performance and resilience](docs/performance.md) · [accessibility and page speed](docs/accessibility.md)
