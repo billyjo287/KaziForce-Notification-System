@@ -1,8 +1,8 @@
-// Node copy of the rule-based classifier v0, used when the ML service is slow (over 500 ms) or
+// Node copy of the rule-based classifier (version rules-v1 inside the file), used when the ML service is slow (over 500 ms) or
 // down (CLAUDE.md section 5). It is a line-by-line port of ml-service/app/classifiers/
 // rule_based.py and reads the same rules (rules-v0.json, a copy of the ML service's file).
 // Tests check that the two files are identical and that both give exactly the same answers for
-// the 28 examples in ml-service/tests/fixtures/rules_v0_examples.json.
+// the 33 examples in ml-service/tests/fixtures/rules_v0_examples.json.
 import rules from './rules-v0.json' with { type: 'json' };
 
 export type NotificationKind = 'job_alert' | 'status_update' | 'message' | 'announcement';
@@ -60,6 +60,17 @@ const bareShortenerLink = (text: string, shorteners: string[]) =>
     new RegExp(`(?:^|[^a-z0-9.])${escapeRegExp(s)}/`).test(text.toLowerCase()),
   );
 
+// A Kenyan mobile number: 07xx / 01xx or +254 7xx / 1xx (digits may be split by spaces or dashes).
+const PHONE_PATTERN = /(?<!\d)(?:\+?254|0)[17](?:[\s-]?\d){8}(?!\d)/;
+const CURRENCY = '(?:kshs?|kes|sh|shillings|bob)';
+
+/** "send 500ksh", "tuma KSh 1,000", "deposit 300 bob": a verb followed by an amount. */
+function asksToSendAmount(text: string, verbs: string[]): boolean {
+  const amount = `(?:${CURRENCY}\\.?\\s*\\d[\\d,]*|\\d[\\d,]*\\s*(?:${CURRENCY}\\b|/=))`;
+  const verb = verbs.map(escapeRegExp).join('|');
+  return new RegExp(`\\b(?:${verb})\\s+${amount}`).test(text.toLowerCase());
+}
+
 const weight = (percent: number) => percent / 100;
 
 function priorityOf(request: PredictRequest, text: string) {
@@ -112,12 +123,18 @@ function spamOf(request: PredictRequest, text: string): { score: number; fired: 
 
   const fired: Fired[] = [];
   const payments = found(text, s.payment_phrases);
+  if (asksToSendAmount(request.text, s.payment_amount_verbs)) payments.push('send amount');
   if (payments.length > 0) {
     fired.push([`spam:payment_request:${payments.join(',')}`, s.payment_request_weight]);
   }
   const blocked = found(text, s.blocked_keywords);
   if (blocked.length > 0) {
     fired.push([`spam:blocked_keyword:${blocked.join(',')}`, s.blocked_keyword_weight]);
+  }
+
+  // A phone number to send money to ("send it on my M-Pesa: 0700 ...").
+  if (PHONE_PATTERN.test(request.text) && found(text, s.mobile_money_words).length > 0) {
+    fired.push(['spam:mobile_money_number', s.mobile_money_weight]);
   }
 
   const hosts = (request.text.match(URL_PATTERN) ?? []).map(urlHost);

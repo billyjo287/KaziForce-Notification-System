@@ -112,7 +112,26 @@
     "markAllRead": "Weka zote kama zimesomwa",
     "markedAllRead_one": "Arifa {{count}} imewekwa kama imesomwa.",
     "markedAllRead_other": "Arifa {{count}} zimewekwa kama zimesomwa.",
-    "openAlert": "Fungua"
+    "openAlert": "Fungua",
+    "feedback": {
+      "title": "Asante. Ungependa kutuambia kwa nini?",
+      "intro": "Si lazima. Inatusaidia kukutumia arifa bora kuliko \"{{title}}\".",
+      "legend": "Kwa nini arifa hii si muhimu kwako?",
+      "pickOne": "Chagua sababu moja, au bonyeza Ruka.",
+      "reasons": {
+        "not_my_work": "Si aina ya kazi ninayofanya",
+        "too_far": "Ni mbali sana",
+        "pay_too_low": "Malipo ni kidogo sana",
+        "not_available": "Sitapatikana wakati huo",
+        "too_many": "Arifa nyingi sana kama hii",
+        "other": "Sababu nyingine"
+      },
+      "noteLabel": "Tuambie zaidi (si lazima)",
+      "noteHelp": "Maneno machache yanatosha. Tafadhali usiandike namba za simu wala majina.",
+      "send": "Tuma",
+      "skip": "Ruka",
+      "thanks": "Asante. Tutatumia hii kuboresha arifa zako."
+    }
   },
   "settings": {
     "title": "Mipangilio",
@@ -172,7 +191,10 @@
     "not_logged_in": "Tafadhali ingia tena.",
     "invalid_input": "Baadhi ya taarifa hazipo au si sahihi. Angalia fomu.",
     "cannot_suspend_admin": "Akaunti za msimamizi haziwezi kusimamishwa.",
-    "already_removed": "Kazi hii tayari imeondolewa."
+    "already_removed": "Kazi hii tayari imeondolewa.",
+    "login_code_wrong": "Msimbo huo si sahihi. Uangalie kisha ujaribu tena.",
+    "login_code_expired": "Msimbo huu umeisha muda. Tafadhali ingia tena.",
+    "not_marked": "Kwanza weka arifa hii kuwa si muhimu."
   },
   "validation": {
     "required": "Tafadhali jaza hapa.",
@@ -207,7 +229,12 @@
       "submit": "Ingia",
       "forgot": "Umesahau nenosiri?",
       "noAccount": "Mgeni kwenye KaziForce?",
-      "register": "Fungua akaunti"
+      "register": "Fungua akaunti",
+      "codeTitle": "Weka msimbo wako",
+      "codeIntro": "Hatua moja zaidi: weka msimbo wa tarakimu 6 ili kumaliza kuingia.",
+      "codeLabel": "Msimbo wa tarakimu 6",
+      "codeSubmit": "Endelea",
+      "codeRestart": "Anza upya"
     },
     "register": {
       "title": "Fungua akaunti yako",
@@ -308,7 +335,8 @@
       "emptyBody": "Ukiomba kazi, unaweza kuifuatilia hapa.",
       "findJobs": "Tafuta kazi",
       "appliedOn": "Uliomba {{when}}"
-    }
+    },
+    "held": "Inasubiri ukaguzi"
   },
   "theme": {
     "label": "Mwonekano wa skrini",
@@ -319,5 +347,9 @@
       "dark": "Giza",
       "system": "Kama kifaa"
     }
+  },
+  "demoCode": {
+    "title": "Msimbo wa majaribio",
+    "help": "Kwa maonyesho, msimbo unaonyeshwa hapa badala ya kutumwa kwa SMS au barua pepe."
   }
 }

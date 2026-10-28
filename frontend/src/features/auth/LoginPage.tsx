@@ -1,10 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { z } from '../../lib/zod';
 import { Button } from '../../components/ui/Button';
+import { DemoCodeBox } from '../../components/ui/DemoCodeBox';
 import { FormAlert } from '../../components/ui/FormAlert';
 import { Input } from '../../components/ui/Input';
 import { PasswordInput } from '../../components/ui/PasswordInput';
@@ -23,6 +24,13 @@ const schema = z.object({
 });
 type Form = z.infer<typeof schema>;
 
+/** Demo mode (backend OTP_DEMO_MODE): the password was right, now a 6-digit code is needed. */
+interface CodeStep {
+  codeRequired: true;
+  challengeId: string;
+  demoCode?: string;
+}
+
 const NOTICE_MS = 5000;
 
 export default function LoginPage() {
@@ -40,26 +48,106 @@ export default function LoginPage() {
   const leaving = useTimedExit(temporary, NOTICE_MS, clearNotice);
   const errorMessage = useApiErrorMessage();
   const [serverError, setServerError] = useState<string | null>(null);
+  const [codeStep, setCodeStep] = useState<CodeStep | null>(null);
+  const [code, setCode] = useState('');
+  const [codeError, setCodeError] = useState<string | null>(null);
+  const [checkingCode, setCheckingCode] = useState(false);
+  const codeHeading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    if (codeStep) codeHeading.current?.focus();
+  }, [codeStep]);
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<Form>({ resolver: zodResolver(schema) });
 
+  function loggedIn(data: Session) {
+    setSession(data);
+    setJustLoggedIn(true);
+    const destination = data.user.onboardingCompleted
+      ? (safeNext(params.get('next')) ?? homePath(data.user.role))
+      : '/onboarding';
+    navigate(destination, { replace: true });
+  }
+
   const onSubmit = handleSubmit(async (values) => {
     setServerError(null);
     try {
-      const { data } = await api.post<Session>('/auth/login', values);
-      setSession(data);
-      setJustLoggedIn(true);
-      const destination = data.user.onboardingCompleted
-        ? (safeNext(params.get('next')) ?? homePath(data.user.role))
-        : '/onboarding';
-      navigate(destination, { replace: true });
+      const { data } = await api.post<Session | CodeStep>('/auth/login', values);
+      if ('codeRequired' in data) {
+        setCode('');
+        setCodeError(null);
+        setCodeStep(data);
+      } else {
+        loggedIn(data);
+      }
     } catch (error) {
       setServerError(errorMessage(error));
     }
   });
+
+  async function onSubmitCode(event: React.FormEvent) {
+    event.preventDefault();
+    if (!codeStep) return;
+    if (!/^\d{6}$/.test(code)) {
+      setCodeError(t('validation.code'));
+      return;
+    }
+    setCodeError(null);
+    setServerError(null);
+    setCheckingCode(true);
+    try {
+      const { data } = await api.post<Session>('/auth/login/code', {
+        challengeId: codeStep.challengeId,
+        code,
+      });
+      loggedIn(data);
+    } catch (error) {
+      setServerError(errorMessage(error));
+    } finally {
+      setCheckingCode(false);
+    }
+  }
+
+  if (codeStep) {
+    return (
+      <AuthLayout>
+        <div>
+          <h1 ref={codeHeading} tabIndex={-1} className="text-3xl font-bold outline-none">
+            {t('auth.login.codeTitle')}
+          </h1>
+          <p className="mt-2 text-lg text-ink-muted">{t('auth.login.codeIntro')}</p>
+        </div>
+        {codeStep.demoCode && <DemoCodeBox code={codeStep.demoCode} />}
+        {serverError && <FormAlert>{serverError}</FormAlert>}
+        <form onSubmit={onSubmitCode} noValidate className="flex flex-col gap-5">
+          <Input
+            label={t('auth.login.codeLabel')}
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            maxLength={6}
+            value={code}
+            onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+            error={codeError ?? undefined}
+            className="max-w-48 text-2xl tracking-[0.3em]"
+          />
+          <Button type="submit" size="lg" disabled={checkingCode}>
+            {t('auth.login.codeSubmit')}
+          </Button>
+        </form>
+        <Button
+          variant="ghost"
+          onClick={() => {
+            setCodeStep(null);
+            setServerError(null);
+          }}
+        >
+          {t('auth.login.codeRestart')}
+        </Button>
+      </AuthLayout>
+    );
+  }
 
   return (
     <AuthLayout>

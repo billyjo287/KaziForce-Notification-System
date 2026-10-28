@@ -174,7 +174,17 @@
       "released": "Imepelekwa kwa {{name}}.",
       "errorTitle": "Hatukuweza kupakia ukaguzi wa taka",
       "emptyTitle": "Hakuna cha kukagua",
-      "emptyBody": "Arifa ikionekana kuwa taka, itakusubiri hapa."
+      "emptyBody": "Arifa ikionekana kuwa taka, itakusubiri hapa.",
+      "heldJobs": {
+        "title_one": "Tangazo {{count}} la kazi linasubiri ukaguzi",
+        "title_other": "Matangazo {{count}} ya kazi yanasubiri ukaguzi",
+        "intro": "Matangazo haya ya kazi yalionekana kuwa ya utapeli yalipowekwa. Wafanyakazi hawawezi kuyaona na hakuna arifa iliyotumwa.",
+        "jobTitle": "Tangazo la kazi: {{title}}",
+        "remove": "Ndiyo, ni utapeli: liondoe",
+        "publish": "Si utapeli: lichapishe",
+        "removed": "Limeondolewa. Mwajiri ataona sababu.",
+        "published": "Limechapishwa. Arifa za kazi zinatumwa sasa."
+      }
     },
     "announce": {
       "title": "Matangazo",

@@ -345,6 +345,7 @@ export function AdminJobsPage() {
             { value: 'open', label: t('employer.myJobs.open') },
             { value: 'closed', label: t('jobs.closed') },
             { value: 'removed', label: t('jobs.removed') },
+            { value: 'held', label: t('jobs.held') },
           ]}
         />
       </div>

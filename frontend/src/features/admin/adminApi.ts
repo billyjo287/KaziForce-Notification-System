@@ -86,6 +86,19 @@ export interface SpamItem {
   createdAt: string;
 }
 
+/** A job post the scam check held when it was posted (nobody has seen it). */
+export interface HeldJob {
+  id: string;
+  title: string;
+  description: string;
+  pay: string | null;
+  location: string;
+  employer: { id: string; name: string };
+  spamScore: number | null;
+  explanation: { feature: string; weight: number }[] | null;
+  createdAt: string;
+}
+
 export interface ModelVersion {
   id: string;
   version: string;
@@ -142,6 +155,18 @@ export const useReleaseSpam = () =>
 
 export const useConfirmSpam = () =>
   useAdminMutation((id: string) => api.post(`/admin/review/spam/${id}/confirm`));
+
+export const useHeldJobs = () =>
+  useQuery({
+    queryKey: ['admin', 'heldJobs'],
+    queryFn: async () => (await api.get<{ items: HeldJob[] }>('/admin/review/jobs')).data,
+  });
+
+export const usePublishHeldJob = () =>
+  useAdminMutation((id: string) => api.post(`/admin/review/jobs/${id}/publish`));
+
+export const useRemoveHeldJob = () =>
+  useAdminMutation((id: string) => api.post(`/admin/review/jobs/${id}/remove`));
 
 export const useCorrectPriority = () =>
   useAdminMutation(({ id, priority }: { id: string; priority: Priority }) =>

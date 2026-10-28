@@ -14,7 +14,7 @@
       "priority_confidence": 0.9,
       "is_spam": false,
       "spam_score": 0.02,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -39,7 +39,7 @@
       "priority_confidence": 0.75,
       "is_spam": false,
       "spam_score": 0.02,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -64,7 +64,7 @@
       "priority_confidence": 0.6,
       "is_spam": false,
       "spam_score": 0.02,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -89,7 +89,7 @@
       "priority_confidence": 0.9,
       "is_spam": false,
       "spam_score": 0.02,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -114,7 +114,7 @@
       "priority_confidence": 0.6,
       "is_spam": false,
       "spam_score": 0.02,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -139,7 +139,7 @@
       "priority_confidence": 0.75,
       "is_spam": false,
       "spam_score": 0.02,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -164,7 +164,7 @@
       "priority_confidence": 0.75,
       "is_spam": false,
       "spam_score": 0.02,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -189,7 +189,7 @@
       "priority_confidence": 0.6,
       "is_spam": false,
       "spam_score": 0.02,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -214,7 +214,7 @@
       "priority_confidence": 0.85,
       "is_spam": false,
       "spam_score": 0.02,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -239,7 +239,7 @@
       "priority_confidence": 0.85,
       "is_spam": false,
       "spam_score": 0.02,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -264,7 +264,7 @@
       "priority_confidence": 0.7,
       "is_spam": false,
       "spam_score": 0.02,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -289,7 +289,7 @@
       "priority_confidence": 0.7,
       "is_spam": false,
       "spam_score": 0.02,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -314,7 +314,7 @@
       "priority_confidence": 0.7,
       "is_spam": false,
       "spam_score": 0.02,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -339,7 +339,7 @@
       "priority_confidence": 0.7,
       "is_spam": false,
       "spam_score": 0.02,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -364,7 +364,7 @@
       "priority_confidence": 0.7,
       "is_spam": false,
       "spam_score": 0.02,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -389,7 +389,7 @@
       "priority_confidence": 0.75,
       "is_spam": false,
       "spam_score": 0.02,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -414,7 +414,7 @@
       "priority_confidence": 0.7,
       "is_spam": false,
       "spam_score": 0.02,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -439,7 +439,7 @@
       "priority_confidence": 0.7,
       "is_spam": false,
       "spam_score": 0.02,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -464,7 +464,7 @@
       "priority_confidence": 0.8,
       "is_spam": false,
       "spam_score": 0.0,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -493,7 +493,7 @@
       "priority_confidence": 0.8,
       "is_spam": false,
       "spam_score": 0.0,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -522,7 +522,7 @@
       "priority_confidence": 0.7,
       "is_spam": true,
       "spam_score": 1.0,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -530,11 +530,11 @@
           "weight": 0.7
         },
         {
-          "feature": "spam:payment_request:registration fee,send ksh",
+          "feature": "spam:payment_request:registration fee,send ksh,send amount",
           "weight": 0.6
         },
         {
-          "feature": "spam:blocked_keyword:congratulations you are hired",
+          "feature": "spam:blocked_keyword:congratulations you are hired,secure your job",
           "weight": 0.4
         },
         {
@@ -559,7 +559,7 @@
       "priority_confidence": 0.75,
       "is_spam": true,
       "spam_score": 1.0,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -592,7 +592,7 @@
       "priority_confidence": 0.7,
       "is_spam": true,
       "spam_score": 1.0,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -600,7 +600,7 @@
           "weight": 0.7
         },
         {
-          "feature": "spam:payment_request:tuma ksh",
+          "feature": "spam:payment_request:tuma ksh,send amount",
           "weight": 0.6
         },
         {
@@ -625,7 +625,7 @@
       "priority_confidence": 0.7,
       "is_spam": true,
       "spam_score": 0.87,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -658,7 +658,7 @@
       "priority_confidence": 0.7,
       "is_spam": true,
       "spam_score": 0.97,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -691,7 +691,7 @@
       "priority_confidence": 0.8,
       "is_spam": true,
       "spam_score": 0.62,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -724,7 +724,7 @@
       "priority_confidence": 0.7,
       "is_spam": false,
       "spam_score": 0.47,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
@@ -753,12 +753,177 @@
       "priority_confidence": 0.7,
       "is_spam": false,
       "spam_score": 0.02,
-      "model_version": "rules-v0",
+      "model_version": "rules-v1",
       "source": "rules",
       "explanation": [
         {
           "feature": "direct_message",
           "weight": 0.7
+        }
+      ]
+    }
+  },
+  {
+    "name": "Scam job post: send money to an M-Pesa number to secure the job (rules-v1)",
+    "request": {
+      "text": "Warehouse packers\nCONGRATULATIONS!!!! Send 500ksh to secure the Job!!!! Send money on my M-Pesa: 0700030367",
+      "type": "job_alert",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-22T10:00:00+03:00",
+      "deadline_minutes": 1440
+    },
+    "expected": {
+      "priority": "low",
+      "priority_confidence": 0.6,
+      "is_spam": true,
+      "spam_score": 1.0,
+      "model_version": "rules-v1",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "general_job_alert",
+          "weight": 0.6
+        },
+        {
+          "feature": "spam:payment_request:send money,send amount",
+          "weight": 0.6
+        },
+        {
+          "feature": "spam:blocked_keyword:secure the job",
+          "weight": 0.4
+        },
+        {
+          "feature": "spam:mobile_money_number",
+          "weight": 0.45
+        },
+        {
+          "feature": "spam:excessive_punctuation",
+          "weight": 0.15
+        }
+      ]
+    }
+  },
+  {
+    "name": "Scam in Kiswahili: tuma KSh to a phone number (rules-v1)",
+    "request": {
+      "text": "Tuma KSh 300 kwa namba 0722 111 222 upate kazi",
+      "type": "message",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-22T10:00:00+03:00",
+      "deadline_minutes": null
+    },
+    "expected": {
+      "priority": "medium",
+      "priority_confidence": 0.7,
+      "is_spam": true,
+      "spam_score": 1.0,
+      "model_version": "rules-v1",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "direct_message",
+          "weight": 0.7
+        },
+        {
+          "feature": "spam:payment_request:tuma ksh,send amount",
+          "weight": 0.6
+        },
+        {
+          "feature": "spam:mobile_money_number",
+          "weight": 0.45
+        }
+      ]
+    }
+  },
+  {
+    "name": "Pay to secure your slot, amount in bob (rules-v1)",
+    "request": {
+      "text": "Please send 500 bob to 0700111222 to secure your slot",
+      "type": "message",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-22T10:00:00+03:00",
+      "deadline_minutes": null
+    },
+    "expected": {
+      "priority": "medium",
+      "priority_confidence": 0.7,
+      "is_spam": true,
+      "spam_score": 1.0,
+      "model_version": "rules-v1",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "direct_message",
+          "weight": 0.7
+        },
+        {
+          "feature": "spam:payment_request:send amount",
+          "weight": 0.6
+        },
+        {
+          "feature": "spam:blocked_keyword:secure your slot",
+          "weight": 0.4
+        },
+        {
+          "feature": "spam:mobile_money_number",
+          "weight": 0.45
+        }
+      ]
+    }
+  },
+  {
+    "name": "Honest: send your CV to a phone number (one sign only, not spam)",
+    "request": {
+      "text": "Send your CV to 0712 345 678 before Friday.",
+      "type": "message",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-22T10:00:00+03:00",
+      "deadline_minutes": null
+    },
+    "expected": {
+      "priority": "medium",
+      "priority_confidence": 0.7,
+      "is_spam": false,
+      "spam_score": 0.47,
+      "model_version": "rules-v1",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "direct_message",
+          "weight": 0.7
+        },
+        {
+          "feature": "spam:mobile_money_number",
+          "weight": 0.45
+        }
+      ]
+    }
+  },
+  {
+    "name": "Honest: employer states the daily pay and a phone number",
+    "request": {
+      "text": "We pay KSh 1,000 per day. Call 0712345678 for details.",
+      "type": "job_alert",
+      "recipient_role": "worker",
+      "sender_role": "business",
+      "created_at": "2026-10-22T10:00:00+03:00",
+      "deadline_minutes": 2880
+    },
+    "expected": {
+      "priority": "low",
+      "priority_confidence": 0.6,
+      "is_spam": false,
+      "spam_score": 0.02,
+      "model_version": "rules-v1",
+      "source": "rules",
+      "explanation": [
+        {
+          "feature": "general_job_alert",
+          "weight": 0.6
         }
       ]
     }

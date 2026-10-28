@@ -71,6 +71,9 @@ export default function MyJobsPage() {
                         {t('employer.myJobs.newApplicants', { count: job.newApplicantCount })}
                       </Badge>
                     )}
+                    {job.status === 'held' && (
+                      <span className="text-ink-muted">{t('employer.heldShort')}</span>
+                    )}
                     {job.status === 'removed' && job.removedReason && (
                       <span className="text-ink-muted">
                         {t('employer.removedReason', { reason: job.removedReason })}

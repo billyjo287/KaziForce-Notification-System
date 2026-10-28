@@ -20,6 +20,7 @@ import {
 import { redis } from '../src/lib/redis.js';
 import { signAccessToken } from '../src/lib/tokens.js';
 import type { SerializedNotification } from '../src/modules/notifications/serialize.js';
+import { recordEvent } from '../src/events/domainEvents.js';
 import { validateNotifications } from '../src/pipeline/createNotifications.js';
 import { createModelRegistry } from '../src/pipeline/modelRegistry.js';
 import { startNotificationWorker } from '../src/pipeline/notificationWorker.js';
@@ -305,7 +306,7 @@ describe('business posts a job -> worker receives it live', () => {
       predictedPriority: 'low',
       isSpam: false,
       spamScore: 0.02,
-      modelVersion: 'rules-v0',
+      modelVersion: 'rules-v1',
       predictionSource: 'rules',
       explanation: [{ feature: 'general_job_alert', weight: 0.6 }],
     });
@@ -705,7 +706,7 @@ describe('Phase 4: priority and spam from /predict', () => {
     expect(saved).toMatchObject({
       isSpam: true,
       spamScore: 1,
-      modelVersion: 'rules-v0',
+      modelVersion: 'rules-v1',
       predictionSource: 'rules',
       deliveries: [],
     });
@@ -743,7 +744,7 @@ describe('Phase 4: priority and spam from /predict', () => {
       const saved = await prisma.notification.findUniqueOrThrow({ where: { id: alert.id } });
       expect(saved).toMatchObject({
         predictionSource: 'rules_fallback',
-        modelVersion: 'rules-v0',
+        modelVersion: 'rules-v1',
         predictedPriority: 'urgent',
         priorityConfidence: 0.75,
       });
@@ -753,24 +754,32 @@ describe('Phase 4: priority and spam from /predict', () => {
   });
 
   it('registers each model version in MLMetadata the first time it answers', async () => {
+    // Put the table back exactly as it was afterwards (the seed has rules-v0 and rules-v1).
+    const before = await prisma.mLMetadata.findMany();
     await prisma.mLMetadata.deleteMany();
     const register = createModelRegistry(prisma);
-    await register('rules-v0');
+    await register('rules-v1');
     expect(await prisma.mLMetadata.findMany({ where: { isActive: true } })).toMatchObject([
-      { version: 'rules-v0', algorithm: 'rules' },
+      { version: 'rules-v1', algorithm: 'rules' },
     ]);
 
-    // A trained model later (Phase 9) takes over as the active one; rules-v0 stays listed.
+    // A trained model later (Phase 9) takes over as the active one; rules-v1 stays listed.
     await register('ml-v1');
     const all = await prisma.mLMetadata.findMany({ orderBy: { version: 'asc' } });
     expect(all.map((m) => [m.version, m.isActive])).toEqual([
       ['ml-v1', true],
-      ['rules-v0', false],
+      ['rules-v1', false],
     ]);
 
     // Back to the state the other tests expect.
-    await prisma.mLMetadata.deleteMany({ where: { version: 'ml-v1' } });
-    await prisma.mLMetadata.update({ where: { version: 'rules-v0' }, data: { isActive: true } });
+    await prisma.mLMetadata.deleteMany();
+    await prisma.mLMetadata.createMany({
+      data: before.map((m) => ({
+        ...m,
+        metrics: m.metrics ?? undefined,
+        datasetInfo: m.datasetInfo ?? undefined,
+      })),
+    });
   });
 });
 
@@ -817,5 +826,182 @@ describe('Phase 5: urgent alerts reach the provider fast (NFR-1)', () => {
         `slowest ${Math.max(...timings).toFixed(0)} ms`,
     );
     expect(p95).toBeLessThan(2000);
+  });
+});
+
+// Billy's report (22 Oct 2026): a job post asking workers to send money to an M-Pesa number
+// reached workers, because job alerts carry our own short summary, not what the employer wrote.
+describe('scam job posts are held until an admin decides (rules-v1)', () => {
+  const SCAM =
+    'CONGRATULATIONS!!!! Send 500ksh to secure the Job!!!! Send money on my M-Pesa: 0700030367';
+  let realMlUrl: string;
+  beforeAll(() => {
+    // The job route asks the ML service too: use the same stand-in as the worker.
+    realMlUrl = env.ML_SERVICE_URL;
+    env.ML_SERVICE_URL = ml.url;
+  });
+  afterAll(() => {
+    env.ML_SERVICE_URL = realMlUrl;
+  });
+
+  const postScam = (title: string) =>
+    request(app).post('/api/jobs').set(auth(employerToken)).send({
+      title,
+      description: SCAM,
+      locationId: westlands,
+      skillId: delivery,
+      pay: 'KSh 1,200',
+      deadline: inTwoDays(),
+    });
+
+  it('holds the job: not listed, no alerts, waiting in the admin review with its reasons', async () => {
+    const worker = await makeUser('worker', { locationId: westlands, skillIds: [delivery] });
+    const res = await postScam('Warehouse packers (scam check)');
+    expect(res.status).toBe(201);
+    expect(res.body.job.status).toBe('held');
+    const jobId: string = res.body.job.id;
+
+    const saved = await prisma.job.findUniqueOrThrow({ where: { id: jobId } });
+    expect(saved).toMatchObject({ status: 'held', spamScore: 1 });
+    expect(saved.heldAt).not.toBeNull();
+    // Never announced, so no alerts can be made from it.
+    const events = await prisma.domainEvent.findMany({ where: { type: 'job.posted' } });
+    expect(events.some((e) => (e.payload as { jobId: string }).jobId === jobId)).toBe(false);
+
+    // Workers cannot find it.
+    const list = await request(app).get('/api/jobs').set(auth(worker.token)).expect(200);
+    expect(JSON.stringify(list.body)).not.toContain(jobId);
+    await request(app).get(`/api/jobs/${jobId}`).set(auth(worker.token)).expect(404);
+
+    const review = await request(app).get('/api/admin/review/jobs').set(auth(adminToken));
+    const held = review.body.items.find((j: { id: string }) => j.id === jobId);
+    const features = held.explanation.map((e: { feature: string }) => e.feature);
+    expect(features).toEqual(
+      expect.arrayContaining(['spam:mobile_money_number', 'spam:blocked_keyword:secure the job']),
+    );
+  });
+
+  it('"Not a scam: publish it" sends the job alerts, and the alerts trust the admin', async () => {
+    const worker = await makeUser('worker', { locationId: westlands, skillIds: [painting] });
+    const socket = await openSocket(worker.token);
+    const res = await postScam('Packers (published after a check)');
+    const jobId: string = res.body.job.id;
+
+    const arrived = nextNotification(socket, (n) => n.link === `/worker/jobs/${jobId}`);
+    await request(app)
+      .post(`/api/admin/review/jobs/${jobId}/publish`)
+      .set(auth(adminToken))
+      .expect(200);
+    const alert = await arrived;
+    expect(alert.type).toBe('job_alert');
+    const job = await prisma.job.findUniqueOrThrow({ where: { id: jobId } });
+    expect(job.status).toBe('open');
+    expect(job.reviewedAt).not.toBeNull();
+    // Deciding twice is refused.
+    await request(app)
+      .post(`/api/admin/review/jobs/${jobId}/publish`)
+      .set(auth(adminToken))
+      .expect(409);
+  });
+
+  it('"Yes, it is a scam: remove it" takes it down with a reason the employer sees', async () => {
+    const res = await postScam('Packers (removed after a check)');
+    const jobId: string = res.body.job.id;
+    await request(app)
+      .post(`/api/admin/review/jobs/${jobId}/remove`)
+      .set(auth(adminToken))
+      .expect(200);
+    const seen = await request(app).get(`/api/jobs/${jobId}`).set(auth(employerToken));
+    expect(seen.body.job).toMatchObject({ status: 'removed' });
+    expect(seen.body.job.removedReason).toContain('scam');
+    expect(
+      await prisma.auditLog.count({ where: { targetId: jobId, action: 'job.removed_as_scam' } }),
+    ).toBe(1);
+  });
+
+  it('safety net: a job alert is also checked against what the employer wrote', async () => {
+    // A job saved without the check (as before the fix), announced the old way.
+    const worker = await makeUser('worker', { locationId: westlands, skillIds: [painting] });
+    const job = await prisma.$transaction(async (tx) => {
+      const created = await tx.job.create({
+        data: {
+          employerId,
+          title: 'Warehouse packers (old post)',
+          description: SCAM,
+          locationId: westlands,
+          skillId: delivery,
+          deadline: new Date(inTwoDays()),
+        },
+      });
+      await recordEvent(tx, 'job.posted', {
+        jobId: created.id,
+        employerId,
+        locationId: westlands,
+        skillId: delivery,
+        urgent: false,
+      });
+      return created;
+    });
+    await eventually(async () => {
+      const n = await prisma.notification.findFirstOrThrow({
+        where: { jobId: job.id, recipientId: worker.user.id },
+      });
+      expect(n.status).toBe('blocked');
+      expect(JSON.stringify(n.explanation)).toContain('job_description:spam:mobile_money_number');
+    }, 5000);
+  });
+});
+
+describe('"Not important to me": the optional "why?"', () => {
+  it('saves a reason (and a note) only after marking; Undo forgets them', async () => {
+    const worker = await makeUser('worker', { locationId: kisumu });
+    const n = await prisma.notification.create({
+      data: {
+        recipientId: worker.user.id,
+        recipientRole: 'worker',
+        senderRole: 'system',
+        type: 'announcement',
+        category: 'announcement',
+        title: 'Market day news',
+        message: 'The market opens late on Friday.',
+        status: 'sent',
+      },
+    });
+    const feedback = (body: object) =>
+      request(app).post(`/api/notifications/${n.id}/feedback`).set(auth(worker.token)).send(body);
+
+    // Not marked yet: refused.
+    await feedback({ reason: 'too_far' }).expect(409);
+    await request(app)
+      .patch('/api/notifications')
+      .set(auth(worker.token))
+      .send({ ids: [n.id], notImportant: true })
+      .expect(200);
+    await feedback({ reason: 'made_up_reason' }).expect(400);
+    await feedback({ reason: 'other', note: 'I only work weekends' }).expect(200);
+    expect(await prisma.notification.findUniqueOrThrow({ where: { id: n.id } })).toMatchObject({
+      notImportantReason: 'other',
+      notImportantNote: 'I only work weekends',
+    });
+
+    // Undo clears the answer too.
+    await request(app)
+      .patch('/api/notifications')
+      .set(auth(worker.token))
+      .send({ ids: [n.id], notImportant: false })
+      .expect(200);
+    expect(await prisma.notification.findUniqueOrThrow({ where: { id: n.id } })).toMatchObject({
+      markedNotImportant: false,
+      notImportantReason: null,
+      notImportantNote: null,
+    });
+
+    // Someone else's alert: not found.
+    const other = await makeUser('worker');
+    await request(app)
+      .post(`/api/notifications/${n.id}/feedback`)
+      .set(auth(other.token))
+      .send({ reason: 'too_far' })
+      .expect(404);
   });
 });

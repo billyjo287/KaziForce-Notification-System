@@ -174,7 +174,17 @@
       "released": "Delivered to {{name}}.",
       "errorTitle": "We could not load the spam review",
       "emptyTitle": "Nothing to review",
-      "emptyBody": "When an alert looks like spam, it waits here for you."
+      "emptyBody": "When an alert looks like spam, it waits here for you.",
+      "heldJobs": {
+        "title_one": "{{count}} job post waiting for a check",
+        "title_other": "{{count}} job posts waiting for a check",
+        "intro": "These job posts looked like scams when they were posted. Workers cannot see them and no alerts were sent.",
+        "jobTitle": "Job post: {{title}}",
+        "remove": "Yes, it is a scam: remove it",
+        "publish": "Not a scam: publish it",
+        "removed": "Removed. The employer sees why.",
+        "published": "Published. The job alerts are going out now."
+      }
     },
     "announce": {
       "title": "Announcements",

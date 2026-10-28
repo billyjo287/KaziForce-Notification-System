@@ -21,7 +21,7 @@ function renderAlerts(role: AlertRole = 'worker', path = '/worker/alerts') {
 
 // The API client is replaced by a stand-in that returns sample alerts.
 vi.mock('../../lib/api', () => ({
-  api: { get: vi.fn(), patch: vi.fn() },
+  api: { get: vi.fn(), patch: vi.fn(), post: vi.fn() },
   apiErrorCode: () => 'generic',
 }));
 
@@ -29,6 +29,7 @@ describe('Alerts dashboard', () => {
   beforeEach(() => {
     vi.mocked(api.get).mockResolvedValue({ data: { items: createNotifications() } });
     vi.mocked(api.patch).mockResolvedValue({ data: { items: [] } });
+    vi.mocked(api.post).mockReset();
   });
   afterEach(async () => {
     await i18n.changeLanguage('en');
@@ -119,6 +120,45 @@ describe('Alerts dashboard', () => {
     expect(
       await screen.findByRole('button', { name: /New message from Pwani Events/ }),
     ).toBeInTheDocument();
+  });
+
+  it('after "Not important to me", asks why (optional): Skip, or pick a reason and Send', async () => {
+    vi.mocked(api.post).mockResolvedValue({ data: { ok: true } });
+    renderAlerts();
+    await userEvent.click(await screen.findByRole('tab', { name: /Important/ }));
+    await userEvent.click(screen.getByRole('button', { name: /New message from Pwani Events/ }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Not important to me' }));
+
+    const card = await screen.findByRole('region', { name: 'Thanks. Want to tell us why?' });
+    // Sending without a choice asks for one (nothing is sent).
+    await userEvent.click(within(card).getByRole('button', { name: 'Send' }));
+    expect(within(card).getByRole('alert')).toHaveTextContent('Choose one reason');
+    expect(api.post).not.toHaveBeenCalled();
+
+    await userEvent.click(within(card).getByRole('radio', { name: 'Something else' }));
+    await userEvent.type(within(card).getByLabelText('Tell us more (optional)'), 'Weekends only');
+    await userEvent.click(within(card).getByRole('button', { name: 'Send' }));
+    expect(api.post).toHaveBeenCalledWith('/notifications/a3/feedback', {
+      reason: 'other',
+      note: 'Weekends only',
+    });
+    expect(await screen.findByText(/Thank you. We will use this/)).toBeInTheDocument();
+    expect(
+      screen.queryByRole('region', { name: 'Thanks. Want to tell us why?' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('the "why?" card can be skipped', async () => {
+    renderAlerts();
+    await userEvent.click(await screen.findByRole('tab', { name: /Important/ }));
+    await userEvent.click(screen.getByRole('button', { name: /New message from Pwani Events/ }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Not important to me' }));
+    const card = await screen.findByRole('region', { name: 'Thanks. Want to tell us why?' });
+    await userEvent.click(within(card).getByRole('button', { name: 'Skip' }));
+    expect(
+      screen.queryByRole('region', { name: 'Thanks. Want to tell us why?' }),
+    ).not.toBeInTheDocument();
+    expect(api.post).not.toHaveBeenCalled();
   });
 
   it('"Mark all as read" marks the whole category, and Undo reverses it', async () => {

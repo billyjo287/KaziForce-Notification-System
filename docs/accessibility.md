@@ -11,6 +11,8 @@ a slow connection can use every screen without help (PRD sections 2, 6 and NFR-4
 | Keyboard only | `e2e/a11y.spec.ts`: log in with Tab and Enter only; "Skip to main content" appears on the first Tab and moves the focus past the menu; every focused control shows a 2-pixel (or wider) outline; open a job with Enter | Passes |
 | 200% zoom | `e2e/a11y.spec.ts`: 640 CSS pixels wide (a 1280-pixel screen at 200%) with **Large** text: Alerts, Jobs, Messages, Settings and three admin pages | No sideways scrolling, every page heading visible |
 | 400% zoom / smallest phones | 320 px wide (existing tests) | No sideways scrolling |
+| Tablets and small laptops (NFR-7) | 768 px and 1024 px, worker, employer and admin pages (`e2e/dashboard.spec.ts`) | Sidebar menu only, no sideways scrolling, no serious axe problems |
+| Other browsers (NFR-7) | Firefox and WebKit (Safari's engine, iPhone 13 size): landing, log in, settings and a live alert (`e2e/browsers.spec.ts`) | No script errors; the live alert arrives |
 | Screen reader (what it announces) | `e2e/screen-reader.spec.ts` reads the accessibility tree: landmarks, one heading per page, names and help of every control, a polite live region for new alerts | Passes; trees reviewed by hand (below) |
 | Lighthouse accessibility | Landing, log-in and Alerts pages, mobile profile | **100** on all three |
 

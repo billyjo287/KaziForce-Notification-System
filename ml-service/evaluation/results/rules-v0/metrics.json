@@ -1,0 +1,1335 @@
+{
+  "run": {
+    "run_at": "2026-10-22 07:48 UTC",
+    "dataset": "evaluation/holdout-v1.csv",
+    "dataset_sha256": "66920042f56b817d10e5bd18d0e1c83ca2a616ff729b9332e6e9228997b924de",
+    "rules_sha256": "8083fd550e1b43bbfc1698d752f4f1e090e620e10fd1324609dfa4eeb659baa2",
+    "rows": 177,
+    "python": "3.10.11"
+  },
+  "model_version": "rules-v0",
+  "priority": {
+    "rows": 147,
+    "accuracy": 0.6326530612244898,
+    "weighted_f1": 0.6351964345753166,
+    "macro_f1": 0.6373900656509353,
+    "per_class": {
+      "urgent": {
+        "precision": 0.9615384615384616,
+        "recall": 0.5434782608695652,
+        "f1": 0.6944444444444445,
+        "support": 46
+      },
+      "medium": {
+        "precision": 0.675,
+        "recall": 0.5192307692307693,
+        "f1": 0.5869565217391304,
+        "support": 52
+      },
+      "low": {
+        "precision": 0.5061728395061729,
+        "recall": 0.8367346938775511,
+        "f1": 0.6307692307692307,
+        "support": 49
+      }
+    },
+    "labels": [
+      "urgent",
+      "medium",
+      "low"
+    ],
+    "confusion_matrix": [
+      [
+        25,
+        6,
+        15
+      ],
+      [
+        0,
+        27,
+        25
+      ],
+      [
+        1,
+        7,
+        41
+      ]
+    ]
+  },
+  "spam": {
+    "rows": 177,
+    "accuracy": 0.8870056497175142,
+    "weighted_f1": 0.8623556083342331,
+    "macro_f1": 0.7181528662420382,
+    "per_class": {
+      "True": {
+        "precision": 1.0,
+        "recall": 0.3333333333333333,
+        "f1": 0.5,
+        "support": 30
+      },
+      "False": {
+        "precision": 0.8802395209580839,
+        "recall": 1.0,
+        "f1": 0.9363057324840766,
+        "support": 147
+      }
+    },
+    "labels": [
+      "True",
+      "False"
+    ],
+    "confusion_matrix": [
+      [
+        10,
+        20
+      ],
+      [
+        0,
+        147
+      ]
+    ],
+    "false_positive_rate": 0.0
+  },
+  "by_language": {
+    "en": {
+      "priority": {
+        "rows": 97,
+        "accuracy": 0.6185567010309279,
+        "weighted_f1": 0.619573485621672,
+        "macro_f1": 0.6226671610431344,
+        "per_class": {
+          "urgent": {
+            "precision": 0.9375,
+            "recall": 0.5172413793103449,
+            "f1": 0.6666666666666667,
+            "support": 29
+          },
+          "medium": {
+            "precision": 0.6923076923076923,
+            "recall": 0.5,
+            "f1": 0.5806451612903226,
+            "support": 36
+          },
+          "low": {
+            "precision": 0.4909090909090909,
+            "recall": 0.84375,
+            "f1": 0.6206896551724137,
+            "support": 32
+          }
+        },
+        "labels": [
+          "urgent",
+          "medium",
+          "low"
+        ],
+        "confusion_matrix": [
+          [
+            15,
+            4,
+            10
+          ],
+          [
+            0,
+            18,
+            18
+          ],
+          [
+            1,
+            4,
+            27
+          ]
+        ]
+      },
+      "spam": {
+        "rows": 117,
+        "accuracy": 0.8717948717948718,
+        "weighted_f1": 0.8379339958287326,
+        "macro_f1": 0.6641148325358852,
+        "per_class": {
+          "True": {
+            "precision": 1.0,
+            "recall": 0.25,
+            "f1": 0.4,
+            "support": 20
+          },
+          "False": {
+            "precision": 0.8660714285714286,
+            "recall": 1.0,
+            "f1": 0.9282296650717704,
+            "support": 97
+          }
+        },
+        "labels": [
+          "True",
+          "False"
+        ],
+        "confusion_matrix": [
+          [
+            5,
+            15
+          ],
+          [
+            0,
+            97
+          ]
+        ],
+        "false_positive_rate": 0.0
+      }
+    },
+    "sw": {
+      "priority": {
+        "rows": 50,
+        "accuracy": 0.66,
+        "weighted_f1": 0.6652472006890611,
+        "macro_f1": 0.663967843812805,
+        "per_class": {
+          "urgent": {
+            "precision": 1.0,
+            "recall": 0.5882352941176471,
+            "f1": 0.7407407407407407,
+            "support": 17
+          },
+          "medium": {
+            "precision": 0.6428571428571429,
+            "recall": 0.5625,
+            "f1": 0.6000000000000001,
+            "support": 16
+          },
+          "low": {
+            "precision": 0.5384615384615384,
+            "recall": 0.8235294117647058,
+            "f1": 0.6511627906976744,
+            "support": 17
+          }
+        },
+        "labels": [
+          "urgent",
+          "medium",
+          "low"
+        ],
+        "confusion_matrix": [
+          [
+            10,
+            2,
+            5
+          ],
+          [
+            0,
+            9,
+            7
+          ],
+          [
+            0,
+            3,
+            14
+          ]
+        ]
+      },
+      "spam": {
+        "rows": 60,
+        "accuracy": 0.9166666666666666,
+        "weighted_f1": 0.9047619047619047,
+        "macro_f1": 0.8095238095238095,
+        "per_class": {
+          "True": {
+            "precision": 1.0,
+            "recall": 0.5,
+            "f1": 0.6666666666666666,
+            "support": 10
+          },
+          "False": {
+            "precision": 0.9090909090909091,
+            "recall": 1.0,
+            "f1": 0.9523809523809523,
+            "support": 50
+          }
+        },
+        "labels": [
+          "True",
+          "False"
+        ],
+        "confusion_matrix": [
+          [
+            5,
+            5
+          ],
+          [
+            0,
+            50
+          ]
+        ],
+        "false_positive_rate": 0.0
+      }
+    }
+  },
+  "mistakes": [
+    {
+      "id": 2,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Event ushers\nSafari Events needs Ushering in Westlands. Pay: KSh 1,500. Apply before 14:00.",
+      "label_priority": "urgent",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes in 2 hours",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 3,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Kitchen helper for lunch rush\nMama Oliech Restaurant needs Cooking in Kilimani. Pay: KSh 900. Apply before 12:30.",
+      "label_priority": "urgent",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes in 2.5 hours, work is today",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 6,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Boda rider for deliveries\nQuick Parcel needs Delivery in CBD. Pay: KSh 1,200. Apply before 10:30.",
+      "label_priority": "urgent",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes in 90 minutes",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 8,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Shop attendant, afternoon shift\nNaivas Express needs Sales in Thika. Pay: KSh 700. Apply before 13:00.",
+      "label_priority": "urgent",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes in under 3 hours, shift is this afternoon",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 9,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Waiters for a wedding this evening\nHarusi Caterers needs Catering in Nakuru. Pay: KSh 1,500. Apply before 16:00.",
+      "label_priority": "urgent",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "work is this evening",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 12,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Farm hands for harvest\nGreen Acres needs Farming in Limuru. Pay: KSh 800. Apply before 11:00. Work starts at noon.",
+      "label_priority": "urgent",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes in 3 hours, starts at noon",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 13,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Electrician for emergency repair\nBright Sparks needs Electrical in Lavington. Pay: KSh 2,500. Apply before 10:40.",
+      "label_priority": "urgent",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "emergency, closes in 100 minutes",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 17,
+      "language": "sw",
+      "type": "job_alert",
+      "text": "Mpishi msaidizi\nHoteli ya Pwani inahitaji Upishi huko Mombasa. Malipo: KSh 900. Omba kabla ya saa 7 mchana.",
+      "label_priority": "urgent",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes in 2.5 hours",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 18,
+      "language": "sw",
+      "type": "job_alert",
+      "text": "Fundi bomba anahitajika\nMaji Safi Plumbers inahitaji Ufundi bomba huko Kisumu. Malipo: KSh 2,000. Omba kabla ya saa 5:20.",
+      "label_priority": "urgent",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes in 80 minutes",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 19,
+      "language": "sw",
+      "type": "job_alert",
+      "text": "Wahudumu wa harusi jioni hii\nHarusi Caterers inahitaji Uhudumu huko Eldoret. Malipo: KSh 1,500. Omba kabla ya saa 9.",
+      "label_priority": "urgent",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "work is this evening",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 22,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Painters, one-day job\nColourful Homes needs Painting in Syokimau. Pay: KSh 1,600. Apply before 11:10.",
+      "label_priority": "urgent",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes in just over 2 hours",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 23,
+      "language": "sw",
+      "type": "job_alert",
+      "text": "Wauzaji sokoni\nDuka la Mama Wanjiku inahitaji Uuzaji huko Gikomba. Malipo: KSh 600. Omba kabla ya saa 6.",
+      "label_priority": "urgent",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes in under 3 hours",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 25,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Receptionist cover\nSmile Dental needs Reception in Upper Hill. Pay: KSh 1,200. Apply before 09:30. Cover needed from 10:00.",
+      "label_priority": "urgent",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes in 90 minutes, cover needed this morning",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 26,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Warehouse packers\nMwangi Logistics needs Packing in Industrial Area. Pay: KSh 1,200. Apply before tomorrow, 10:00.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes tomorrow",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 27,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Tutor for weekend classes\nBright Minds needs Teaching in Kahawa. Pay: KSh 1,000 per session. Apply before Thursday 17:00.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes in about 33 hours",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 28,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Gardener\nGreen Thumb needs Gardening in Runda. Pay: KSh 900. Apply before tomorrow morning.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes tomorrow morning",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 29,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Security guards (3)\nSecure Homes needs Security in Embakasi. Pay: KSh 1,100 per night. Apply before Friday 12:00.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes within 48 hours",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 30,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Data entry clerk\nFigure Ltd needs Data entry in Westlands. Pay: KSh 1,000. Apply before tomorrow 08:00.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes tomorrow",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 31,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Event setup crew\nSafari Events needs Event setup in Kasarani. Pay: KSh 1,300. Apply before Saturday 10:00.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes within 48 hours",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 32,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Laundry assistant\nFreshFold needs Laundry in Kilimani. Pay: KSh 700. Apply before 20:00.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes in about 12 hours, nothing starts today",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 33,
+      "language": "sw",
+      "type": "job_alert",
+      "text": "Wapakiaji\nMwangi Logistics inahitaji Upakiaji huko Mlolongo. Malipo: KSh 1,000. Omba kabla ya kesho saa 4.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes tomorrow",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 34,
+      "language": "sw",
+      "type": "job_alert",
+      "text": "Mwalimu wa ziada\nElimu Bora inahitaji Ufundishaji huko Nyeri. Malipo: KSh 1,000. Omba kabla ya Alhamisi.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes within 48 hours",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 35,
+      "language": "sw",
+      "type": "job_alert",
+      "text": "Mpiga rangi\nRangi Bora inahitaji Upakaji rangi huko Machakos. Malipo: KSh 1,500. Omba kabla ya Ijumaa.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes within 48 hours",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 36,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Cook for a school trip\nSafari Schools needs Cooking in Naivasha. Pay: KSh 2,000. Apply before tomorrow 18:00.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes tomorrow",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 37,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Shop assistant\nNaivas Express needs Sales in Kitengela. Pay: KSh 750. Apply before Wednesday.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes within 48 hours",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 38,
+      "language": "sw",
+      "type": "job_alert",
+      "text": "Msaidizi wa duka\nDuka la Baraka inahitaji Uuzaji huko Kakamega. Malipo: KSh 700. Omba kabla ya kesho asubuhi.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes tomorrow morning",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 39,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Plumber for a new block\nMaji Safi Plumbers needs Plumbing in Kiambu. Pay: KSh 2,200. Apply before Friday 09:00.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes within 48 hours",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 40,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Delivery riders, evening\nQuick Parcel needs Delivery in Rongai. Pay: KSh 1,100. Apply before 22:00. Work is tomorrow evening.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "work is tomorrow",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 41,
+      "language": "sw",
+      "type": "job_alert",
+      "text": "Walinzi wawili\nUlinzi Imara inahitaji Ulinzi huko Ruiru. Malipo: KSh 1,000. Omba kabla ya Jumatano.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes within 48 hours",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 42,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Cashier, weekend\nMega Wholesale needs Cashier in Kisumu. Pay: KSh 900. Apply within 2 days.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes in 48 hours",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 43,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Babysitter\nHappy Home needs Childcare in Lavington. Pay: KSh 1,000. Apply before tomorrow 15:00.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes tomorrow",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 44,
+      "language": "sw",
+      "type": "job_alert",
+      "text": "Fundi wa umeme\nBright Sparks inahitaji Umeme huko Kitale. Malipo: KSh 2,500. Omba kabla ya Alhamisi saa 6.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes within 48 hours",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 45,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Car wash attendants\nSplash Car Wash needs Cleaning in Ngong. Pay: KSh 600. Apply before 19:00. Work starts tomorrow.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "work starts tomorrow",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 69,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Security guard (expires Sunday)\nUlinzi Imara needs Security in Kitengela. Pay: KSh 1,000. Apply before Sunday.",
+      "label_priority": "low",
+      "predicted_priority": "urgent",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "says 'expires' but closes in 3.4 days",
+      "explanation": [
+        "urgent_words:expires"
+      ]
+    },
+    {
+      "id": 77,
+      "language": "sw",
+      "type": "status_update",
+      "text": "Umechaguliwa\nSparkle Cleaning wamekuchagua kwa \"Wasafishaji\". Fika Kasarani saa 8 mchana.",
+      "label_priority": "urgent",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "chosen, report this afternoon",
+      "explanation": [
+        "application_update"
+      ]
+    },
+    {
+      "id": 92,
+      "language": "en",
+      "type": "status_update",
+      "text": "Job closed\nThe job \"Painters, one-day job\" was filled. You do not need to do anything.",
+      "label_priority": "low",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "information only",
+      "explanation": [
+        "application_update"
+      ]
+    },
+    {
+      "id": 93,
+      "language": "sw",
+      "type": "status_update",
+      "text": "Kazi imefungwa\nKazi ya \"Mpiga rangi\" imejazwa. Huhitaji kufanya chochote.",
+      "label_priority": "low",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "information only",
+      "explanation": [
+        "application_update"
+      ]
+    },
+    {
+      "id": 95,
+      "language": "en",
+      "type": "message",
+      "text": "New message from Safari Events\nThe shift starts in 30 minutes. Are you still coming?",
+      "label_priority": "urgent",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "shift starts in 30 minutes",
+      "explanation": [
+        "direct_message"
+      ]
+    },
+    {
+      "id": 96,
+      "language": "en",
+      "type": "message",
+      "text": "New message from Kamau Njoroge\nI am at the gate but nobody is here. Please call me.",
+      "label_priority": "urgent",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "worker waiting at the gate now",
+      "explanation": [
+        "direct_message"
+      ]
+    },
+    {
+      "id": 98,
+      "language": "sw",
+      "type": "message",
+      "text": "Ujumbe mpya kutoka kwa Wanjiru Kamau\nNiko getini lakini hakuna mtu. Tafadhali nipigie.",
+      "label_priority": "urgent",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "worker waiting at the gate now",
+      "explanation": [
+        "direct_message"
+      ]
+    },
+    {
+      "id": 101,
+      "language": "en",
+      "type": "message",
+      "text": "New message from Otieno Ochieng\nMy matatu broke down, I will be 20 minutes late for the 9 am shift.",
+      "label_priority": "urgent",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "late for a shift starting soon",
+      "explanation": [
+        "direct_message"
+      ]
+    },
+    {
+      "id": 102,
+      "language": "en",
+      "type": "message",
+      "text": "New message from Smile Dental\nThe address changed: come to Upper Hill Medical Centre, 3rd floor, before 10.",
+      "label_priority": "urgent",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "changed address for this morning",
+      "explanation": [
+        "direct_message"
+      ]
+    },
+    {
+      "id": 118,
+      "language": "en",
+      "type": "message",
+      "text": "New message from Mwangi Logistics\nThank you for your good work last week!",
+      "label_priority": "low",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "thanks only",
+      "explanation": [
+        "direct_message"
+      ]
+    },
+    {
+      "id": 119,
+      "language": "sw",
+      "type": "message",
+      "text": "Ujumbe mpya kutoka kwa Sparkle Cleaning\nAsante kwa kazi nzuri. Mungu akubariki.",
+      "label_priority": "low",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "thanks only",
+      "explanation": [
+        "direct_message"
+      ]
+    },
+    {
+      "id": 120,
+      "language": "en",
+      "type": "message",
+      "text": "New message from Wanjiru Kamau\nThank you, I received the payment.",
+      "label_priority": "low",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "thanks only",
+      "explanation": [
+        "direct_message"
+      ]
+    },
+    {
+      "id": 121,
+      "language": "sw",
+      "type": "message",
+      "text": "Ujumbe mpya kutoka kwa Mutua Musyoka\nSawa, asante sana.",
+      "label_priority": "low",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "thanks only",
+      "explanation": [
+        "direct_message"
+      ]
+    },
+    {
+      "id": 122,
+      "language": "en",
+      "type": "message",
+      "text": "New message from Safari Events\nHave a good weekend!",
+      "label_priority": "low",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "greeting only",
+      "explanation": [
+        "direct_message"
+      ]
+    },
+    {
+      "id": 137,
+      "language": "en",
+      "type": "announcement",
+      "text": "Action needed: verify your phone\nVerify your phone number by Friday or you will stop getting SMS alerts.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "action needed within days",
+      "explanation": [
+        "announcement",
+        "spam:trusted_sender"
+      ]
+    },
+    {
+      "id": 138,
+      "language": "sw",
+      "type": "announcement",
+      "text": "Thibitisha simu yako\nThibitisha nambari yako ya simu kabla ya Ijumaa ili uendelee kupata arifa za SMS.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "action needed within days",
+      "explanation": [
+        "announcement",
+        "spam:trusted_sender"
+      ]
+    },
+    {
+      "id": 139,
+      "language": "en",
+      "type": "announcement",
+      "text": "New rules for job posts\nFrom next Monday every job post must show the pay. Please update your open jobs.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "action needed within days",
+      "explanation": [
+        "announcement",
+        "spam:trusted_sender"
+      ]
+    },
+    {
+      "id": 140,
+      "language": "en",
+      "type": "announcement",
+      "text": "Please add your ID number\nAdd your ID number in your profile within 2 days so employers can trust you.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "action needed within days (in the app, not by message)",
+      "explanation": [
+        "announcement",
+        "spam:trusted_sender"
+      ]
+    },
+    {
+      "id": 141,
+      "language": "en",
+      "type": "announcement",
+      "text": "Service problem right now\nSMS alerts are delayed this morning. Please open the app to see urgent jobs.",
+      "label_priority": "urgent",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "outage now: open the app to avoid missing jobs",
+      "explanation": [
+        "announcement",
+        "spam:trusted_sender"
+      ]
+    },
+    {
+      "id": 142,
+      "language": "sw",
+      "type": "announcement",
+      "text": "Tatizo la huduma sasa hivi\nArifa za SMS zimechelewa asubuhi hii. Fungua programu kuona kazi za haraka.",
+      "label_priority": "urgent",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "outage now: open the app to avoid missing jobs",
+      "explanation": [
+        "announcement",
+        "spam:trusted_sender"
+      ]
+    },
+    {
+      "id": 146,
+      "language": "en",
+      "type": "message",
+      "text": "New message from Top Jobs Agency\nTo confirm your job, send me your M-Pesa PIN.",
+      "label_priority": "urgent",
+      "predicted_priority": "medium",
+      "label_spam": true,
+      "predicted_spam": false,
+      "why": "asks for M-Pesa PIN",
+      "explanation": [
+        "direct_message"
+      ]
+    },
+    {
+      "id": 147,
+      "language": "en",
+      "type": "message",
+      "text": "New message from HR Manager\nYou got the job! Click bit.ly/kf-pay to receive your first salary.",
+      "label_priority": "urgent",
+      "predicted_priority": "medium",
+      "label_spam": true,
+      "predicted_spam": false,
+      "why": "shortened link, salary before work",
+      "explanation": [
+        "direct_message",
+        "spam:link_shortener"
+      ]
+    },
+    {
+      "id": 149,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Crypto trading assistant\nDouble your money in 7 days. No experience needed. WhatsApp 0700 000 000.",
+      "label_priority": "low",
+      "predicted_priority": "low",
+      "label_spam": true,
+      "predicted_spam": false,
+      "why": "crypto, double your money",
+      "explanation": [
+        "general_job_alert",
+        "spam:blocked_keyword:double your money,crypto"
+      ]
+    },
+    {
+      "id": 151,
+      "language": "sw",
+      "type": "message",
+      "text": "Ujumbe mpya kutoka kwa Bwana Juma\nUmeshinda zawadi ya KSh 20,000! Tuma ada ya KSh 200 kupokea.",
+      "label_priority": "medium",
+      "predicted_priority": "medium",
+      "label_spam": true,
+      "predicted_spam": false,
+      "why": "prize with a fee",
+      "explanation": [
+        "direct_message",
+        "spam:blocked_keyword:umeshinda"
+      ]
+    },
+    {
+      "id": 152,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Mystery shopper\nGet paid to shop! Buy a starter kit for KSh 1,500 first, then earn KSh 4,000 a day.",
+      "label_priority": "low",
+      "predicted_priority": "low",
+      "label_spam": true,
+      "predicted_spam": false,
+      "why": "pay first for a 'kit'",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 153,
+      "language": "en",
+      "type": "message",
+      "text": "New message from Recruiter\nWe need a copy of your ID and your password to finish your registration.",
+      "label_priority": "medium",
+      "predicted_priority": "medium",
+      "label_spam": true,
+      "predicted_spam": false,
+      "why": "asks for password",
+      "explanation": [
+        "direct_message"
+      ]
+    },
+    {
+      "id": 155,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Easy online job\nLike videos and earn KSh 2,000 daily. Join at tinyurl.com/easy-kf",
+      "label_priority": "low",
+      "predicted_priority": "low",
+      "label_spam": true,
+      "predicted_spam": false,
+      "why": "shortened link, too good to be true",
+      "explanation": [
+        "general_job_alert",
+        "spam:link_shortener"
+      ]
+    },
+    {
+      "id": 156,
+      "language": "en",
+      "type": "message",
+      "text": "New message from Faith\nHi dear, I am stuck. Please send me KSh 1,000 by M-Pesa, I will pay back tomorrow.",
+      "label_priority": "medium",
+      "predicted_priority": "medium",
+      "label_spam": true,
+      "predicted_spam": false,
+      "why": "stranger asks for money",
+      "explanation": [
+        "direct_message"
+      ]
+    },
+    {
+      "id": 157,
+      "language": "sw",
+      "type": "message",
+      "text": "Ujumbe mpya kutoka kwa Ofisi ya Kazi\nTuma nambari yako ya siri ya M-Pesa ili tukutumie mshahara.",
+      "label_priority": "medium",
+      "predicted_priority": "medium",
+      "label_spam": true,
+      "predicted_spam": false,
+      "why": "asks for M-Pesa PIN",
+      "explanation": [
+        "direct_message"
+      ]
+    },
+    {
+      "id": 159,
+      "language": "en",
+      "type": "message",
+      "text": "New message from KaziForce Support\nYour account is blocked. Log in here to unblock: http://kaziforce-login.xyz",
+      "label_priority": "urgent",
+      "predicted_priority": "medium",
+      "label_spam": true,
+      "predicted_spam": false,
+      "why": "fake login page (phishing)",
+      "explanation": [
+        "direct_message"
+      ]
+    },
+    {
+      "id": 161,
+      "language": "en",
+      "type": "job_alert",
+      "text": "WORK FROM HOME NOW!!!\nEARN BIG MONEY FAST. CALL 0722 222 222.",
+      "label_priority": "low",
+      "predicted_priority": "low",
+      "label_spam": true,
+      "predicted_spam": false,
+      "why": "shouting, too good to be true",
+      "explanation": [
+        "general_job_alert",
+        "spam:all_capitals",
+        "spam:excessive_punctuation"
+      ]
+    },
+    {
+      "id": 162,
+      "language": "en",
+      "type": "message",
+      "text": "New message from Agent Brian\nInvestment opportunity: give me KSh 10,000 and get KSh 30,000 next week.",
+      "label_priority": "medium",
+      "predicted_priority": "medium",
+      "label_spam": true,
+      "predicted_spam": false,
+      "why": "investment scheme",
+      "explanation": [
+        "direct_message",
+        "spam:blocked_keyword:investment opportunity"
+      ]
+    },
+    {
+      "id": 163,
+      "language": "sw",
+      "type": "message",
+      "text": "Ujumbe mpya kutoka kwa Bwana Peter\nPesa ya haraka! Jiunge na kikundi chetu kwa KSh 500 tu.",
+      "label_priority": "medium",
+      "predicted_priority": "urgent",
+      "label_spam": true,
+      "predicted_spam": false,
+      "why": "pay to join, quick money",
+      "explanation": [
+        "urgent_words:haraka",
+        "spam:blocked_keyword:pesa ya haraka"
+      ]
+    },
+    {
+      "id": 164,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Driver needed (company car)\nYou must pay KSh 2,500 for uniform and training before starting.",
+      "label_priority": "low",
+      "predicted_priority": "low",
+      "label_spam": true,
+      "predicted_spam": false,
+      "why": "pay before starting",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 167,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Nanny abroad\nGuaranteed job in Qatar. Visa and ticket KSh 45,000. Pay before Friday.",
+      "label_priority": "low",
+      "predicted_priority": "low",
+      "label_spam": true,
+      "predicted_spam": false,
+      "why": "guaranteed job abroad, pay first",
+      "explanation": [
+        "general_job_alert",
+        "spam:blocked_keyword:guaranteed job"
+      ]
+    },
+    {
+      "id": 168,
+      "language": "en",
+      "type": "message",
+      "text": "New message from Lucky Draw\nYour number won KSh 100,000 in the KaziForce lottery.",
+      "label_priority": "medium",
+      "predicted_priority": "medium",
+      "label_spam": true,
+      "predicted_spam": false,
+      "why": "lottery",
+      "explanation": [
+        "direct_message",
+        "spam:blocked_keyword:lottery"
+      ]
+    },
+    {
+      "id": 169,
+      "language": "sw",
+      "type": "message",
+      "text": "Ujumbe mpya kutoka kwa Mama Grace\nNitumie nambari ya kitambulisho na PIN yako ya M-Pesa nikusajili.",
+      "label_priority": "medium",
+      "predicted_priority": "medium",
+      "label_spam": true,
+      "predicted_spam": false,
+      "why": "asks for ID and M-Pesa PIN",
+      "explanation": [
+        "direct_message"
+      ]
+    },
+    {
+      "id": 170,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Bitcoin mining jobs\nEarn KSh 1,000 per hour mining bitcoin from your phone.",
+      "label_priority": "low",
+      "predicted_priority": "low",
+      "label_spam": true,
+      "predicted_spam": false,
+      "why": "crypto",
+      "explanation": [
+        "general_job_alert",
+        "spam:blocked_keyword:bitcoin"
+      ]
+    },
+    {
+      "id": 171,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Remote typing job\nPay KSh 700 for the typing software, then earn KSh 15,000 weekly.",
+      "label_priority": "low",
+      "predicted_priority": "low",
+      "label_spam": true,
+      "predicted_spam": false,
+      "why": "pay first for software",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 172,
+      "language": "sw",
+      "type": "job_alert",
+      "text": "Kazi ya kutuma SMS\nPata KSh 1,000 kwa siku kutuma SMS. Lipa KSh 300 kwanza.",
+      "label_priority": "low",
+      "predicted_priority": "low",
+      "label_spam": true,
+      "predicted_spam": false,
+      "why": "pay first",
+      "explanation": [
+        "general_job_alert"
+      ]
+    },
+    {
+      "id": 176,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Delivery riders, own bike\nQuick Parcel needs Delivery in Kasarani. We refund fuel at the end of each day. Pay: KSh 1,100. Apply before tomorrow.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "refund, honest; closes tomorrow",
+      "explanation": [
+        "general_job_alert"
+      ]
+    }
+  ],
+  "targets": {
+    "priority_weighted_f1": {
+      "target": 0.85,
+      "met": false
+    },
+    "spam_accuracy": {
+      "target": 0.95,
+      "met": false
+    },
+    "spam_false_positive_rate": {
+      "target": 0.05,
+      "met": true
+    }
+  }
+}

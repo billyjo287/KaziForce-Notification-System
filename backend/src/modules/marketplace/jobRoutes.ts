@@ -1,6 +1,7 @@
 // Jobs: browse and apply (workers), post and manage applicants (employers). PRD FR-2.1, FR-2.2.
 import { Router } from 'express';
 import { z } from 'zod';
+import { env } from '../../config/env.js';
 import { recordEvent } from '../../events/domainEvents.js';
 import type { Prisma } from '../../generated/prisma/client.js';
 import { badRequest, conflict, notFound } from '../../lib/httpError.js';
@@ -8,6 +9,7 @@ import { prisma } from '../../lib/prisma.js';
 import type { RateLimiters } from '../../lib/rateLimits.js';
 import { PAGE_SIZE, idParam, pageQuery, parse } from '../../lib/validate.js';
 import { currentUser, requireAuth, requireRole } from '../../middleware/auth.js';
+import { classify } from '../../pipeline/classify.js';
 import { jobInclude, serializeJob } from './serializers.js';
 
 const MAX_DEADLINE_DAYS = 90;
@@ -82,7 +84,8 @@ export function jobRoutes(limits: RateLimiters) {
       },
     });
     // Removed jobs are only visible to their employer and admins.
-    if (!job || (job.status === 'removed' && me.role === 'worker')) throw notFound();
+    if (!job || (['removed', 'held'].includes(job.status) && me.role === 'worker'))
+      throw notFound();
     const isOwner = job.employerId === me.id;
     res.json({
       job: {
@@ -112,6 +115,23 @@ export function jobRoutes(limits: RateLimiters) {
     if (!location || !skill)
       throw badRequest('invalid_input', 'Choose a place and skill from the list.');
 
+    // Scam check of what the employer wrote, before anyone sees it (same classifier as the
+    // alerts: ML service, or the same rules in Node if it does not answer within 500 ms). A job
+    // that looks like a scam is "held": no alerts, not listed, until an admin decides.
+    const verdict = await classify(
+      {
+        title: input.title,
+        message: input.description,
+        type: 'job_alert',
+        recipientRole: 'worker',
+        senderRole: 'business',
+        createdAt: new Date(),
+        deadlineAt: deadline,
+      },
+      { mlServiceUrl: env.ML_SERVICE_URL, timeoutMs: env.ML_TIMEOUT_MS },
+    );
+    const held = verdict.isSpam;
+
     const job = await prisma.$transaction(async (tx) => {
       const created = await tx.job.create({
         data: {
@@ -123,9 +143,13 @@ export function jobRoutes(limits: RateLimiters) {
           pay: input.pay || null,
           deadline,
           urgency: input.urgent ? 'urgent' : 'normal',
+          spamScore: verdict.spamScore,
+          spamReasons: verdict.explanation,
+          ...(held && { status: 'held', heldAt: new Date() }),
         },
         include: jobInclude,
       });
+      if (held) return created; // announced only if an admin publishes it
       await recordEvent(tx, 'job.posted', {
         jobId: created.id,
         employerId: me.id,

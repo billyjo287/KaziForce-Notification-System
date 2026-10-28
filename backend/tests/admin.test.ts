@@ -312,9 +312,11 @@ describe('announcements', () => {
 describe('model versions', () => {
   it('lists MLMetadata with the active version and how much each one classified', async () => {
     const res = await get('/admin/models');
-    const rules = res.body.models.find((m: { version: string }) => m.version === 'rules-v0');
-    expect(rules).toMatchObject({ algorithm: 'rules', isActive: true });
-    expect(rules.classified).toBeGreaterThan(0);
+    const find = (v: string) => res.body.models.find((m: { version: string }) => m.version === v);
+    // rules-v0 (the Sprint II baseline) classified the sample alerts; rules-v1 is in use now.
+    expect(find('rules-v0')).toMatchObject({ algorithm: 'rules', isActive: false });
+    expect(find('rules-v0').classified).toBeGreaterThan(0);
+    expect(find('rules-v1')).toMatchObject({ algorithm: 'rules', isActive: true });
     expect(res.body.models.filter((m: { isActive: boolean }) => m.isActive)).toHaveLength(1);
   });
 });

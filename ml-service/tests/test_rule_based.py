@@ -46,16 +46,16 @@ def test_answer_says_which_rules_fired():
         item["feature"]
         for item in client.post("/predict", json=scam["request"]).json()["explanation"]
     ]
-    assert "spam:payment_request:registration fee,send ksh" in features
+    assert "spam:payment_request:registration fee,send ksh,send amount" in features
     assert "spam:excessive_punctuation" in features
 
 
-def test_every_answer_is_labelled_rules_v0():
+def test_every_answer_is_labelled_with_the_rules_version():
     response = client.post("/predict", json=EXAMPLES[0]["request"])
     body = response.json()
-    assert body["model_version"] == "rules-v0"
+    assert body["model_version"] == "rules-v1"
     assert body["source"] == "rules"
-    assert client.get("/health").json()["model_version"] == "rules-v0"
+    assert client.get("/health").json()["model_version"] == "rules-v1"
 
 
 def test_bad_request_is_refused():
@@ -88,10 +88,24 @@ def test_normalize():
 
 def test_classifier_is_chosen_by_setting_only():
     rules = load_classifier(Settings(classifier="rules", model_path=None, log_level="info"))
-    assert rules.version == "rules-v0"
+    assert rules.version == "rules-v1"
     with pytest.raises(RuntimeError, match="Phase 9"):
         load_classifier(
             Settings(classifier="trained", model_path="models/x.joblib", log_level="info")
         )
     with pytest.raises(ValueError, match="Unknown CLASSIFIER"):
         load_classifier(Settings(classifier="magic", model_path=None, log_level="info"))
+
+
+def test_rules_v1_mobile_money_scam_is_blocked_but_one_sign_alone_is_not():
+    """Billy's report: a job post asking to send money to an M-Pesa number reached workers."""
+    by_name = {e["name"]: e for e in EXAMPLES}
+    scam = by_name["Scam job post: send money to an M-Pesa number to secure the job (rules-v1)"]
+    body = client.post("/predict", json=scam["request"]).json()
+    assert body["is_spam"] is True
+    features = [item["feature"] for item in body["explanation"]]
+    assert "spam:mobile_money_number" in features
+    assert "spam:blocked_keyword:secure the job" in features
+    # A phone number with "send" on its own (an honest "send your CV to ...") stays below 50.
+    honest = by_name["Honest: send your CV to a phone number (one sign only, not spam)"]
+    assert client.post("/predict", json=honest["request"]).json()["is_spam"] is False

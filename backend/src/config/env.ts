@@ -36,6 +36,12 @@ const envSchema = z.object({
   // Log-in / sign-up attempts per 15 minutes per network address.
   LOGIN_RATE_LIMIT: z.coerce.number().int().min(1).default(10),
   STATUS_UNDO_SECONDS: z.coerce.number().int().min(0).max(120).default(15),
+  // Presentation only: log-in asks for a 6-digit code after the password, and the code (and the
+  // sign-up phone code) is SHOWN ON SCREEN instead of being sent. Never allowed in production.
+  OTP_DEMO_MODE: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((v) => v === 'true'),
   SMTP_HOST: z.string().default('localhost'),
   SMTP_PORT: z.coerce.number().int().positive().default(1025),
   EMAIL_FROM: z.string().default('KaziForce <alerts@kaziforce.local>'),
@@ -84,6 +90,14 @@ const withProviderKeys = envSchema.superRefine((v, ctx) => {
       code: 'custom',
       path: ['JWT_ACCESS_SECRET'],
       message: 'Set a new random secret for production (see .env.example)',
+    });
+  }
+  // A code shown on screen protects nothing: demo mode is for presentations on this computer.
+  if (v.NODE_ENV === 'production' && v.OTP_DEMO_MODE) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['OTP_DEMO_MODE'],
+      message: 'Demo codes are shown on screen: turn OTP_DEMO_MODE off in production',
     });
   }
   if (v.CHANNEL_MODE === 'mock') return;

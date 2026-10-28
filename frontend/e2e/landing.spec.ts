@@ -74,3 +74,27 @@ test.describe('Landing page', () => {
     expect(await page.evaluate(() => document.documentElement.lang)).toBe('sw');
   });
 });
+
+test('"Add to home screen": the manifest and its icons load', async ({ page, request }) => {
+  await page.goto('/login');
+  const href = await page.locator('link[rel="manifest"]').getAttribute('href');
+  expect(href).toBe('/manifest.webmanifest');
+  const res = await request.get(href!);
+  expect(res.ok()).toBe(true);
+  const manifest = (await res.json()) as {
+    name: string;
+    start_url: string;
+    display: string;
+    icons: { src: string; sizes: string; purpose: string }[];
+  };
+  expect(manifest).toMatchObject({ name: 'KaziForce', start_url: '/', display: 'standalone' });
+  expect(manifest.icons.map((i) => i.sizes)).toEqual(
+    expect.arrayContaining(['192x192', '512x512']),
+  );
+  expect(manifest.icons.some((i) => i.purpose === 'maskable')).toBe(true);
+  for (const icon of [...manifest.icons, { src: '/apple-touch-icon.png' }]) {
+    const image = await request.get(icon.src);
+    expect(image.ok(), icon.src).toBe(true);
+    expect(image.headers()['content-type']).toContain('image/png');
+  }
+});

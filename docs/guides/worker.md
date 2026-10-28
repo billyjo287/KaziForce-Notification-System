@@ -29,7 +29,8 @@ and a word, so you always know how important it is:
 
 - Tap an alert to read it. It then counts as read.
 - If an alert does not matter to you, tap **Not important to me**. We will show you fewer like
-  it.
+  it. A short question then asks why (for example "Too far away"). Answering is optional: tap
+  **Skip** if you prefer.
 - New alerts appear by themselves while the page is open. You do not need to refresh.
 
 **If you miss an urgent alert:** we first send it to your first choice (for example WhatsApp).

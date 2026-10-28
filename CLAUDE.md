@@ -19,7 +19,7 @@ Design references to follow (trusted sources, not blogs): W3C WCAG 2.2 level AA;
 - **Backend:** Node.js (LTS) + Express + TypeScript, Socket.IO, BullMQ on Redis, Prisma ORM on PostgreSQL, JWT auth + bcrypt, zod validation, helmet, express-rate-limit, pino logging.
 - **ML service:** Python 3.11+, FastAPI, scikit-learn, spaCy, joblib (SHAP later). Exposes REST only.
 - **Channels:** Twilio WhatsApp API, Africa's Talking SMS, Resend email (SendGrid as a drop-in alternative), Socket.IO in-app.
-- **Infra:** Local dev with Docker Compose (Postgres + Redis + Mailpit fake inbox). Deploy: Vercel (frontend), Railway (backend, worker, ML service, Redis), Supabase Postgres. Do NOT use Upstash free tier for BullMQ: idle BullMQ workers poll Redis constantly (~3.8M commands/month per idle queue), far above its 500K commands/month.
+- **Infra:** Local dev with Docker Compose (Postgres + Redis + Mailpit fake inbox). Deploy: Vercel (frontend), one Azure for Students virtual machine running Docker Compose (backend, worker, ML service, Redis, Caddy for HTTPS; see `deploy/azure/` and ADR 0011), Supabase Postgres. All free. Do NOT use Upstash free tier for BullMQ: idle BullMQ workers poll Redis constantly (~3.8M commands/month per idle queue), far above its 500K commands/month.
 - **Testing:** Vitest + React Testing Library, Supertest, Playwright + @axe-core/playwright, pytest, k6 for load tests.
 
 Always install the current stable version of each package and check its official docs before using an API you are unsure about. Do not invent library APIs.

@@ -51,6 +51,8 @@ export const CSV_COLUMNS = [
   'clicked',
   'dismissed',
   'marked_not_important',
+  // The reason chosen from the fixed list (never the free-text note, which may name people).
+  'not_important_reason',
   'delivery_failures',
   'response_seconds',
 ] as const;
@@ -161,6 +163,7 @@ type Source = {
   heldUntil: Date | null;
   readAt: Date | null;
   markedNotImportant: boolean;
+  notImportantReason: string | null;
   deliveries: Delivery[];
 };
 
@@ -222,6 +225,7 @@ export function toRow(
     clicked: n.deliveries.some((d) => d.clickedAt),
     dismissed: n.deliveries.some((d) => d.dismissedAt),
     marked_not_important: n.markedNotImportant,
+    not_important_reason: n.notImportantReason,
     delivery_failures: n.deliveries.filter((d) => d.status === 'failed').length,
     // Response time = opened - sent (CLAUDE.md section 6), in seconds.
     response_seconds:

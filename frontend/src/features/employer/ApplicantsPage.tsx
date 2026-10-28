@@ -14,6 +14,7 @@ import { useApiErrorMessage } from '../../lib/useApiErrorMessage';
 import { usePageTitle } from '../../lib/usePageTitle';
 import { showToast } from '../../stores/toasts';
 import type { Applicant, JobDelivery } from '../../types/api';
+import { FormAlert } from '../../components/ui/FormAlert';
 import { JobCard } from '../jobs/JobCard';
 import { ApplicantDelivery, JobAlertReach } from './DeliveryStatus';
 import './strings';
@@ -48,7 +49,13 @@ export default function ApplicantsPage() {
         <>
           <h1 className="sr-only">{`${t('employer.applicants.title')}: ${data.job.title}`}</h1>
           <JobCard job={data.job} />
-          <JobAlertReach jobAlert={data.delivery.jobAlert} />
+          {data.job.status === 'held' ? (
+            <FormAlert tone="success" className="mt-4">
+              {t('employer.heldNotice')}
+            </FormAlert>
+          ) : (
+            <JobAlertReach jobAlert={data.delivery.jobAlert} />
+          )}
           <h2 className="mt-8 mb-4 flex items-center gap-2 text-2xl font-bold">
             <Users aria-hidden="true" className="size-6" />
             {t('employer.applicants.title')} ({data.applicants.length})

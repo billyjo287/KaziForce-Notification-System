@@ -112,7 +112,7 @@ test.describe('Other pages pass axe and fit the screen', () => {
     });
   }
 
-  for (const path of ['/login', '/register', '/forgot-password', '/ui-kit']) {
+  for (const path of ['/login', '/register', '/forgot-password']) {
     test(`${path} (logged out)`, async ({ page }) => {
       await page.goto(`${path}?theme=light`);
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
@@ -120,6 +120,13 @@ test.describe('Other pages pass axe and fit the screen', () => {
       await expectNoHorizontalScroll(page);
     });
   }
+
+  test('the developer component gallery is not in the built site', async ({ page }) => {
+    await page.goto('/ui-kit?theme=light');
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'We cannot find that page' }),
+    ).toBeVisible();
+  });
 });
 
 test.describe('Smallest phones (320px, PRD NFR-4)', () => {
@@ -143,4 +150,48 @@ test.describe('Smallest phones (320px, PRD NFR-4)', () => {
       await expectNoHorizontalScroll(page);
     }
   });
+});
+
+// PRD NFR-7: also tested at 768 px (tablet) and 1024 px (small laptop). From 768 px the menu is
+// the left sidebar with every page, as on desktops.
+test.describe('Tablets and small laptops (768 and 1024 px, PRD NFR-7)', () => {
+  test.skip(
+    ({ viewport }) => (viewport?.width ?? 0) < 1000,
+    'desktop project only (sets its own size)',
+  );
+
+  const sides = [
+    {
+      who: 'worker1@example.com',
+      password: undefined,
+      paths: ['/worker/alerts', '/worker/jobs', '/worker/messages', '/worker/settings'],
+    },
+    {
+      who: 'employer1@example.com',
+      password: undefined,
+      paths: ['/employer/alerts', '/employer/jobs', '/employer/jobs/new'],
+    },
+    {
+      who: ADMIN.email,
+      password: ADMIN.password,
+      paths: ['/admin/overview', '/admin/delivery-logs', '/admin/spam'],
+    },
+  ];
+  for (const width of [768, 1024]) {
+    for (const { who, password, paths } of sides) {
+      test(`${width}px: ${who.split('@')[0]} pages`, async ({ page }) => {
+        await page.setViewportSize({ width, height: width === 768 ? 1024 : 768 });
+        await logIn(page, who, password);
+        for (const path of paths) {
+          await page.goto(`${path}?theme=light`);
+          await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+          // The sidebar is the only navigation shown (the phone bottom bar is hidden).
+          await expect(page.getByRole('navigation', { name: 'Main menu' })).toHaveCount(1);
+          await expectNoHorizontalScroll(page);
+        }
+        await page.waitForLoadState('networkidle');
+        await expectNoSeriousA11yIssues(page);
+      });
+    }
+  }
 });

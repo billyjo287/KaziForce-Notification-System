@@ -35,8 +35,15 @@ RESEND_API_KEY=re_...
 EMAIL_FROM="KaziForce <onboarding@resend.dev>"
 ```
 
-`AFRICASTALKING_WEBHOOK_SECRET` is any long random text; to make one, run
-`node -e "console.log(require('crypto').randomBytes(24).toString('hex'))"`.
+- `AFRICASTALKING_WEBHOOK_SECRET` is **required** (the app will not start in sandbox mode
+  without it). It is not something Africa's Talking gives you: it is any long random text you
+  make up. To make one, run
+  `node -e "console.log(require('crypto').randomBytes(24).toString('hex'))"` and paste the
+  result.
+- `AFRICASTALKING_SENDER_ID` stays **empty** in the sandbox. It is the name shown as the sender
+  of real SMS (for example "KAZIFORCE"); you only need it for live mode, where you apply for one
+  in the Africa's Talking dashboard (**SMS > Sender IDs**). It costs money and needs approval
+  from the mobile networks, which takes days. Without one, real SMS come from a shared number.
 
 Stop `npm run dev` (Ctrl + C) and start it again. If a key is missing, the `api` lines say
 which one.

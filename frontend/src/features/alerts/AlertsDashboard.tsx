@@ -9,6 +9,7 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { showToast } from '../../stores/toasts';
 import { AlertCard } from './AlertCard';
 import { AlertDetail } from './AlertDetail';
+import { NotImportantFeedback } from './NotImportantFeedback';
 import type { AlertActions } from './useAlerts';
 import { PRIORITY_STYLE } from './priorityStyle';
 import { PRIORITIES, type Alert, type AlertRole, type Priority } from './types';
@@ -58,6 +59,8 @@ export function AlertsDashboard({
   const [tab, setTab] = useState<Priority>(() => linked?.priority ?? firstTabWithUnread(shown));
   const [filter, setFilter] = useState<Filter>('all');
   const [selectedId, setSelectedId] = useState<string | null>(linked?.id ?? null);
+  // After "Not important to me": the optional "why?" card for that alert.
+  const [feedbackFor, setFeedbackFor] = useState<Alert | null>(null);
   const [now] = useState(() => Date.now());
   const pageHeading = useRef<HTMLHeadingElement>(null);
   const detailHeading = useRef<HTMLHeadingElement>(null);
@@ -113,11 +116,16 @@ export function AlertsDashboard({
     focusAfterClose.current = 'heading';
     setNotImportant(alert.id, true);
     setSelectedId(null);
+    // Then an optional "why?" card above the list (skippable).
+    setFeedbackFor(alert);
     // Forgiving: undo instead of a scary "Are you sure?" (PRD 6.7).
     showToast({
       message: t('alerts.notImportantDone'),
       actionLabel: t('common.undo'),
-      onAction: () => setNotImportant(alert.id, false),
+      onAction: () => {
+        setNotImportant(alert.id, false);
+        setFeedbackFor((current) => (current?.id === alert.id ? null : current));
+      },
     });
   }
 
@@ -135,6 +143,15 @@ export function AlertsDashboard({
               : t('alerts.allRead')}
           </p>
         </header>
+
+        {feedbackFor && (
+          <NotImportantFeedback
+            key={feedbackFor.id}
+            alertId={feedbackFor.id}
+            alertTitle={feedbackFor.title}
+            onDone={() => setFeedbackFor(null)}
+          />
+        )}
 
         <Tabs.Root
           value={tab}

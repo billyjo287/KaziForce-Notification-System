@@ -205,6 +205,8 @@ export function meRoutes(limits: RateLimiters) {
       ok: true,
       // Mock mode only: lets automated tests read the code. Never sent in production.
       ...(env.CHANNEL_MODE === 'mock' && env.NODE_ENV !== 'production' && { mockCode: code }),
+      // Presentation demo mode: the page shows the code (never in production, see env.ts).
+      ...(env.OTP_DEMO_MODE && { demoCode: code }),
     });
   });
 

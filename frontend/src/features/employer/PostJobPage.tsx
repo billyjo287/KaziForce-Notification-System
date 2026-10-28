@@ -80,7 +80,9 @@ export default function PostJobPage() {
         deadline: new Date(`${values.date}T${values.time}`).toISOString(),
         urgent: values.urgent === 'yes',
       });
-      showToast({ message: t('employer.post.posted') });
+      showToast({
+        message: t(job.status === 'held' ? 'employer.post.held' : 'employer.post.posted'),
+      });
       navigate(`/employer/jobs/${job.id}`, { replace: true });
     } catch (error) {
       setServerError(errorMessage(error));

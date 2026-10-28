@@ -1,4 +1,7 @@
-"""Rule-based classifier v0 (PRD section 5): the rules in rules_v0.json, applied in plain Python.
+"""Rule-based classifier (PRD section 5): the rules in rules_v0.json, applied in plain Python.
+The file name is kept from the first version; the version inside it is now rules-v1, which adds
+three scam signs to the measured Sprint II baseline rules-v0: an amount to send ("send
+500ksh"), a phone number next to M-Pesa or "send" words, and "secure the job" phrases.
 
 Priority
   URGENT  deadline within 60 minutes; an accepted application; or words such as "urgent",
@@ -49,6 +52,18 @@ def bare_shortener_link(text: str, shorteners: list[str]) -> bool:
     return any(
         re.search(r"(?:^|[^a-z0-9.])" + re.escape(s) + "/", lowered) is not None for s in shorteners
     )
+
+
+# A Kenyan mobile number: 07xx / 01xx or +254 7xx / 1xx (digits may be split by spaces or dashes).
+PHONE_PATTERN = re.compile(r"(?<!\d)(?:\+?254|0)[17](?:[\s-]?\d){8}(?!\d)")
+CURRENCY = r"(?:kshs?|kes|sh|shillings|bob)"
+
+
+def asks_to_send_amount(text: str, verbs: list[str]) -> bool:
+    """ "send 500ksh", "tuma KSh 1,000", "deposit 300 bob": a verb followed by an amount."""
+    amount = rf"(?:{CURRENCY}\.?\s*\d[\d,]*|\d[\d,]*\s*(?:{CURRENCY}\b|/=))"
+    verb = "|".join(re.escape(v) for v in verbs)
+    return re.search(rf"\b(?:{verb})\s+{amount}", text.lower()) is not None
 
 
 def weight(percent: int) -> float:
@@ -103,6 +118,8 @@ class RuleBasedClassifier:
 
         fired: list[tuple[str, int]] = []
         payments = found(text, rules["payment_phrases"])
+        if asks_to_send_amount(request.text, rules["payment_amount_verbs"]):
+            payments.append("send amount")
         if payments:
             fired.append(
                 ("spam:payment_request:" + ",".join(payments), rules["payment_request_weight"])
@@ -112,6 +129,10 @@ class RuleBasedClassifier:
             fired.append(
                 ("spam:blocked_keyword:" + ",".join(blocked), rules["blocked_keyword_weight"])
             )
+
+        # A phone number to send money to ("send it on my M-Pesa: 0700 ...").
+        if PHONE_PATTERN.search(request.text) and found(text, rules["mobile_money_words"]):
+            fired.append(("spam:mobile_money_number", rules["mobile_money_weight"]))
 
         hosts = [url_host(u) for u in URL_PATTERN.findall(request.text)]
         untrusted = [h for h in hosts if not any(d in h for d in rules["trusted_link_domains"])]

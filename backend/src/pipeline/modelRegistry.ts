@@ -1,6 +1,6 @@
 // Keeps the MLMetadata table (the list of classifier versions) up to date: the first time the
 // worker sees a model version on an answer, it is registered and marked as the active one.
-// "rules-v0" is registered this way (and by the seed); a trained "ml-v1" will be too in Phase 9,
+// "rules-v0" and now "rules-v1" are registered this way (and by the seed); a trained "ml-v1" will be too in Phase 9,
 // without any change here. Metrics are added by the training scripts in Phase 9.
 import type { PrismaClient } from '../generated/prisma/client.js';
 

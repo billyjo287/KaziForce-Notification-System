@@ -100,6 +100,7 @@ enum JobStatus {
   open
   closed // deadline passed or filled by the employer
   removed // taken down by an admin
+  held // looked like a scam when posted: nobody sees it until an admin publishes or removes it
 }
 
 enum JobUrgency {
@@ -339,6 +340,10 @@ model Notification {
   readAt               DateTime?
   markedNotImportant   Boolean   @default(false)
   markedNotImportantAt DateTime?
+  // Optional "why?" after "Not important to me": not_my_work | too_far | pay_too_low |
+  // not_available | too_many | other, plus an optional short note (feedback and training data).
+  notImportantReason   String?   @db.VarChar(30)
+  notImportantNote     String?   @db.VarChar(300)
 
   // ---- Urgent escalation ----
   escalatedAt DateTime?
@@ -450,6 +455,14 @@ model Job {
   removedReason String?    @db.VarChar(500)
   removedAt     DateTime?
   removedById   String?    @db.Uuid
+  // Scam check when the job was posted (same classifier as notifications): the score and reasons
+  // are kept for every job; a job that looked like a scam is "held" until an admin decides.
+  spamScore     Float?
+  spamReasons   Json?
+  heldAt        DateTime?
+  // Set when an admin published a held job: later checks of its alerts trust the admin.
+  reviewedAt    DateTime?
+  reviewedById  String?    @db.Uuid
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 

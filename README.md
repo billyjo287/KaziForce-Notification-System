@@ -34,7 +34,8 @@ only logged, never really sent.
 
 - **Put it online:** [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) (Vercel, Azure for Students, Supabase: free, step by step)
 - **User guides:** [workers](docs/guides/worker.md) · [employers](docs/guides/employer.md) · [admins](docs/guides/admin.md)
-- **For the thesis:** [technical overview](docs/technical-overview.md) ·
+- **Sprint reviews:** [Sprint I evidence](docs/sprint-1-evidence.md) · [Sprint II evidence](docs/sprint-2-evidence.md) · [How the system was tested](docs/testing-report.md)
+- **For the thesis:** [design diagrams](docs/diagrams.md) · [technical overview](docs/technical-overview.md) ·
   [performance and resilience](docs/performance.md) · [accessibility and page speed](docs/accessibility.md)
 
 ## 1. Install these first (once per computer)
@@ -117,7 +118,8 @@ Then open:
 - http://localhost:5173: the website. Click **Log in** and use one of the sample accounts below,
   or **Create an account** (the SMS code is printed in the backend terminal, look for
   `[mock SMS]`).
-- http://localhost:5173/ui-kit: gallery of every interface component
+- http://localhost:5173/ui-kit: gallery of every interface component (only in `npm run dev`; the
+  built website does not include it)
 - http://localhost:4000/health: backend health (database and Redis)
 - http://localhost:8000/health: ML service health
 - http://localhost:8025: Mailpit fake inbox (password-reset links and new-login emails land here)
@@ -143,16 +145,21 @@ npm test              # Vitest tests, frontend + backend
 npm run format        # auto-format with Prettier
 ```
 
-Frontend browser tests (Playwright + axe accessibility checks at 320, 360 and 1440 px, run against
-the real backend on port 4001 with its own `kaziforce_e2e` database, so Docker must be running)
-and the bundle size report:
+Frontend browser tests (Playwright + axe accessibility checks at 320, 360, 768, 1024 and 1440 px in
+Chrome, plus a short smoke test in Firefox and WebKit, the engine of Safari; run against the real
+backend on port 4001 with its own `kaziforce_e2e` database, so Docker must be running) and the
+bundle size report:
 
 ```bash
 cd frontend
-npx playwright install chromium   # once: downloads the test browser (~150 MB)
+npx playwright install chromium firefox webkit   # once: downloads the test browsers
 npm run test:e2e                  # browser tests + accessibility checks
 npm run build:report              # sizes per first visit; fails if Three.js reaches the app
 ```
+
+On a slow connection the download can time out; add
+`PLAYWRIGHT_DOWNLOAD_CONNECTION_TIMEOUT=300000` (PowerShell:
+`$env:PLAYWRIGHT_DOWNLOAD_CONNECTION_TIMEOUT="300000"`) before the install command.
 
 To use the Google Chrome already on your computer instead of downloading a browser, set
 `PW_CHANNEL=chrome` first (PowerShell: `$env:PW_CHANNEL="chrome"`; macOS/Linux/Git Bash:

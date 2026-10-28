@@ -274,16 +274,28 @@ async function main() {
   });
 
   // ---------- ML model registry ----------
-  await prisma.mLMetadata.create({
-    data: {
-      version: 'rules-v0',
-      algorithm: 'rules',
-      description:
-        'Rule-based classifier (PRD section 5): deadline, keywords and application status for ' +
-        'priority; payment requests, scam phrases, links, capitals and punctuation for spam.',
-      isActive: true,
-      deployedAt: ago(7 * DAY),
-    },
+  await prisma.mLMetadata.createMany({
+    data: [
+      {
+        version: 'rules-v0',
+        algorithm: 'rules',
+        description:
+          'Rule-based classifier (PRD section 5): deadline, keywords and application status for ' +
+          'priority; payment requests, scam phrases, links, capitals and punctuation for spam. ' +
+          'The measured Sprint II baseline.',
+        isActive: false,
+        deployedAt: ago(14 * DAY),
+      },
+      {
+        version: 'rules-v1',
+        algorithm: 'rules',
+        description:
+          'rules-v0 plus three scam signs: an amount to send ("send 500ksh"), a phone number ' +
+          'next to M-Pesa or "send" words, and "secure the job" phrases.',
+        isActive: true,
+        deployedAt: ago(1 * DAY),
+      },
+    ],
   });
 
   // ---------- Notifications (Phase 3 creates these for real; samples for the dashboard) ----------

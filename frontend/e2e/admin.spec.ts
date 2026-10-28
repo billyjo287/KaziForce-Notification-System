@@ -79,7 +79,7 @@ test.describe('Admin', () => {
   test('model versions and the anonymised training data download', async ({ page }) => {
     await asAdmin(page);
     await page.goto('/admin/models?theme=light');
-    const rules = page.getByRole('article', { name: 'rules-v0' });
+    const rules = page.getByRole('article', { name: 'rules-v1' });
     await expect(rules.getByText('In use', { exact: true })).toBeVisible();
     await expectNoSeriousA11yIssues(page);
     await expectNoHorizontalScroll(page);

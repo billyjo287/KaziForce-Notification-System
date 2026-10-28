@@ -102,6 +102,53 @@ describe('Log in', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Log in' }));
     await vi.waitFor(() => expect(useAuth.getState().justLoggedIn).toBe(true));
   });
+
+  it('demo mode: after the password, shows the demo code and asks for it', async () => {
+    vi.mocked(api.post)
+      .mockResolvedValueOnce({
+        data: { codeRequired: true, challengeId: 'challenge-1', demoCode: '482913' },
+      })
+      .mockRejectedValueOnce(apiError(400, 'login_code_wrong'))
+      .mockResolvedValueOnce({
+        data: {
+          accessToken: 'token',
+          user: {
+            id: 'u1',
+            name: 'Wanjiru Kamau',
+            role: 'worker',
+            language: 'en',
+            onboardingCompleted: true,
+          },
+        },
+      });
+    renderWithRouter(<LoginPage />, '/login');
+    await userEvent.type(screen.getByLabelText('Email address'), 'worker1@example.com');
+    await userEvent.type(screen.getByLabelText('Password'), 'Password123!');
+    await userEvent.click(screen.getByRole('button', { name: 'Log in' }));
+
+    expect(await screen.findByRole('heading', { level: 1, name: 'Enter your code' })).toHaveFocus();
+    expect(screen.getByText('Demo code')).toBeInTheDocument();
+    expect(screen.getByTestId('demo-code')).toHaveTextContent('482913');
+
+    // Too short: checked before sending.
+    await userEvent.type(screen.getByLabelText('6-digit code'), '123');
+    await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    expect(await screen.findByText(/6 digits/)).toBeInTheDocument();
+
+    // A wrong code is explained; the right one logs in.
+    await userEvent.clear(screen.getByLabelText('6-digit code'));
+    await userEvent.type(screen.getByLabelText('6-digit code'), '111111');
+    await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('That code is not right.');
+    await userEvent.clear(screen.getByLabelText('6-digit code'));
+    await userEvent.type(screen.getByLabelText('6-digit code'), '482913');
+    await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    await vi.waitFor(() => expect(useAuth.getState().justLoggedIn).toBe(true));
+    expect(api.post).toHaveBeenLastCalledWith('/auth/login/code', {
+      challengeId: 'challenge-1',
+      code: '482913',
+    });
+  });
 });
 
 describe('Sign up', () => {

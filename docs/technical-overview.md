@@ -102,7 +102,8 @@ changes nothing outside `ml-service/`.
   In alerts the deleted person sent to others, their name becomes "a former user" and chat
   messages lose their words.
 - Secrets only in environment variables; production refuses example secrets; logs never contain
-  tokens, cookies or webhook secrets. Dependency audits (npm, pip) and a secret scan: clean.
+  tokens, cookies or webhook secrets. Dependency audits (npm audit, pip-audit) and a secret scan of
+  the whole Git history (gitleaks) run in CI on every push: clean.
   (ADR 0003, 0007, 0009.)
 
 ## 5.6 Usability and accessibility (NFR-4)
@@ -121,14 +122,17 @@ ready-made HTML, readable before the app has downloaded (ADR 0010).
 
 | Level | Tool | Count |
 | --- | --- | ---: |
-| Backend unit and integration (real Postgres and Redis) | Vitest + Supertest | 177 |
-| Frontend components | Vitest + Testing Library | 84 |
-| ML service | pytest | 56 |
-| End to end, phone (360 px) and desktop (1440 px), with axe | Playwright | 106 (+8 run on one screen size only) |
+| Backend unit and integration (real Postgres and Redis) | Vitest + Supertest | 193 |
+| Frontend components | Vitest + Testing Library | 88 |
+| ML service | pytest | 66 |
+| End to end in Chrome, phone (360 px), tablet (768 px), laptop (1024 px) and desktop (1440 px), with axe | Playwright | 114 |
+| Smoke test in Firefox and WebKit (Safari's engine) | Playwright | 4 (run in CI) |
 | Load and resilience | k6 + Socket.IO listeners | 2 runs of 10,000 |
 
 Continuous integration (GitHub Actions) runs formatting, lint and type checks, every test suite
-above except load, the end-to-end browser tests, the bundle-size check and the production builds.
+above except load, the end-to-end browser tests (Chrome at 360, 768, 1024 and 1440 px, plus a
+smoke test in Firefox and WebKit), the bundle-size check, the production builds and the security
+checks (dependency audits and secret scan).
 
 ## 5.8 Results against the non-functional requirements
 
@@ -142,6 +146,7 @@ above except load, the end-to-end browser tests, the bundle-size check and the p
 | NFR-3 recovery | < 30 s | Redis 3.1 s, Postgres 1.6 s |
 | NFR-1 app shell size | ≤ ~200 KB gzipped | 199.7 KB |
 | NFR-1 page load (LCP) | < 2.5 s on "Fast 3G" | Landing, log in, sign up: **1.1–1.3 s** with Chrome's Fast 3G throttling (was 4.1–4.4 s): met. Lighthouse's simulation, which adds opening a new connection: 4.0–4.5 s (was 5.2–5.4 s; its floor for any page is 2.9 s). Slow 4G: 1.1–1.4 s ([accessibility.md](accessibility.md), ADR 0010) |
+| Classifier (`rules-v0` baseline → `rules-v1`) | priority weighted F1 ≥ 85%; spam accuracy ≥ 95%, false positives < 5% | On a hand-written held-out set of 177 messages (60 Kiswahili, 30 scams): weighted F1 63.5%, spam accuracy 88.7% → 89.3%, false positives 0%. Not met: the trained models (Phase 9) must close the gap ([testing-report.md](testing-report.md), section 7) |
 | NFR-4 accessibility | WCAG 2.2 AA | axe: no serious issues on any page; Lighthouse accessibility 100; keyboard-only and 200% zoom tests pass |
 
 Two bottlenecks were found and fixed by the load test (database connection pool; one-at-a-time

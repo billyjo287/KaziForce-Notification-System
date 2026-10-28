@@ -1,0 +1,11 @@
+# Secret scan settings (gitleaks, run in CI: .github/workflows/ci.yml). Uses gitleaks' standard
+# rules; the allowlist below only lists made-up values that live in tests on purpose.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Made-up test values"
+regexes = [
+  # backend/tests/security.test.ts: a fake "real-looking" login secret, to check it is accepted.
+  '''Qm9vdHN0cmFwLXRlc3Qtc2VjcmV0LWZvci1rYXppZm9yY2UtMjAyNg''',
+]

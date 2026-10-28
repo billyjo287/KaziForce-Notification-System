@@ -1,0 +1,355 @@
+id,language,type,recipient_role,sender_role,created_at,deadline_minutes,text,priority,is_spam,why
+1,en,job_alert,worker,business,2026-10-02T08:07:00+03:00,45,"Warehouse loaders needed
+Mwangi Logistics needs Loading in Industrial Area. Pay: KSh 1,000. Apply before 11:00.",urgent,false,closes in 45 minutes
+2,en,job_alert,worker,business,2026-10-03T09:14:00+03:00,120,"Event ushers
+Safari Events needs Ushering in Westlands. Pay: KSh 1,500. Apply before 14:00.",urgent,false,closes in 2 hours
+3,en,job_alert,worker,business,2026-10-04T10:21:00+03:00,150,"Kitchen helper for lunch rush
+Mama Oliech Restaurant needs Cooking in Kilimani. Pay: KSh 900. Apply before 12:30.",urgent,false,"closes in 2.5 hours, work is today"
+4,en,job_alert,worker,business,2026-10-05T11:28:00+03:00,600,"Night guard tonight
+Urgent. Secure Homes needs Security in Karen. Pay: KSh 1,200 for the night. Apply before 18:00.",urgent,false,work starts tonight
+5,en,job_alert,worker,business,2026-10-06T12:35:00+03:00,300,"Cleaners needed today
+Sparkle Cleaning needs Cleaning in South B. Pay: KSh 800. Apply before 15:00.",urgent,false,work is today
+6,en,job_alert,worker,business,2026-10-07T13:42:00+03:00,90,"Boda rider for deliveries
+Quick Parcel needs Delivery in CBD. Pay: KSh 1,200. Apply before 10:30.",urgent,false,closes in 90 minutes
+7,en,job_alert,worker,business,2026-10-08T14:49:00+03:00,30,"Replacement mason
+Jengo Builders needs Masonry in Ruaka. Pay: KSh 1,800. Apply before 09:30.",urgent,false,closes in 30 minutes
+8,en,job_alert,worker,business,2026-10-09T15:56:00+03:00,170,"Shop attendant, afternoon shift
+Naivas Express needs Sales in Thika. Pay: KSh 700. Apply before 13:00.",urgent,false,"closes in under 3 hours, shift is this afternoon"
+9,en,job_alert,worker,business,2026-10-10T16:03:00+03:00,400,"Waiters for a wedding this evening
+Harusi Caterers needs Catering in Nakuru. Pay: KSh 1,500. Apply before 16:00.",urgent,false,work is this evening
+10,en,job_alert,worker,business,2026-10-11T17:10:00+03:00,55,"Car wash attendant
+Splash Car Wash needs Cleaning in Rongai. Pay: KSh 600. Apply before 08:55.",urgent,false,closes in 55 minutes
+11,en,job_alert,worker,business,2026-10-12T18:17:00+03:00,240,"Movers needed immediately
+HomeShift Movers needs Moving in Kileleshwa. Pay: KSh 1,300. Apply before 14:00.",urgent,false,work starts immediately
+12,en,job_alert,worker,business,2026-10-01T19:24:00+03:00,180,"Farm hands for harvest
+Green Acres needs Farming in Limuru. Pay: KSh 800. Apply before 11:00. Work starts at noon.",urgent,false,"closes in 3 hours, starts at noon"
+13,en,job_alert,worker,business,2026-10-02T20:31:00+03:00,100,"Electrician for emergency repair
+Bright Sparks needs Electrical in Lavington. Pay: KSh 2,500. Apply before 10:40.",urgent,false,"emergency, closes in 100 minutes"
+14,sw,job_alert,worker,business,2026-10-03T21:38:00+03:00,40,"Wapakiaji wanahitajika
+Mwangi Logistics inahitaji Upakiaji huko Industrial Area. Malipo: KSh 1,000. Omba kabla ya saa 4:40.",urgent,false,closes in 40 minutes
+15,sw,job_alert,worker,business,2026-10-04T06:45:00+03:00,500,"Mlinzi wa usiku huu
+Haraka. Secure Homes inahitaji Ulinzi huko Karen. Malipo: KSh 1,200. Omba kabla ya saa 12 jioni.",urgent,false,work is tonight
+16,sw,job_alert,worker,business,2026-10-05T07:52:00+03:00,200,"Wasafishaji leo
+Sparkle Cleaning inahitaji Usafi huko Kasarani. Malipo: KSh 800. Kazi inaanza leo saa 8 mchana.",urgent,false,work is today
+17,sw,job_alert,worker,business,2026-10-06T08:59:00+03:00,150,"Mpishi msaidizi
+Hoteli ya Pwani inahitaji Upishi huko Mombasa. Malipo: KSh 900. Omba kabla ya saa 7 mchana.",urgent,false,closes in 2.5 hours
+18,sw,job_alert,worker,business,2026-10-07T09:06:00+03:00,80,"Fundi bomba anahitajika
+Maji Safi Plumbers inahitaji Ufundi bomba huko Kisumu. Malipo: KSh 2,000. Omba kabla ya saa 5:20.",urgent,false,closes in 80 minutes
+19,sw,job_alert,worker,business,2026-10-08T10:13:00+03:00,300,"Wahudumu wa harusi jioni hii
+Harusi Caterers inahitaji Uhudumu huko Eldoret. Malipo: KSh 1,500. Omba kabla ya saa 9.",urgent,false,work is this evening
+20,sw,job_alert,worker,business,2026-10-09T11:20:00+03:00,60,"Dereva wa mizigo
+Quick Parcel inahitaji Udereva huko Thika. Malipo: KSh 1,800. Omba sasa hivi.",urgent,false,closes in 60 minutes
+21,en,job_alert,worker,business,2026-10-10T12:27:00+03:00,1440,"Starts tonight: stock count
+Mega Wholesale needs Stock taking in Industrial Area. Pay: KSh 1,400. Apply before tomorrow 09:00. Work begins tonight at 8 pm.",urgent,false,work starts tonight although applications close tomorrow
+22,en,job_alert,worker,business,2026-10-11T13:34:00+03:00,130,"Painters, one-day job
+Colourful Homes needs Painting in Syokimau. Pay: KSh 1,600. Apply before 11:10.",urgent,false,closes in just over 2 hours
+23,sw,job_alert,worker,business,2026-10-12T14:41:00+03:00,170,"Wauzaji sokoni
+Duka la Mama Wanjiku inahitaji Uuzaji huko Gikomba. Malipo: KSh 600. Omba kabla ya saa 6.",urgent,false,closes in under 3 hours
+24,en,job_alert,worker,business,2026-10-01T15:48:00+03:00,20,"Last call: delivery riders
+Quick Parcel needs Delivery in Westlands. Pay: KSh 1,200. Apply before 10:20.",urgent,false,closes in 20 minutes
+25,en,job_alert,worker,business,2026-10-02T16:55:00+03:00,90,"Receptionist cover
+Smile Dental needs Reception in Upper Hill. Pay: KSh 1,200. Apply before 09:30. Cover needed from 10:00.",urgent,false,"closes in 90 minutes, cover needed this morning"
+26,en,job_alert,worker,business,2026-10-03T17:02:00+03:00,1440,"Warehouse packers
+Mwangi Logistics needs Packing in Industrial Area. Pay: KSh 1,200. Apply before tomorrow, 10:00.",medium,false,closes tomorrow
+27,en,job_alert,worker,business,2026-10-04T18:09:00+03:00,2000,"Tutor for weekend classes
+Bright Minds needs Teaching in Kahawa. Pay: KSh 1,000 per session. Apply before Thursday 17:00.",medium,false,closes in about 33 hours
+28,en,job_alert,worker,business,2026-10-05T19:16:00+03:00,900,"Gardener
+Green Thumb needs Gardening in Runda. Pay: KSh 900. Apply before tomorrow morning.",medium,false,closes tomorrow morning
+29,en,job_alert,worker,business,2026-10-06T20:23:00+03:00,2800,"Security guards (3)
+Secure Homes needs Security in Embakasi. Pay: KSh 1,100 per night. Apply before Friday 12:00.",medium,false,closes within 48 hours
+30,en,job_alert,worker,business,2026-10-07T21:30:00+03:00,1200,"Data entry clerk
+Figure Ltd needs Data entry in Westlands. Pay: KSh 1,000. Apply before tomorrow 08:00.",medium,false,closes tomorrow
+31,en,job_alert,worker,business,2026-10-08T06:37:00+03:00,2400,"Event setup crew
+Safari Events needs Event setup in Kasarani. Pay: KSh 1,300. Apply before Saturday 10:00.",medium,false,closes within 48 hours
+32,en,job_alert,worker,business,2026-10-09T07:44:00+03:00,700,"Laundry assistant
+FreshFold needs Laundry in Kilimani. Pay: KSh 700. Apply before 20:00.",medium,false,"closes in about 12 hours, nothing starts today"
+33,sw,job_alert,worker,business,2026-10-10T08:51:00+03:00,1440,"Wapakiaji
+Mwangi Logistics inahitaji Upakiaji huko Mlolongo. Malipo: KSh 1,000. Omba kabla ya kesho saa 4.",medium,false,closes tomorrow
+34,sw,job_alert,worker,business,2026-10-11T09:58:00+03:00,2000,"Mwalimu wa ziada
+Elimu Bora inahitaji Ufundishaji huko Nyeri. Malipo: KSh 1,000. Omba kabla ya Alhamisi.",medium,false,closes within 48 hours
+35,sw,job_alert,worker,business,2026-10-12T10:05:00+03:00,2600,"Mpiga rangi
+Rangi Bora inahitaji Upakaji rangi huko Machakos. Malipo: KSh 1,500. Omba kabla ya Ijumaa.",medium,false,closes within 48 hours
+36,en,job_alert,worker,business,2026-10-01T11:12:00+03:00,1600,"Cook for a school trip
+Safari Schools needs Cooking in Naivasha. Pay: KSh 2,000. Apply before tomorrow 18:00.",medium,false,closes tomorrow
+37,en,job_alert,worker,business,2026-10-02T12:19:00+03:00,2200,"Shop assistant
+Naivas Express needs Sales in Kitengela. Pay: KSh 750. Apply before Wednesday.",medium,false,closes within 48 hours
+38,sw,job_alert,worker,business,2026-10-03T13:26:00+03:00,1300,"Msaidizi wa duka
+Duka la Baraka inahitaji Uuzaji huko Kakamega. Malipo: KSh 700. Omba kabla ya kesho asubuhi.",medium,false,closes tomorrow morning
+39,en,job_alert,worker,business,2026-10-04T14:33:00+03:00,2700,"Plumber for a new block
+Maji Safi Plumbers needs Plumbing in Kiambu. Pay: KSh 2,200. Apply before Friday 09:00.",medium,false,closes within 48 hours
+40,en,job_alert,worker,business,2026-10-05T15:40:00+03:00,1000,"Delivery riders, evening
+Quick Parcel needs Delivery in Rongai. Pay: KSh 1,100. Apply before 22:00. Work is tomorrow evening.",medium,false,work is tomorrow
+41,sw,job_alert,worker,business,2026-10-06T16:47:00+03:00,1800,"Walinzi wawili
+Ulinzi Imara inahitaji Ulinzi huko Ruiru. Malipo: KSh 1,000. Omba kabla ya Jumatano.",medium,false,closes within 48 hours
+42,en,job_alert,worker,business,2026-10-07T17:54:00+03:00,2880,"Cashier, weekend
+Mega Wholesale needs Cashier in Kisumu. Pay: KSh 900. Apply within 2 days.",medium,false,closes in 48 hours
+43,en,job_alert,worker,business,2026-10-08T18:01:00+03:00,1500,"Babysitter
+Happy Home needs Childcare in Lavington. Pay: KSh 1,000. Apply before tomorrow 15:00.",medium,false,closes tomorrow
+44,sw,job_alert,worker,business,2026-10-09T19:08:00+03:00,2100,"Fundi wa umeme
+Bright Sparks inahitaji Umeme huko Kitale. Malipo: KSh 2,500. Omba kabla ya Alhamisi saa 6.",medium,false,closes within 48 hours
+45,en,job_alert,worker,business,2026-10-10T20:15:00+03:00,500,"Car wash attendants
+Splash Car Wash needs Cleaning in Ngong. Pay: KSh 600. Apply before 19:00. Work starts tomorrow.",medium,false,work starts tomorrow
+46,en,job_alert,worker,business,2026-10-11T21:22:00+03:00,7200,"Farm workers for planting season
+Green Acres needs Farming in Nanyuki. Pay: KSh 800 per day. Apply before 10 October.",low,false,closes in 5 days
+47,en,job_alert,worker,business,2026-10-12T06:29:00+03:00,10080,"Office cleaner, long term
+Sparkle Cleaning needs Cleaning in Upper Hill. Pay: KSh 15,000 per month. Apply before next Monday.",low,false,closes in a week
+48,en,job_alert,worker,business,2026-10-01T07:36:00+03:00,5000,"Hotel waiters (December season)
+Pwani Beach Hotel needs Waiting in Diani. Pay: KSh 1,000 per day. Apply before 15 October.",low,false,closes in 3.5 days
+49,sw,job_alert,worker,business,2026-10-02T08:43:00+03:00,8000,"Wafanyakazi wa shambani
+Shamba Bora inahitaji Kilimo huko Meru. Malipo: KSh 700 kwa siku. Omba kabla ya tarehe 12.",low,false,closes in 5.5 days
+50,en,job_alert,worker,business,2026-10-03T09:50:00+03:00,20160,"Drivers for school term
+Safari Schools needs Driving in Nairobi. Pay: KSh 25,000 per month. Apply within 2 weeks.",low,false,closes in 2 weeks
+51,en,job_alert,worker,business,2026-10-04T10:57:00+03:00,4500,"Graphic design gig
+AdWorks needs Design (remote). Pay: KSh 5,000. Apply before Sunday.",low,false,closes in 3 days
+52,sw,job_alert,worker,business,2026-10-05T11:04:00+03:00,9000,"Mpishi wa shule
+Shule ya Upendo inahitaji Upishi huko Kericho. Malipo: KSh 12,000 kwa mwezi. Omba kabla ya mwisho wa mwezi.",low,false,closes in 6 days
+53,en,job_alert,worker,business,2026-10-06T12:11:00+03:00,6000,"Construction labourers
+Jengo Builders needs Construction in Athi River. Pay: KSh 900 per day. Apply before next week Tuesday.",low,false,closes in 4 days
+54,en,job_alert,worker,business,2026-10-07T13:18:00+03:00,14000,"Tailor
+Fashion Hub needs Tailoring in Eastleigh. Pay: KSh 1,200 per day. Apply before 20 October.",low,false,closes in 10 days
+55,sw,job_alert,worker,business,2026-10-08T14:25:00+03:00,5500,"Mlinzi wa mchana
+Ulinzi Imara inahitaji Ulinzi huko Nyali. Malipo: KSh 900. Omba kabla ya Jumapili.",low,false,closes in about 4 days
+56,en,job_alert,worker,business,2026-10-09T15:32:00+03:00,7000,"Sales agents (commission)
+FiberNet needs Sales in Kisumu. Pay: commission on each sale. Apply before 14 October.",low,false,closes in 5 days
+57,en,job_alert,worker,business,2026-10-10T16:39:00+03:00,4400,"Photographer for a graduation
+SnapIt needs Photography in Juja. Pay: KSh 4,000. Apply before Saturday.",low,false,closes in 3 days
+58,sw,job_alert,worker,business,2026-10-11T17:46:00+03:00,12000,"Wasaidizi wa jikoni
+Mama Oliech Restaurant inahitaji Upishi huko Kilimani. Malipo: KSh 800. Omba kabla ya wiki ijayo.",low,false,closes next week
+59,en,job_alert,worker,business,2026-10-12T18:53:00+03:00,30000,"Seasonal tea pickers
+Kericho Tea Estates needs Farming in Kericho. Pay: KSh 600 per day. Apply this month.",low,false,closes in 3 weeks
+60,en,job_alert,worker,business,2026-10-01T19:00:00+03:00,5800,"Mechanic
+Auto Fix needs Mechanics in Industrial Area. Pay: KSh 1,800 per day. Apply before Monday.",low,false,closes in 4 days
+61,sw,job_alert,worker,business,2026-10-02T20:07:00+03:00,6500,"Mpiga picha wa harusi
+SnapIt inahitaji Upigaji picha huko Nakuru. Malipo: KSh 5,000. Omba kabla ya Jumatatu.",low,false,closes in 4.5 days
+62,en,job_alert,worker,business,2026-10-03T21:14:00+03:00,9000,"Library assistant
+City Library needs Admin in CBD. Pay: KSh 18,000 per month. Apply before 16 October.",low,false,closes in 6 days
+63,en,job_alert,worker,business,2026-10-04T06:21:00+03:00,4400,"Cleaners for a new office (start next week)
+Sparkle Cleaning needs Cleaning in Gigiri. Pay: KSh 800. Apply before Friday.",low,false,"closes in 3 days, starts next week"
+64,sw,job_alert,worker,business,2026-10-05T07:28:00+03:00,7500,"Madereva wa bodaboda
+Quick Parcel inahitaji Udereva huko Kisii. Malipo: KSh 1,000 kwa siku. Omba kabla ya tarehe 14.",low,false,closes in 5 days
+65,en,job_alert,worker,business,2026-10-06T08:35:00+03:00,3600,"Waiters for a conference on Friday
+Safari Events needs Waiting in Westlands. Pay: KSh 1,500. Apply before Thursday evening.",low,false,closes in 2.5 days
+66,en,job_alert,worker,business,2026-10-07T09:42:00+03:00,8640,"Hairdresser
+Glam Salon needs Hairdressing in Kayole. Pay: 50% of each client. Apply before next Saturday.",low,false,closes in 6 days
+67,sw,job_alert,worker,business,2026-10-08T10:49:00+03:00,10000,"Mwalimu wa kompyuta
+Elimu Bora inahitaji Ufundishaji huko Thika. Malipo: KSh 20,000 kwa mwezi. Omba kabla ya tarehe 18.",low,false,closes in a week
+68,en,job_alert,worker,business,2026-10-09T11:56:00+03:00,5000,"Porters for the market
+Wakulima Market needs Loading in Marikiti. Pay: KSh 700 per day. Apply before Sunday.",low,false,closes in 3.5 days
+69,en,job_alert,worker,business,2026-10-10T12:03:00+03:00,4900,"Security guard (expires Sunday)
+Ulinzi Imara needs Security in Kitengela. Pay: KSh 1,000. Apply before Sunday.",low,false,says 'expires' but closes in 3.4 days
+70,sw,job_alert,worker,business,2026-10-11T13:10:00+03:00,6000,"Fundi seremala
+Mbao Bora inahitaji Useremala huko Kitale. Malipo: KSh 1,500 kwa siku. Omba kabla ya Jumatatu.",low,false,closes in 4 days
+71,en,status_update,worker,business,2026-10-12T14:17:00+03:00,,"Your application was accepted
+Mwangi Logistics accepted your application for ""Warehouse packers"". Open Messages to agree the details.",urgent,false,accepted: confirm before the place goes to someone else
+72,en,status_update,worker,business,2026-10-01T15:24:00+03:00,,"Your application was accepted
+Safari Events accepted your application for ""Event ushers"". Please confirm by 4 pm today or the place goes to someone else.",urgent,false,"accepted, confirm today"
+73,sw,status_update,worker,business,2026-10-02T16:31:00+03:00,,"Ombi lako limekubaliwa
+Mwangi Logistics wamekubali ombi lako la ""Wapakiaji"". Fungua Ujumbe mkubaliane maelezo.",urgent,false,accepted
+74,sw,status_update,worker,business,2026-10-03T17:38:00+03:00,,"Ombi lako limekubaliwa
+Harusi Caterers wamekubali ombi lako la ""Wahudumu wa harusi"". Thibitisha kabla ya saa 10 leo.",urgent,false,"accepted, confirm today"
+75,en,status_update,worker,business,2026-10-04T18:45:00+03:00,,"Interview this afternoon
+Bright Minds would like to meet you at 2 pm today at their Kahawa office for ""Tutor for weekend classes"".",urgent,false,interview today
+76,en,status_update,worker,business,2026-10-05T19:52:00+03:00,,"Good news for ""Night guard tonight""
+Secure Homes chose you. Report at the Karen gate by 6 pm.",urgent,false,"chosen, report this evening"
+77,sw,status_update,worker,business,2026-10-06T20:59:00+03:00,,"Umechaguliwa
+Sparkle Cleaning wamekuchagua kwa ""Wasafishaji"". Fika Kasarani saa 8 mchana.",urgent,false,"chosen, report this afternoon"
+78,en,status_update,worker,business,2026-10-07T21:06:00+03:00,,"Your application was reviewed
+Mwangi Logistics looked at your application for ""Warehouse packers"".",medium,false,application reviewed
+79,en,status_update,worker,business,2026-10-08T06:13:00+03:00,,"Your application was not successful
+Green Acres chose other people for ""Farm hands for harvest"". New jobs are added every day.",medium,false,application turned down
+80,sw,status_update,worker,business,2026-10-09T07:20:00+03:00,,"Ombi lako limeangaliwa
+Elimu Bora wameangalia ombi lako la ""Mwalimu wa ziada"".",medium,false,application reviewed
+81,sw,status_update,worker,business,2026-10-10T08:27:00+03:00,,"Ombi lako halikufanikiwa
+Rangi Bora wamechagua watu wengine kwa ""Mpiga rangi"". Kazi mpya huongezwa kila siku.",medium,false,application turned down
+82,en,status_update,worker,business,2026-10-11T09:34:00+03:00,,"Your application was reviewed
+Smile Dental looked at your application for ""Receptionist cover"".",medium,false,application reviewed
+83,en,status_update,worker,business,2026-10-12T10:41:00+03:00,,"Your application was not successful
+Safari Events chose other people for ""Event setup crew"". New jobs are added every day.",medium,false,application turned down
+84,en,status_update,business,worker,2026-10-01T11:48:00+03:00,,"New applicant
+Wanjiru Kamau applied for ""Warehouse packers"".",medium,false,new applicant to look at
+85,sw,status_update,business,worker,2026-10-02T12:55:00+03:00,,"Mwombaji mpya
+Otieno Ochieng ameomba kazi ya ""Walinzi wawili"".",medium,false,new applicant to look at
+86,en,status_update,business,worker,2026-10-03T13:02:00+03:00,,"New applicant
+Achieng Atieno applied for ""Cook for a school trip"".",medium,false,new applicant to look at
+87,en,status_update,worker,business,2026-10-04T14:09:00+03:00,,"Your application was reviewed
+FiberNet looked at your application for ""Sales agents (commission)"".",medium,false,application reviewed
+88,sw,status_update,worker,business,2026-10-05T15:16:00+03:00,,"Ombi lako limeangaliwa
+Shamba Bora wameangalia ombi lako la ""Wafanyakazi wa shambani"".",medium,false,application reviewed
+89,en,status_update,worker,business,2026-10-06T16:23:00+03:00,,"Your application was not successful
+Pwani Beach Hotel chose other people for ""Hotel waiters"". New jobs are added every day.",medium,false,application turned down
+90,en,status_update,business,worker,2026-10-07T17:30:00+03:00,,"New applicant (urgent job)
+Kamau Njoroge applied for ""Replacement mason"", which starts in 1 hour.",urgent,false,applicant for a job starting in 1 hour
+91,sw,status_update,business,worker,2026-10-08T18:37:00+03:00,,"Mwombaji mpya
+Mutua Musyoka ameomba kazi ya ""Dereva wa mizigo"" inayoanza sasa hivi.",urgent,false,applicant for a job starting now
+92,en,status_update,worker,business,2026-10-09T19:44:00+03:00,,"Job closed
+The job ""Painters, one-day job"" was filled. You do not need to do anything.",low,false,information only
+93,sw,status_update,worker,business,2026-10-10T20:51:00+03:00,,"Kazi imefungwa
+Kazi ya ""Mpiga rangi"" imejazwa. Huhitaji kufanya chochote.",low,false,information only
+94,en,message,worker,business,2026-10-11T21:58:00+03:00,,"New message from Mwangi Logistics
+Can you start tonight at 8? Please reply quickly.",urgent,false,asks to start tonight
+95,en,message,worker,business,2026-10-12T06:05:00+03:00,,"New message from Safari Events
+The shift starts in 30 minutes. Are you still coming?",urgent,false,shift starts in 30 minutes
+96,en,message,business,worker,2026-10-01T07:12:00+03:00,,"New message from Kamau Njoroge
+I am at the gate but nobody is here. Please call me.",urgent,false,worker waiting at the gate now
+97,sw,message,worker,business,2026-10-02T08:19:00+03:00,,"Ujumbe mpya kutoka kwa Secure Homes
+Unaweza kuanza usiku huu? Jibu haraka tafadhali.",urgent,false,asks to start tonight
+98,sw,message,business,worker,2026-10-03T09:26:00+03:00,,"Ujumbe mpya kutoka kwa Wanjiru Kamau
+Niko getini lakini hakuna mtu. Tafadhali nipigie.",urgent,false,worker waiting at the gate now
+99,en,message,worker,business,2026-10-04T10:33:00+03:00,,"New message from Jengo Builders
+We need you on site right now, the other mason did not come.",urgent,false,needed on site now
+100,sw,message,worker,business,2026-10-05T11:40:00+03:00,,"Ujumbe mpya kutoka kwa Harusi Caterers
+Wageni wamefika mapema, njoo sasa hivi.",urgent,false,needed now
+101,en,message,business,worker,2026-10-06T12:47:00+03:00,,"New message from Otieno Ochieng
+My matatu broke down, I will be 20 minutes late for the 9 am shift.",urgent,false,late for a shift starting soon
+102,en,message,worker,business,2026-10-07T13:54:00+03:00,,"New message from Smile Dental
+The address changed: come to Upper Hill Medical Centre, 3rd floor, before 10.",urgent,false,changed address for this morning
+103,sw,message,worker,business,2026-10-08T14:01:00+03:00,,"Ujumbe mpya kutoka kwa Quick Parcel
+Mzigo uko tayari leo, chukua kabla ya saa 11.",urgent,false,pick up today
+104,en,message,worker,business,2026-10-09T15:08:00+03:00,,"New message from Mwangi Logistics
+Thank you for applying. Do you have your own safety boots?",medium,false,question to answer
+105,en,message,business,worker,2026-10-10T16:15:00+03:00,,"New message from Wanjiru Kamau
+Hello, is the job still available? I have done packing for 2 years.",medium,false,question to answer
+106,sw,message,worker,business,2026-10-11T17:22:00+03:00,,"Ujumbe mpya kutoka kwa Elimu Bora
+Asante kwa kuomba. Unafundisha masomo gani?",medium,false,question to answer
+107,sw,message,business,worker,2026-10-12T18:29:00+03:00,,"Ujumbe mpya kutoka kwa Mutua Musyoka
+Habari, nina leseni ya kuendesha gari. Naweza kuanza wiki ijayo.",medium,false,applicant introduces themself
+108,en,message,worker,business,2026-10-01T19:36:00+03:00,,"New message from Green Acres
+We will send the farm location tomorrow. Bring a hat and water.",medium,false,instructions for tomorrow
+109,en,message,business,worker,2026-10-02T20:43:00+03:00,,"New message from Achieng Atieno
+What time should I arrive on Saturday?",medium,false,question to answer
+110,sw,message,worker,business,2026-10-03T21:50:00+03:00,,"Ujumbe mpya kutoka kwa Rangi Bora
+Tutakulipa kwa M-Pesa baada ya kazi kuisha.",medium,false,wages by M-Pesa after work: honest
+111,en,message,worker,business,2026-10-04T06:57:00+03:00,,"New message from Safari Events
+We pay through M-Pesa on the same evening the event ends.",medium,false,wages by M-Pesa after work: honest
+112,en,message,worker,business,2026-10-05T07:04:00+03:00,,"New message from Bright Minds
+You can see our timetable at https://brightminds.co.ke/timetable before Thursday.",medium,false,company website link: honest
+113,sw,message,business,worker,2026-10-06T08:11:00+03:00,,"Ujumbe mpya kutoka kwa Kamau Njoroge
+Nimetuma CV yangu. Tafadhali niambie kama mmepokea.",medium,false,question to answer
+114,en,message,business,worker,2026-10-07T09:18:00+03:00,,"New message from Otieno Ochieng
+Can I bring my brother? He is also a good mason.",medium,false,question to answer
+115,en,message,worker,business,2026-10-08T10:25:00+03:00,,"New message from HomeShift Movers
+We will refund your bus fare, send us the amount you paid.",medium,false,fare refund: honest
+116,sw,message,worker,business,2026-10-09T11:32:00+03:00,,"Ujumbe mpya kutoka kwa Shamba Bora
+Tutahitaji watu 5 zaidi mwezi ujao. Una marafiki?",medium,false,question to answer
+117,en,message,worker,business,2026-10-10T12:39:00+03:00,,"New message from Maji Safi Plumbers
+Please send a photo of your certificate when you can.",medium,false,"request, no rush"
+118,en,message,worker,business,2026-10-11T13:46:00+03:00,,"New message from Mwangi Logistics
+Thank you for your good work last week!",low,false,thanks only
+119,sw,message,worker,business,2026-10-12T14:53:00+03:00,,"Ujumbe mpya kutoka kwa Sparkle Cleaning
+Asante kwa kazi nzuri. Mungu akubariki.",low,false,thanks only
+120,en,message,business,worker,2026-10-01T15:00:00+03:00,,"New message from Wanjiru Kamau
+Thank you, I received the payment.",low,false,thanks only
+121,sw,message,business,worker,2026-10-02T16:07:00+03:00,,"Ujumbe mpya kutoka kwa Mutua Musyoka
+Sawa, asante sana.",low,false,thanks only
+122,en,message,worker,business,2026-10-03T17:14:00+03:00,,"New message from Safari Events
+Have a good weekend!",low,false,greeting only
+123,en,announcement,worker,admin,2026-10-04T18:21:00+03:00,,"Tip: complete your profile
+Workers with a photo and skills get more job alerts.",low,false,tip
+124,sw,announcement,worker,admin,2026-10-05T19:28:00+03:00,,"Kidokezo: kamilisha wasifu wako
+Wafanyakazi wenye picha na ujuzi hupata arifa zaidi za kazi.",low,false,tip
+125,en,announcement,worker,admin,2026-10-06T20:35:00+03:00,,"New: quiet hours
+You can now choose hours when we will not disturb you, except for urgent jobs.",low,false,news
+126,en,announcement,worker,admin,2026-10-07T21:42:00+03:00,,"Planned maintenance
+KaziForce will be unavailable on Sunday from 2 am to 3 am.",low,false,"notice, nothing to do"
+127,sw,announcement,worker,admin,2026-10-08T06:49:00+03:00,,"Matengenezo yaliyopangwa
+KaziForce haitapatikana Jumapili kuanzia saa 8 hadi saa 9 usiku.",low,false,"notice, nothing to do"
+128,en,announcement,worker,admin,2026-10-09T07:56:00+03:00,,"Stay safe from fake jobs
+KaziForce never asks you to pay to get a job. Report any request for money.",low,false,safety tip that mentions payment: honest
+129,sw,announcement,worker,admin,2026-10-10T08:03:00+03:00,,"Jihadhari na kazi za uongo
+KaziForce haitakuomba ulipe ada ili upate kazi. Ripoti mtu yeyote anayeomba pesa.",low,false,safety tip that mentions payment: honest
+130,en,announcement,business,admin,2026-10-11T09:10:00+03:00,,"Tip for employers
+Jobs with a clear pay amount get twice as many applicants.",low,false,tip
+131,en,announcement,worker,admin,2026-10-12T10:17:00+03:00,,"Holiday notice
+Our support team will be closed on Mashujaa Day, 20 October.",low,false,notice
+132,sw,announcement,worker,admin,2026-10-01T11:24:00+03:00,,"Taarifa ya sikukuu
+Timu yetu ya msaada itafungwa Siku ya Mashujaa, tarehe 20 Oktoba.",low,false,notice
+133,en,announcement,worker,admin,2026-10-02T12:31:00+03:00,,"Today: new jobs in Mombasa
+More employers in Mombasa joined this week. Have a look.",low,false,news
+134,en,announcement,worker,admin,2026-10-03T13:38:00+03:00,,"Thank you
+KaziForce helped 1,000 workers find jobs this month.",low,false,news
+135,sw,announcement,business,admin,2026-10-04T14:45:00+03:00,,"Kidokezo kwa waajiri
+Taja malipo wazi ili upate waombaji wengi zaidi.",low,false,tip
+136,en,announcement,worker,admin,2026-10-05T15:52:00+03:00,,"Update your settings
+You can now pick the letter style that is easiest to read.",low,false,news
+137,en,announcement,worker,admin,2026-10-06T16:59:00+03:00,,"Action needed: verify your phone
+Verify your phone number by Friday or you will stop getting SMS alerts.",medium,false,action needed within days
+138,sw,announcement,worker,admin,2026-10-07T17:06:00+03:00,,"Thibitisha simu yako
+Thibitisha nambari yako ya simu kabla ya Ijumaa ili uendelee kupata arifa za SMS.",medium,false,action needed within days
+139,en,announcement,business,admin,2026-10-08T18:13:00+03:00,,"New rules for job posts
+From next Monday every job post must show the pay. Please update your open jobs.",medium,false,action needed within days
+140,en,announcement,worker,admin,2026-10-09T19:20:00+03:00,,"Please add your ID number
+Add your ID number in your profile within 2 days so employers can trust you.",medium,false,"action needed within days (in the app, not by message)"
+141,en,announcement,worker,admin,2026-10-10T20:27:00+03:00,,"Service problem right now
+SMS alerts are delayed this morning. Please open the app to see urgent jobs.",urgent,false,outage now: open the app to avoid missing jobs
+142,sw,announcement,worker,admin,2026-10-11T21:34:00+03:00,,"Tatizo la huduma sasa hivi
+Arifa za SMS zimechelewa asubuhi hii. Fungua programu kuona kazi za haraka.",urgent,false,outage now: open the app to avoid missing jobs
+143,en,job_alert,worker,business,2026-10-12T06:41:00+03:00,3000,"Data entry from home
+Earn KSh 3,000 daily. Pay a registration fee of KSh 500 to M-Pesa till 556677 to start.",low,true,registration fee
+144,en,job_alert,worker,business,2026-10-01T07:48:00+03:00,600,"CONGRATULATIONS!!!
+You have been selected for a hotel job in Dubai. Send KSh 2,000 processing fee today.",urgent,true,"processing fee, prize-style wording"
+145,sw,job_alert,worker,business,2026-10-02T08:55:00+03:00,4000,"Kazi ya uhakika
+Pata KSh 50,000 kwa mwezi. Lipa ada ya usajili KSh 1,000 kwa M-Pesa.",low,true,"registration fee, guaranteed job"
+146,en,message,worker,business,2026-10-03T09:02:00+03:00,,"New message from Top Jobs Agency
+To confirm your job, send me your M-Pesa PIN.",urgent,true,asks for M-Pesa PIN
+147,en,message,worker,business,2026-10-04T10:09:00+03:00,,"New message from HR Manager
+You got the job! Click bit.ly/kf-pay to receive your first salary.",urgent,true,"shortened link, salary before work"
+148,sw,message,worker,business,2026-10-05T11:16:00+03:00,,"Ujumbe mpya kutoka kwa Wakala wa Kazi
+Tuma pesa KSh 300 ili tukuhifadhie nafasi.",medium,true,asks for money to keep a place
+149,en,job_alert,worker,business,2026-10-06T12:23:00+03:00,5000,"Crypto trading assistant
+Double your money in 7 days. No experience needed. WhatsApp 0700 000 000.",low,true,"crypto, double your money"
+150,en,message,worker,business,2026-10-07T13:30:00+03:00,,"New message from Kevin
+I can get you a government job. Send KSh 5,000 to 0711 111 111 and it is yours.",medium,true,pay for a job
+151,sw,message,worker,business,2026-10-08T14:37:00+03:00,,"Ujumbe mpya kutoka kwa Bwana Juma
+Umeshinda zawadi ya KSh 20,000! Tuma ada ya KSh 200 kupokea.",medium,true,prize with a fee
+152,en,job_alert,worker,business,2026-10-09T15:44:00+03:00,6000,"Mystery shopper
+Get paid to shop! Buy a starter kit for KSh 1,500 first, then earn KSh 4,000 a day.",low,true,pay first for a 'kit'
+153,en,message,worker,business,2026-10-10T16:51:00+03:00,,"New message from Recruiter
+We need a copy of your ID and your password to finish your registration.",medium,true,asks for password
+154,sw,job_alert,worker,business,2026-10-11T17:58:00+03:00,1000,"Kazi Ulaya
+Kazi Canada bila uzoefu. Lipa ada ya maombi KSh 3,000 leo.",urgent,true,application fee
+155,en,job_alert,worker,business,2026-10-12T18:05:00+03:00,5000,"Easy online job
+Like videos and earn KSh 2,000 daily. Join at tinyurl.com/easy-kf",low,true,"shortened link, too good to be true"
+156,en,message,business,worker,2026-10-01T19:12:00+03:00,,"New message from Faith
+Hi dear, I am stuck. Please send me KSh 1,000 by M-Pesa, I will pay back tomorrow.",medium,true,stranger asks for money
+157,sw,message,worker,business,2026-10-02T20:19:00+03:00,,"Ujumbe mpya kutoka kwa Ofisi ya Kazi
+Tuma nambari yako ya siri ya M-Pesa ili tukutumie mshahara.",medium,true,asks for M-Pesa PIN
+158,en,job_alert,worker,business,2026-10-03T21:26:00+03:00,4000,"Loan + job offer
+Get a job and a KSh 50,000 loan. Security fee KSh 1,200 only.",low,true,security fee
+159,en,message,worker,business,2026-10-04T06:33:00+03:00,,"New message from KaziForce Support
+Your account is blocked. Log in here to unblock: http://kaziforce-login.xyz",urgent,true,fake login page (phishing)
+160,sw,job_alert,worker,business,2026-10-05T07:40:00+03:00,3000,"Wanatafutwa wasichana
+Kazi ya hoteli Saudi Arabia. Tuma KSh 5,000 kwa paybill 123456 kwa visa.",low,true,pay for visa via paybill
+161,en,job_alert,worker,business,2026-10-06T08:47:00+03:00,2000,"WORK FROM HOME NOW!!!
+EARN BIG MONEY FAST. CALL 0722 222 222.",low,true,"shouting, too good to be true"
+162,en,message,worker,business,2026-10-07T09:54:00+03:00,,"New message from Agent Brian
+Investment opportunity: give me KSh 10,000 and get KSh 30,000 next week.",medium,true,investment scheme
+163,sw,message,worker,business,2026-10-08T10:01:00+03:00,,"Ujumbe mpya kutoka kwa Bwana Peter
+Pesa ya haraka! Jiunge na kikundi chetu kwa KSh 500 tu.",medium,true,"pay to join, quick money"
+164,en,job_alert,worker,business,2026-10-09T11:08:00+03:00,3500,"Driver needed (company car)
+You must pay KSh 2,500 for uniform and training before starting.",low,true,pay before starting
+165,en,message,worker,business,2026-10-10T12:15:00+03:00,,"New message from Sarah HR
+You have won a free smartphone. Claim at cutt.ly/claim-kf",medium,true,"prize, shortened link"
+166,sw,job_alert,worker,business,2026-10-11T13:22:00+03:00,4000,"Ajira ya serikali
+Nafasi 200 za ajira. Lipa ada KSh 1,000 kupitia M-Pesa kwa 0733 333 333.",low,true,pay a fee for a government job
+167,en,job_alert,worker,business,2026-10-12T14:29:00+03:00,5500,"Nanny abroad
+Guaranteed job in Qatar. Visa and ticket KSh 45,000. Pay before Friday.",low,true,"guaranteed job abroad, pay first"
+168,en,message,worker,business,2026-10-01T15:36:00+03:00,,"New message from Lucky Draw
+Your number won KSh 100,000 in the KaziForce lottery.",medium,true,lottery
+169,sw,message,worker,business,2026-10-02T16:43:00+03:00,,"Ujumbe mpya kutoka kwa Mama Grace
+Nitumie nambari ya kitambulisho na PIN yako ya M-Pesa nikusajili.",medium,true,asks for ID and M-Pesa PIN
+170,en,job_alert,worker,business,2026-10-03T17:50:00+03:00,6000,"Bitcoin mining jobs
+Earn KSh 1,000 per hour mining bitcoin from your phone.",low,true,crypto
+171,en,job_alert,worker,business,2026-10-04T18:57:00+03:00,4500,"Remote typing job
+Pay KSh 700 for the typing software, then earn KSh 15,000 weekly.",low,true,pay first for software
+172,sw,job_alert,worker,business,2026-10-05T19:04:00+03:00,4000,"Kazi ya kutuma SMS
+Pata KSh 1,000 kwa siku kutuma SMS. Lipa KSh 300 kwanza.",low,true,pay first
+173,en,job_alert,worker,business,2026-10-06T20:11:00+03:00,5000,"Cashier (M-Pesa experience)
+Naivas Express needs Cashier in Ruaka. You must know how to use M-Pesa and the till. Pay: KSh 900. Apply before Saturday.",low,false,"M-Pesa skill, honest"
+174,en,job_alert,worker,business,2026-10-07T21:18:00+03:00,6000,"Paid training for new guards
+Ulinzi Imara needs Security in Kitengela. We pay you KSh 500 for each training day. Apply before Monday.",low,false,"employer pays for training, honest"
+175,sw,job_alert,worker,business,2026-10-08T06:25:00+03:00,4600,"Wakala wa M-Pesa
+Duka la Baraka inahitaji Wakala wa M-Pesa huko Thika. Malipo: KSh 800. Omba kabla ya Jumamosi.",low,false,"M-Pesa agent job, honest"
+176,en,job_alert,worker,business,2026-10-09T07:32:00+03:00,1300,"Delivery riders, own bike
+Quick Parcel needs Delivery in Kasarani. We refund fuel at the end of each day. Pay: KSh 1,100. Apply before tomorrow.",medium,false,"refund, honest; closes tomorrow"
+177,en,message,worker,business,2026-10-10T08:39:00+03:00,,"New message from Mwangi Logistics
+Details are on our website https://mwangilogistics.co.ke/jobs. See you tomorrow at 7.",medium,false,"company website link, honest"

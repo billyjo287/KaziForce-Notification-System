@@ -3,6 +3,7 @@
 // training label (correctedSpam / correctedPriority, who and when) and written to AuditLog.
 import { Router } from 'express';
 import { z } from 'zod';
+import { recordEvent } from '../../events/domainEvents.js';
 import type { Prisma } from '../../generated/prisma/client.js';
 import { conflict, notFound } from '../../lib/httpError.js';
 import { prisma } from '../../lib/prisma.js';
@@ -79,6 +80,107 @@ export function reviewRoutes() {
     const { id } = parse(idParam, req.params);
     await blocked(id);
     await decide(admin.id, id, 'notification.spam_confirmed', { correctedSpam: true });
+    res.json({ ok: true });
+  });
+
+  // ---------- Job posts held by the scam check (jobRoutes.ts) ----------
+  // A held job was never listed and sent no alerts. "Publish" announces it now (alerts go out
+  // and later checks trust the admin); "Remove" takes it down for good with a reason the
+  // employer sees.
+  router.get('/review/jobs', async (_req, res) => {
+    const jobs = await prisma.job.findMany({
+      where: { status: 'held' },
+      include: {
+        employer: { select: { id: true, name: true, companyName: true } },
+        location: { select: { name: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 50,
+    });
+    res.json({
+      items: jobs.map((j) => ({
+        id: j.id,
+        title: j.title,
+        description: j.description,
+        pay: j.pay,
+        location: j.location.name,
+        employer: { id: j.employer.id, name: j.employer.companyName ?? j.employer.name },
+        spamScore: j.spamScore,
+        explanation: j.spamReasons,
+        createdAt: j.createdAt.toISOString(),
+      })),
+    });
+  });
+
+  async function heldJob(id: string) {
+    const job = await prisma.job.findUnique({ where: { id } });
+    if (!job) throw notFound();
+    if (job.status !== 'held') {
+      throw conflict('already_reviewed', 'Someone already decided about this one.');
+    }
+    return job;
+  }
+
+  router.post('/review/jobs/:id/publish', async (req, res) => {
+    const admin = currentUser(req);
+    const { id } = parse(idParam, req.params);
+    const job = await heldJob(id);
+    await prisma.$transaction(async (tx) => {
+      await tx.job.update({
+        where: { id },
+        data: { status: 'open', reviewedAt: new Date(), reviewedById: admin.id },
+      });
+      if (job.deadline > new Date()) {
+        await recordEvent(tx, 'job.posted', {
+          jobId: id,
+          employerId: job.employerId,
+          locationId: job.locationId,
+          skillId: job.skillId,
+          urgent: job.urgency === 'urgent',
+        });
+      }
+      await tx.auditLog.create({
+        data: {
+          actorId: admin.id,
+          action: 'job.published_after_check',
+          targetType: 'job',
+          targetId: id,
+          metadata: { title: job.title, spamScore: job.spamScore },
+        },
+      });
+    });
+    res.json({ ok: true });
+  });
+
+  router.post('/review/jobs/:id/remove', async (req, res) => {
+    const admin = currentUser(req);
+    const { id } = parse(idParam, req.params);
+    const job = await heldJob(id);
+    const reason = 'It looked like a scam (asking workers for money).';
+    const now = new Date();
+    await prisma.$transaction([
+      prisma.job.update({
+        where: { id },
+        data: {
+          status: 'removed',
+          removedReason: reason,
+          removedAt: now,
+          removedById: admin.id,
+          reviewedAt: now,
+          reviewedById: admin.id,
+        },
+      }),
+      prisma.auditLog.create({
+        data: {
+          actorId: admin.id,
+          action: 'job.removed_as_scam',
+          targetType: 'job',
+          targetId: id,
+          reason,
+          metadata: { title: job.title, spamScore: job.spamScore },
+        },
+      }),
+    ]);
     res.json({ ok: true });
   });
 

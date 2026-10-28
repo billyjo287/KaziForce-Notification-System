@@ -91,21 +91,31 @@ export function monitoringRoutes() {
   router.get('/overview', async (_req, res) => {
     const now = new Date();
     const today = nairobiDayStart(now);
-    const [last24h, last7d, notificationsToday, spamBlockedToday, spamWaiting, heldNow, recent] =
-      await Promise.all([
-        channelRates(new Date(now.getTime() - DAY)),
-        channelRates(new Date(now.getTime() - 7 * DAY)),
-        prisma.notification.count({ where: { createdAt: { gte: today } } }),
-        prisma.notification.count({ where: { createdAt: { gte: today }, isSpam: true } }),
-        prisma.notification.count({ where: { status: 'blocked', correctedSpam: null } }),
-        prisma.notification.count({ where: { heldUntil: { gt: now } } }),
-        prisma.deliveryLog.findMany({
-          where: { status: 'failed', createdAt: { gte: new Date(now.getTime() - DAY) } },
-          include: { notification: { select: { id: true, title: true } } },
-          orderBy: { createdAt: 'desc' },
-          take: 5,
-        }),
-      ]);
+    const [
+      last24h,
+      last7d,
+      notificationsToday,
+      spamBlockedToday,
+      spamAlerts,
+      heldJobs,
+      heldNow,
+      recent,
+    ] = await Promise.all([
+      channelRates(new Date(now.getTime() - DAY)),
+      channelRates(new Date(now.getTime() - 7 * DAY)),
+      prisma.notification.count({ where: { createdAt: { gte: today } } }),
+      prisma.notification.count({ where: { createdAt: { gte: today }, isSpam: true } }),
+      prisma.notification.count({ where: { status: 'blocked', correctedSpam: null } }),
+      // Job posts held by the scam check wait in the same review page.
+      prisma.job.count({ where: { status: 'held' } }),
+      prisma.notification.count({ where: { heldUntil: { gt: now } } }),
+      prisma.deliveryLog.findMany({
+        where: { status: 'failed', createdAt: { gte: new Date(now.getTime() - DAY) } },
+        include: { notification: { select: { id: true, title: true } } },
+        orderBy: { createdAt: 'desc' },
+        take: 5,
+      }),
+    ]);
     // Redis may be down: the page still shows everything else.
     const queues = await queueBacklog().catch((error: unknown) => {
       logger.warn({ err: error }, 'Could not read the queue sizes');
@@ -119,7 +129,7 @@ export function monitoringRoutes() {
         spamBlocked: spamBlockedToday,
         failedDeliveries: last24h.reduce((total, c) => total + c.failed, 0),
       },
-      spamWaiting,
+      spamWaiting: spamAlerts + heldJobs,
       heldNow,
       queues,
       recentFailures: recent.map((log) => ({

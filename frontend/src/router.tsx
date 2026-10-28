@@ -74,10 +74,15 @@ export const router = createBrowserRouter([
           Component: (await import('./features/onboarding/OnboardingPage')).default,
         }),
       },
-      {
-        path: 'ui-kit',
-        lazy: async () => ({ Component: (await import('./pages/UiKitPage')).default }),
-      },
+      // The component gallery is a developer tool: only in `npm run dev`, never in the built site.
+      ...(import.meta.env.DEV
+        ? [
+            {
+              path: 'ui-kit',
+              lazy: async () => ({ Component: (await import('./pages/UiKitPage')).default }),
+            },
+          ]
+        : []),
 
       // ---------- Worker ----------
       {

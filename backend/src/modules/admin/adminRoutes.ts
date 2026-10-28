@@ -21,7 +21,7 @@ const userListQuery = z.object({
 });
 const jobListQuery = z.object({
   q: z.string().trim().max(100).optional(),
-  status: z.enum(['open', 'closed', 'removed']).optional(),
+  status: z.enum(['open', 'closed', 'removed', 'held']).optional(),
   page: pageQuery,
 });
 const reasonSchema = z.object({

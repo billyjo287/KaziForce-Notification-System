@@ -57,10 +57,10 @@ jobs:
       - run: npm run test -w frontend
       - name: Build and check bundle sizes (fails if Three.js reaches the app bundle)
         run: npm run build:report -w frontend
-      - name: Install Playwright's browser
-        run: npx playwright install --with-deps chromium
+      - name: Install Playwright's browsers (Chromium, plus Firefox and WebKit for the smoke test)
+        run: npx playwright install --with-deps chromium firefox webkit
         working-directory: frontend
-      - name: Browser tests + accessibility (axe) at 360px and 1440px, with the real backend
+      - name: Browser tests + accessibility (axe) at 360, 768, 1024 and 1440px, with the real backend
         run: npm run test:e2e -w frontend
       - name: Keep the Playwright report if tests fail
         if: failure()
@@ -126,3 +126,30 @@ jobs:
       - name: Check formatting (ruff)
         run: ruff format --check .
       - run: pytest
+
+  # Known security problems in the packages the system uses, and secrets committed by mistake
+  # (passwords, API keys) anywhere in the Git history. Fails the build if one is found.
+  security:
+    name: Security checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # the whole history, so the secret scan sees every commit
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: npm packages that ship to users (high or critical problems fail)
+        run: npm audit --omit=dev --audit-level=high
+      - name: All npm packages, including development tools (report only)
+        run: npm audit --audit-level=high || true
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Python packages of the ML service (pip-audit)
+        run: pipx run pip-audit==2.9.0 -r ml-service/requirements.txt
+      - name: Secret scan of the whole Git history (gitleaks)
+        run: |
+          curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v8.28.0/gitleaks_8.28.0_linux_x64.tar.gz \
+            | tar -xz gitleaks
+          ./gitleaks git . --config .gitleaks.toml --redact --no-banner

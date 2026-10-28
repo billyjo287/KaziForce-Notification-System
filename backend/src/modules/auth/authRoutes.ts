@@ -21,7 +21,8 @@ import { prisma } from '../../lib/prisma.js';
 import type { RateLimiters } from '../../lib/rateLimits.js';
 import { sendEmail } from '../../lib/mailer.js';
 import { redis } from '../../lib/redis.js';
-import { randomToken, sha256, signAccessToken } from '../../lib/tokens.js';
+import { logger } from '../../lib/logger.js';
+import { randomToken, sha256, signAccessToken, sixDigitCode } from '../../lib/tokens.js';
 import { parse } from '../../lib/validate.js';
 import { currentUser, requireAuth } from '../../middleware/auth.js';
 import { publish } from '../../realtime/bus.js';
@@ -34,6 +35,10 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 /** Two tabs refreshing at the same moment must not look like token theft. */
 const ROTATION_GRACE_MS = 30 * 1000;
 const RESET_LINK_MS = 60 * 60 * 1000;
+// Log-in code (OTP_DEMO_MODE, for presentations): valid 5 minutes, 5 tries, kept only as a hash.
+const LOGIN_CODE_SECONDS = 5 * 60;
+const LOGIN_CODE_TRIES = 5;
+const loginCodeKey = (challengeId: string) => `kf:login-code:${sha256(challengeId)}`;
 // Compared against when the email is unknown, so "no such user" takes as long as "wrong password".
 const DUMMY_HASH = bcrypt.hashSync('not-a-real-password', 10);
 
@@ -140,6 +145,62 @@ export function authRoutes(limits: RateLimiters) {
       throw forbidden('account_suspended', 'This account has been suspended.');
     }
 
+    // Demo mode: a second step with a 6-digit code. A real version would send it by SMS or
+    // email; for the presentation it is shown on screen (and in this terminal).
+    if (env.OTP_DEMO_MODE) {
+      const code = sixDigitCode();
+      const challengeId = randomToken();
+      await redis.set(
+        loginCodeKey(challengeId),
+        JSON.stringify({ userId: user.id, codeHash: sha256(`${user.id}:${code}`), tries: 0 }),
+        'EX',
+        LOGIN_CODE_SECONDS,
+      );
+      logger.info(`[demo code] log-in code for ${user.email}: ${code}`);
+      res.json({
+        codeRequired: true,
+        challengeId,
+        demoCode: code,
+        expiresInSeconds: LOGIN_CODE_SECONDS,
+      });
+      return;
+    }
+    await finishLogin(req, res, user);
+  });
+
+  // Demo mode, step 2: the 6-digit code shown after the password.
+  router.post('/login/code', limits.login, async (req, res) => {
+    const input = parse(
+      z.object({
+        challengeId: z.string().min(10).max(200),
+        code: z.string().regex(/^\d{6}$/, 'Enter the 6 digits'),
+      }),
+      req.body,
+    );
+    const key = loginCodeKey(input.challengeId);
+    const saved = await redis.get(key);
+    if (!saved) throw badRequest('login_code_expired', 'This code has expired. Log in again.');
+    const pending = JSON.parse(saved) as { userId: string; codeHash: string; tries: number };
+    if (pending.codeHash !== sha256(`${pending.userId}:${input.code}`)) {
+      pending.tries += 1;
+      if (pending.tries >= LOGIN_CODE_TRIES) {
+        await redis.del(key);
+        throw badRequest('login_code_expired', 'Too many wrong codes. Log in again.');
+      }
+      await redis.set(key, JSON.stringify(pending), 'KEEPTTL');
+      throw badRequest('login_code_wrong', 'That code is not right. Check it and try again.');
+    }
+    await redis.del(key);
+    const user = await prisma.user.findUnique({ where: { id: pending.userId } });
+    if (!user) throw unauthorized();
+    if (user.status === 'suspended') {
+      throw forbidden('account_suspended', 'This account has been suspended.');
+    }
+    await finishLogin(req, res, user);
+  });
+
+  /** The end of a successful log-in: session cookie, new-device email, the user's details. */
+  async function finishLogin(req: Request, res: Response, user: User) {
     const userAgent = req.get('user-agent');
     const seenDevice = await prisma.session.findFirst({
       where: { userId: user.id, userAgent: userAgent?.slice(0, 500) ?? null },
@@ -155,7 +216,7 @@ export function authRoutes(limits: RateLimiters) {
       });
     }
     await loggedInResponse(res, user.id);
-  });
+  }
 
   router.post('/refresh', requireAppHeader, async (req, res) => {
     const token: unknown = req.cookies?.[COOKIE];

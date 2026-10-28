@@ -45,5 +45,8 @@ Thumbs.db
 !.vscode/extensions.json
 *.log
 
+# Billy's private notes (presentation scripts etc.): never committed
+private/
+
 # Load test output (contains login tokens for the test accounts)
 loadtest/data/

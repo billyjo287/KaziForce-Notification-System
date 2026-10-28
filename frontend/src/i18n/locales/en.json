@@ -112,7 +112,26 @@
     "markAllRead": "Mark all as read",
     "markedAllRead_one": "{{count}} alert marked as read.",
     "markedAllRead_other": "{{count}} alerts marked as read.",
-    "openAlert": "Open"
+    "openAlert": "Open",
+    "feedback": {
+      "title": "Thanks. Want to tell us why?",
+      "intro": "Optional. It helps us send you better alerts than \"{{title}}\".",
+      "legend": "Why is this alert not important to you?",
+      "pickOne": "Choose one reason, or press Skip.",
+      "reasons": {
+        "not_my_work": "Not my kind of work",
+        "too_far": "Too far away",
+        "pay_too_low": "The pay is too low",
+        "not_available": "I am not available then",
+        "too_many": "Too many alerts like this",
+        "other": "Something else"
+      },
+      "noteLabel": "Tell us more (optional)",
+      "noteHelp": "A few words are enough. Please do not write phone numbers or names.",
+      "send": "Send",
+      "skip": "Skip",
+      "thanks": "Thank you. We will use this to improve your alerts."
+    }
   },
   "settings": {
     "title": "Settings",
@@ -172,7 +191,10 @@
     "not_logged_in": "Please log in again.",
     "invalid_input": "Some details are missing or not valid. Check the form.",
     "cannot_suspend_admin": "Admin accounts cannot be suspended.",
-    "already_removed": "This job was already removed."
+    "already_removed": "This job was already removed.",
+    "login_code_wrong": "That code is not right. Check it and try again.",
+    "login_code_expired": "This code has expired. Please log in again.",
+    "not_marked": "Mark the alert as not important first."
   },
   "validation": {
     "required": "Please fill this in.",
@@ -207,7 +229,12 @@
       "submit": "Log in",
       "forgot": "Forgot your password?",
       "noAccount": "New to KaziForce?",
-      "register": "Create an account"
+      "register": "Create an account",
+      "codeTitle": "Enter your code",
+      "codeIntro": "One more step: enter the 6-digit code to finish logging in.",
+      "codeLabel": "6-digit code",
+      "codeSubmit": "Continue",
+      "codeRestart": "Start again"
     },
     "register": {
       "title": "Create your account",
@@ -308,7 +335,8 @@
       "emptyBody": "When you apply for a job, you can follow it here.",
       "findJobs": "Find jobs",
       "appliedOn": "Applied {{when}}"
-    }
+    },
+    "held": "Waiting for a check"
   },
   "theme": {
     "label": "Screen colours",
@@ -319,5 +347,9 @@
       "dark": "Dark",
       "system": "Same as device"
     }
+  },
+  "demoCode": {
+    "title": "Demo code",
+    "help": "For the presentation, the code is shown here instead of being sent by SMS or email."
   }
 }

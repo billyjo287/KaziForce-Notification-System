@@ -1,6 +1,6 @@
 {
-  "version": "rules-v0",
-  "about": "Rule-based classifier v0 (PRD section 5). Used by the ML service and, word for word, by the backend's fallback (backend/src/pipeline/rulesV0.ts; a test checks both copies are identical). Numbers are whole percentages so Python and JavaScript compute exactly the same results. Phrases are matched as whole words after lower-casing and replacing everything except a-z and 0-9 with spaces.",
+  "version": "rules-v1",
+  "about": "Rule-based classifier (rules-v1; rules-v0 was the measured Sprint II baseline) (PRD section 5). Used by the ML service and, word for word, by the backend's fallback (backend/src/pipeline/rulesV0.ts; a test checks both copies are identical). Numbers are whole percentages so Python and JavaScript compute exactly the same results. Phrases are matched as whole words after lower-casing and replacing everything except a-z and 0-9 with spaces.",
   "priority": {
     "urgent_deadline_minutes": 60,
     "urgent_deadline_confidence": 90,
@@ -87,6 +87,7 @@
       "tuma kwa mpesa",
       "tuma kwa m pesa"
     ],
+    "payment_amount_verbs": ["send", "deposit", "tuma", "lipa", "weka"],
     "blocked_keyword_weight": 40,
     "blocked_keywords": [
       "congratulations you are hired",
@@ -102,7 +103,14 @@
       "umeshinda",
       "bahati nasibu",
       "kazi ya uhakika",
-      "pesa ya haraka"
+      "pesa ya haraka",
+      "secure the job",
+      "secure your job",
+      "secure the position",
+      "secure your position",
+      "secure your slot",
+      "secure your place",
+      "hakikisha nafasi yako"
     ],
     "suspicious_link_weight": 35,
     "link_shortener_weight": 45,
@@ -112,6 +120,17 @@
     "all_caps_min_letters": 12,
     "all_caps_percent": 60,
     "punctuation_weight": 15,
-    "punctuation_min_exclamations": 3
+    "punctuation_min_exclamations": 3,
+    "mobile_money_weight": 45,
+    "mobile_money_words": [
+      "mpesa",
+      "m pesa",
+      "till",
+      "paybill",
+      "airtel money",
+      "send",
+      "tuma",
+      "lipa"
+    ]
   }
 }

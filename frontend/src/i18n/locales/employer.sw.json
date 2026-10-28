@@ -34,7 +34,8 @@
       "urgentNo": "Hapana",
       "submit": "Chapisha kazi",
       "posting": "Inachapisha…",
-      "posted": "Kazi yako imechapishwa."
+      "posted": "Kazi yako imechapishwa.",
+      "held": "Kazi yako inasubiri ukaguzi mfupi wa timu yetu. Wafanyakazi wataiona ikishaidhinishwa."
     },
     "applicants": {
       "title": "Waombaji",
@@ -58,6 +59,8 @@
       "nameHelp": "Wafanyakazi wanaona hili kwenye matangazo yako ya kazi.",
       "location": "Kampuni yako iko wapi?"
     },
-    "removedReason": "Imeondolewa: {{reason}}"
+    "removedReason": "Imeondolewa: {{reason}}",
+    "heldNotice": "Timu yetu inakagua kazi hii kabla wafanyakazi hawajaiona, kwa sababu ilionekana kuomba pesa kutoka kwa wafanyakazi. Hakuna arifa iliyotumwa bado.",
+    "heldShort": "Inasubiri ukaguzi mfupi wa timu yetu"
   }
 }

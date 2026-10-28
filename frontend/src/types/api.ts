@@ -94,7 +94,8 @@ export interface Job {
   pay: string | null;
   deadline: string;
   urgent: boolean;
-  status: 'open' | 'closed' | 'removed';
+  /** held: looked like a scam when posted; waits for an admin before anyone sees it. */
+  status: 'open' | 'closed' | 'removed' | 'held';
   removedReason: string | null;
   location: Place;
   skill: Skill;

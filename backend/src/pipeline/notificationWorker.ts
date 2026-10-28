@@ -61,7 +61,35 @@ export function startNotificationWorker({
     const released = input.correctedSpam === false && input.modelVersion !== null;
     let classification = {};
     if (!released) {
-      const verdict = await classify(input, { mlServiceUrl, timeoutMs: mlTimeoutMs });
+      let verdict = await classify(input, { mlServiceUrl, timeoutMs: mlTimeoutMs });
+      // Safety net: a job alert's text is our own short summary, so also check what the employer
+      // wrote (the job's title and description), unless an admin already published the job.
+      // Jobs are checked when posted too (jobRoutes.ts); this catches anything posted before.
+      if (!verdict.isSpam && input.type === 'job_alert' && input.jobId) {
+        const job = await prisma.job.findUnique({
+          where: { id: input.jobId },
+          select: { title: true, description: true, reviewedAt: true },
+        });
+        if (job && !job.reviewedAt) {
+          const jobCheck = await classify(
+            { ...input, title: job.title, message: job.description },
+            { mlServiceUrl, timeoutMs: mlTimeoutMs },
+          );
+          if (jobCheck.isSpam) {
+            verdict = {
+              ...verdict,
+              isSpam: true,
+              spamScore: jobCheck.spamScore,
+              explanation: [
+                ...verdict.explanation,
+                ...jobCheck.explanation
+                  .filter((item) => item.feature.startsWith('spam:'))
+                  .map((item) => ({ ...item, feature: `job_description:${item.feature}` })),
+              ],
+            };
+          }
+        }
+      }
       if (verdict.fallbackReason && !mlDown) {
         mlDown = true;
         logger.warn(

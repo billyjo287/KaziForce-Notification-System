@@ -29,6 +29,13 @@ them. For each one:
 
 Both answers teach the future model, so please decide even when it is obvious.
 
+**Job posts waiting for a check** appear at the top of Spam review. These are jobs that looked
+like scams when the employer posted them (for example "send 500ksh to my M-Pesa to secure the
+job"). Workers cannot see them and no alerts were sent. For each one:
+
+- **Yes, it is a scam: remove it**: the job is taken down, and the employer sees why.
+- **Not a scam: publish it**: the job is listed and the job alerts go out now.
+
 ## Users and jobs
 
 - **Users:** search by name, email or phone. Open a person to see their details and history.

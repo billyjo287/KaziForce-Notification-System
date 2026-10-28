@@ -118,11 +118,18 @@ describe('spam review', () => {
   beforeEach(() => {
     vi.mocked(api.get).mockReset();
     vi.mocked(api.post).mockReset();
-    vi.mocked(api.get).mockResolvedValue({
-      data: { items: [spam], total: 1, page: 1, pageSize: 20 },
-    });
+    // Blocked alerts, and (separately) job posts held by the scam check.
+    vi.mocked(api.get).mockImplementation(async (url) => ({
+      data:
+        url === '/admin/review/jobs'
+          ? { items: heldJobs }
+          : { items: [spam], total: 1, page: 1, pageSize: 20 },
+    }));
     vi.mocked(api.post).mockResolvedValue({ data: { ok: true } });
+    heldJobs = [];
   });
+
+  let heldJobs: object[] = [];
 
   it('shows why it was blocked; "Yes, it is spam" confirms the block', async () => {
     renderWithRouter(
@@ -156,6 +163,41 @@ describe('spam review', () => {
     await userEvent.click(within(dialog).getByRole('button', { name: 'Deliver now' }));
     expect(api.post).toHaveBeenCalledWith('/admin/review/spam/s1/release', { priority: 'medium' });
     expect(await screen.findByText('Delivered to Faith Njeri.')).toBeInTheDocument();
+  });
+
+  it('job posts held by the scam check come first; "remove it" and "publish it"', async () => {
+    heldJobs = [
+      {
+        id: 'j1',
+        title: 'Warehouse packers',
+        description: 'Send 500ksh to secure the Job!!!! Send money on my M-Pesa: 0700030367',
+        pay: 'KSh 1,200',
+        location: 'Embu',
+        employer: { id: 'e1', name: 'Mwangi Logistics' },
+        spamScore: 1,
+        explanation: [
+          { feature: 'direct_message', weight: 0.7 },
+          { feature: 'spam:mobile_money_number', weight: 0.45 },
+        ],
+        createdAt: new Date().toISOString(),
+      },
+    ];
+    renderWithRouter(
+      <>
+        <SpamReviewPage />
+        <Toaster />
+      </>,
+    );
+    const section = await screen.findByRole('region', { name: '1 job post waiting for a check' });
+    expect(within(section).getByText('Job post: Warehouse packers')).toBeInTheDocument();
+    expect(within(section).getByText(/Why: mobile money number/)).toBeInTheDocument();
+    await userEvent.click(
+      within(section).getByRole('button', { name: 'Yes, it is a scam: remove it' }),
+    );
+    expect(api.post).toHaveBeenCalledWith('/admin/review/jobs/j1/remove');
+    expect(await screen.findByText('Removed. The employer sees why.')).toBeInTheDocument();
+    await userEvent.click(within(section).getByRole('button', { name: 'Not a scam: publish it' }));
+    expect(api.post).toHaveBeenCalledWith('/admin/review/jobs/j1/publish');
   });
 });
 

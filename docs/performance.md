@@ -101,8 +101,8 @@ minute with BullMQ's defaults, 172 tuned (77% fewer).
 ## Limits of these numbers
 
 - One laptop runs everything, including k6 and the 100 listeners, so the numbers include their
-  load too. Production has separate machines but also network hops (Vercel → Railway →
-  Supabase), which add tens of milliseconds to each request.
+  load too. Production adds network hops (Vercel → the Azure server → Supabase), which add
+  tens of milliseconds to each request.
 - Mock mode measures our pipeline up to "accepted by the provider", as NFR-1 asks; real
   WhatsApp/SMS delivery to a phone adds the provider's own time.
 - The ML service answers with the rule-based model; a trained model (Phase 9) will be slower and

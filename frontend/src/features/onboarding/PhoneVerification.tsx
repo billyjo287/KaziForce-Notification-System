@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useSendPhoneCode, useVerifyPhone } from '../../api/hooks';
 import { Button } from '../../components/ui/Button';
 import { Checkbox } from '../../components/ui/Checkbox';
+import { DemoCodeBox } from '../../components/ui/DemoCodeBox';
 import { FormAlert } from '../../components/ui/FormAlert';
 import { Input } from '../../components/ui/Input';
 import { formatPhone, normalizeKenyanPhone } from '../../lib/phone';
@@ -39,6 +40,8 @@ export function PhoneVerification({
   }>({});
   const [serverError, setServerError] = useState<string | null>(null);
   const [resent, setResent] = useState(false);
+  // Presentation demo mode only: the code a real SMS would carry, shown on screen.
+  const [demoCode, setDemoCode] = useState<string | null>(null);
   const codeHeading = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
@@ -48,7 +51,8 @@ export function PhoneVerification({
   async function requestCode(target: string) {
     setServerError(null);
     try {
-      await sendCode.mutateAsync(target);
+      const sent = await sendCode.mutateAsync(target);
+      setDemoCode(sent.demoCode ?? null);
       setPhone(target);
       return true;
     } catch (error) {
@@ -122,6 +126,7 @@ export function PhoneVerification({
           {t('onboarding.phone.codeIntro', { phone: formatPhone(phone) })}
         </p>
       </div>
+      {demoCode && <DemoCodeBox code={demoCode} />}
       {serverError && <FormAlert>{serverError}</FormAlert>}
       {resent && !serverError && (
         <FormAlert tone="success">{t('onboarding.phone.codeSent')}</FormAlert>

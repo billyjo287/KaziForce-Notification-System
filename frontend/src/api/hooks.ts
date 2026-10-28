@@ -97,7 +97,12 @@ export function useAnswerChannelSuggestion() {
 export const useSendPhoneCode = () =>
   useMutation({
     mutationFn: async (phone: string) =>
-      (await api.post<{ ok: true; mockCode?: string }>('/me/phone', { phone, consent: true })).data,
+      (
+        await api.post<{ ok: true; mockCode?: string; demoCode?: string }>('/me/phone', {
+          phone,
+          consent: true,
+        })
+      ).data,
   });
 
 export const useVerifyPhone = () =>

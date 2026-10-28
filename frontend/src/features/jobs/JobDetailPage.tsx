@@ -145,7 +145,7 @@ export default function JobDetailPage() {
               {t('jobs.detail.message')}
             </Link>
           </div>
-        ) : job.status === 'removed' ? (
+        ) : job.status === 'removed' || job.status === 'held' ? (
           <p className="text-lg">{t('jobs.detail.removed')}</p>
         ) : job.status === 'closed' ? (
           <p className="text-lg">{t('jobs.detail.closed')}</p>

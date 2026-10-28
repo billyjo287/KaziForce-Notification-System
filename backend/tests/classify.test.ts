@@ -1,4 +1,4 @@
-// Phase 4: the Node copy of rules-v0 gives exactly the ML service's answers, and the worker's
+// Phase 4: the Node copy of the rules gives exactly the ML service's answers, and the worker's
 // classify() falls back to it when /predict is slow (over 500 ms), down or answers nonsense.
 import { readFileSync } from 'node:fs';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -12,7 +12,7 @@ const EXAMPLES = JSON.parse(
   readFileSync(mlFile('tests/fixtures/rules_v0_examples.json'), 'utf8'),
 ) as { name: string; request: PredictRequest; expected: unknown }[];
 
-describe('Node copy of rules-v0', () => {
+describe('Node copy of the rules', () => {
   it('uses exactly the same rules as the ML service', () => {
     // Compared as data, so formatting differences (Prettier here, none in Python) do not matter.
     const read = (url: URL) => JSON.parse(readFileSync(url, 'utf8')) as unknown;
@@ -56,7 +56,7 @@ describe('classify(): ML service first, Node rules as the fallback', () => {
       isSpam: true,
       spamScore: 1,
       priority: 'medium',
-      modelVersion: 'rules-v0',
+      modelVersion: 'rules-v1',
       predictionSource: 'rules',
     });
     expect(verdict.fallbackReason).toBeUndefined();

@@ -22,6 +22,7 @@ export default defineConfig({
   projects: [
     {
       name: 'phone-360',
+      testIgnore: 'browsers.spec.ts',
       use: {
         ...devices['Desktop Chrome'],
         channel,
@@ -31,7 +32,20 @@ export default defineConfig({
     },
     {
       name: 'desktop-1440',
+      testIgnore: 'browsers.spec.ts',
       use: { ...devices['Desktop Chrome'], channel, viewport: { width: 1440, height: 900 } },
+    },
+    // A short smoke test in the other browser engines (PRD NFR-7). Install them once with
+    // `npx playwright install firefox webkit`.
+    {
+      name: 'firefox',
+      testMatch: 'browsers.spec.ts',
+      use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'webkit-iphone',
+      testMatch: 'browsers.spec.ts',
+      use: { ...devices['iPhone 13'] },
     },
   ],
   webServer: [

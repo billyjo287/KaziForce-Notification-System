@@ -34,7 +34,8 @@
       "urgentNo": "No",
       "submit": "Post the job",
       "posting": "Posting…",
-      "posted": "Your job is posted."
+      "posted": "Your job is posted.",
+      "held": "Your job is waiting for a quick check by our team. Workers will see it once it is approved."
     },
     "applicants": {
       "title": "Applicants",
@@ -58,6 +59,8 @@
       "nameHelp": "Workers see this on your job posts.",
       "location": "Where is your company?"
     },
-    "removedReason": "Removed: {{reason}}"
+    "removedReason": "Removed: {{reason}}",
+    "heldNotice": "Our team is checking this job before workers see it, because it looked like it asks workers for money. No alerts have been sent yet.",
+    "heldShort": "Waiting for a quick check by our team"
   }
 }
