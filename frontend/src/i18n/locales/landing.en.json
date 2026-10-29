@@ -41,7 +41,21 @@
     },
     "footer": {
       "project": "A student project at Strathmore University, Nairobi.",
-      "privacy": "WhatsApp and SMS alerts never include your personal details."
+      "privacy": "WhatsApp and SMS alerts never include your personal details.",
+      "tagline": "Job alerts that reach you on time: urgent work by SMS or WhatsApp, everything else calm and tidy.",
+      "copyright": "© {{year}} KaziForce. All rights reserved.",
+      "columns": {
+        "product": "KaziForce",
+        "account": "Your account"
+      },
+      "links": {
+        "how": "How it works",
+        "levels": "Alert levels",
+        "employers": "For employers",
+        "login": "Log in",
+        "register": "Create an account",
+        "forgot": "Forgot your password?"
+      }
     }
   }
 }

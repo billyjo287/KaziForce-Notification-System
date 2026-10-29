@@ -92,6 +92,7 @@
   --kf-bar-medium: #e3a43c;
   --kf-bar-low: #c6cfda;
   --kf-new-row: #e3f7ef; /* a newly arrived live row */
+  --kf-scrim: rgba(20, 22, 43, 0.55); /* behind pop-up windows */
 
   /* shape and depth */
   --kf-radius-sm: 10px;
@@ -145,6 +146,7 @@
   --kf-bar-urgent: #e2643a;
   --kf-bar-low: #4b5576;
   --kf-new-row: #123a2e;
+  --kf-scrim: rgba(0, 0, 0, 0.7);
   --kf-shadow: 0 24px 48px -28px rgba(0, 0, 0, 0.8);
   color-scheme: dark;
 }
@@ -182,6 +184,7 @@
     --kf-bar-urgent: #e2643a;
     --kf-bar-low: #4b5576;
     --kf-new-row: #123a2e;
+    --kf-scrim: rgba(0, 0, 0, 0.7);
     --kf-shadow: 0 24px 48px -28px rgba(0, 0, 0, 0.8);
     color-scheme: dark;
   }

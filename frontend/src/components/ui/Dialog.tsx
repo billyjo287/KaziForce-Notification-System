@@ -21,7 +21,7 @@ export function Dialog({ open, onOpenChange, title, description, children }: Dia
   return (
     <RadixDialog.Root open={open} onOpenChange={onOpenChange}>
       <RadixDialog.Portal>
-        <RadixDialog.Overlay className="fixed inset-0 z-40 bg-black/50" />
+        <RadixDialog.Overlay className="fixed inset-0 z-40 bg-kf-scrim" />
         <RadixDialog.Content className="fixed inset-x-0 bottom-0 z-50 max-h-[90dvh] overflow-y-auto rounded-t-2xl bg-surface p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] text-ink shadow-xl sm:inset-x-auto sm:top-1/2 sm:bottom-auto sm:left-1/2 sm:w-full sm:max-w-lg sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-2xl">
           <div className="flex items-start justify-between gap-4">
             <RadixDialog.Title className="text-2xl font-bold">{title}</RadixDialog.Title>

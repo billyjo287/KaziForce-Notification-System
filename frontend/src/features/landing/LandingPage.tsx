@@ -3,6 +3,7 @@ import {
   Check,
   Clock,
   ListOrdered,
+  LockKeyhole,
   ShieldCheck,
   Smartphone,
   TriangleAlert,
@@ -39,6 +40,29 @@ const LEVELS: { key: 'urgent' | 'medium' | 'low'; icon: LucideIcon; tone: BadgeT
 ];
 
 const CONTROLS = ['channels', 'quiet', 'notImportant', 'language'] as const;
+
+/** Footer links: only to sections of this page and pages that exist. */
+const FOOTER_COLUMNS = [
+  {
+    key: 'product',
+    links: [
+      { key: 'how', to: '#how' },
+      { key: 'levels', to: '#levels' },
+      { key: 'employers', to: '#employers' },
+    ],
+  },
+  {
+    key: 'account',
+    links: [
+      { key: 'login', to: '/login' },
+      { key: 'register', to: '/register' },
+      { key: 'forgot', to: '/forgot-password' },
+    ],
+  },
+] as const;
+
+const FOOTER_LINK =
+  'inline-flex min-h-11 items-center rounded-md text-kf-on-inverse-2 underline-offset-4 hover:text-kf-on-inverse hover:underline';
 
 /** Public landing page: what KaziForce alerts do, in plain words. */
 export default function LandingPage() {
@@ -118,7 +142,7 @@ export default function LandingPage() {
         </section>
 
         {/* ---------- Priority levels ---------- */}
-        <section aria-labelledby="levels-title" className="py-16">
+        <section id="levels" aria-labelledby="levels-title" className="scroll-mt-4 py-16">
           <div className="mx-auto max-w-6xl px-4 sm:px-8">
             <h2 id="levels-title" data-reveal className="text-3xl font-bold">
               {t('landing.levels.title')}
@@ -159,7 +183,7 @@ export default function LandingPage() {
         </section>
 
         {/* ---------- Employers ---------- */}
-        <section aria-labelledby="employers-title" className="py-16">
+        <section id="employers" aria-labelledby="employers-title" className="scroll-mt-4 py-16">
           <div
             data-reveal
             className="mx-auto max-w-6xl rounded-none border-y border-line bg-primary-soft px-4 py-10 sm:mx-8 sm:rounded-2xl sm:border sm:px-10 lg:mx-auto"
@@ -175,10 +199,60 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="border-t border-line py-8">
-        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 text-ink-muted sm:px-8">
-          <p>{t('landing.footer.privacy')}</p>
-          <p>{t('landing.footer.project')}</p>
+      {/* ---------- Footer: always dark (Night Ink), with the white-letter logo ---------- */}
+      <footer
+        className="bg-kf-inverse text-kf-on-inverse"
+        // A mint focus ring: the usual indigo ring would not show on the dark band.
+        style={{ '--kf-focus': 'var(--kf-accent)' } as React.CSSProperties}
+      >
+        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-8 md:grid-cols-[2fr_1fr_1fr] md:py-16">
+          <div className="flex flex-col gap-4">
+            <Link to="/" className="self-start rounded-lg">
+              <img
+                src="/brand/kaziforce-logo-dark.svg"
+                alt={t('app.name')}
+                width={463}
+                height={100}
+                className="h-9 w-auto"
+              />
+            </Link>
+            <p className="max-w-sm text-lg text-kf-on-inverse-2">{t('landing.footer.tagline')}</p>
+            <p className="flex max-w-sm items-start gap-2 text-kf-on-inverse-2">
+              <LockKeyhole aria-hidden="true" className="mt-1 size-4 shrink-0" />
+              {t('landing.footer.privacy')}
+            </p>
+          </div>
+          {FOOTER_COLUMNS.map((column) => (
+            <nav key={column.key} aria-labelledby={`footer-${column.key}`}>
+              <h2
+                id={`footer-${column.key}`}
+                className="text-sm font-bold tracking-wider text-kf-on-inverse uppercase"
+              >
+                {t(`landing.footer.columns.${column.key}`)}
+              </h2>
+              <ul className="mt-4 flex flex-col gap-1">
+                {column.links.map((link) => (
+                  <li key={link.key}>
+                    {link.to.startsWith('#') ? (
+                      <a href={link.to} className={FOOTER_LINK}>
+                        {t(`landing.footer.links.${link.key}`)}
+                      </a>
+                    ) : (
+                      <Link to={link.to} className={FOOTER_LINK}>
+                        {t(`landing.footer.links.${link.key}`)}
+                      </Link>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
+        </div>
+        <div className="border-t border-kf-inverse-2">
+          <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-6 text-kf-on-inverse-2 sm:px-8 md:flex-row md:items-center md:justify-between">
+            <p>{t('landing.footer.copyright', { year: new Date().getFullYear() })}</p>
+            <p>{t('landing.footer.project')}</p>
+          </div>
         </div>
       </footer>
     </div>

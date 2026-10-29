@@ -149,6 +149,7 @@ html[data-font='system'] {
   --color-kf-success-fg: var(--kf-success-fg);
   --color-kf-success-solid: var(--kf-success-solid);
   --color-kf-danger-solid: var(--kf-danger-solid);
+  --color-kf-scrim: var(--kf-scrim);
   --radius-kf: 14px;
   --radius-kf-lg: 22px;
   --radius-kf-xl: 28px;

@@ -41,7 +41,21 @@
     },
     "footer": {
       "project": "Mradi wa mwanafunzi katika Chuo Kikuu cha Strathmore, Nairobi.",
-      "privacy": "Arifa za WhatsApp na SMS hazina taarifa zako binafsi kamwe."
+      "privacy": "Arifa za WhatsApp na SMS hazina taarifa zako binafsi kamwe.",
+      "tagline": "Arifa za kazi zinazokufikia kwa wakati: kazi za haraka kwa SMS au WhatsApp, mengine kwa utulivu na mpangilio.",
+      "copyright": "© {{year}} KaziForce. Haki zote zimehifadhiwa.",
+      "columns": {
+        "product": "KaziForce",
+        "account": "Akaunti yako"
+      },
+      "links": {
+        "how": "Jinsi inavyofanya kazi",
+        "levels": "Viwango vya arifa",
+        "employers": "Kwa waajiri",
+        "login": "Ingia",
+        "register": "Fungua akaunti",
+        "forgot": "Umesahau nenosiri?"
+      }
     }
   }
 }
