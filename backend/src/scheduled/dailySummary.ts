@@ -129,7 +129,7 @@ export function summaryEmail(input: {
   ].join('\n');
 
   const link = (href: string, label: string) =>
-    `<a href="${escapeHtml(href)}" style="color:#0b6b45;font-weight:bold;">${escapeHtml(label)}</a>`;
+    `<a href="${escapeHtml(href)}" style="color:#3b3fb6;font-weight:bold;">${escapeHtml(label)}</a>`;
   const groupsHtml = input.groups
     .map(
       (

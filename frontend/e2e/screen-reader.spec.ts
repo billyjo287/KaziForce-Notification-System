@@ -26,7 +26,7 @@ test('alerts page: landmarks, one h1, named tabs, and a live region for new aler
   await expect(page.getByRole('navigation', { name: 'Main menu' }).first()).toBeVisible();
   await expect(page.getByRole('main')).toBeVisible();
   await expect(page.getByRole('tablist', { name: 'Alert categories' })).toBeVisible();
-  for (const tab of [/Urgent/, /Important/, /For later/]) {
+  for (const tab of [/Act now/, /Check today/, /When you're free/]) {
     await expect(page.getByRole('tab', { name: tab })).toBeVisible();
   }
   // New alerts are announced without moving the focus.

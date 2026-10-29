@@ -146,7 +146,7 @@ test('a new worker signs up and completes onboarding', async ({ page }, testInfo
 
   await expect(page).toHaveURL(/\/worker\/alerts$/);
   await expect(
-    page.getByRole('heading', { name: /Nothing under "Urgent" right now/ }),
+    page.getByRole('heading', { name: /Nothing under "Act now" right now/ }),
   ).toBeVisible();
 });
 

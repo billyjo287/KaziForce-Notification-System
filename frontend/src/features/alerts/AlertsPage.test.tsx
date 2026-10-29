@@ -35,30 +35,30 @@ describe('Alerts dashboard', () => {
     await i18n.changeLanguage('en');
   });
 
-  it('shows a loading placeholder, then one tab per category, opening on Urgent', async () => {
+  it('shows a loading placeholder, then one tab per category, opening on Act now', async () => {
     renderAlerts();
     expect(screen.getByRole('status')).toHaveTextContent('Loading…');
 
     const tabs = await screen.findAllByRole('tab');
     expect(tabs.map((tab) => tab.textContent)).toEqual([
-      'Urgent2 new',
-      'Important1 new',
-      'For later1 new',
+      'Act now2 new',
+      'Check today1 new',
+      "When you're free1 new",
     ]);
     expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
   });
 
   it('shows priority as a word, not only a colour', async () => {
     renderAlerts();
-    const panel = await screen.findByRole('tabpanel', { name: /Urgent/ });
+    const panel = await screen.findByRole('tabpanel', { name: /Act now/ });
     expect(within(panel).getAllByRole('button', { name: /Warehouse/ })[0]).toHaveTextContent(
-      'Urgent',
+      'Act now',
     );
   });
 
   it('each category has the same filters; Unread hides read alerts', async () => {
     renderAlerts();
-    await userEvent.click(await screen.findByRole('tab', { name: /For later/ }));
+    await userEvent.click(await screen.findByRole('tab', { name: /When you're free/ }));
     expect(screen.getByText('Tips for a strong profile')).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: 'Unread' }));
@@ -104,7 +104,7 @@ describe('Alerts dashboard', () => {
 
   it('"Not important to me" hides the alert, and Undo brings it back', async () => {
     renderAlerts();
-    await userEvent.click(await screen.findByRole('tab', { name: /Important/ }));
+    await userEvent.click(await screen.findByRole('tab', { name: /Check today/ }));
     await userEvent.click(screen.getByRole('button', { name: /New message from Pwani Events/ }));
     await userEvent.click(await screen.findByRole('button', { name: 'Not important to me' }));
 
@@ -125,7 +125,7 @@ describe('Alerts dashboard', () => {
   it('after "Not important to me", asks why (optional): Skip, or pick a reason and Send', async () => {
     vi.mocked(api.post).mockResolvedValue({ data: { ok: true } });
     renderAlerts();
-    await userEvent.click(await screen.findByRole('tab', { name: /Important/ }));
+    await userEvent.click(await screen.findByRole('tab', { name: /Check today/ }));
     await userEvent.click(screen.getByRole('button', { name: /New message from Pwani Events/ }));
     await userEvent.click(await screen.findByRole('button', { name: 'Not important to me' }));
 
@@ -150,7 +150,7 @@ describe('Alerts dashboard', () => {
 
   it('the "why?" card can be skipped', async () => {
     renderAlerts();
-    await userEvent.click(await screen.findByRole('tab', { name: /Important/ }));
+    await userEvent.click(await screen.findByRole('tab', { name: /Check today/ }));
     await userEvent.click(screen.getByRole('button', { name: /New message from Pwani Events/ }));
     await userEvent.click(await screen.findByRole('button', { name: 'Not important to me' }));
     const card = await screen.findByRole('region', { name: 'Thanks. Want to tell us why?' });
@@ -167,7 +167,7 @@ describe('Alerts dashboard', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Mark all as read' }));
     expect(screen.getByText('You have 2 unread alerts.')).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: /Urgent/ })).toHaveTextContent('0 new');
+    expect(screen.getByRole('tab', { name: /Act now/ })).toHaveTextContent('0 new');
 
     await userEvent.click(await screen.findByRole('button', { name: 'Undo' }));
     expect(screen.getByText('You have 4 unread alerts.')).toBeInTheDocument();
@@ -184,6 +184,6 @@ describe('Alerts dashboard', () => {
     renderAlerts();
     await screen.findByRole('button', { name: 'Zote' }); // wait until loaded
     expect(screen.getByRole('heading', { level: 1, name: 'Arifa' })).toBeInTheDocument();
-    expect(screen.getAllByText('Dharura').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Sasa hivi').length).toBeGreaterThan(0);
   });
 });

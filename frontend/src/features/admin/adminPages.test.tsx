@@ -157,9 +157,9 @@ describe('spam review', () => {
     const dialog = await screen.findByRole('dialog', {
       name: 'Deliver “New message” to Faith Njeri?',
     });
-    // Starts on what the classifier said ("For later"); each choice has one line of help.
-    expect(within(dialog).getByRole('radio', { name: /For later/ })).toBeChecked();
-    await userEvent.click(within(dialog).getByRole('radio', { name: /Important/ }));
+    // Starts on what the classifier said ("When you're free"); each choice has one line of help.
+    expect(within(dialog).getByRole('radio', { name: /When you're free/ })).toBeChecked();
+    await userEvent.click(within(dialog).getByRole('radio', { name: /Check today/ }));
     await userEvent.click(within(dialog).getByRole('button', { name: 'Deliver now' }));
     expect(api.post).toHaveBeenCalledWith('/admin/review/spam/s1/release', { priority: 'medium' });
     expect(await screen.findByText('Delivered to Faith Njeri.')).toBeInTheDocument();
@@ -234,7 +234,7 @@ describe('announcements', () => {
     // The preview is the real alert card.
     const preview = screen.getByRole('region', { name: 'Preview: how it will look' });
     expect(preview).toHaveTextContent('Office closed on Friday');
-    expect(preview).toHaveTextContent('For later');
+    expect(preview).toHaveTextContent("When you're free");
     expect(screen.getByText('978 characters left')).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: 'Send to 6 people' }));

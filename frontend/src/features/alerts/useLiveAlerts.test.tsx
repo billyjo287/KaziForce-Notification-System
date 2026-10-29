@@ -68,7 +68,7 @@ describe('live alerts', () => {
 
     expect(queryClient.getQueryData<{ id: string }[]>(ALERTS_KEY)?.[0]?.id).toBe('live-1');
     expect(
-      await screen.findByText('New Important alert: New message from Mwangi Logistics', {
+      await screen.findByText('New alert (Check today): New message from Mwangi Logistics', {
         exact: true,
       }),
     ).toBeInTheDocument();
@@ -77,7 +77,7 @@ describe('live alerts', () => {
     expect(router.state.location.search).toBe('?open=live-1');
   });
 
-  it('stays quiet for "For later" alerts', () => {
+  it("stays quiet for 'When you're free' alerts", () => {
     renderWithRouter(<Live />, '/worker/jobs');
     act(() => handlers().onNotification({ ...incoming, id: 'low-1', priority: 'low' }));
     expect(screen.queryByRole('button', { name: 'Open' })).not.toBeInTheDocument();

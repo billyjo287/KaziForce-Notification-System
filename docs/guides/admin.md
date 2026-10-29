@@ -4,7 +4,9 @@ Admins keep KaziForce safe and check that alerts reach people. Every admin actio
 an account, removing a job, a spam decision, a download) is recorded in the **Audit log**.
 
 The admin account is created from `ADMIN_EMAIL` and `ADMIN_PASSWORD` when the database is set
-up (see [DEPLOYMENT.md](../DEPLOYMENT.md)). Change the password after the first log-in.
+up (see [DEPLOYMENT.md](../DEPLOYMENT.md)). Change the password after the first log-in. On a new
+phone or computer you also get a 6-digit code by email (admins have no phone number); tick
+**Remember this phone or computer for 30 days** only on your own device.
 
 ## Every day: Overview and Spam review
 

@@ -92,9 +92,13 @@ changes nothing outside `ml-service/`.
 
 ## 5.5 Security and privacy (NFR-2, Kenya Data Protection Act 2019)
 
+- Log in with the email or a confirmed phone number. On a new phone or computer a 6-digit code
+  follows the password, by SMS or email (the person chooses); "Remember this phone or computer
+  for 30 days" skips it there. Sign-up confirms the email with a code before the account exists.
+  Codes and remembered devices are stored only as hashes (ADR 0013).
 - Passwords hashed with bcrypt; short-lived JWT access tokens; refresh token in an httpOnly,
   SameSite cookie, stored only as a hash and rotated; "log out of all devices".
-- Every input checked with zod; rate limits on log-in, password reset, SMS codes and everything
+- Every input checked with zod; rate limits on log-in, account checks, password reset, codes sent and everything
   people create (per user); CORS limited to the website; helmet headers on the API; a Content
   Security Policy and HSTS on the website.
 - Consent before any SMS/WhatsApp; STOP replies honoured; account deletion within 14 days
@@ -122,10 +126,10 @@ ready-made HTML, readable before the app has downloaded (ADR 0010).
 
 | Level | Tool | Count |
 | --- | --- | ---: |
-| Backend unit and integration (real Postgres and Redis) | Vitest + Supertest | 193 |
-| Frontend components | Vitest + Testing Library | 88 |
+| Backend unit and integration (real Postgres and Redis) | Vitest + Supertest | 204 |
+| Frontend components | Vitest + Testing Library | 93 |
 | ML service | pytest | 66 |
-| End to end in Chrome, phone (360 px), tablet (768 px), laptop (1024 px) and desktop (1440 px), with axe | Playwright | 114 |
+| End to end in Chrome, phone (360 px), tablet (768 px), laptop (1024 px) and desktop (1440 px), with axe | Playwright | 120 |
 | Smoke test in Firefox and WebKit (Safari's engine) | Playwright | 4 (run in CI) |
 | Load and resilience | k6 + Socket.IO listeners | 2 runs of 10,000 |
 
@@ -144,7 +148,7 @@ checks (dependency audits and secret scan).
 | NFR-1 `/predict` | < 300 ms | median 5.8 ms, p95 13 ms; no fallback needed |
 | NFR-3 nothing lost | no queued job lost | Redis and Postgres restarted under load: 9,975 of 9,975 accepted messages delivered |
 | NFR-3 recovery | < 30 s | Redis 3.1 s, Postgres 1.6 s |
-| NFR-1 app shell size | ≤ ~200 KB gzipped | 199.7 KB |
+| NFR-1 app shell size | ≤ ~200 KB gzipped | 199.7 KB (log-in, job and feedback words load with their own pages) |
 | NFR-1 page load (LCP) | < 2.5 s on "Fast 3G" | Landing, log in, sign up: **1.1–1.3 s** with Chrome's Fast 3G throttling (was 4.1–4.4 s): met. Lighthouse's simulation, which adds opening a new connection: 4.0–4.5 s (was 5.2–5.4 s; its floor for any page is 2.9 s). Slow 4G: 1.1–1.4 s ([accessibility.md](accessibility.md), ADR 0010) |
 | Classifier (`rules-v0` baseline → `rules-v1`) | priority weighted F1 ≥ 85%; spam accuracy ≥ 95%, false positives < 5% | On a hand-written held-out set of 177 messages (60 Kiswahili, 30 scams): weighted F1 63.5%, spam accuracy 88.7% → 89.3%, false positives 0%. Not met: the trained models (Phase 9) must close the gap ([testing-report.md](testing-report.md), section 7) |
 | NFR-4 accessibility | WCAG 2.2 AA | axe: no serious issues on any page; Lighthouse accessibility 100; keyboard-only and 200% zoom tests pass |

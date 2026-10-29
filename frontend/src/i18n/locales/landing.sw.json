@@ -3,29 +3,45 @@
     "title": "Arifa za kazi zinazokufikia kwa wakati",
     "nav": {
       "login": "Ingia",
-      "switchTo": "English"
+      "switchTo": "English",
+      "how": "Jinsi inavyofanya kazi",
+      "alerts": "Arifa mahiri",
+      "workers": "Kwa wafanyakazi",
+      "employers": "Kwa waajiri",
+      "register": "Anza sasa",
+      "label": "Sehemu za ukurasa huu"
     },
     "hero": {
-      "title": "Usikose kazi inayokufaa",
+      "pill": "Imetengenezwa kwa wafanyakazi na waajiri wa Kenya",
+      "line1": "Pata kazi.",
+      "line2": "Usikose",
+      "line3": "kilicho",
+      "highlight": "muhimu.",
       "body": "KaziForce hutuma arifa za kazi za dharura moja kwa moja kwenye WhatsApp au SMS yako, na hupanga mengine yote kwa utulivu.",
-      "cta": "Anza sasa",
-      "secondary": "Ona jinsi inavyofanya kazi"
+      "worker": "Ninatafuta kazi",
+      "business": "Ninaajiri",
+      "ticks": {
+        "phone": "Inafanya kazi kwenye simu yoyote",
+        "language": "Kiingereza na Kiswahili",
+        "sms": "Arifa kwa SMS, hata bila data"
+      }
     },
     "how": {
       "title": "Jinsi arifa za KaziForce zinavyofanya kazi",
       "checkTitle": "Tunakagua kila arifa",
       "checkBody": "Kazi bandia na ujumbe unaokuomba kutuma pesa huzuiwa kabla ya kukufikia.",
       "sortTitle": "Tunapanga kwa uharaka",
-      "sortBody": "Kila arifa huwekwa alama ya Dharura, Muhimu au Baadaye, ili ujue cha kufanya kwanza.",
+      "sortBody": "Kila arifa huwekwa alama ya Sasa hivi, Angalia leo au Ukipata nafasi, ili ujue cha kufanya kwanza.",
       "sendTitle": "Tunaituma unapoangalia",
       "sendBody": "Arifa za dharura huenda kwenye WhatsApp au SMS. Ukikosa moja, tunajaribu chaguo lako linalofuata."
     },
     "levels": {
-      "title": "Viwango vitatu, rahisi kutofautisha",
+      "title": "Arifa mahiri, rahisi kutofautisha",
       "body": "Kila arifa ina rangi, picha na neno, kwa hivyo hutahitaji kubahatisha.",
-      "urgent": "Chukua hatua sasa: kazi zinazofungwa hivi karibuni, au ofa ya kazi uliyopokea.",
-      "medium": "Zinafaa kuangaliwa leo: ujumbe na taarifa kuhusu maombi yako.",
-      "low": "Hakuna haraka: vidokezo na habari. Tunazituma pia kwenye barua pepe moja ya kila siku."
+      "urgent": "Kazi zinazofungwa hivi karibuni, au ofa ya kazi uliyopokea.",
+      "medium": "Ujumbe na taarifa kuhusu maombi yako.",
+      "low": "Vidokezo na habari. Tunazituma pia kwenye barua pepe moja ya kila siku.",
+      "spam": "Kazi bandia na maombi ya pesa yanazuiwa. Huyaoni kamwe."
     },
     "control": {
       "title": "Wewe ndiye mwenye udhibiti",
@@ -56,6 +72,44 @@
         "register": "Fungua akaunti",
         "forgot": "Umesahau nenosiri?"
       }
+    },
+    "demo": {
+      "title": "Arifa zako",
+      "sorting": "Inapanga…",
+      "sorted": "Zimepangwa kwa ajili yako",
+      "description": "Mfano: arifa mpya zinajipanga zenyewe kuwa Sasa hivi, Angalia leo na Ukipata nafasi, na ujumbe wa utapeli unaoomba pesa unanaswa na kuondolewa.",
+      "urgentTitle": "Wapakiaji wa ghala wanahitajika leo",
+      "urgentBody": "Industrial Area · KSh 1,200 kwa siku · inafungwa baada ya saa 2",
+      "mediumTitle": "Ujumbe kutoka Mwangi Logistics",
+      "mediumBody": "Unaweza kuanza saa moja asubuhi kesho?",
+      "lowTitle": "Kazi 5 mpya karibu nawe",
+      "lowBody": "Zinasubiri kwenye muhtasari wako wa kila siku",
+      "scamTitle": "Lipa KES 5,000 kupata kazi yako ya Dubai!",
+      "blocked": "Ujumbe 3 wa utapeli umezuiwa leo. Karibu."
+    },
+    "channels": {
+      "title": "Arifa zinakufikia unapoangalia",
+      "inApp": "Ndani ya programu",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "email": "Barua pepe"
+    },
+    "workers": {
+      "title": "Kwa wafanyakazi",
+      "body": "Sikia kuhusu kazi inayokufaa kwanza, bila simu yako kulia siku nzima.",
+      "cta": "Ninatafuta kazi"
+    },
+    "everyone": {
+      "title": "Rahisi kutumia, uwe na miaka 18 au 80",
+      "text": "Herufi kubwa na wazi, pamoja na mpangilio wa Herufi kubwa na mitindo ya herufi rahisi kusoma.",
+      "language": "Kila skrini kwa Kiingereza na Kiswahili.",
+      "slow": "Inatumia data kidogo: inafanya kazi kwenye simu ya kawaida na mtandao wa polepole.",
+      "calm": "Hali ya giza na Punguza mwendo, kwa kusoma kwa starehe."
+    },
+    "cta": {
+      "title": "Uko tayari? Inachukua dakika moja kujiunga.",
+      "sub": "Ni muda mfupi kuliko kusubiri matatu ijae.",
+      "button": "Fungua akaunti yako bure"
     }
   }
 }

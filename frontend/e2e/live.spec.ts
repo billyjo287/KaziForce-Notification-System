@@ -1,5 +1,5 @@
 // Alerts arrive live, without refreshing the page (PRD FR-6), at 360 px and 1440 px, sorted by
-// the classifier (Phase 4): announcements are "For later" (quiet), messages are "Important".
+// the classifier (Phase 4): announcements are "When you're free" (quiet), messages are "Check today".
 // An admin and an employer act through the API while a worker has the app open.
 import { expect, test, type APIRequestContext } from '@playwright/test';
 import { ADMIN, PASSWORD, expectNoSeriousA11yIssues, logIn } from './helpers';
@@ -48,25 +48,25 @@ test('new alerts slide in live, in the right category, and "Open" goes straight 
   await logIn(page, 'worker1@example.com');
   await expect(page.getByRole('heading', { level: 1, name: 'Alerts' })).toBeVisible();
 
-  // An announcement appears under "For later" without a refresh.
+  // An announcement appears under "When you're free" without a refresh.
   await announce(request, `Live on the alerts page ${stamp}`);
-  await page.getByRole('tab', { name: /For later/ }).click();
+  await page.getByRole('tab', { name: /When you're free/ }).click();
   await expect(
     page.getByRole('button', { name: new RegExp(`Live on the alerts page ${stamp}`) }),
   ).toBeVisible();
   await expectNoSeriousA11yIssues(page);
 
-  // On another page: an announcement stays quiet ("For later" never pops up)...
+  // On another page: an announcement stays quiet ("When you're free" never pops up)...
   await page.getByRole('link', { name: 'Jobs' }).first().click();
   await expect(page.getByRole('heading', { level: 1, name: 'Jobs' })).toBeVisible();
   await announce(request, `Quiet ${stamp}`);
-  // ...but a message from the employer ("Important") shows a short message with "Open".
+  // ...but a message from the employer ("Check today") shows a short message with "Open".
   await employerMessagesWorker(request, `Please come to Gate B at 2pm. ${stamp}`);
-  const toast = page.getByText('New Important alert: New message from Mwangi Logistics', {
+  const toast = page.getByText('New alert (Check today): New message from Mwangi Logistics', {
     exact: true,
   });
   await expect(toast).toBeVisible();
-  await expect(page.getByText(`New For later alert: Quiet ${stamp}`)).toHaveCount(0);
+  await expect(page.getByText(`New alert (When you're free): Quiet ${stamp}`)).toHaveCount(0);
   await page.getByRole('button', { name: 'Open' }).click();
   // The alert opens (its details heading), showing the message.
   await expect(
@@ -90,7 +90,7 @@ test('offline: shows the banner, then catches up on alerts sent meanwhile', asyn
 
   await context.setOffline(false);
   await expect(page.getByText(/You are offline/)).toBeHidden();
-  await page.getByRole('tab', { name: /For later/ }).click();
+  await page.getByRole('tab', { name: /When you're free/ }).click();
   await expect(page.getByRole('button', { name: new RegExp(title) })).toBeVisible({
     timeout: 15_000,
   });

@@ -175,7 +175,7 @@ describe('external message texts', () => {
       }
     }
     expect(shortText('You have a new message', longLink, 'urgent', 'en')).toBe(
-      `KaziForce (Urgent): You have a new message. Open: ${longLink}`,
+      `KaziForce (Act now): You have a new message. Open: ${longLink}`,
     );
     expect(shortText('Una ujumbe mpya', longLink, 'medium', 'sw')).toBe(
       `KaziForce: Una ujumbe mpya. Fungua: ${longLink}`,
@@ -250,7 +250,7 @@ describe('WhatsApp through Twilio (sandbox)', () => {
       notificationId: 'n1',
       to: '+254712345678',
       language: 'en',
-      text: 'KaziForce (Urgent): New job. Open: https://x/o/abc',
+      text: 'KaziForce (Act now): New job. Open: https://x/o/abc',
       summary: 'New job',
       link: 'https://x/o/abc',
     });
@@ -267,6 +267,6 @@ describe('WhatsApp through Twilio (sandbox)', () => {
   it('still sends from a computer Twilio cannot reach (no tunnel), without delivery reports', async () => {
     const form = await sentForm('http://localhost:4000/webhooks/twilio/status');
     expect(form.has('StatusCallback')).toBe(false);
-    expect(form.get('Body')).toContain('KaziForce (Urgent)');
+    expect(form.get('Body')).toContain('KaziForce (Act now)');
   });
 });

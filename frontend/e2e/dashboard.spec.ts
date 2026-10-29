@@ -11,8 +11,8 @@ test.describe('Worker Alerts dashboard (real data)', () => {
   test('passes axe in light mode, list and details', async ({ page }) => {
     await logIn(page, 'worker1@example.com');
     await page.goto('/worker/alerts?theme=light');
-    // Earlier tests may already have read it, so open the Urgent tab explicitly.
-    await page.getByRole('tab', { name: /Urgent/ }).click();
+    // Earlier tests may already have read it, so open the Act now tab explicitly.
+    await page.getByRole('tab', { name: /Act now/ }).click();
     await expectNoSeriousA11yIssues(page);
     await expectNoHorizontalScroll(page);
 
@@ -32,14 +32,14 @@ test.describe('Worker Alerts dashboard (real data)', () => {
   test('never downloads Three.js or the landing page code', async ({ page }) => {
     const scripts = trackScripts(page);
     await logIn(page, 'worker1@example.com');
-    await expect(page.getByRole('tab', { name: /Urgent/ })).toBeVisible();
+    await expect(page.getByRole('tab', { name: /Act now/ })).toBeVisible();
     await page.waitForLoadState('networkidle');
     expect(scripts.filter((url) => /heroScene|LandingPage|three/i.test(url))).toEqual([]);
   });
 
   test('"Not important to me" can be undone', async ({ page }) => {
     await logIn(page, 'worker1@example.com');
-    await page.getByRole('tab', { name: /Important/ }).click();
+    await page.getByRole('tab', { name: /Check today/ }).click();
     // The seeded message (other tests may add more messages from the same employer).
     const card = page
       .getByRole('button', { name: /New message from Mwangi Logistics/ })
@@ -72,7 +72,7 @@ test.describe('Worker Alerts dashboard (real data)', () => {
       ),
     );
     await logIn(page, 'worker1@example.com');
-    await expect(page.getByRole('tab', { name: /Urgent/ })).toBeVisible();
+    await expect(page.getByRole('tab', { name: /Act now/ })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.dataset.textSize)).toBe('large');
     await expectNoHorizontalScroll(page);
   });

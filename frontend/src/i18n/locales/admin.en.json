@@ -188,7 +188,7 @@
     },
     "announce": {
       "title": "Announcements",
-      "intro": "Send news to everyone, or only to workers or employers. It arrives in the app, usually as “For later”.",
+      "intro": "Send news to everyone, or only to workers or employers. It arrives in the app, usually as “When you’re free”.",
       "audience": "Who should get it?",
       "audiences": {
         "everyone": "Everyone",

@@ -53,9 +53,10 @@
     "admin": "Admin"
   },
   "priority": {
-    "urgent": "Urgent",
-    "medium": "Important",
-    "low": "For later"
+    "urgent": "Act now",
+    "medium": "Check today",
+    "low": "When you're free",
+    "spam": "Blocked scam"
   },
   "offline": {
     "message": "You are offline. New alerts will appear when you are back online.",
@@ -69,7 +70,7 @@
     "new": "New",
     "closes": "Closes {{when}}",
     "closed": "This job has closed",
-    "newAlertAnnouncement": "New {{priority}} alert: {{title}}",
+    "newAlertAnnouncement": "New alert ({{priority}}): {{title}}",
     "notImportantDone": "Marked as not important. We will show you fewer alerts like it.",
     "filters": {
       "label": "Show",
@@ -78,8 +79,8 @@
       "last7days": "Last 7 days"
     },
     "groups": {
-      "urgent": "Act now. These can expire soon.",
-      "medium": "Worth a look today.",
+      "urgent": "These can expire soon. Reply quickly.",
+      "medium": "Messages and updates worth a look today.",
       "low": "No rush. We also send these in your daily summary email."
     },
     "empty": {

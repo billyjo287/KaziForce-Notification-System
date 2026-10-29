@@ -86,7 +86,7 @@ Latency benchmark: `ml-service/.venv/Scripts/python ml-service/scripts/benchmark
 
 **Try WhatsApp, SMS and email (mock mode, no keys):** with `CHANNEL_MODE=mock` nothing leaves
 your computer. WhatsApp and SMS messages are printed in the `worker` terminal lines as
-`[mock whatsapp] to +2547...: KaziForce (Urgent): ... Open: http://localhost:4000/o/...` (open
+`[mock whatsapp] to +2547...: KaziForce (Act now): ... Open: http://localhost:4000/o/...` (open
 that link to count as "opened"), and emails land in Mailpit. To watch the safety net, set
 `MOCK_FAIL_CHANNELS=whatsapp` in `backend/.env` and restart: urgent alerts then try WhatsApp 3
 times and go to SMS. Log in as `worker5@example.com` (Faith) and open Settings to see the

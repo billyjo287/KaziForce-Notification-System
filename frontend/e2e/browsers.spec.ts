@@ -47,7 +47,7 @@ test('a worker logs in, opens settings and receives a live alert', async ({ page
   // Live delivery over Socket.IO in this browser: the alert appears without a refresh.
   const title = `Browser check ${test.info().project.name} ${Date.now()}`;
   await announce(request, title);
-  await page.getByRole('tab', { name: /For later/ }).click();
+  await page.getByRole('tab', { name: /When you're free/ }).click();
   await expect(page.getByRole('button', { name: new RegExp(title) })).toBeVisible({
     timeout: 15_000,
   });

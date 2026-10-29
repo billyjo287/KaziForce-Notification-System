@@ -43,14 +43,14 @@ const WORDS: Record<
     button: 'Open in KaziForce',
     footer: 'You get this email because of your KaziForce settings.',
     settings: 'Change what we send you',
-    urgent: 'Urgent',
+    urgent: 'Act now', // the app's word for urgent alerts (design refresh)
   },
   sw: {
     open: 'Fungua',
     button: 'Fungua KaziForce',
     footer: 'Unapokea barua pepe hii kwa sababu ya mipangilio yako ya KaziForce.',
     settings: 'Badilisha tunachokutumia',
-    urgent: 'Haraka',
+    urgent: 'Sasa hivi',
   },
 };
 
@@ -83,7 +83,7 @@ export function toGsm(text: string): string {
     .join('');
 }
 
-/** SMS and WhatsApp text: "KaziForce (Urgent): You have a new message. Open: <link>". */
+/** SMS and WhatsApp text: "KaziForce (Act now): You have a new message. Open: <link>". */
 export function shortText(summary: string, link: string, priority: Priority, language: Language) {
   const w = WORDS[language];
   const label = priority === 'urgent' ? `KaziForce (${w.urgent})` : 'KaziForce';
@@ -98,13 +98,14 @@ export const escapeHtml = (s: string) =>
     (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!,
   );
 
-const GREEN = '#0b6b45';
+// KaziForce indigo (design refresh): white text on it is 8:1.
+const BRAND = '#3b3fb6';
 
-/** A big green button that works in every email app (a table cell around a link). */
+/** A big indigo button that works in every email app (a table cell around a link). */
 export function emailButton(label: string, href: string) {
   return `<table role="presentation" cellpadding="0" cellspacing="0" border="0">
               <tr>
-                <td style="border-radius:10px;background:${GREEN};">
+                <td style="border-radius:10px;background:${BRAND};">
                   <a href="${escapeHtml(href)}" style="display:inline-block;padding:16px 28px;font-family:Arial,Helvetica,sans-serif;font-size:18px;font-weight:bold;line-height:1.2;color:#ffffff;text-decoration:none;border-radius:10px;">${escapeHtml(label)}</a>
                 </td>
               </tr>
@@ -138,7 +139,7 @@ export function emailLayout(input: {
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:480px;background:#ffffff;border-radius:12px;">
         <tr>
           <td style="padding:28px 24px;font-family:Arial,Helvetica,sans-serif;color:#1c1917;">
-            <p style="margin:0 0 16px;font-size:16px;font-weight:bold;color:${GREEN};">KaziForce</p>
+            <p style="margin:0 0 16px;font-size:16px;font-weight:bold;color:${BRAND};">KaziForce</p>
             ${input.body}
           </td>
         </tr>
@@ -175,7 +176,7 @@ export function emailContent(input: {
     preview: input.summary,
     body: `<h1 style="margin:0 0 24px;font-size:24px;line-height:1.3;font-weight:bold;">${escapeHtml(input.summary)}</h1>
             ${emailButton(w.button, input.link)}
-            <p style="margin:28px 0 0;font-size:14px;line-height:1.5;color:#57534e;">${escapeHtml(w.footer)}<br><a href="${escapeHtml(input.settingsUrl)}" style="color:${GREEN};">${escapeHtml(w.settings)}</a></p>`,
+            <p style="margin:28px 0 0;font-size:14px;line-height:1.5;color:#57534e;">${escapeHtml(w.footer)}<br><a href="${escapeHtml(input.settingsUrl)}" style="color:${BRAND};">${escapeHtml(w.settings)}</a></p>`,
   });
   return { subject, text, html };
 }

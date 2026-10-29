@@ -53,9 +53,10 @@
     "admin": "Msimamizi"
   },
   "priority": {
-    "urgent": "Dharura",
-    "medium": "Muhimu",
-    "low": "Baadaye"
+    "urgent": "Sasa hivi",
+    "medium": "Angalia leo",
+    "low": "Ukipata nafasi",
+    "spam": "Utapeli umezuiwa"
   },
   "offline": {
     "message": "Hauko mtandaoni. Arifa mpya zitaonekana ukirudi mtandaoni.",
@@ -69,7 +70,7 @@
     "new": "Mpya",
     "closes": "Inafungwa {{when}}",
     "closed": "Kazi hii imefungwa",
-    "newAlertAnnouncement": "Arifa mpya ya {{priority}}: {{title}}",
+    "newAlertAnnouncement": "Arifa mpya ({{priority}}): {{title}}",
     "notImportantDone": "Imewekwa kama si muhimu. Tutakuonyesha arifa chache kama hii.",
     "filters": {
       "label": "Onyesha",
@@ -78,7 +79,7 @@
       "last7days": "Siku 7 zilizopita"
     },
     "groups": {
-      "urgent": "Chukua hatua sasa. Hizi zinaweza kuisha muda hivi karibuni.",
+      "urgent": "Hizi zinaweza kuisha muda hivi karibuni. Jibu haraka.",
       "medium": "Zinafaa kuangaliwa leo.",
       "low": "Hakuna haraka. Tunazituma pia kwenye barua pepe yako ya muhtasari wa kila siku."
     },

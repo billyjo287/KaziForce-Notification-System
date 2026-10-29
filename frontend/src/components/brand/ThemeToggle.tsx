@@ -16,6 +16,10 @@ export function ThemeToggle({ onDarkHeader = false }: { onDarkHeader?: boolean }
     <button
       type="button"
       onClick={() => {
+        // Colours fade for half a second (styles/theme.css), only for this switch.
+        const root = document.documentElement;
+        root.dataset.themeSwitching = 'true';
+        window.setTimeout(() => delete root.dataset.themeSwitching, 600);
         toggle();
         showToast({ message: t(isDark ? 'theme.toggle.toLight' : 'theme.toggle.toDark') });
       }}

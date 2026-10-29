@@ -200,15 +200,16 @@
     letter-spacing: -0.02em;
   }
 
-  /* Smooth theme switch (colours only, never layout). */
-  body,
-  header,
-  main,
-  section,
-  nav,
-  aside,
-  footer,
-  .kf-card {
+  /* Smooth theme switch (colours only, never layout), only while the light/dark toggle is
+     switching (ThemeToggle sets data-theme-switching for a moment): never while a page loads. */
+  html[data-theme-switching] body,
+  html[data-theme-switching] header,
+  html[data-theme-switching] main,
+  html[data-theme-switching] section,
+  html[data-theme-switching] nav,
+  html[data-theme-switching] aside,
+  html[data-theme-switching] footer,
+  html[data-theme-switching] .kf-card {
     transition:
       background-color var(--kf-dur) ease,
       color var(--kf-dur) ease,
@@ -577,6 +578,41 @@
   left: 50%;
   top: 50%;
   animation: kf-confetti 1.3s cubic-bezier(0.15, 0.7, 0.3, 1) 0.25s both;
+}
+
+/* Landing hero ("the alerts sort themselves", features/landing/AlertSortHero.tsx) */
+@keyframes kf-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes kf-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+.kf-fade-in {
+  animation: kf-fade-in 0.5s ease both;
+}
+.kf-fade-out {
+  animation: kf-fade-out 0.3s ease both;
+}
+/* The scam: drops in at 1.9 s, is swept away at 3.1 s. */
+.kf-drop-sweep {
+  animation:
+    kf-drop 0.6s var(--kf-ease-out) 1.9s both,
+    kf-sweep 0.45s var(--kf-ease-in) 3.1s both;
+}
+/* The ready-made copy of the landing page (ADR 0010) keeps the demo hidden: it plays once, when
+   the app has arrived, instead of playing and then starting over. */
+[data-prerendered] .kf-hero-demo {
+  visibility: hidden;
 }
 
 /* Scroll reveal (with the useReveal hook) */

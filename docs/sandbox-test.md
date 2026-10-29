@@ -61,7 +61,7 @@ which one.
 In a private window, log in as `employer1@example.com` (password `Password123!`) and **Post a
 job** in your place and skill, with **Urgent: yes**.
 
-- **WhatsApp:** within seconds your phone gets "KaziForce (Urgent): ... Open: ...".
+- **WhatsApp:** within seconds your phone gets "KaziForce (Act now): ... Open: ...".
 - **In the app:** the alert appears on your Alerts page at the same time.
 - **SMS:** in Settings > Notifications, move SMS above WhatsApp, then post another urgent job.
   The SMS appears in the simulator.

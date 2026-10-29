@@ -3,29 +3,45 @@
     "title": "Job alerts that reach you in time",
     "nav": {
       "login": "Log in",
-      "switchTo": "Kiswahili"
+      "switchTo": "Kiswahili",
+      "how": "How it works",
+      "alerts": "Smart alerts",
+      "workers": "For workers",
+      "employers": "For employers",
+      "register": "Get started",
+      "label": "Sections of this page"
     },
     "hero": {
-      "title": "Never miss a job that is right for you",
+      "pill": "Built for Kenya’s workers and employers",
+      "line1": "Find work.",
+      "line2": "Never miss",
+      "line3": "what",
+      "highlight": "matters.",
       "body": "KaziForce sends urgent job alerts straight to your WhatsApp or SMS, and keeps everything else calm and tidy.",
-      "cta": "Get started",
-      "secondary": "See how it works"
+      "worker": "I’m looking for work",
+      "business": "I’m hiring",
+      "ticks": {
+        "phone": "Works on any phone",
+        "language": "English & Kiswahili",
+        "sms": "Alerts by SMS, even without data"
+      }
     },
     "how": {
       "title": "How KaziForce alerts work",
       "checkTitle": "We check every alert",
       "checkBody": "Fake jobs and messages asking you to send money are stopped before they reach you.",
       "sortTitle": "We sort by urgency",
-      "sortBody": "Each alert is marked Urgent, Important or For later, so you know what to do first.",
+      "sortBody": "Each alert is marked Act now, Check today or When you're free, so you know what to do first.",
       "sendTitle": "We send it where you look",
       "sendBody": "Urgent alerts go to WhatsApp or SMS. If you miss one, we try your next choice."
     },
     "levels": {
-      "title": "Three levels, easy to tell apart",
+      "title": "Smart alerts, easy to tell apart",
       "body": "Every alert shows a colour, a picture and a word, so you never have to guess.",
-      "urgent": "Act now: jobs that close soon, or a job offer you received.",
-      "medium": "Worth a look today: messages and updates on your applications.",
-      "low": "No rush: tips and news. We also send these in one daily email."
+      "urgent": "Jobs that close soon, or a job offer you received.",
+      "medium": "Messages and updates on your applications.",
+      "low": "Tips and news. We also send these in one daily email.",
+      "spam": "Fake jobs and requests for money are stopped. You never see them."
     },
     "control": {
       "title": "You are in control",
@@ -56,6 +72,44 @@
         "register": "Create an account",
         "forgot": "Forgot your password?"
       }
+    },
+    "demo": {
+      "title": "Your alerts",
+      "sorting": "Sorting…",
+      "sorted": "Sorted for you",
+      "description": "Example: new alerts sort themselves into Act now, Check today and When you’re free, and a scam message asking for money is caught and removed.",
+      "urgentTitle": "Warehouse packers needed today",
+      "urgentBody": "Industrial Area · KSh 1,200 a day · closes in 2 hours",
+      "mediumTitle": "Message from Mwangi Logistics",
+      "mediumBody": "Can you start at 7 tomorrow morning?",
+      "lowTitle": "5 new jobs near you",
+      "lowBody": "Waiting in your daily summary",
+      "scamTitle": "Pay KES 5,000 to secure your Dubai job!",
+      "blocked": "3 spam messages blocked today. You’re welcome."
+    },
+    "channels": {
+      "title": "Alerts reach you where you look",
+      "inApp": "In the app",
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "email": "Email"
+    },
+    "workers": {
+      "title": "For workers",
+      "body": "Hear about the right job first, without your phone buzzing all day.",
+      "cta": "I’m looking for work"
+    },
+    "everyone": {
+      "title": "Easy to use, whether you’re 18 or 80",
+      "text": "Big, clear letters, with a Large text setting and easy-to-read letter styles.",
+      "language": "Every screen in English and Kiswahili.",
+      "slow": "Light on data: works on a mid-range phone and a slow connection.",
+      "calm": "Dark mode and Reduce motion, for comfortable reading."
+    },
+    "cta": {
+      "title": "Ready? It takes one minute to join.",
+      "sub": "That’s less time than waiting for a matatu to fill up.",
+      "button": "Create your free account"
     }
   }
 }

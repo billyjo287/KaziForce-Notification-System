@@ -1,5 +1,5 @@
 // Bundle report: how much a first visit downloads (compressed with gzip, as servers send it),
-// and proof that Three.js never reaches the logged-in app.
+// and proof that Three.js (no longer used since the design refresh) never comes back.
 //
 // Run after `vite build` (use `npm run build:report`). Writes dist/bundle-report.md and exits
 // with an error if a rule is broken, so CI fails too.
@@ -39,8 +39,6 @@ const entry = chunks.find((c) => c.isEntry).file;
 const entrySet = closure(entry);
 const appShell = union(entrySet, closure(chunkFor('src/app/appRoutes.tsx')));
 const landing = union(entrySet, closure(chunkFor('src/features/landing/LandingPage.tsx')));
-const heroAll = closure(chunkFor('src/features/landing/heroScene.ts'));
-const hero = new Set([...heroAll].filter((f) => !landing.has(f)));
 
 const motionAll = closure(chunkFor('src/lib/motionFeatures.ts'));
 const motionEngine = new Set([...motionAll].filter((f) => !appShell.has(f)));
@@ -56,22 +54,21 @@ const live = new Set([...liveAll].filter((f) => !appShell.has(f)));
 const cssFiles = readdirSync(join(DIST, 'assets')).filter((f) => f.endsWith('.css'));
 const cssKb = cssFiles.reduce((t, f) => t + gzipKb(`assets/${f}`), 0);
 const fontFiles = readdirSync(join(DIST, 'assets')).filter((f) => f.endsWith('.woff2'));
-// The browser downloads only the font subsets a page uses (usually Latin): report that one.
-const latinFont = fontFiles.find((f) => /-latin-wght-/.test(f));
-const fontKb = latinFont ? rawKb(`assets/${latinFont}`) : 0;
+// The design refresh's two fonts (Latin letters): Figtree for text, Bricolage Grotesque for
+// headings. The other letter styles in Settings download only when someone picks one.
+const brandFonts = fontFiles.filter((f) => /^(figtree|bricolage)/.test(f));
+const fontKb = brandFonts.reduce((t, f) => t + rawKb(`assets/${f}`), 0);
 
 const rows = [
   ['App shell (first visit to /worker/alerts)', appShell],
   ['Animation engine, extra (app only, loaded right after the first paint)', motionEngine],
   ['Live connection for new alerts, extra (loaded after logging in)', live],
   ['Landing page (first visit to /)', landing],
-  ['3D hero, extra (loaded after the page is idle, capable devices only)', hero],
 ];
 
 const problems = [];
 const threeInApp = containsLibrary(appShell, 'three');
 const threeInLanding = containsLibrary(landing, 'three');
-const threeInHero = containsLibrary(hero, 'three');
 const gsapInApp = containsLibrary(appShell, 'gsap');
 const socketInApp = containsLibrary(appShell, 'socket.io-client');
 if (socketInApp.length)
@@ -82,7 +79,6 @@ if (threeInLanding.length)
   problems.push(
     `Three.js found in the landing page's first download: ${threeInLanding.join(', ')}`,
   );
-if (!threeInHero.length) problems.push('Three.js not found in the hero chunk (report is wrong?)');
 if (gsapInApp.length) problems.push(`GSAP found in the app bundle: ${gsapInApp.join(', ')}`);
 const appShellKb = sum(appShell);
 if (appShellKb > APP_SHELL_BUDGET_KB)
@@ -100,14 +96,13 @@ const lines = [
   '| --- | ---: | --- |',
   ...rows.map(([label, files]) => `| ${label} | ${kb(sum(files))} | ${[...files].join('<br>')} |`),
   '',
-  `Shared by every page: CSS ${kb(cssKb)} and the Latin font file ${kb(fontKb)} (woff2, already compressed).`,
+  `Shared by every page: CSS ${kb(cssKb)} and the two brand fonts ${kb(fontKb)} (Figtree and Bricolage Grotesque, woff2, already compressed).`,
   '',
   '## Checks',
   '',
   `- App shell JavaScript budget (<= ${APP_SHELL_BUDGET_KB} KB): ${appShellKb <= APP_SHELL_BUDGET_KB ? 'PASS' : 'FAIL'} (${kb(appShellKb)})`,
   `- Three.js in the app bundle: ${threeInApp.length ? 'FAIL (found)' : 'PASS (not present)'}`,
   `- Three.js in the landing page's first download: ${threeInLanding.length ? 'FAIL (found)' : 'PASS (not present)'}`,
-  `- Three.js only in the lazy hero file: ${threeInHero.length ? `PASS (${threeInHero.join(', ')})` : 'FAIL'}`,
   `- GSAP in the app bundle: ${gsapInApp.length ? 'FAIL (found)' : 'PASS (not present)'}`,
   `- Live connection (socket.io-client) kept out of the app shell: ${socketInApp.length ? 'FAIL (found)' : 'PASS'}`,
   '',

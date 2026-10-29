@@ -40,7 +40,7 @@ test.describe('Admin', () => {
     if (await release.isVisible()) {
       await release.click();
       const dialog = page.getByRole('dialog');
-      await dialog.getByRole('radio', { name: /Important/ }).check();
+      await dialog.getByRole('radio', { name: /Check today/ }).check();
       await expectNoSeriousA11yIssues(page);
       await dialog.getByRole('button', { name: 'Deliver now' }).click();
       await expect(page.getByText(/^Delivered to /).first()).toBeVisible();
