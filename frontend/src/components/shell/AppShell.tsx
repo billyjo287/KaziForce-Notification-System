@@ -7,7 +7,7 @@ import { Link, NavLink, useLocation } from 'react-router';
 import { useAuth } from '../../stores/auth';
 import { useSettings } from '../../stores/settings';
 import { Logo } from '../Logo';
-import { ThemeSelect } from '../ThemeSelect';
+import { ThemeToggle } from '../brand/ThemeToggle';
 import { OfflineBanner } from '../ui/OfflineBanner';
 import { LazyToaster } from '../ui/LazyToaster';
 import { LogOutButton } from './LogOutButton';
@@ -98,7 +98,7 @@ export function AppShell({ role, unreadCount, children }: AppShellProps) {
                         <>
                           <item.icon
                             aria-hidden="true"
-                            className={`size-6 shrink-0 ${isActive ? 'text-primary' : ''}`}
+                            className={`size-6 shrink-0 ${isActive ? 'text-kf-primary-text' : ''}`}
                             strokeWidth={isActive ? 2.5 : 2}
                           />
                           <span className="flex-1">{t(`nav.${item.key}`)}</span>
@@ -121,24 +121,24 @@ export function AppShell({ role, unreadCount, children }: AppShellProps) {
                   </p>
                 </div>
               )}
-              <ThemeSelect wide />
+              <ThemeToggle />
               <LogOutButton wide />
             </div>
           </aside>
 
           {/* ---------- Main content ---------- */}
           <div className="flex min-w-0 flex-1 flex-col">
-            {/* Phones: logo and Log out, then the screen colours dropdown. It scrolls away with
-                the page so it never covers what the person is reading; the menu stays at the
-                bottom. */}
+            {/* Phones: logo, the light/dark toggle and Log out. It scrolls away with the page so
+                it never covers what the person is reading; the menu stays at the bottom.
+                Settings keeps the full choice (light, dark, same as device). */}
             <header className="flex flex-wrap items-center justify-between gap-2 border-b border-line bg-surface px-4 py-2 md:hidden">
               <Link to={nav.basePath} className="kf-logo-link rounded-lg">
-                <Logo markClassName="size-11" />
+                <Logo markClassName="h-8" />
               </Link>
-              <LogOutButton />
-              <div className="w-full">
-                <ThemeSelect wide />
-              </div>
+              <span className="flex items-center gap-2">
+                <ThemeToggle />
+                <LogOutButton />
+              </span>
             </header>
             <main
               id="main"
@@ -248,7 +248,7 @@ function BottomItemContent({
       <span className="relative">
         <item.icon
           aria-hidden="true"
-          className={`size-6 ${active ? 'text-primary' : ''}`}
+          className={`size-6 ${active ? 'text-kf-primary-text' : ''}`}
           strokeWidth={active ? 2.5 : 2}
         />
       </span>

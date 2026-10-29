@@ -371,7 +371,7 @@ export default function RegisterPage() {
             {rules.map((rule) => (
               <li
                 key={rule.label}
-                className={`flex items-center gap-2 text-lg ${rule.ok ? 'font-bold text-primary' : 'text-ink-muted'}`}
+                className={`flex items-center gap-2 text-lg ${rule.ok ? 'font-bold text-kf-primary-text' : 'text-ink-muted'}`}
               >
                 {rule.ok ? (
                   <Check aria-hidden="true" className="size-5 shrink-0" />
@@ -436,7 +436,7 @@ export default function RegisterPage() {
       </form>
       <p className="text-lg">
         {t('auth.register.haveAccount')}{' '}
-        <Link to="/login" className="font-bold text-primary underline underline-offset-4">
+        <Link to="/login" className="font-bold text-kf-primary-text underline underline-offset-4">
           {t('auth.register.login')}
         </Link>
       </p>

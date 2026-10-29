@@ -25,7 +25,7 @@ export function JobAlertReach({ jobAlert }: { jobAlert: JobDelivery['jobAlert'] 
       <section aria-labelledby="reach-title" className="flex flex-col gap-3">
         <div>
           <h2 id="reach-title" className="flex items-center gap-2 text-xl font-bold">
-            <Radio aria-hidden="true" className="size-6 text-primary" />
+            <Radio aria-hidden="true" className="size-6 text-kf-primary-text" />
             {t('employer.delivery.title')}
           </h2>
           <p className="text-ink-muted">{t('employer.delivery.help')}</p>
@@ -74,7 +74,7 @@ export function ApplicantDelivery({
   const line = (key: 'decision' | 'message', state: DeliveryState) => (
     <li className="flex items-center gap-1.5">
       {state === 'seen' && (
-        <CircleCheck aria-hidden="true" className="size-4 shrink-0 text-primary" />
+        <CircleCheck aria-hidden="true" className="size-4 shrink-0 text-kf-primary-text" />
       )}
       {t(`employer.delivery.${key}`, { state: t(`employer.delivery.short.${state}`) })}
     </li>

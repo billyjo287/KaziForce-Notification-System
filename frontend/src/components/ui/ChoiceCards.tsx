@@ -65,7 +65,9 @@ export function ChoiceCards<T extends string>({
                 onChange={() => onChange(choice.value)}
                 className="mt-1 size-5 shrink-0 accent-(--kf-primary) focus-visible:outline-none"
               />
-              {Icon && <Icon aria-hidden="true" className="mt-0.5 size-6 shrink-0 text-primary" />}
+              {Icon && (
+                <Icon aria-hidden="true" className="mt-0.5 size-6 shrink-0 text-kf-primary-text" />
+              )}
               <span className="flex flex-col">
                 <span className="text-lg font-bold">{choice.label}</span>
                 {choice.help && <span className="text-ink-muted">{choice.help}</span>}

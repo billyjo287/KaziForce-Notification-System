@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { LanguageToggle } from '../../components/LanguageToggle';
 import { Logo } from '../../components/Logo';
-import { ThemeSelect } from '../../components/ThemeSelect';
+import { ThemeToggle } from '../../components/brand/ThemeToggle';
 import { Toaster } from '../../components/ui/Toaster';
 import './strings';
 
@@ -21,7 +21,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
     { icon: SlidersHorizontal, text: t('auth.side.points.control') },
   ];
   return (
-    <div className="min-h-dvh lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+    <div className="min-h-dvh lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:grid-rows-1">
       <aside className="relative hidden overflow-hidden bg-primary p-12 text-on-primary lg:flex lg:flex-col lg:justify-center">
         {/* Soft rings, like the clock in the logo (decoration only). */}
         <div
@@ -61,7 +61,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
               <Logo />
             </Link>
             <div className="flex flex-wrap items-center gap-2">
-              <ThemeSelect />
+              <ThemeToggle />
               <LanguageToggle />
             </div>
           </header>

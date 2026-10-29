@@ -24,6 +24,7 @@ const TEXT_SIZES: TextSize[] = ['normal', 'large'];
 const THEMES: Theme[] = ['light', 'dark', 'system'];
 /** Each choice is shown in its own letters (the font names match index.css). */
 const FONTS: { value: Font; family: string }[] = [
+  { value: 'figtree', family: "'Figtree'" },
   { value: 'atkinson', family: "'Atkinson Hyperlegible Next Variable'" },
   { value: 'lexend', family: "'Lexend Variable'" },
   { value: 'andika', family: "'Andika'" },

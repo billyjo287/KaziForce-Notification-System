@@ -257,11 +257,11 @@ function ChannelOrder({ prefs, save }: { prefs: NotificationPreferences; save: S
             >
               <span
                 aria-hidden="true"
-                className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary-soft text-lg font-bold text-primary"
+                className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary-soft text-lg font-bold text-kf-primary-text"
               >
                 {index + 1}
               </span>
-              <Icon aria-hidden="true" className="size-6 shrink-0 text-primary" />
+              <Icon aria-hidden="true" className="size-6 shrink-0 text-kf-primary-text" />
               <span className="min-w-0 flex-1">
                 <span className="block text-lg font-bold">{title}</span>
                 {note && (

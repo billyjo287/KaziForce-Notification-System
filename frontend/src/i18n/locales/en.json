@@ -232,6 +232,11 @@
       "light": "Light",
       "dark": "Dark",
       "system": "Same as device"
+    },
+    "toggle": {
+      "label": "Dark mode",
+      "toDark": "Lights off. Your eyes say asante.",
+      "toLight": "Lights on. Karibu back."
     }
   }
 }

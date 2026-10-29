@@ -85,9 +85,13 @@
       "label": "Letter style",
       "help": "Choose the letters that are easiest for you to read. This phone or computer remembers it.",
       "options": {
+        "figtree": {
+          "name": "Figtree",
+          "help": "Friendly, clear letters. The usual style."
+        },
         "atkinson": {
           "name": "Atkinson Hyperlegible",
-          "help": "Clear letters that are hard to mix up. The usual style."
+          "help": "Extra-clear letters that are hard to mix up, such as I, l and 1."
         },
         "lexend": {
           "name": "Lexend",

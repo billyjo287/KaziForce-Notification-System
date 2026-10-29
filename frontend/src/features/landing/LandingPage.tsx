@@ -12,7 +12,7 @@ import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { LanguageToggle } from '../../components/LanguageToggle';
-import { ThemeSelect } from '../../components/ThemeSelect';
+import { ThemeToggle } from '../../components/brand/ThemeToggle';
 import { Logo } from '../../components/Logo';
 import { Badge, type BadgeTone } from '../../components/ui/Badge';
 import { buttonClasses } from '../../components/ui/buttonStyles';
@@ -58,14 +58,14 @@ export default function LandingPage() {
 
       {/* Phones: theme and language get their own slim row so the header fits 320px screens. */}
       <div className="flex flex-wrap justify-end gap-2 px-4 pt-3 sm:hidden">
-        <ThemeSelect />
+        <ThemeToggle />
         <LanguageToggle />
       </div>
       <header className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-4 sm:px-8">
         <Logo />
         <div className="flex items-center gap-2">
           <span className="hidden items-center gap-2 sm:flex">
-            <ThemeSelect />
+            <ThemeToggle />
             <LanguageToggle />
           </span>
           <Link to="/login" className={buttonClasses('secondary', 'md', 'min-h-11 px-4')}>
@@ -104,7 +104,7 @@ export default function LandingPage() {
               {STEPS.map(({ key, icon: Icon }, index) => (
                 <li key={key} data-reveal className="rounded-xl border border-line bg-canvas p-6">
                   <span className="flex items-center gap-3">
-                    <span className="grid size-12 shrink-0 place-items-center rounded-full bg-primary-soft text-primary">
+                    <span className="grid size-12 shrink-0 place-items-center rounded-full bg-primary-soft text-kf-primary-text">
                       <Icon aria-hidden="true" className="size-6" />
                     </span>
                     <span className="text-lg font-bold text-ink-muted">{index + 1}</span>

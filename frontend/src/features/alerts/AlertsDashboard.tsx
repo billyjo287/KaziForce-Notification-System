@@ -229,7 +229,7 @@ export function AlertsDashboard({
                   <button
                     type="button"
                     onClick={markAllRead}
-                    className="inline-flex min-h-11 items-center gap-2 rounded-lg px-2 font-bold text-primary underline-offset-4 hover:underline"
+                    className="inline-flex min-h-11 items-center gap-2 rounded-lg px-2 font-bold text-kf-primary-text underline-offset-4 hover:underline"
                   >
                     <CheckCheck aria-hidden="true" className="size-5" />
                     {t('alerts.markAllRead')}

@@ -45,7 +45,7 @@ export const AlertCard = forwardRef<HTMLButtonElement, AlertCardProps>(function 
           <PriorityBadge priority={alert.priority} />
           <Pause />
           {unread && (
-            <span className="inline-flex items-center gap-1.5 font-bold text-primary">
+            <span className="inline-flex items-center gap-1.5 font-bold text-kf-primary-text">
               <span aria-hidden="true" className="size-2.5 rounded-full bg-primary" />
               {t('alerts.new')}
               <Pause />

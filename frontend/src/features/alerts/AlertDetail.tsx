@@ -47,7 +47,7 @@ export const AlertDetail = forwardRef<HTMLHeadingElement, AlertDetailProps>(func
       <button
         type="button"
         onClick={onBack}
-        className="-ml-2 inline-flex min-h-11 items-center gap-2 self-start rounded-lg px-2 font-bold text-primary lg:hidden"
+        className="-ml-2 inline-flex min-h-11 items-center gap-2 self-start rounded-lg px-2 font-bold text-kf-primary-text lg:hidden"
       >
         <ArrowLeft aria-hidden="true" className="size-5" />
         {t('alerts.detail.back')}

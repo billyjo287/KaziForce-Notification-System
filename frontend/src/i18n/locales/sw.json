@@ -232,6 +232,11 @@
       "light": "Nyepesi",
       "dark": "Giza",
       "system": "Kama kifaa"
+    },
+    "toggle": {
+      "label": "Hali ya giza",
+      "toDark": "Taa zimezimwa. Macho yako yanasema asante.",
+      "toLight": "Taa zimewashwa. Karibu tena."
     }
   }
 }

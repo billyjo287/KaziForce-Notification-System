@@ -92,7 +92,7 @@ test('"Add to home screen": the manifest and its icons load', async ({ page, req
     expect.arrayContaining(['192x192', '512x512']),
   );
   expect(manifest.icons.some((i) => i.purpose === 'maskable')).toBe(true);
-  for (const icon of [...manifest.icons, { src: '/apple-touch-icon.png' }]) {
+  for (const icon of [...manifest.icons, { src: '/brand/kaziforce-apple-touch-180.png' }]) {
     const image = await request.get(icon.src);
     expect(image.ok(), icon.src).toBe(true);
     expect(image.headers()['content-type']).toContain('image/png');

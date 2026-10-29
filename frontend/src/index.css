@@ -9,117 +9,84 @@
 @import '@fontsource/opendyslexic/latin-400.css';
 @import '@fontsource/opendyslexic/latin-700.css';
 
+/* The design refresh: colours (light and dark), the two brand fonts, motion classes.
+   See styles/theme.css and docs/design/DESIGN_HANDOVER.md. */
+@import './styles/theme.css';
+
 /* ==========================================================================
-   KaziForce design tokens ("calm notice board").
-   Colours are CSS variables so light/dark mode swap in one place.
-   Every text pair passes WCAG 2.2 AA (>= 4.5:1); bars and borders pass 3:1.
-   Contrast ratios are listed in docs/design/visual-direction.md.
+   The app's colour names (bg-canvas, text-ink, text-urgent, ...) now point at the design
+   refresh tokens in styles/theme.css, so every screen follows the new palette and switches
+   with light/dark in one place. Priority colours are always shown with an icon and a word.
    ========================================================================== */
 
 :root {
-  color-scheme: light;
+  /* Letter style: Settings > Display (data-font on <html>). The default is Figtree for text and
+     Bricolage Grotesque for headings; any other choice is used for headings too. */
+  --kf-font: 'Figtree';
+  --kf-font-display: 'Bricolage Grotesque';
 
-  /* Letter style: Settings > Display (data-font on <html>). */
-  --kf-font: 'Atkinson Hyperlegible Next Variable';
+  --kf-canvas: var(--kf-bg);
+  --kf-ink: var(--kf-text);
+  --kf-ink-muted: var(--kf-muted);
+  --kf-on-primary: #ffffff; /* white on indigo in both themes */
 
-  --kf-canvas: #faf8f5; /* page background: warm off-white, softer than pure white */
-  --kf-surface: #ffffff; /* cards, sidebar, panels */
-  --kf-ink: #1c1917; /* main text            16.5:1 on canvas */
-  --kf-ink-muted: #57534e; /* secondary text        7.2:1 on canvas */
-  --kf-line: #e7e5e4; /* decorative dividers (never the only cue) */
-  --kf-line-strong: #78716c; /* input and card borders 4.8:1 on surface */
+  --kf-urgent: var(--kf-urgent-fg);
+  --kf-urgent-soft: var(--kf-urgent-bg);
+  --kf-urgent-bar: var(--kf-bar-urgent);
+  --kf-on-urgent: #ffffff; /* text on the solid urgent colour (unread count) */
 
-  --kf-primary: #0b6b45; /* KaziForce green       6.6:1 with white text */
-  --kf-on-primary: #ffffff;
-  --kf-primary-soft: #e7f4ed; /* selected nav item background */
-  --kf-focus: #1d4ed8; /* keyboard focus ring   6.3:1 on canvas */
+  --kf-important: var(--kf-medium-fg);
+  --kf-important-soft: var(--kf-medium-bg);
+  --kf-important-bar: #c2770e; /* side bar: 3.1:1 on white */
 
-  --kf-urgent: #b42318; /* "Urgent" text/icon    6.1:1 on its tint */
-  --kf-urgent-soft: #fef3f2;
-  --kf-urgent-bar: #b42318;
-  --kf-on-urgent: #ffffff; /* text on the solid urgent colour (unread count) 6.6:1 */
-
-  --kf-important: #93370d; /* "Important"           7.2:1 on its tint */
-  --kf-important-soft: #fffaeb;
-  --kf-important-bar: #dc6803; /* side bar             3.5:1 on surface */
-
-  --kf-later: #344054; /* "For later"           9.5:1 on its tint */
-  --kf-later-soft: #f2f4f7;
-  --kf-later-bar: #667085;
+  --kf-later: var(--kf-low-fg);
+  --kf-later-soft: var(--kf-low-bg);
+  --kf-later-bar: #64748b;
 
   --kf-duration-fast: 150ms;
   --kf-duration-base: 200ms;
   --kf-duration-slow: 300ms;
-  --kf-ease-out: cubic-bezier(0.2, 0, 0, 1);
-}
-
-/* Dark mode: follows the phone/computer setting, unless the user picked a theme. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    color-scheme: dark;
-    --kf-canvas: #161311;
-    --kf-surface: #221e1b;
-    --kf-ink: #f5f5f4;
-    --kf-ink-muted: #b5afa9;
-    --kf-line: #3a3430;
-    --kf-line-strong: #8a837d;
-    --kf-primary: #4cc38a;
-    --kf-on-primary: #0b1f15;
-    --kf-primary-soft: #1d3328;
-    --kf-focus: #7aa2ff;
-    --kf-urgent: #fda29b;
-    --kf-urgent-soft: #3a1512;
-    --kf-urgent-bar: #f97066;
-    --kf-on-urgent: #1f0a08;
-    --kf-important: #fec84b;
-    --kf-important-soft: #35230a;
-    --kf-important-bar: #fdb022;
-    --kf-later: #d0d5dd;
-    --kf-later-soft: #262b33;
-    --kf-later-bar: #98a2b3;
-  }
 }
 
 :root[data-theme='dark'] {
-  color-scheme: dark;
-  --kf-canvas: #161311;
-  --kf-surface: #221e1b;
-  --kf-ink: #f5f5f4;
-  --kf-ink-muted: #b5afa9;
-  --kf-line: #3a3430;
-  --kf-line-strong: #8a837d;
-  --kf-primary: #4cc38a;
-  --kf-on-primary: #0b1f15;
-  --kf-primary-soft: #1d3328;
-  --kf-focus: #7aa2ff;
-  --kf-urgent: #fda29b;
-  --kf-urgent-soft: #3a1512;
-  --kf-urgent-bar: #f97066;
-  --kf-on-urgent: #1f0a08;
-  --kf-important: #fec84b;
-  --kf-important-soft: #35230a;
-  --kf-important-bar: #fdb022;
-  --kf-later: #d0d5dd;
-  --kf-later-soft: #262b33;
-  --kf-later-bar: #98a2b3;
+  --kf-on-urgent: #1f0a08; /* dark text on the lighter dark-mode urgent colour */
+  --kf-important-bar: #e3a43c;
+  --kf-later-bar: #8a96b0;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --kf-on-urgent: #1f0a08;
+    --kf-important-bar: #e3a43c;
+    --kf-later-bar: #8a96b0;
+  }
+}
+
+html[data-font='atkinson'] {
+  --kf-font: 'Atkinson Hyperlegible Next Variable';
+  --kf-font-display: var(--kf-font);
+}
 html[data-font='lexend'] {
   --kf-font: 'Lexend Variable';
+  --kf-font-display: var(--kf-font);
 }
 html[data-font='andika'] {
   --kf-font: 'Andika';
+  --kf-font-display: var(--kf-font);
 }
 html[data-font='opendyslexic'] {
   --kf-font: 'OpenDyslexic';
+  --kf-font-display: var(--kf-font);
 }
 html[data-font='system'] {
   --kf-font: system-ui;
+  --kf-font-display: var(--kf-font);
 }
 
 /* Expose the variables as Tailwind utilities: bg-canvas, text-ink, border-line-strong, ... */
 @theme inline {
   --font-sans: var(--kf-font), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--kf-font-display), var(--kf-font), ui-sans-serif, system-ui, sans-serif;
 
   --color-canvas: var(--kf-canvas);
   --color-surface: var(--kf-surface);
@@ -143,6 +110,49 @@ html[data-font='system'] {
   --color-later-bar: var(--kf-later-bar);
 
   --ease-out-soft: var(--kf-ease-out);
+
+  /* Design refresh tokens as utilities too: bg-kf-surface, text-kf-muted, rounded-kf-lg, ...
+     (styles/tailwind-tokens.md in the design pack). They switch with light/dark by themselves,
+     so no dark: variants are needed. */
+  --color-kf-bg: var(--kf-bg);
+  --color-kf-surface: var(--kf-surface);
+  --color-kf-surface-2: var(--kf-surface-2);
+  --color-kf-track: var(--kf-track);
+  --color-kf-line: var(--kf-line);
+  --color-kf-line-soft: var(--kf-line-soft);
+  --color-kf-line-strong: var(--kf-line-strong);
+  --color-kf-text: var(--kf-text);
+  --color-kf-text-2: var(--kf-text-2);
+  --color-kf-muted: var(--kf-muted);
+  --color-kf-faint: var(--kf-faint);
+  --color-kf-primary: var(--kf-primary);
+  --color-kf-primary-strong: var(--kf-primary-strong);
+  --color-kf-primary-text: var(--kf-primary-text);
+  --color-kf-primary-soft: var(--kf-primary-soft);
+  --color-kf-on-primary-soft: var(--kf-on-primary-soft);
+  --color-kf-accent: var(--kf-accent);
+  --color-kf-on-accent: var(--kf-on-accent);
+  --color-kf-inverse: var(--kf-inverse);
+  --color-kf-inverse-2: var(--kf-inverse-2);
+  --color-kf-on-inverse: var(--kf-on-inverse);
+  --color-kf-on-inverse-2: var(--kf-on-inverse-2);
+  --color-kf-urgent-bg: var(--kf-urgent-bg);
+  --color-kf-urgent-fg: var(--kf-urgent-fg);
+  --color-kf-urgent-line: var(--kf-urgent-line);
+  --color-kf-medium-bg: var(--kf-medium-bg);
+  --color-kf-medium-fg: var(--kf-medium-fg);
+  --color-kf-low-bg: var(--kf-low-bg);
+  --color-kf-low-fg: var(--kf-low-fg);
+  --color-kf-spam-bg: var(--kf-spam-bg);
+  --color-kf-spam-fg: var(--kf-spam-fg);
+  --color-kf-success-bg: var(--kf-success-bg);
+  --color-kf-success-fg: var(--kf-success-fg);
+  --color-kf-success-solid: var(--kf-success-solid);
+  --color-kf-danger-solid: var(--kf-danger-solid);
+  --radius-kf: 14px;
+  --radius-kf-lg: 22px;
+  --radius-kf-xl: 28px;
+  --shadow-kf: var(--kf-shadow);
 
   --radius-card: 0.75rem;
   --radius-control: 0.75rem;
@@ -217,56 +227,6 @@ html[data-font='system'] {
 
 @utility animate-kf-pulse {
   animation: kf-pulse 1.2s var(--kf-ease-out) 2;
-}
-
-/* ---------- Logo animations (see components/Logo.tsx) ---------- */
-.kf-logo-ring {
-  stroke-dasharray: 100;
-  animation: kf-logo-draw 700ms var(--kf-ease-out) both;
-}
-
-.kf-logo-dot {
-  transform-box: view-box;
-  transform-origin: 20px 20px;
-  /* 12 ticks, one every 0.4 s, then it stops back at 12 o'clock. */
-  animation: kf-logo-tick 4.8s steps(12, end) 700ms 1 both;
-}
-
-.kf-logo-link:hover .kf-logo-dot,
-a:focus-visible .kf-logo-dot {
-  animation: kf-logo-rewind 600ms var(--kf-ease-out) 1;
-}
-
-@keyframes kf-logo-draw {
-  from {
-    stroke-dashoffset: 100;
-  }
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes kf-logo-tick {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes kf-logo-rewind {
-  to {
-    transform: rotate(-360deg);
-  }
-}
-
-/* Reduced motion (device setting or the in-app switch): the logo is simply still. */
-@media (prefers-reduced-motion: reduce) {
-  .kf-logo * {
-    animation: none !important;
-  }
-}
-
-html[data-reduce-motion='true'] .kf-logo * {
-  animation: none !important;
 }
 
 /* ---------- Timed messages: "Welcome back" after logging in, "You are logged out" ----------

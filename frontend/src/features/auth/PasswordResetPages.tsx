@@ -30,7 +30,7 @@ function BackToLogin() {
   return (
     <Link
       to="/login"
-      className="min-h-11 text-lg font-bold text-primary underline underline-offset-4"
+      className="min-h-11 text-lg font-bold text-kf-primary-text underline underline-offset-4"
     >
       {t('auth.forgot.backToLogin')}
     </Link>

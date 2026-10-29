@@ -1,4 +1,4 @@
-// Header controls on every page (360 px phone and 1440 px desktop): the screen colours dropdown,
+// Header controls on every page (360 px phone and 1440 px desktop): the light/dark toggle,
 // Log out, the welcome message after logging in, and "You are logged out" that goes away.
 import { expect, test } from '@playwright/test';
 import { expectNoHorizontalScroll, expectNoSeriousA11yIssues, logIn } from './helpers';
@@ -13,18 +13,19 @@ test('dark mode, welcome message and Log out from any page', async ({ page }, te
   await expect(page.getByRole('heading', { level: 1, name: 'Jobs' })).toBeVisible();
   await expect(welcome).toBeHidden({ timeout: 7000 });
 
-  // Dark mode on, checked for contrast and layout, then back to the device setting.
-  const colours = page.getByRole('combobox', { name: 'Screen colours' }).locator('visible=true');
-  await colours.selectOption('dark');
+  // Dark mode on with the sun/moon toggle, checked for contrast and layout, then light again.
+  const toggle = page.getByRole('button', { name: 'Dark mode' }).locator('visible=true');
+  await toggle.click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await expect(toggle).toHaveAttribute('aria-pressed', 'true');
   await expectNoSeriousA11yIssues(page);
   await expectNoHorizontalScroll(page);
   await page.screenshot({ path: testInfo.outputPath('jobs-dark.png') });
 
   await page.reload(); // the choice is remembered
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await colours.selectOption('system');
-  await expect(page.locator('html')).not.toHaveAttribute('data-theme');
+  await toggle.click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
   await page.screenshot({ path: testInfo.outputPath('jobs-light.png') });
 
   // Log out from this page (not Settings); the confirmation goes away after 5 seconds.

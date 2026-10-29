@@ -85,9 +85,13 @@
       "label": "Mtindo wa herufi",
       "help": "Chagua herufi zilizo rahisi zaidi kwako kusoma. Simu au kompyuta hii itakumbuka.",
       "options": {
+        "figtree": {
+          "name": "Figtree",
+          "help": "Herufi rafiki na wazi. Mtindo wa kawaida."
+        },
         "atkinson": {
           "name": "Atkinson Hyperlegible",
-          "help": "Herufi wazi ambazo ni vigumu kuchanganya. Mtindo wa kawaida."
+          "help": "Herufi wazi zaidi ambazo ni vigumu kuchanganya, kama I, l na 1."
         },
         "lexend": {
           "name": "Lexend",

@@ -6,7 +6,9 @@ import { useAuth } from '../../stores/auth';
 import { useSettings } from '../../stores/settings';
 import { renderWithRouter } from '../../test/renderWithRouter';
 import type { User } from '../../types/api';
+import { ThemeToggle } from '../brand/ThemeToggle';
 import { ThemeSelect } from '../ThemeSelect';
+import { useToasts } from '../../stores/toasts';
 import { AppShell } from './AppShell';
 import WelcomeBanner from './WelcomeBanner';
 
@@ -37,6 +39,26 @@ describe('screen colours dropdown', () => {
     expect(document.documentElement.dataset.theme).toBe('light');
     await userEvent.selectOptions(menu, 'system');
     expect(document.documentElement.dataset.theme).toBeUndefined();
+  });
+});
+
+describe('light/dark toggle in the top bars (design refresh)', () => {
+  afterEach(() => useSettings.setState({ theme: 'system' }));
+
+  it('switches between light and dark, says so, and keeps one name for screen readers', async () => {
+    useSettings.setState({ theme: 'light' });
+    renderWithRouter(<ThemeToggle />);
+    const toggle = screen.getByRole('button', { name: 'Dark mode' });
+    expect(toggle).toHaveAttribute('aria-pressed', 'false');
+
+    await userEvent.click(toggle);
+    expect(document.documentElement.dataset.theme).toBe('dark');
+    expect(toggle).toHaveAttribute('aria-pressed', 'true');
+    expect(useToasts.getState().toasts.at(-1)?.message).toBe('Lights off. Your eyes say asante.');
+
+    await userEvent.click(toggle);
+    expect(document.documentElement.dataset.theme).toBe('light');
+    expect(toggle).toHaveAttribute('aria-pressed', 'false');
   });
 });
 

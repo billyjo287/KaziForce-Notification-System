@@ -1,0 +1,82 @@
+{
+  "brand": {
+    "loading": [
+      {
+        "text": "Finding jobs near you…"
+      },
+      {
+        "text": "Sorting the urgent from the not-so-urgent…"
+      },
+      {
+        "text": "Hang on… I know someone who’s gonna wait.",
+        "wink": true
+      },
+      {
+        "text": "Almost there. Boda boda speed."
+      }
+    ],
+    "loadingLabel": "Loading",
+    "success": {
+      "profileCreated": {
+        "title": "You’re all set, {{name}}!",
+        "titleNoName": "You’re all set!",
+        "body": "Your profile is live. Now let the jobs come to you, no chasing needed.",
+        "cta": "Show me jobs"
+      },
+      "jobDeclined": "No problem. We’ll keep looking for something that suits you better.",
+      "applied": {
+        "label": "Applied",
+        "hint": "Fingers crossed for you"
+      },
+      "applicantAccepted": "Done. {{name}} gets a message in seconds.",
+      "applicantDeclined": "Declined kindly. We’ll let {{name}} know there’s more work coming.",
+      "retryWorked": "Back in business."
+    },
+    "empty": {
+      "all": {
+        "title": "All caught up.",
+        "body": "Nothing new right now. We’ll shout if something important comes in."
+      },
+      "urgent": {
+        "title": "Nothing urgent. Enjoy your chai.",
+        "body": "When something can’t wait, you’ll know straight away, even by SMS."
+      },
+      "medium": {
+        "title": "Nothing here for now.",
+        "body": "Messages and updates will show up here."
+      },
+      "low": {
+        "title": "Quiet day.",
+        "body": "Small updates wait here until your daily summary."
+      }
+    },
+    "spam": {
+      "workerLine": "{{count}} scam messages tried to reach you. They didn’t get past us.",
+      "adminBlocked": "Blocked. That one won’t bother anyone again.",
+      "adminReleased": "Released and delivered."
+    },
+    "admin": {
+      "priorityCorrected": "Noted. The model will learn from this one."
+    },
+    "offline": {
+      "title": "You’re offline. Don’t worry.",
+      "body": "Urgent alerts will still reach you by SMS, so you won’t miss a thing. We’ll catch up the moment you’re back.",
+      "cta": "Try again",
+      "chip": "SMS alerts are on"
+    },
+    "notFound": {
+      "title": "This page went for lunch and didn’t come back.",
+      "body": "Let’s get you somewhere more useful.",
+      "cta": "Take me home"
+    },
+    "error": {
+      "title": "Something tripped on our side.",
+      "body": "It’s us, not you. Give it another go, and if it keeps happening, we’re already on it.",
+      "cta": "Try again"
+    },
+    "landing": {
+      "ctaSub": "That’s less time than waiting for a matatu to fill up.",
+      "footer": "Made in Nairobi, powered by a lot of chai."
+    }
+  }
+}

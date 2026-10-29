@@ -36,7 +36,7 @@ export function ChannelSuggestionCard({ enabled }: { enabled: boolean }) {
       className="mb-6 rounded-xl border-2 border-primary bg-primary-soft p-5"
     >
       <h2 id="channel-suggestion-title" className="flex items-center gap-3 text-xl font-bold">
-        <Lightbulb aria-hidden="true" className="size-6 shrink-0 text-primary" />
+        <Lightbulb aria-hidden="true" className="size-6 shrink-0 text-kf-primary-text" />
         {t('settings.suggestion.title', { channel })}
       </h2>
       <p className="mt-2 text-lg">

@@ -3,11 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Logo files: public/brand (design pack, docs/design/DESIGN_HANDOVER.md section 3). -->
+    <link rel="icon" type="image/svg+xml" href="/brand/kaziforce-favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/brand/favicon-32.png" />
     <!-- "Add to home screen" (PRD section 9 allows a manifest; there is no push service). -->
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta name="theme-color" content="#0b6b45" />
+    <link rel="apple-touch-icon" href="/brand/kaziforce-apple-touch-180.png" />
+    <!-- Browser bar colour: the page background, light or dark like the device. -->
+    <meta name="theme-color" content="#F5F6FA" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0E1022" media="(prefers-color-scheme: dark)" />
     <meta name="description" content="KaziForce: job alerts that reach you on time." />
     <title>KaziForce</title>
     <!-- Runs before anything is drawn (allowed by its hash in the Content Security Policy, see
@@ -29,9 +33,14 @@
           }
         };
         var settings = {};
+        var version = 0;
         try {
-          settings = JSON.parse(store('kf.settings')).state || {};
+          var saved = JSON.parse(store('kf.settings'));
+          settings = saved.state || {};
+          version = saved.version || 0;
         } catch (e) {}
+        // Before the design refresh "atkinson" was the default (stores/settings.ts, version 1).
+        if (settings.font === 'atkinson' && version < 1) settings.font = 'figtree';
         var theme = query.get('theme') || settings.theme;
         if (theme === 'dark' || theme === 'light') html.dataset.theme = theme;
         if (settings.textSize) html.dataset.textSize = settings.textSize;

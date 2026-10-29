@@ -458,7 +458,7 @@ export function AuditLogPage() {
                       {entry.targetType === 'user' ? (
                         <Link
                           to={`/admin/users/${entry.targetId}`}
-                          className="text-primary underline underline-offset-4"
+                          className="text-kf-primary-text underline underline-offset-4"
                         >
                           {entry.targetName}
                         </Link>

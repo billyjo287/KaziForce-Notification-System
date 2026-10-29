@@ -5,8 +5,11 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 export type TextSize = 'normal' | 'large';
-/** Letter style (see index.css). "system" is the phone's own font: nothing to download. */
-export type Font = 'atkinson' | 'lexend' | 'andika' | 'opendyslexic' | 'system';
+/**
+ * Letter style (see index.css). "figtree" is the design refresh's own style (the default);
+ * "system" is the phone's own font: nothing to download.
+ */
+export type Font = 'figtree' | 'atkinson' | 'lexend' | 'andika' | 'opendyslexic' | 'system';
 /** "system" follows the phone/computer setting (the default). */
 export type Theme = 'system' | 'light' | 'dark';
 
@@ -26,7 +29,7 @@ export const useSettings = create<SettingsState>()(
     (set) => ({
       theme: 'system',
       textSize: 'normal',
-      font: 'atkinson',
+      font: 'figtree',
       reduceMotion: false,
       setTheme: (theme) => set({ theme }),
       setTextSize: (textSize) => set({ textSize }),
@@ -36,6 +39,14 @@ export const useSettings = create<SettingsState>()(
     {
       name: 'kf.settings',
       storage: createJSONStorage(() => localStorage),
+      // Version 1 (design refresh): Atkinson was the default before, so a saved "atkinson" was
+      // almost always the default rather than a choice. It moves to the new default.
+      version: 1,
+      migrate: (saved, version) => {
+        const state = saved as Partial<SettingsState>;
+        if (version < 1 && state.font === 'atkinson') state.font = 'figtree';
+        return state as SettingsState;
+      },
       partialize: ({ theme, textSize, font, reduceMotion }) => ({
         theme,
         textSize,

@@ -114,7 +114,7 @@ function Tile({
       {link && (
         <Link
           to={link.to}
-          className="mt-1 inline-flex min-h-11 items-center gap-1 self-start font-bold text-primary underline underline-offset-4"
+          className="mt-1 inline-flex min-h-11 items-center gap-1 self-start font-bold text-kf-primary-text underline underline-offset-4"
         >
           {link.label}
           <ArrowRight aria-hidden="true" className="size-4" />
@@ -301,7 +301,7 @@ function RecentFailures({ failures }: { failures: Overview['recentFailures'] }) 
             </ul>
             <Link
               to="/admin/delivery-logs?status=failed"
-              className="mt-4 inline-flex min-h-11 items-center gap-1 font-bold text-primary underline underline-offset-4"
+              className="mt-4 inline-flex min-h-11 items-center gap-1 font-bold text-kf-primary-text underline underline-offset-4"
             >
               {t('admin.overview.failures.all')}
               <ArrowRight aria-hidden="true" className="size-4" />

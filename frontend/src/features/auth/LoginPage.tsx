@@ -157,7 +157,7 @@ export default function LoginPage() {
     <Link
       to="/forgot-password"
       state={step.name !== 'who' && step.who.kind === 'email' ? { email: step.who.value } : null}
-      className="min-h-11 text-lg font-bold text-primary underline underline-offset-4"
+      className="min-h-11 text-lg font-bold text-kf-primary-text underline underline-offset-4"
     >
       {t('auth.login.forgot')}
     </Link>
@@ -249,7 +249,7 @@ export default function LoginPage() {
         )}
         {!remembered && (
           <div className="flex items-center gap-3 rounded-xl border-2 border-line bg-surface p-3">
-            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary-soft text-primary">
+            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary-soft text-kf-primary-text">
               <UserRound aria-hidden="true" className="size-5" />
             </span>
             <span className="min-w-0 flex-1 truncate text-lg font-bold">{shown(who)}</span>
@@ -340,7 +340,10 @@ export default function LoginPage() {
         {forgotLink}
         <p>
           {t('auth.login.noAccount')}{' '}
-          <Link to="/register" className="font-bold text-primary underline underline-offset-4">
+          <Link
+            to="/register"
+            className="font-bold text-kf-primary-text underline underline-offset-4"
+          >
             {t('auth.login.register')}
           </Link>
         </p>

@@ -71,7 +71,7 @@ export function Select({
                   className="relative flex min-h-12 cursor-pointer items-center rounded-lg pr-3 pl-10 text-lg outline-none select-none data-highlighted:bg-primary-soft"
                 >
                   <RadixSelect.ItemIndicator className="absolute left-3">
-                    <Check aria-hidden="true" className="size-5 text-primary" />
+                    <Check aria-hidden="true" className="size-5 text-kf-primary-text" />
                   </RadixSelect.ItemIndicator>
                   <RadixSelect.ItemText>{option.label}</RadixSelect.ItemText>
                 </RadixSelect.Item>

@@ -1,0 +1,82 @@
+{
+  "brand": {
+    "loading": [
+      {
+        "text": "Tunatafuta kazi karibu nawe…"
+      },
+      {
+        "text": "Tunatenganisha za haraka na zisizo za haraka…"
+      },
+      {
+        "text": "Subiri kidogo… najua mtu atakayesubiri.",
+        "wink": true
+      },
+      {
+        "text": "Karibu tumefika. Kasi ya boda boda."
+      }
+    ],
+    "loadingLabel": "Inapakia",
+    "success": {
+      "profileCreated": {
+        "title": "Uko tayari, {{name}}!",
+        "titleNoName": "Uko tayari!",
+        "body": "Wasifu wako uko hewani. Sasa acha kazi zikufuate, hakuna kukimbizana.",
+        "cta": "Nionyeshe kazi"
+      },
+      "jobDeclined": "Hakuna shida. Tutaendelea kutafuta kitu kinachokufaa zaidi.",
+      "applied": {
+        "label": "Umeomba",
+        "hint": "Tunakuombea bahati njema"
+      },
+      "applicantAccepted": "Imekamilika. {{name}} atapata ujumbe sasa hivi.",
+      "applicantDeclined": "Umekataa kwa upole. Tutamjulisha {{name}} kuwa kazi zaidi zinakuja.",
+      "retryWorked": "Tumerudi kazini."
+    },
+    "empty": {
+      "all": {
+        "title": "Umesoma yote.",
+        "body": "Hakuna jipya kwa sasa. Tutakuambia kitu muhimu kikifika."
+      },
+      "urgent": {
+        "title": "Hakuna la haraka. Furahia chai yako.",
+        "body": "Kitu kisichoweza kusubiri kikifika, utajua mara moja, hata kwa SMS."
+      },
+      "medium": {
+        "title": "Hakuna kitu hapa kwa sasa.",
+        "body": "Ujumbe na taarifa zitaonekana hapa."
+      },
+      "low": {
+        "title": "Siku tulivu.",
+        "body": "Taarifa ndogo zinasubiri hapa hadi muhtasari wako wa kila siku."
+      }
+    },
+    "spam": {
+      "workerLine": "Ujumbe {{count}} wa utapeli ulijaribu kukufikia. Haukupita kwetu.",
+      "adminBlocked": "Umezuiwa. Huo hautamsumbua mtu tena.",
+      "adminReleased": "Umeruhusiwa na kutumwa."
+    },
+    "admin": {
+      "priorityCorrected": "Tumepokea. Mfumo utajifunza kutokana na hili."
+    },
+    "offline": {
+      "title": "Huna mtandao. Usijali.",
+      "body": "Arifa za haraka bado zitakufikia kwa SMS, kwa hiyo hutakosa kitu. Tutasasisha mara utakaporudi.",
+      "cta": "Jaribu tena",
+      "chip": "Arifa za SMS zimewashwa"
+    },
+    "notFound": {
+      "title": "Ukurasa huu ulienda kula chakula cha mchana na haukurudi.",
+      "body": "Twende mahali penye manufaa zaidi.",
+      "cta": "Nipeleke mwanzo"
+    },
+    "error": {
+      "title": "Kuna kitu kimekwama upande wetu.",
+      "body": "Ni sisi, si wewe. Jaribu tena, na likiendelea, tayari tunalishughulikia.",
+      "cta": "Jaribu tena"
+    },
+    "landing": {
+      "ctaSub": "Ni muda mfupi kuliko kusubiri matatu ijae.",
+      "footer": "Imetengenezwa Nairobi, kwa nguvu ya chai nyingi."
+    }
+  }
+}
