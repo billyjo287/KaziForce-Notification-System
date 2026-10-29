@@ -39,13 +39,23 @@ export function trackScripts(page: Page): string[] {
   return urls;
 }
 
-/** Logs in through the real log-in page and waits for the user's home page. */
+/**
+ * Logs in through the real log-in page (email first, then the password) and waits for the
+ * user's home page. The test server has log-in codes switched off (ACCOUNT_CODES=false); the
+ * code screens have their own tests (auth.spec.ts).
+ */
 export async function logIn(page: Page, email: string, password = PASSWORD) {
   await page.goto('/login');
-  await page.getByLabel('Email address').fill(email);
+  await enterPassword(page, email, password);
+  await page.waitForURL(/\/(worker|employer|admin)\//);
+}
+
+/** The two log-in steps: "Email or phone number", Continue, password, Log in. */
+export async function enterPassword(page: Page, identifier: string, password = PASSWORD) {
+  await page.getByLabel('Email or phone number').fill(identifier);
+  await page.getByRole('button', { name: 'Continue' }).click();
   await page.getByLabel('Password', { exact: true }).fill(password);
   await page.getByRole('button', { name: 'Log in' }).click();
-  await page.waitForURL(/\/(worker|employer|admin)\//);
 }
 
 /** Picks an option in one of our (Radix) dropdowns by its label. */

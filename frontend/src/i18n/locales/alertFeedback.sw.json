@@ -1,0 +1,23 @@
+{
+  "alerts": {
+    "feedback": {
+      "title": "Asante. Ungependa kutuambia kwa nini?",
+      "intro": "Si lazima. Inatusaidia kukutumia arifa bora kuliko \"{{title}}\".",
+      "legend": "Kwa nini arifa hii si muhimu kwako?",
+      "pickOne": "Chagua sababu moja, au bonyeza Ruka.",
+      "reasons": {
+        "not_my_work": "Si aina ya kazi ninayofanya",
+        "too_far": "Ni mbali sana",
+        "pay_too_low": "Malipo ni kidogo sana",
+        "not_available": "Sitapatikana wakati huo",
+        "too_many": "Arifa nyingi sana kama hii",
+        "other": "Sababu nyingine"
+      },
+      "noteLabel": "Tuambie zaidi (si lazima)",
+      "noteHelp": "Maneno machache yanatosha. Tafadhali usiandike namba za simu wala majina.",
+      "send": "Tuma",
+      "skip": "Ruka",
+      "thanks": "Asante. Tutatumia hii kuboresha arifa zako."
+    }
+  }
+}

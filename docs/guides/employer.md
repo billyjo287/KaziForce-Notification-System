@@ -6,7 +6,9 @@ hear about it at once, and you can see who got the alert and who saw it.
 ## 1. Create your account
 
 1. Open KaziForce and tap **Get started**.
-2. Choose **I'm hiring**, then type your name, email and a password (twice).
+2. Choose **I'm hiring**, then answer one question per screen: email, name and a password.
+   Type the 6-digit code we email you to finish. When you log in on a new phone or computer,
+   we send another code, by SMS or email (you choose).
 3. Add your phone number and confirm it with the 6-digit SMS code, so we can reach you when
    someone applies. You can skip this and do it later in **Settings**.
 4. Add your company name and place under **Settings > Company profile**.

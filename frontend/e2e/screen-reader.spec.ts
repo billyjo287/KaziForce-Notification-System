@@ -11,9 +11,8 @@ test('log-in page: a heading, labelled fields, one main button', async ({ page }
   await page.goto('/login?theme=light');
   await expect(page.getByRole('main')).toMatchAriaSnapshot(`
     - heading "Log in" [level=1]
-    - textbox "Email address"
-    - textbox "Password"
-    - button "Log in"
+    - textbox "Email or phone number"
+    - button "Continue"
   `);
   await testInfo.attach('login.aria.yml', { body: await page.locator('body').ariaSnapshot() });
 });

@@ -13,7 +13,8 @@
     <!-- Runs before anything is drawn (allowed by its hash in the Content Security Policy, see
          vite.config.ts). 1) The person's colours, text size and letter style, so a dark page never flashes
          white. 2) Pages sent as ready-made HTML (scripts/prerender.mjs, ADR 0010): hide the copy
-         when it is not right for this visit (another address, Kiswahili, already logged in);
+         when it is not right for this visit (another address, Kiswahili, already logged in, a
+         remembered account);
          until the app arrives, forms never send and the last button pressed is remembered.
          3) On those pages, the app is downloaded after the page is on screen. -->
     <script>
@@ -45,7 +46,9 @@
         if (
           path !== copy.content ||
           language === 'sw' ||
-          (path !== '/' && (signedIn === '1' || signedIn === 'blocked'))
+          (path !== '/' && (signedIn === '1' || signedIn === 'blocked')) ||
+          // This device remembers an account: the log-in page says "Welcome back" instead.
+          (path === '/login' && store('kf.rememberedAccount'))
         ) {
           html.dataset.prerender = 'off';
         }

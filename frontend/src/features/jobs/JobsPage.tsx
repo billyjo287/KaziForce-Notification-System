@@ -13,6 +13,7 @@ import { CardListSkeleton } from '../../components/ui/Skeleton';
 import { relativeTime } from '../../lib/relativeTime';
 import { usePageTitle } from '../../lib/usePageTitle';
 import { JobCard } from './JobCard';
+import './strings';
 
 type Tab = 'find' | 'applications';
 

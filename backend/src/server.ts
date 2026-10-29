@@ -11,7 +11,8 @@ import { attachRealtime } from './realtime/socketServer.js';
 const app = createApp({
   frontendOrigin: env.FRONTEND_ORIGIN,
   logger,
-  rateLimits: { login: env.LOGIN_RATE_LIMIT },
+  // The "is there an account?" check and code checks come with each log-in: three per log-in.
+  rateLimits: { login: env.LOGIN_RATE_LIMIT, lookup: env.LOGIN_RATE_LIMIT * 3 },
   trustProxyHops: env.TRUST_PROXY_HOPS,
   healthChecks: {
     database: () => prisma.$queryRaw`SELECT 1`,

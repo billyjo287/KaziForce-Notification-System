@@ -15,6 +15,8 @@ export function testApp(rateLimits: Partial<RateLimitSettings> = {}) {
       login: 1000,
       passwordReset: 1000,
       phoneCode: 1000,
+      lookup: 1000,
+      codeSend: 1000,
       message: 1000,
       apply: 1000,
       postJob: 1000,

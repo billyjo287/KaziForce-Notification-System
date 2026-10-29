@@ -6,6 +6,7 @@ import { useSkillName } from '../../lib/useSkillName';
 import { Badge } from '../../components/ui/Badge';
 import { relativeTime } from '../../lib/relativeTime';
 import type { Job } from '../../types/api';
+import './strings';
 
 /** One job in a list. The title is the link; the rest is plain text (one tap target). */
 export function JobCard({ job, to, footer }: { job: Job; to?: string; footer?: ReactNode }) {

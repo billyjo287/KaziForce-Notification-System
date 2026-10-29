@@ -115,9 +115,12 @@ posts a job in the worker's area), the alert appears on the worker's screen with
 
 Then open:
 
-- http://localhost:5173: the website. Click **Log in** and use one of the sample accounts below,
-  or **Create an account** (the SMS code is printed in the backend terminal, look for
-  `[mock SMS]`).
+- http://localhost:5173: the website. Click **Log in** and use one of the sample accounts below
+  (email or phone number, e.g. `0700 000 004` for worker1), or **Create an account**. On a new
+  browser a 6-digit code follows the password: choose SMS (printed in the `api` terminal lines,
+  look for `[mock sms]`) or email (in Mailpit, http://localhost:8025). Tick **Remember this
+  phone or computer** to skip it next time. For a presentation, `OTP_DEMO_MODE=true` in
+  `backend/.env` also shows the code on screen.
 - http://localhost:5173/ui-kit: gallery of every interface component (only in `npm run dev`; the
   built website does not include it)
 - http://localhost:4000/health: backend health (database and Redis)

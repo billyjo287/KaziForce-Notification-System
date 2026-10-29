@@ -16,9 +16,7 @@ async function slowScripts(page: Page) {
 }
 
 test.describe('Pages ready before the app arrives', () => {
-  test('log in: shows at once; typing and pressing "Log in" early still logs in', async ({
-    page,
-  }) => {
+  test('log in: shows at once; typing and pressing "Continue" early is kept', async ({ page }) => {
     const errors: string[] = [];
     page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
     const release = await slowScripts(page);
@@ -29,15 +27,17 @@ test.describe('Pages ready before the app arrives', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Log in' })).toBeVisible();
     await expect(page).toHaveTitle('Log in · KaziForce');
 
-    await page.getByLabel('Email address').fill('worker1@example.com');
-    await page.getByLabel('Password', { exact: true }).fill(PASSWORD);
-    await page.getByRole('button', { name: 'Log in' }).click();
-    // The early press never sends the form by itself (that would put the password in the address).
-    expect(page.url()).not.toContain('password');
+    await page.getByLabel('Email or phone number').fill('worker1@example.com');
+    await page.getByRole('button', { name: 'Continue' }).click();
+    // The early press never sends the form by itself (that would put it in the address).
+    expect(page.url()).not.toContain('worker1');
 
     release();
+    // The app arrives, presses Continue again, and asks for the password.
+    await page.getByLabel('Password', { exact: true }).fill(PASSWORD);
+    await page.getByRole('button', { name: 'Log in' }).click();
     await page.waitForURL(/\/worker\//);
-    expect(page.url()).not.toContain('password');
+    expect(page.url()).not.toContain('worker1@');
     expect(errors.filter((e) => /Content Security Policy/.test(e))).toEqual([]);
   });
 
@@ -50,7 +50,7 @@ test.describe('Pages ready before the app arrives', () => {
     await expect(page.locator('[data-prerendered]')).toHaveCount(0); // the app has taken over
     await expect(page.getByRole('radio', { name: /I'm hiring/ })).toBeChecked();
     await page.getByRole('button', { name: 'Continue' }).click();
-    await expect(page.getByLabel('Your full name')).toBeVisible();
+    await expect(page.getByLabel('Email address')).toBeVisible();
   });
 
   test('Kiswahili visitors never see the English copy', async ({ page }) => {

@@ -30,6 +30,7 @@ async function clear() {
   await prisma.application.deleteMany();
   await prisma.job.deleteMany();
   await prisma.session.deleteMany();
+  await prisma.trustedDevice.deleteMany();
   await prisma.passwordResetToken.deleteMany();
   await prisma.phoneVerification.deleteMany();
   await prisma.userPreference.deleteMany();

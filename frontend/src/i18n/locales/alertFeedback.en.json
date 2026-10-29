@@ -1,0 +1,23 @@
+{
+  "alerts": {
+    "feedback": {
+      "title": "Thanks. Want to tell us why?",
+      "intro": "Optional. It helps us send you better alerts than \"{{title}}\".",
+      "legend": "Why is this alert not important to you?",
+      "pickOne": "Choose one reason, or press Skip.",
+      "reasons": {
+        "not_my_work": "Not my kind of work",
+        "too_far": "Too far away",
+        "pay_too_low": "The pay is too low",
+        "not_available": "I am not available then",
+        "too_many": "Too many alerts like this",
+        "other": "Something else"
+      },
+      "noteLabel": "Tell us more (optional)",
+      "noteHelp": "A few words are enough. Please do not write phone numbers or names.",
+      "send": "Send",
+      "skip": "Skip",
+      "thanks": "Thank you. We will use this to improve your alerts."
+    }
+  }
+}

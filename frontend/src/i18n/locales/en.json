@@ -112,26 +112,7 @@
     "markAllRead": "Mark all as read",
     "markedAllRead_one": "{{count}} alert marked as read.",
     "markedAllRead_other": "{{count}} alerts marked as read.",
-    "openAlert": "Open",
-    "feedback": {
-      "title": "Thanks. Want to tell us why?",
-      "intro": "Optional. It helps us send you better alerts than \"{{title}}\".",
-      "legend": "Why is this alert not important to you?",
-      "pickOne": "Choose one reason, or press Skip.",
-      "reasons": {
-        "not_my_work": "Not my kind of work",
-        "too_far": "Too far away",
-        "pay_too_low": "The pay is too low",
-        "not_available": "I am not available then",
-        "too_many": "Too many alerts like this",
-        "other": "Something else"
-      },
-      "noteLabel": "Tell us more (optional)",
-      "noteHelp": "A few words are enough. Please do not write phone numbers or names.",
-      "send": "Send",
-      "skip": "Skip",
-      "thanks": "Thank you. We will use this to improve your alerts."
-    }
+    "openAlert": "Open"
   },
   "settings": {
     "title": "Settings",
@@ -175,7 +156,7 @@
     "generic": "Something went wrong. Please try again.",
     "network": "We cannot reach KaziForce. Check your internet connection and try again.",
     "server_error": "Something went wrong on our side. Please try again in a moment.",
-    "wrong_credentials": "The email or password is not right. Check them and try again.",
+    "wrong_credentials": "The email, phone number or password is not right. Check them and try again.",
     "account_suspended": "This account has been suspended. Contact KaziForce if you think this is a mistake.",
     "email_taken": "An account with this email already exists. Try logging in instead.",
     "rate_limited": "Too many tries. Please wait a few minutes and try again.",
@@ -193,8 +174,11 @@
     "cannot_suspend_admin": "Admin accounts cannot be suspended.",
     "already_removed": "This job was already removed.",
     "login_code_wrong": "That code is not right. Check it and try again.",
-    "login_code_expired": "This code has expired. Please log in again.",
-    "not_marked": "Mark the alert as not important first."
+    "login_code_expired": "This code has expired. Press \"Start again\" for a new one.",
+    "not_marked": "Mark the alert as not important first.",
+    "identifier_invalid": "Type an email address like name@gmail.com, or a Kenyan mobile number like 0712 345 678.",
+    "code_too_soon": "Please wait a few seconds before asking for a new code.",
+    "code_channel_unavailable": "This way is not available for your account. Choose email."
   },
   "validation": {
     "required": "Please fill this in.",
@@ -221,58 +205,6 @@
       "loggedOut": "You are logged out.",
       "loggedOutAll": "You are logged out on all your devices."
     },
-    "login": {
-      "title": "Log in",
-      "intro": "Welcome back to KaziForce.",
-      "email": "Email address",
-      "password": "Password",
-      "submit": "Log in",
-      "forgot": "Forgot your password?",
-      "noAccount": "New to KaziForce?",
-      "register": "Create an account",
-      "codeTitle": "Enter your code",
-      "codeIntro": "One more step: enter the 6-digit code to finish logging in.",
-      "codeLabel": "6-digit code",
-      "codeSubmit": "Continue",
-      "codeRestart": "Start again"
-    },
-    "register": {
-      "title": "Create your account",
-      "step": "Step {{step}} of 3",
-      "roleQuestion": "What brings you to KaziForce?",
-      "worker": "I'm looking for work",
-      "workerHelp": "Get job alerts and apply in one tap.",
-      "business": "I'm hiring",
-      "businessHelp": "Post jobs and find workers fast.",
-      "detailsTitle": "Your details",
-      "name": "Your full name",
-      "email": "Email address",
-      "emailHelp": "We send account emails here.",
-      "password": "Choose a password",
-      "passwordHelp": "At least 8 characters.",
-      "submit": "Create account",
-      "haveAccount": "Already have an account?",
-      "login": "Log in",
-      "confirmPassword": "Type the password again"
-    },
-    "forgot": {
-      "title": "Forgot your password?",
-      "intro": "Enter your email. We will send you a link to set a new password.",
-      "email": "Email address",
-      "submit": "Send the link",
-      "sent": "If an account uses this email, we have sent a link to it. Check your inbox and spam folder.",
-      "backToLogin": "Back to log in"
-    },
-    "reset": {
-      "title": "Set a new password",
-      "password": "New password",
-      "passwordHelp": "At least 8 characters.",
-      "submit": "Save new password",
-      "done": "Your password has been changed. You can now log in.",
-      "missingToken": "This link is not complete. Ask for a new one.",
-      "askAgain": "Ask for a new link",
-      "confirmPassword": "Type the new password again"
-    },
     "welcome": {
       "title": "Welcome back, {{name}}!",
       "body": "You are logged in."
@@ -292,52 +224,6 @@
       "rejected": "Not selected"
     }
   },
-  "jobs": {
-    "title": "Jobs",
-    "findTab": "Find jobs",
-    "mineTab": "My applications",
-    "filters": "Filter jobs",
-    "location": "Place",
-    "anyLocation": "Any place",
-    "skill": "Skill",
-    "anySkill": "Any skill",
-    "results_one": "{{count}} job",
-    "results_other": "{{count}} jobs",
-    "emptyTitle": "No jobs match",
-    "emptyBody": "Try another place or skill, or choose \"Any\".",
-    "errorTitle": "We could not load the jobs",
-    "urgent": "Urgent",
-    "closes": "Closes {{when}}",
-    "closed": "Closed",
-    "removed": "Removed",
-    "pay": "Pay",
-    "applied": "You applied",
-    "detail": {
-      "back": "Back to jobs",
-      "postedBy": "Posted by {{name}}",
-      "about": "About the job",
-      "where": "Where",
-      "skill": "Skill needed",
-      "closesAt": "Closes",
-      "apply": "Apply for this job",
-      "noteLabel": "Short note to the employer",
-      "noteHelp": "Optional. For example, when you can start.",
-      "applyButton": "Apply now",
-      "applying": "Sending…",
-      "appliedToast": "Application sent. We will tell you when the employer replies.",
-      "yourApplication": "Your application",
-      "closed": "This job is closed. Applications are no longer accepted.",
-      "removed": "This job was removed by KaziForce.",
-      "message": "Message the employer"
-    },
-    "mine": {
-      "emptyTitle": "No applications yet",
-      "emptyBody": "When you apply for a job, you can follow it here.",
-      "findJobs": "Find jobs",
-      "appliedOn": "Applied {{when}}"
-    },
-    "held": "Waiting for a check"
-  },
   "theme": {
     "label": "Screen colours",
     "settingsLabel": "Appearance",
@@ -347,9 +233,5 @@
       "dark": "Dark",
       "system": "Same as device"
     }
-  },
-  "demoCode": {
-    "title": "Demo code",
-    "help": "For the presentation, the code is shown here instead of being sent by SMS or email."
   }
 }

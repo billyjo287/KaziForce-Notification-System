@@ -2,17 +2,22 @@ import { CheckCheck, Inbox } from 'lucide-react';
 import { AnimatePresence } from 'motion/react';
 import * as m from 'motion/react-m';
 import { Tabs } from 'radix-ui';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { showToast } from '../../stores/toasts';
 import { AlertCard } from './AlertCard';
 import { AlertDetail } from './AlertDetail';
-import { NotImportantFeedback } from './NotImportantFeedback';
 import type { AlertActions } from './useAlerts';
 import { PRIORITY_STYLE } from './priorityStyle';
 import { PRIORITIES, type Alert, type AlertRole, type Priority } from './types';
+
+// The optional "why?" after "Not important to me" is downloaded only when someone presses it,
+// so it does not make everyone's first download bigger (app shell budget: 200 KB).
+const NotImportantFeedback = lazy(async () => ({
+  default: (await import('./NotImportantFeedback')).NotImportantFeedback,
+}));
 
 type Filter = 'all' | 'unread' | 'last7days';
 const FILTERS: Filter[] = ['all', 'unread', 'last7days'];
@@ -145,12 +150,14 @@ export function AlertsDashboard({
         </header>
 
         {feedbackFor && (
-          <NotImportantFeedback
-            key={feedbackFor.id}
-            alertId={feedbackFor.id}
-            alertTitle={feedbackFor.title}
-            onDone={() => setFeedbackFor(null)}
-          />
+          <Suspense fallback={null}>
+            <NotImportantFeedback
+              key={feedbackFor.id}
+              alertId={feedbackFor.id}
+              alertTitle={feedbackFor.title}
+              onDone={() => setFeedbackFor(null)}
+            />
+          </Suspense>
         )}
 
         <Tabs.Root

@@ -1,0 +1,48 @@
+{
+  "jobs": {
+    "title": "Jobs",
+    "findTab": "Find jobs",
+    "mineTab": "My applications",
+    "filters": "Filter jobs",
+    "location": "Place",
+    "anyLocation": "Any place",
+    "skill": "Skill",
+    "anySkill": "Any skill",
+    "results_one": "{{count}} job",
+    "results_other": "{{count}} jobs",
+    "emptyTitle": "No jobs match",
+    "emptyBody": "Try another place or skill, or choose \"Any\".",
+    "errorTitle": "We could not load the jobs",
+    "urgent": "Urgent",
+    "closes": "Closes {{when}}",
+    "closed": "Closed",
+    "removed": "Removed",
+    "pay": "Pay",
+    "applied": "You applied",
+    "detail": {
+      "back": "Back to jobs",
+      "postedBy": "Posted by {{name}}",
+      "about": "About the job",
+      "where": "Where",
+      "skill": "Skill needed",
+      "closesAt": "Closes",
+      "apply": "Apply for this job",
+      "noteLabel": "Short note to the employer",
+      "noteHelp": "Optional. For example, when you can start.",
+      "applyButton": "Apply now",
+      "applying": "Sending…",
+      "appliedToast": "Application sent. We will tell you when the employer replies.",
+      "yourApplication": "Your application",
+      "closed": "This job is closed. Applications are no longer accepted.",
+      "removed": "This job was removed by KaziForce.",
+      "message": "Message the employer"
+    },
+    "mine": {
+      "emptyTitle": "No applications yet",
+      "emptyBody": "When you apply for a job, you can follow it here.",
+      "findJobs": "Find jobs",
+      "appliedOn": "Applied {{when}}"
+    },
+    "held": "Waiting for a check"
+  }
+}

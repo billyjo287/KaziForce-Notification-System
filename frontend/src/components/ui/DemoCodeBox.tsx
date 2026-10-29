@@ -1,5 +1,7 @@
 import { KeyRound } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+// Its words live with the log-in pages' words (only pages that ask for a code show this box).
+import '../../features/auth/strings';
 
 /**
  * Presentation demo only (backend OTP_DEMO_MODE): shows the 6-digit code that a real version

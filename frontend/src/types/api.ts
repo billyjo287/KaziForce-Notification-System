@@ -87,6 +87,33 @@ export interface Session {
   user: User;
 }
 
+/** Log-in codes and sign-up codes (backend accountCodes.ts). */
+export type CodeChannel = 'sms' | 'email';
+export interface CodeOption {
+  channel: CodeChannel;
+  /** Masked: "07•• ••• 678", "wa•••@gmail.com". */
+  to: string;
+}
+export interface CodeSent extends CodeOption {
+  expiresInSeconds: number;
+  resendInSeconds: number;
+  /** Presentation demo mode only (OTP_DEMO_MODE). */
+  demoCode?: string;
+}
+/** The password was right; a code is needed (a new phone or computer). */
+export interface LoginCodeStep {
+  codeRequired: true;
+  challengeId: string;
+  firstName: string;
+  options: CodeOption[];
+}
+/** Sign-up: the account is created once the emailed code is right. */
+export interface SignupCodeStep {
+  codeRequired: true;
+  challengeId: string;
+  sent: CodeSent;
+}
+
 export interface Job {
   id: string;
   title: string;

@@ -21,8 +21,11 @@ test('keyboard only: log in, skip to the content, see where the focus is, open a
   page,
 }) => {
   await page.goto('/login?theme=light');
-  await tabTo(page, page.getByLabel('Email address'));
+  await tabTo(page, page.getByLabel('Email or phone number'));
   await page.keyboard.type('worker2@example.com');
+  await page.keyboard.press('Enter');
+  // The next step's heading takes the focus; the password is the next stop.
+  await expect(page.getByRole('heading', { level: 1, name: 'Enter your password' })).toBeFocused();
   await tabTo(page, page.getByLabel('Password', { exact: true }));
   await page.keyboard.type(PASSWORD);
   await page.keyboard.press('Enter');

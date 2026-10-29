@@ -6,9 +6,14 @@ import { Button } from '../../components/ui/Button';
 import { ChoiceCards } from '../../components/ui/ChoiceCards';
 import { FormAlert } from '../../components/ui/FormAlert';
 import { Textarea } from '../../components/ui/Textarea';
+import { addPageStrings } from '../../i18n/addPageStrings';
+import feedbackEn from '../../i18n/locales/alertFeedback.en.json';
+import feedbackSw from '../../i18n/locales/alertFeedback.sw.json';
 import { api } from '../../lib/api';
 import { useApiErrorMessage } from '../../lib/useApiErrorMessage';
 import { showToast } from '../../stores/toasts';
+
+addPageStrings(feedbackEn, feedbackSw);
 
 const NOT_IMPORTANT_REASONS = [
   'not_my_work',

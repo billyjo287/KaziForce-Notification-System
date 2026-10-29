@@ -18,6 +18,7 @@ import { relativeTime } from '../../lib/relativeTime';
 import { useApiErrorMessage } from '../../lib/useApiErrorMessage';
 import { usePageTitle } from '../../lib/usePageTitle';
 import { showToast } from '../../stores/toasts';
+import './strings';
 
 /** Worker job detail with one-tap Apply (and an optional short note). */
 export default function JobDetailPage() {

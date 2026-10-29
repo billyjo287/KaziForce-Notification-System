@@ -24,4 +24,5 @@ export const loadEnv = {
   // Production mode refuses the example secret; this one is only for the local load test.
   JWT_ACCESS_SECRET: 'local-load-test-only-secret-0123456789abcdefghijklmnop',
   FRONTEND_ORIGIN: 'http://localhost:5173',
+  ACCOUNT_CODES: 'false',
 };

@@ -1,5 +1,6 @@
 // Accounts: register, log in, stay logged in (refresh), log out, log out everywhere, and reset a
-// forgotten password (PRD FR-1).
+// forgotten password (PRD FR-1). Log-in on a new device and sign-up are confirmed with a 6-digit
+// code (accountCodes.ts, ADR 0013).
 //
 // Login token (JWT, 15 min) goes to the page's memory. The refresh token (30 days) lives in an
 // httpOnly cookie that page scripts cannot read, is stored only as a hash, and is replaced on
@@ -21,13 +22,23 @@ import { prisma } from '../../lib/prisma.js';
 import type { RateLimiters } from '../../lib/rateLimits.js';
 import { sendEmail } from '../../lib/mailer.js';
 import { redis } from '../../lib/redis.js';
-import { logger } from '../../lib/logger.js';
-import { randomToken, sha256, signAccessToken, sixDigitCode } from '../../lib/tokens.js';
+import { randomToken, sha256, signAccessToken } from '../../lib/tokens.js';
 import { parse } from '../../lib/validate.js';
 import { currentUser, requireAuth } from '../../middleware/auth.js';
 import { publish } from '../../realtime/bus.js';
 import { DEFAULT_QUIET_HOURS, PRESETS } from '../me/presets.js';
 import { serializeUser, userWithProfile } from '../me/serializeUser.js';
+import {
+  checkCode,
+  codeOptions,
+  createChallenge,
+  findAccount,
+  forgetDevices,
+  isTrustedDevice,
+  parseIdentifier,
+  sendCode,
+  trustDevice,
+} from './accountCodes.js';
 import { describeDevice, newLoginEmail, passwordResetEmail } from './emails.js';
 
 const COOKIE = 'kf_refresh';
@@ -35,10 +46,6 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 /** Two tabs refreshing at the same moment must not look like token theft. */
 const ROTATION_GRACE_MS = 30 * 1000;
 const RESET_LINK_MS = 60 * 60 * 1000;
-// Log-in code (OTP_DEMO_MODE, for presentations): valid 5 minutes, 5 tries, kept only as a hash.
-const LOGIN_CODE_SECONDS = 5 * 60;
-const LOGIN_CODE_TRIES = 5;
-const loginCodeKey = (challengeId: string) => `kf:login-code:${sha256(challengeId)}`;
 // Compared against when the email is unknown, so "no such user" takes as long as "wrong password".
 const DUMMY_HASH = bcrypt.hashSync('not-a-real-password', 10);
 
@@ -63,7 +70,20 @@ const registerSchema = z.object({
   password,
   language: z.enum(['en', 'sw']).default('en'),
 });
-const loginSchema = z.object({ email, password: z.string().min(1).max(128) });
+// "identifier" is an email or a phone number; older pages (and the tests) send "email".
+const loginSchema = z
+  .object({
+    identifier: z.string().trim().min(1).max(254).optional(),
+    email: z.string().trim().min(1).max(254).optional(),
+    password: z.string().min(1).max(128),
+  })
+  .refine((v) => v.identifier ?? v.email, { path: ['identifier'], message: 'Required' });
+const identifierSchema = z.object({ identifier: z.string().trim().min(1).max(254) });
+const challengeSchema = z.object({ challengeId: z.string().min(10).max(200) });
+const codeSchema = challengeSchema.extend({
+  code: z.string().regex(/^\d{6}$/, 'Enter the 6 digits'),
+  rememberDevice: z.boolean().default(false),
+});
 const forgotSchema = z.object({ email });
 const resetSchema = z.object({ token: z.string().min(20).max(200), password });
 
@@ -110,14 +130,67 @@ export function authRoutes(limits: RateLimiters) {
     const input = parse(registerSchema, req.body);
     const existing = await prisma.user.findUnique({ where: { email: input.email } });
     if (existing) throw conflict('email_taken', 'An account with this email already exists.');
+    // From here on only the hash: the typed password is never kept, not even in Redis.
+    const details = {
+      role: input.role,
+      name: input.name,
+      email: input.email,
+      language: input.language,
+      passwordHash: await bcrypt.hash(input.password, 12),
+    };
 
+    if (env.ACCOUNT_CODES) {
+      // The account is created only once the emailed code is right (no half-made accounts, and
+      // nobody can take someone else's email address).
+      const challengeId = await createChallenge({
+        purpose: 'signup',
+        signup: details,
+        name: input.name,
+        language: input.language,
+        email: input.email,
+      });
+      const sent = await sendCode(challengeId, 'signup', 'email');
+      res.json({ codeRequired: true, challengeId, sent });
+      return;
+    }
+    await createAccount(req, res, details);
+  });
+
+  router.post('/register/resend', limits.codeSend, async (req, res) => {
+    const { challengeId } = parse(challengeSchema, req.body);
+    res.json(await sendCode(challengeId, 'signup', 'email'));
+  });
+
+  router.post('/register/code', limits.lookup, async (req, res) => {
+    const input = parse(codeSchema, req.body);
+    const challenge = await checkCode(input.challengeId, 'signup', input.code);
+    if (!challenge.signup) throw badRequest('login_code_expired', 'Start again.');
+    if (await prisma.user.findUnique({ where: { email: challenge.signup.email } })) {
+      throw conflict('email_taken', 'An account with this email already exists.');
+    }
+    await createAccount(req, res, challenge.signup, input.rememberDevice);
+  });
+
+  /** Creates the account with the recommended settings and logs it in (201). */
+  async function createAccount(
+    req: Request,
+    res: Response,
+    input: {
+      role: 'worker' | 'business';
+      name: string;
+      email: string;
+      passwordHash: string;
+      language: 'en' | 'sw';
+    },
+    rememberDevice = false,
+  ) {
     const user = await prisma.user.create({
       data: {
         role: input.role,
         name: input.name,
         email: input.email,
         language: input.language,
-        passwordHash: await bcrypt.hash(input.password, 12),
+        passwordHash: input.passwordHash,
         lastLoginAt: new Date(),
         preference: {
           create: {
@@ -130,13 +203,27 @@ export function authRoutes(limits: RateLimiters) {
       },
     });
     await startSession(res, user, req.get('user-agent'));
+    if (rememberDevice) await trustDevice(req, res, user.id);
     res.status(201);
     await loggedInResponse(res, user.id);
+    return user;
+  }
+
+  // "Email or phone number" first: is there an account? The page then asks for the password, or
+  // offers to create one. Like sign-up, this tells whether an address is registered, never whose
+  // it is; it has its own rate limit.
+  router.post('/check', limits.lookup, async (req, res) => {
+    const { identifier } = parse(identifierSchema, req.body);
+    const parsed = parseIdentifier(identifier);
+    if (!parsed) throw badRequest('identifier_invalid', 'Type an email address or a phone number.');
+    const user = await findAccount(parsed);
+    res.json({ exists: !!user, kind: parsed.kind });
   });
 
   router.post('/login', limits.login, async (req, res) => {
     const input = parse(loginSchema, req.body);
-    const user = await prisma.user.findUnique({ where: { email: input.email } });
+    const identifier = parseIdentifier(input.identifier ?? input.email ?? '');
+    const user = identifier ? await findAccount(identifier) : null;
     const passwordOk = await bcrypt.compare(input.password, user?.passwordHash ?? DUMMY_HASH);
     if (!user || !passwordOk) {
       throw unauthorized('wrong_credentials', 'The email or password is not right.');
@@ -145,57 +232,47 @@ export function authRoutes(limits: RateLimiters) {
       throw forbidden('account_suspended', 'This account has been suspended.');
     }
 
-    // Demo mode: a second step with a 6-digit code. A real version would send it by SMS or
-    // email; for the presentation it is shown on screen (and in this terminal).
-    if (env.OTP_DEMO_MODE) {
-      const code = sixDigitCode();
-      const challengeId = randomToken();
-      await redis.set(
-        loginCodeKey(challengeId),
-        JSON.stringify({ userId: user.id, codeHash: sha256(`${user.id}:${code}`), tries: 0 }),
-        'EX',
-        LOGIN_CODE_SECONDS,
-      );
-      logger.info(`[demo code] log-in code for ${user.email}: ${code}`);
+    // A new phone or computer: the password was right, now a code by SMS or email.
+    if (env.ACCOUNT_CODES && !(await isTrustedDevice(req, user.id))) {
+      const contact = {
+        phone: user.phoneVerified && user.phone && !user.smsOptedOutAt ? user.phone : undefined,
+        email: user.email,
+      };
+      const challengeId = await createChallenge({
+        purpose: 'login',
+        userId: user.id,
+        name: user.name,
+        language: user.language,
+        ...contact,
+      });
       res.json({
         codeRequired: true,
         challengeId,
-        demoCode: code,
-        expiresInSeconds: LOGIN_CODE_SECONDS,
+        firstName: user.name.split(' ')[0],
+        options: codeOptions(contact),
       });
       return;
     }
     await finishLogin(req, res, user);
   });
 
-  // Demo mode, step 2: the 6-digit code shown after the password.
-  router.post('/login/code', limits.login, async (req, res) => {
-    const input = parse(
-      z.object({
-        challengeId: z.string().min(10).max(200),
-        code: z.string().regex(/^\d{6}$/, 'Enter the 6 digits'),
-      }),
-      req.body,
-    );
-    const key = loginCodeKey(input.challengeId);
-    const saved = await redis.get(key);
-    if (!saved) throw badRequest('login_code_expired', 'This code has expired. Log in again.');
-    const pending = JSON.parse(saved) as { userId: string; codeHash: string; tries: number };
-    if (pending.codeHash !== sha256(`${pending.userId}:${input.code}`)) {
-      pending.tries += 1;
-      if (pending.tries >= LOGIN_CODE_TRIES) {
-        await redis.del(key);
-        throw badRequest('login_code_expired', 'Too many wrong codes. Log in again.');
-      }
-      await redis.set(key, JSON.stringify(pending), 'KEEPTTL');
-      throw badRequest('login_code_wrong', 'That code is not right. Check it and try again.');
-    }
-    await redis.del(key);
-    const user = await prisma.user.findUnique({ where: { id: pending.userId } });
+  // "Where should we send your code?": SMS or email (also "Send again" and "Use email instead").
+  router.post('/login/send', limits.codeSend, async (req, res) => {
+    const input = parse(challengeSchema.extend({ channel: z.enum(['sms', 'email']) }), req.body);
+    res.json(await sendCode(input.challengeId, 'login', input.channel));
+  });
+
+  router.post('/login/code', limits.lookup, async (req, res) => {
+    const input = parse(codeSchema, req.body);
+    const challenge = await checkCode(input.challengeId, 'login', input.code);
+    const user = challenge.userId
+      ? await prisma.user.findUnique({ where: { id: challenge.userId } })
+      : null;
     if (!user) throw unauthorized();
     if (user.status === 'suspended') {
       throw forbidden('account_suspended', 'This account has been suspended.');
     }
+    if (input.rememberDevice) await trustDevice(req, res, user.id);
     await finishLogin(req, res, user);
   });
 
@@ -276,6 +353,7 @@ export function authRoutes(limits: RateLimiters) {
   router.post('/logout-all', requireAuth, async (req, res) => {
     const me = currentUser(req);
     await endAllSessions(me.id);
+    await forgetDevices(me.id);
     // Other devices lose their live connection at once (this tab is logging out anyway).
     await publish(redis, { kind: 'disconnect', userId: me.id }).catch(() => {});
     res.clearCookie(COOKIE, { path: '/api/auth' });
@@ -318,6 +396,7 @@ export function authRoutes(limits: RateLimiters) {
         where: { userId: reset.userId, revokedAt: null },
         data: { revokedAt: new Date() },
       }),
+      prisma.trustedDevice.deleteMany({ where: { userId: reset.userId } }),
     ]);
     res.json({ ok: true });
   });

@@ -35,17 +35,23 @@ test('dark mode, welcome message and Log out from any page', async ({ page }, te
   await expect(loggedOut).toBeHidden({ timeout: 7000 });
 });
 
-test('sign-up asks for the password twice', async ({ page }) => {
+test('sign-up: one question per screen, a typo hint and password rules ticked off', async ({
+  page,
+}) => {
   await page.goto('/register');
   await page.getByRole('radio', { name: /I'm looking for work/ }).check();
   await page.getByRole('button', { name: 'Continue' }).click();
+  await page.getByLabel('Email address').fill(`rules.${Date.now()}@gmial.com`);
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(page.getByText(/Did you mean rules\.\d+@gmail\.com\?/)).toBeVisible();
+  await expectNoSeriousA11yIssues(page);
+  await page.getByRole('button', { name: 'Yes, use this' }).click();
   await page.getByLabel('Your full name').fill('Test Mtu');
-  await page.getByLabel('Email address').fill(`twice.${Date.now()}@example.com`);
-  await page.getByLabel('Choose a password').fill('Password123!');
-  await page.getByLabel('Type the password again').fill('Password321!');
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await page.getByLabel('Choose a password').fill('12345678');
   await page.getByRole('button', { name: 'Create account' }).click();
   await expect(
-    page.getByText('The two passwords are not the same.', { exact: false }),
+    page.getByText('This password is too easy to guess.', { exact: false }),
   ).toBeVisible();
   await expect(page).toHaveURL(/\/register$/);
   await expectNoSeriousA11yIssues(page);

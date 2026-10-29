@@ -7,6 +7,10 @@ export interface RateLimitSettings {
   passwordReset: number;
   /** SMS codes per hour per user. */
   phoneCode: number;
+  /** "Is there an account for this email or phone?" and code checks, per 15 minutes per address. */
+  lookup: number;
+  /** Log-in and sign-up codes sent (SMS or email) per hour per address. */
+  codeSend: number;
   // Things people create (PRD NFR-2: rate limits on create endpoints). Counted per logged-in
   // user, generous enough that nobody using the site normally ever meets them.
   /** Messages per minute per user. */
@@ -23,6 +27,8 @@ export const DEFAULT_RATE_LIMITS: RateLimitSettings = {
   login: 10,
   passwordReset: 5,
   phoneCode: 3,
+  lookup: 30,
+  codeSend: 10,
   message: 30,
   apply: 30,
   postJob: 20,
@@ -35,7 +41,7 @@ function limiter(limit: number, windowMs: number, keyByUser = false) {
     limit,
     standardHeaders: 'draft-8',
     legacyHeaders: false,
-    // Log-in and password reset are counted per network address; the rest per logged-in user.
+    // Log-in, codes and password reset are counted per network address; the rest per logged-in user.
     ...(keyByUser && { keyGenerator: (req) => req.user?.id ?? 'anonymous' }),
     handler: (_req, res) => {
       res.status(429).json({
@@ -54,6 +60,8 @@ export function createRateLimiters(settings: RateLimitSettings) {
     login: limiter(settings.login, 15 * 60 * 1000),
     passwordReset: limiter(settings.passwordReset, 60 * 60 * 1000),
     phoneCode: limiter(settings.phoneCode, 60 * 60 * 1000, true),
+    lookup: limiter(settings.lookup, 15 * 60 * 1000),
+    codeSend: limiter(settings.codeSend, 60 * 60 * 1000),
     message: limiter(settings.message, 60 * 1000, true),
     apply: limiter(settings.apply, 60 * 60 * 1000, true),
     postJob: limiter(settings.postJob, 60 * 60 * 1000, true),

@@ -5,6 +5,7 @@ import {
   PASSWORD,
   choose,
   expectNoHorizontalScroll,
+  enterPassword,
   expectNoSeriousA11yIssues,
   logIn,
 } from './helpers';
@@ -107,10 +108,13 @@ test('a new worker signs up and completes onboarding', async ({ page }, testInfo
   await page.goto('/register');
   await page.getByRole('radio', { name: /I'm looking for work/ }).check();
   await page.getByRole('button', { name: 'Continue' }).click();
-  await page.getByLabel('Your full name').fill('Test Mfanyakazi');
+  // One question per screen: email, name, password.
   await page.getByLabel('Email address').fill(email);
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await page.getByLabel('Your full name').fill('Test Mfanyakazi');
+  await page.getByRole('button', { name: 'Continue' }).click();
   await page.getByLabel('Choose a password').fill(PASSWORD);
-  await page.getByLabel('Type the password again').fill(PASSWORD);
+  await expectNoSeriousA11yIssues(page);
   await page.getByRole('button', { name: 'Create account' }).click();
 
   // Step 2: phone, consent, SMS code (mock mode returns the code to tests).
@@ -161,9 +165,7 @@ test('a suspended user cannot log in and is told why', async ({ page, browser },
   await expect(admin.getByText('Account suspended.', { exact: true })).toBeVisible();
 
   await page.goto('/login');
-  await page.getByLabel('Email address').fill('worker6@example.com');
-  await page.getByLabel('Password', { exact: true }).fill(PASSWORD);
-  await page.getByRole('button', { name: 'Log in' }).click();
+  await enterPassword(page, 'worker6@example.com');
   await expect(page.getByRole('alert')).toContainText('This account has been suspended.');
 
   await admin.getByRole('button', { name: 'Reactivate this account' }).click();

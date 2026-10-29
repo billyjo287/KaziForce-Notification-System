@@ -162,6 +162,7 @@ model User {
   messagesSent           Message[]            @relation("MessageSender")
   messagesReceived       Message[]            @relation("MessageRecipient")
   sessions               Session[]
+  trustedDevices         TrustedDevice[]
   passwordResetTokens    PasswordResetToken[]
   phoneVerifications     PhoneVerification[]
   auditActions           AuditLog[]           @relation("AuditActor")
@@ -206,6 +207,22 @@ model Session {
   revokedAt    DateTime?
   replacedById String?   @db.Uuid
   createdAt    DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// "Remember this phone or computer for 30 days": after a log-in code, this device may skip the
+// code next time. The browser keeps a random token in an httpOnly cookie; only its hash is stored.
+// "Log out of all devices" and a new password remove every row.
+model TrustedDevice {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  tokenHash String   @unique
+  userAgent String?  @db.VarChar(500)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

@@ -30,6 +30,7 @@ import { ReasonDialog } from './ReasonDialog';
 import { ANY, useParamSetter } from './params';
 import { LoadError } from './shared';
 import '../employer/strings';
+import '../jobs/strings';
 
 /** Search box that only searches when the button is pressed (fewer requests on slow data). */
 function SearchForm({

@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Link, useSearchParams } from 'react-router';
+import { Link, useLocation, useSearchParams } from 'react-router';
 import { z } from '../../lib/zod';
 import { Button } from '../../components/ui/Button';
 import { buttonClasses } from '../../components/ui/buttonStyles';
@@ -44,11 +44,16 @@ export function ForgotPasswordPage() {
   const errorMessage = useApiErrorMessage();
   const [sent, setSent] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  // From the log-in page: the email already typed there.
+  const typed = (useLocation().state as { email?: string } | null)?.email ?? '';
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<z.infer<typeof forgotSchema>>({ resolver: zodResolver(forgotSchema) });
+  } = useForm<z.infer<typeof forgotSchema>>({
+    resolver: zodResolver(forgotSchema),
+    defaultValues: { email: typed },
+  });
 
   const onSubmit = handleSubmit(async (values) => {
     setServerError(null);

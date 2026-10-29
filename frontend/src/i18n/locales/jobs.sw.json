@@ -1,0 +1,48 @@
+{
+  "jobs": {
+    "title": "Kazi",
+    "findTab": "Tafuta kazi",
+    "mineTab": "Maombi yangu",
+    "filters": "Chuja kazi",
+    "location": "Mahali",
+    "anyLocation": "Mahali popote",
+    "skill": "Ujuzi",
+    "anySkill": "Ujuzi wowote",
+    "results_one": "Kazi {{count}}",
+    "results_other": "Kazi {{count}}",
+    "emptyTitle": "Hakuna kazi zinazolingana",
+    "emptyBody": "Jaribu mahali au ujuzi mwingine, au chagua \"Yoyote\".",
+    "errorTitle": "Hatukuweza kupakia kazi",
+    "urgent": "Dharura",
+    "closes": "Inafungwa {{when}}",
+    "closed": "Imefungwa",
+    "removed": "Imeondolewa",
+    "pay": "Malipo",
+    "applied": "Umeomba",
+    "detail": {
+      "back": "Rudi kwenye kazi",
+      "postedBy": "Imechapishwa na {{name}}",
+      "about": "Kuhusu kazi",
+      "where": "Mahali",
+      "skill": "Ujuzi unaohitajika",
+      "closesAt": "Inafungwa",
+      "apply": "Omba kazi hii",
+      "noteLabel": "Ujumbe mfupi kwa mwajiri",
+      "noteHelp": "Si lazima. Kwa mfano, lini unaweza kuanza.",
+      "applyButton": "Omba sasa",
+      "applying": "Inatuma…",
+      "appliedToast": "Ombi limetumwa. Tutakujulisha mwajiri akijibu.",
+      "yourApplication": "Ombi lako",
+      "closed": "Kazi hii imefungwa. Maombi hayapokelewi tena.",
+      "removed": "Kazi hii iliondolewa na KaziForce.",
+      "message": "Mwandikie mwajiri"
+    },
+    "mine": {
+      "emptyTitle": "Bado hakuna maombi",
+      "emptyBody": "Ukiomba kazi, unaweza kuifuatilia hapa.",
+      "findJobs": "Tafuta kazi",
+      "appliedOn": "Uliomba {{when}}"
+    },
+    "held": "Inasubiri ukaguzi"
+  }
+}

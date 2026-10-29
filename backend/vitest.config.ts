@@ -19,6 +19,8 @@ export default defineConfig({
       TWILIO_AUTH_TOKEN: 'test-twilio-auth-token',
       AFRICASTALKING_WEBHOOK_SECRET: 'test-africastalking-secret',
       MOCK_FAIL_CHANNELS: '',
+      // Most tests log in with the password alone; tests/accountCodes.test.ts switches codes on.
+      ACCOUNT_CODES: 'false',
     },
     globalSetup: ['./tests/globalSetup.ts'],
     // One shared test database: run the files one after another.

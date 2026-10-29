@@ -36,8 +36,14 @@ const envSchema = z.object({
   // Log-in / sign-up attempts per 15 minutes per network address.
   LOGIN_RATE_LIMIT: z.coerce.number().int().min(1).default(10),
   STATUS_UNDO_SECONDS: z.coerce.number().int().min(0).max(120).default(15),
-  // Presentation only: log-in asks for a 6-digit code after the password, and the code (and the
-  // sign-up phone code) is SHOWN ON SCREEN instead of being sent. Never allowed in production.
+  // A 6-digit code confirms who it is: after the password on a new phone or computer (by SMS or
+  // email, the person chooses) and at sign-up (by email). "false" only for automated tests.
+  ACCOUNT_CODES: z
+    .enum(['true', 'false'])
+    .default('true')
+    .transform((v) => v === 'true'),
+  // Presentation only: every code (log-in, sign-up, phone) is ALSO SHOWN ON SCREEN, so a demo
+  // works without opening the inbox. Never allowed in production.
   OTP_DEMO_MODE: z
     .enum(['true', 'false'])
     .default('false')

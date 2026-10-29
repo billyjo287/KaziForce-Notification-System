@@ -20,6 +20,14 @@ export function useLogOut() {
       await api.post(everywhere ? '/auth/logout-all' : '/auth/logout');
       const notice: AuthNotice = everywhere ? 'loggedOutAll' : 'loggedOut';
       queryClient.clear(); // forget this person's data on this device
+      if (everywhere) {
+        // This device no longer greets them by name (features/auth/identifier.ts).
+        try {
+          localStorage.removeItem('kf.rememberedAccount');
+        } catch {
+          // storage blocked: nothing was saved
+        }
+      }
       clear(notice);
       navigate('/login', { replace: true });
     } catch (error) {

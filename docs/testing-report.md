@@ -59,10 +59,10 @@ This is called continuous integration (CI): a change that breaks something is ca
 
 | Test suite | What it covers | Tests | Result | Time |
 | --- | --- | ---: | --- | --- |
-| Backend unit + integration | API, notification pipeline, classifier fallback, channels, escalation, quiet hours, daily summary, retention, security, admin tools | **193** | All passed | ≈ 4 min |
-| Website components | Screens and buttons on their own (log-in, alerts, settings, admin pages) | **88** | All passed | ≈ 1 min |
+| Backend unit + integration | API, notification pipeline, classifier fallback, channels, escalation, quiet hours, daily summary, retention, security, admin tools | **204** | All passed | ≈ 4 min |
+| Website components | Screens and buttons on their own (log-in, alerts, settings, admin pages) | **93** | All passed | ≈ 1 min |
 | ML service | `/predict` answers, spam and priority rules, evaluation maths | **66** | All passed | ≈ 2 s |
-| Browser (end to end), Chrome | Whole tasks at 360 px (phone), 768 px (tablet), 1024 px (laptop) and 1440 px (desktop), with accessibility checks on every page | **114** | All passed | ≈ 11 min |
+| Browser (end to end), Chrome | Whole tasks at 360 px (phone), 768 px (tablet), 1024 px (laptop) and 1440 px (desktop), with accessibility checks on every page | **120** | All passed | ≈ 11 min |
 | Browser smoke test, Firefox + WebKit | Landing, log-in, settings and a live alert in two other browser engines | 4 | Runs in GitHub Actions | ≈ 1 min |
 | Load test | 1,000 alerts a minute for 10 minutes | 10,000 alerts | All delivered | 10 min |
 | Recovery test | Redis and PostgreSQL restarted during the load test | 9,975 alerts | None lost | 10 min |
@@ -84,7 +84,7 @@ This is called continuous integration (CI): a change that breaks something is ca
 4. Start **Docker Desktop** and wait until it says it is running. The tests need the database
    and Redis that run inside Docker.
 
-### 4.2 Backend tests (API, pipeline, channels): 193 tests
+### 4.2 Backend tests (API, pipeline, channels): 204 tests
 
 ```
 npm run test -w backend
@@ -94,7 +94,7 @@ npm run test -w backend
 
 ```
  Test Files  15 passed (15)
-      Tests  193 passed (193)
+      Tests  204 passed (204)
 ```
 
 **How it works:** before the tests start, a fresh test database is created and filled with the
@@ -103,13 +103,13 @@ the answer and what was saved in the database. Some tests also start the notific
 and a stand-in ML service, and wait for the alert to arrive live, exactly as a worker's browser
 would.
 
-### 4.3 Website component tests: 88 tests
+### 4.3 Website component tests: 93 tests
 
 ```
 npm run test -w frontend
 ```
 
-**What you see:** `Test Files 15 passed (15)`, `Tests 88 passed (88)`.
+**What you see:** `Test Files 15 passed (15)`, `Tests 93 passed (93)`.
 
 **How it works:** each screen is drawn in a simulated browser with a fake server, so the screen
 can be tested on its own. Example: "after *Not important to me*, a card asks why; pressing *Send*
@@ -129,7 +129,7 @@ Kiswahili, are sent to `/predict`. Each answer must match the expected priority,
 reasons exactly. The **same 33 examples** are also checked against the backend's copy of the
 rules (used when the ML service is too slow), so both always give the same answer.
 
-### 4.5 Browser tests (end to end): 114 tests
+### 4.5 Browser tests (end to end): 120 tests
 
 ```
 cd frontend
@@ -140,7 +140,7 @@ npm run test:e2e
 The install line downloads the test browsers and is only needed once. To use the Google Chrome
 already on the computer instead, first run `$env:PW_CHANNEL="chrome"` in PowerShell.
 
-**What you see:** a numbered list of tests with ✓ or ✘, then `114 passed`. The tests marked
+**What you see:** a numbered list of tests with ✓ or ✘, then `120 passed`. The tests marked
 *skipped* are expected: they are the optional screenshot tests, and tests meant for one screen
 size only.
 
@@ -210,7 +210,7 @@ NFR = non-functional requirement.
 
 | Requirement | What is tested (examples) | Where |
 | --- | --- | --- |
-| FR-1 Log-in and accounts | Wrong password gets a plain answer; too many tries are blocked; suspended users are stopped at once; stolen refresh tokens end all sessions; the demo log-in code (right, wrong, five wrong tries, used twice) | `backend/tests/auth.test.ts`, `loginCode.test.ts`, `roles-and-suspension.test.ts` |
+| FR-1 Log-in and accounts | Wrong password gets a plain answer; too many tries are blocked; suspended users are stopped at once; stolen refresh tokens end all sessions; log-in by email or phone; the code by SMS or email after the password on a new device (right, wrong, five wrong tries, used twice, 30-second wait, "remember this device" until "log out of all devices"); sign-up account created only after the emailed code | `backend/tests/auth.test.ts`, `accountCodes.test.ts`, `frontend/src/features/auth/auth.test.tsx`, `e2e/auth.spec.ts`, `roles-and-suspension.test.ts` |
 | FR-2 Notifications created | Job posts reach workers in the same place or with the same skill; application updates and messages notify the right person; incomplete notifications are refused | `pipeline.test.ts`, `marketplace.test.ts` |
 | FR-3 Priority and spam | Scam messages are blocked and never delivered; **scam job posts are held** until an admin decides; ML service too slow → the same rules run inside the backend | `pipeline.test.ts`, `classify.test.ts`, `ml-service/tests` |
 | FR-4 Channels and safety net | WhatsApp fails 3 times → SMS; not opened in time → next channel; deadline in 8 minutes → window of 4 minutes; STOP turns a channel off | `delivery.test.ts`, `channels.test.ts` |
@@ -219,7 +219,7 @@ NFR = non-functional requirement.
 | FR-7 Delivery logs | One row per try; admin filters | `delivery.test.ts`, `e2e/admin.spec.ts` |
 | FR-8 Daily summary | Only "for later" alerts of the last 24 hours, grouped; nothing sent when empty; once a day at 08:00 Nairobi time | `dailySummary.test.ts` |
 | NFR-1 Speed | 1,000 alerts a minute; urgent alert at the provider within 2 s; page appears in about 1.2 s on slow 3G | load test, `e2e/prerender.spec.ts` |
-| NFR-2 Security and privacy | Example secrets refused in production; demo codes refused in production; signed webhooks; anonymised training export | `security.test.ts`, `loginCode.test.ts`, `admin.test.ts` |
+| NFR-2 Security and privacy | Example secrets refused in production; demo codes refused in production; codes and remembered devices kept only as hashes; signed webhooks; anonymised training export | `security.test.ts`, `accountCodes.test.ts`, `admin.test.ts` |
 | NFR-3 Recovery | Redis down → `/health` says so; Redis and database restarted under load → nothing lost | `health.test.ts`, recovery test |
 | NFR-4 Accessibility | axe on every page; keyboard only; 200% zoom; 320 px phones; tablets and laptops | `e2e/*.spec.ts` |
 
@@ -254,14 +254,18 @@ the test before it runs; the test fails if the actual result is different.
 | TC-20 | Account deletion requested | Removed after 14 days, not before; name becomes "a former user" | As expected ✔ |
 | TC-21 | Admin downloads the training data | No ids, names, phones or emails | As expected ✔ |
 | TC-22 | Redis and database restarted under load | No alert lost; back within 30 s | 9,975 of 9,975 delivered; 3.1 s and 1.6 s ✔ |
-| TC-23 | Typing and pressing "Log in" before the app has loaded | Nothing lost; logged in | As expected ✔ |
+| TC-23 | Typing and pressing "Continue" on the log-in page before the app has loaded | Nothing lost; the password step follows; logged in | As expected ✔ |
 | TC-24 | Every page at 320, 360, 768, 1024 and 1440 px | No serious accessibility problem; no sideways scrolling | As expected ✔ |
 | TC-25 | **Employer posts a job asking workers to "send 500ksh … on my M-Pesa: 07…"** | Job held: not listed, no alerts, waiting in admin review with its reasons | As expected ✔ |
 | TC-26 | Admin publishes a held job / removes it | Publish: alerts go out. Remove: taken down with a reason the employer sees | As expected ✔ |
 | TC-27 | An older scam job (saved before the fix) is announced | Its alerts are blocked using the job's own description | As expected ✔ |
 | TC-28 | Honest "Send your CV to 0712 345 678" | Not spam (one warning sign only) | As expected ✔ |
 | TC-29 | Worker gives a reason after *Not important to me*; then presses Undo | Reason saved; Undo removes it; only the worker can answer | As expected ✔ |
-| TC-30 | Demo log-in code: right, wrong, five wrong, reused | Right logs in once; wrong is explained; five wrong or reused ends the attempt | As expected ✔ |
+| TC-30 | Log-in code on a new device: right, wrong, five wrong, reused | Right logs in once; wrong is explained; five wrong or reused ends the attempt | As expected ✔ |
+| TC-31 | Log in on a new device, choose **By SMS** (verified phone) or **By email** | Code arrives on the chosen channel (terminal / Mailpit in mock mode); addresses masked; a person without a verified phone gets email only | As expected ✔ |
+| TC-32 | Tick "Remember this phone or computer", log in again; then "Log out of all devices" | No code the second time, greeted "Welcome back, Wanjiru"; after logging out everywhere, the code is asked again | As expected ✔ |
+| TC-33 | Sign up with `name@gmial.com`, password `12345678` | "Did you mean gmail.com?"; easy password refused; account created only after the emailed code | As expected ✔ |
+| TC-34 | Log in with `0700 000 004` (a confirmed phone) / with an unknown email | Phone works like the email / "We cannot find an account" with "Create an account" (email carried over) | As expected ✔ |
 
 ---
 

@@ -22,6 +22,8 @@ const env = {
   LOG_LEVEL: 'warn',
   // Many test log-ins come from one computer.
   LOGIN_RATE_LIMIT: '1000',
+  // Browser tests log in with the password alone (the code steps have their own tests).
+  ACCOUNT_CODES: 'false',
 };
 
 execSync('npx prisma migrate deploy', { env, stdio: 'inherit' });
