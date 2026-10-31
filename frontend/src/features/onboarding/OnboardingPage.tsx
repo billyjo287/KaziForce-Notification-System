@@ -2,6 +2,8 @@ import { Bell, BellRing, Mail, MessageSquare, Smartphone } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useNavigate } from 'react-router';
+import '../../components/brand/strings';
+import { SuccessBurst } from '../../components/brand/SuccessBurst';
 import { useFinishOnboarding, useSetChannels, useSetPreset } from '../../api/hooks';
 import { useRestoreSession } from '../../lib/useRestoreSession';
 import { Button } from '../../components/ui/Button';
@@ -39,8 +41,16 @@ export default function OnboardingPage() {
   const [preset, setPresetChoice] = useState<PresetName>('recommended');
   const [showErrors, setShowErrors] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  // Set as the last step (or Skip) is saved: the account then counts as onboarded, and this page
+  // shows "You're all set" instead of sending the person straight on.
+  const [finishing, setFinishing] = useState(false);
+  const done = finishing && !!user?.onboardingCompleted;
   const heading = useRef<HTMLHeadingElement>(null);
-  usePageTitle(t(step === 'preset' ? 'onboarding.preset.title' : 'onboarding.phone.title'));
+  usePageTitle(
+    done
+      ? t('brand.success.profileCreated.titleNoName')
+      : t(step === 'preset' ? 'onboarding.preset.title' : 'onboarding.phone.title'),
+  );
 
   // Each new step starts clean, and focus moves to its heading for screen readers.
   const setStep = (next: Step) => {
@@ -50,11 +60,11 @@ export default function OnboardingPage() {
   };
   useEffect(() => {
     heading.current?.focus();
-  }, [step]);
+  }, [step, done]);
 
   if (status === 'unknown') return <PageSkeleton />;
   if (!user) return <Navigate to="/login" replace />;
-  if (user.role === 'admin' || user.onboardingCompleted)
+  if (user.role === 'admin' || (user.onboardingCompleted && !finishing))
     return <Navigate to={homePath(user.role)} replace />;
 
   const goHome = () => navigate(homePath(user.role), { replace: true });
@@ -73,21 +83,59 @@ export default function OnboardingPage() {
   }
 
   async function savePreset() {
+    setFinishing(true);
     try {
       await setPreset.mutateAsync(preset);
-      goHome();
     } catch (error) {
+      setFinishing(false);
       setServerError(errorMessage(error));
     }
   }
 
   async function skipAll() {
+    setFinishing(true);
     try {
       await finish.mutateAsync();
-      goHome();
     } catch (error) {
+      setFinishing(false);
       setServerError(errorMessage(error));
     }
+  }
+
+  if (done) {
+    const firstName = user.name.split(' ')[0];
+    const worker = user.role === 'worker';
+    return (
+      <AuthLayout>
+        {/* The confetti flies wider than the column; clip it sideways so phones never scroll. */}
+        <div className="flex flex-col items-center gap-4 overflow-x-clip py-6 text-center">
+          <SuccessBurst size={112} />
+          <h1 ref={heading} tabIndex={-1} className="mt-4 text-3xl font-bold outline-none">
+            {firstName
+              ? t('brand.success.profileCreated.title', { name: firstName })
+              : t('brand.success.profileCreated.titleNoName')}
+          </h1>
+          <p className="text-lg text-ink-muted">
+            {t(
+              worker
+                ? 'brand.success.profileCreated.body'
+                : 'brand.success.profileCreated.bodyBusiness',
+            )}
+          </p>
+          <Button
+            size="lg"
+            className="mt-2 w-full"
+            onClick={() => (worker ? navigate('/worker/jobs', { replace: true }) : goHome())}
+          >
+            {t(
+              worker
+                ? 'brand.success.profileCreated.cta'
+                : 'brand.success.profileCreated.ctaBusiness',
+            )}
+          </Button>
+        </div>
+      </AuthLayout>
+    );
   }
 
   const stepNumber = step === 'preset' ? 3 : 2;

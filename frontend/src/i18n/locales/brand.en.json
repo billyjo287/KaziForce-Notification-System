@@ -2,7 +2,7 @@
   "brand": {
     "loading": [
       {
-        "text": "Finding jobs near you…"
+        "text": "Getting things ready…"
       },
       {
         "text": "Sorting the urgent from the not-so-urgent…"
@@ -21,7 +21,9 @@
         "title": "You’re all set, {{name}}!",
         "titleNoName": "You’re all set!",
         "body": "Your profile is live. Now let the jobs come to you, no chasing needed.",
-        "cta": "Show me jobs"
+        "cta": "Show me jobs",
+        "bodyBusiness": "Your account is ready. Post a job and we’ll tell you as soon as people apply.",
+        "ctaBusiness": "Go to my home"
       },
       "jobDeclined": "No problem. We’ll keep looking for something that suits you better.",
       "applied": {
@@ -57,22 +59,6 @@
     },
     "admin": {
       "priorityCorrected": "Noted. The model will learn from this one."
-    },
-    "offline": {
-      "title": "You’re offline. Don’t worry.",
-      "body": "Urgent alerts will still reach you by SMS, so you won’t miss a thing. We’ll catch up the moment you’re back.",
-      "cta": "Try again",
-      "chip": "SMS alerts are on"
-    },
-    "notFound": {
-      "title": "This page went for lunch and didn’t come back.",
-      "body": "Let’s get you somewhere more useful.",
-      "cta": "Take me home"
-    },
-    "error": {
-      "title": "Something tripped on our side.",
-      "body": "It’s us, not you. Give it another go, and if it keeps happening, we’re already on it.",
-      "cta": "Try again"
     },
     "landing": {
       "ctaSub": "That’s less time than waiting for a matatu to fill up.",

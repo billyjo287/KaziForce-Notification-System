@@ -87,11 +87,11 @@ test('offline: shows the banner, then catches up on alerts sent meanwhile', asyn
   await expect(page.getByRole('heading', { level: 1, name: 'Alerts' })).toBeVisible();
 
   await context.setOffline(true);
-  await expect(page.getByText(/You are offline/)).toBeVisible();
+  await expect(page.getByText(/You’re offline/)).toBeVisible();
   await announce(request, title);
 
   await context.setOffline(false);
-  await expect(page.getByText(/You are offline/)).toBeHidden();
+  await expect(page.getByText(/You’re offline/)).toBeHidden();
   await page.getByRole('tab', { name: /When you're free/ }).click();
   await expect(page.getByRole('button', { name: new RegExp(title) })).toBeVisible({
     timeout: 15_000,

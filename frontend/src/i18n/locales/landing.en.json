@@ -85,7 +85,9 @@
       "lowTitle": "5 new jobs near you",
       "lowBody": "Waiting in your daily summary",
       "scamTitle": "Pay KES 5,000 to secure your Dubai job!",
-      "blocked": "3 spam messages blocked today. You’re welcome."
+      "blocked": "3 spam messages blocked today. You’re welcome.",
+      "pause": "Pause animation",
+      "play": "Play animation"
     },
     "channels": {
       "title": "Alerts reach you where you look",

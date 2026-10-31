@@ -611,11 +611,30 @@
 .kf-fade-out {
   animation: kf-fade-out 0.3s ease both;
 }
-/* The scam: drops in at 1.9 s, is swept away at 3.1 s. */
-.kf-drop-sweep {
-  animation:
-    kf-drop 0.6s var(--kf-ease-out) 1.9s both,
-    kf-sweep 0.45s var(--kf-ease-in) 3.1s both;
+/* The hero plays in rounds at an easy pace (timings in AlertSortHero.tsx): slower versions of
+   drop, stamp and sweep, then the whole picture fades out before the next round. */
+.kf-hero-drop {
+  animation: kf-drop 0.9s var(--kf-ease-out) both;
+}
+.kf-hero-stamp {
+  animation: kf-stamp 0.7s var(--kf-ease-spring) both;
+}
+.kf-hero-sweep {
+  animation: kf-sweep 0.7s var(--kf-ease-in) both;
+}
+.kf-hero-round {
+  animation: kf-fade-out 0.8s ease forwards;
+}
+.kf-hero-round .kf-fade-in {
+  animation-duration: 0.8s;
+}
+.kf-hero-round .kf-fade-out {
+  animation-duration: 0.5s;
+}
+/* The Pause button: everything freezes where it is. */
+.kf-paused,
+.kf-paused * {
+  animation-play-state: paused !important;
 }
 /* The ready-made copy of the landing page (ADR 0010) keeps the demo hidden: it plays once, when
    the app has arrived, instead of playing and then starting over. */

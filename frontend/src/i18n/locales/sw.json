@@ -58,7 +58,10 @@
     "spam": "Utapeli umezuiwa"
   },
   "offline": {
-    "message": "Hauko mtandaoni. Arifa mpya zitaonekana ukirudi mtandaoni.",
+    "title": "Huna mtandao. Usijali.",
+    "bodySms": "Arifa za haraka bado zitakufikia kwa SMS. Tutasasisha mara utakaporudi.",
+    "body": "Arifa mpya zitaonekana mara utakaporudi.",
+    "chip": "Arifa za SMS zimewashwa",
     "reconnecting": "Tunaunganisha tena… Arifa mpya zitaonekana punde tu."
   },
   "alerts": {
@@ -85,8 +88,18 @@
     "empty": {
       "filteredTitle": "Hakuna cha kuonyesha",
       "filteredBody": "Hakuna arifa zinazolingana na chaguo hili. Chagua \"Zote\" kuona kila kitu katika aina hii.",
-      "tabTitle": "Hakuna kitu chini ya \"{{category}}\" kwa sasa",
-      "tabBody": "Kitu kipya kikifika, kitaonekana hapa."
+      "urgent": {
+        "title": "Hakuna la haraka. Furahia chai yako.",
+        "body": "Kitu kisichoweza kusubiri kikifika, utakiona hapa mara moja."
+      },
+      "medium": {
+        "title": "Hakuna kitu hapa kwa sasa.",
+        "body": "Ujumbe na taarifa zitaonekana hapa."
+      },
+      "low": {
+        "title": "Siku tulivu.",
+        "body": "Taarifa ndogo zinasubiri hapa hadi muhtasari wako wa kila siku."
+      }
     },
     "error": {
       "title": "Hatukuweza kupakia arifa zako",
@@ -119,11 +132,12 @@
     "logout": "Toka"
   },
   "errors": {
-    "notFoundTitle": "Hatuwezi kupata ukurasa huo",
-    "notFoundBody": "Huenda kiungo ni cha zamani au kimeandikwa vibaya.",
-    "genericTitle": "Kuna tatizo",
-    "genericBody": "Tafadhali pakia ukurasa upya. Tatizo likiendelea, jaribu tena baadaye.",
-    "reload": "Pakia ukurasa upya"
+    "notFoundTitle": "Ukurasa huu ulienda kula chakula cha mchana na haukurudi.",
+    "notFoundBody": "Twende mahali penye manufaa zaidi.",
+    "notFoundCta": "Nipeleke mwanzo",
+    "genericTitle": "Kuna kitu kimekwama upande wetu.",
+    "genericBody": "Si wewe. Tafadhali jaribu tena. Likiendelea, jaribu tena baadaye kidogo.",
+    "reload": "Jaribu tena"
   },
   "apiErrors": {
     "generic": "Kuna tatizo. Tafadhali jaribu tena.",

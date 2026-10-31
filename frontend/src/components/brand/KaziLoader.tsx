@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { prefersReducedMotion } from '../../stores/settings';
+import brandEn from '../../i18n/locales/brand.en.json';
+import brandSw from '../../i18n/locales/brand.sw.json';
 import { KaziMark } from './KaziMark';
-import './strings';
 
 interface LoadingLine {
   text: string;
@@ -27,64 +26,34 @@ function WinkFace() {
 }
 
 /**
- * Loading state (design refresh): the logo's head hops while friendly lines change every 2.6 s,
- * above skeleton rows. Purely visual: show it where the page already knows it is loading.
- * With reduced motion the head stays still and the first line stays (no fading text).
+ * The top of every loading state (design refresh): the logo's head hops while friendly lines
+ * change every 2.6 s. Decoration only, loaded separately by LoaderHead (components/ui/Skeleton),
+ * which passes the language and motion setting in: this file uses nothing but React, so the
+ * shared app code is not split into extra downloads (ADR 0014). Screen readers hear one steady
+ * "Loading…" there, not every line. With reduced motion the head stays still and the first line
+ * stays.
  */
-export function KaziLoader({
-  skeletonRows = 3,
-  compact = false,
-}: {
-  skeletonRows?: number;
-  compact?: boolean;
-}) {
-  const { t } = useTranslation();
-  const lines = t('brand.loading', { returnObjects: true }) as LoadingLine[];
-  const still = prefersReducedMotion();
+export default function KaziLoader({ language, still }: { language: string; still: boolean }) {
+  const lines: LoadingLine[] = (language === 'sw' ? brandSw : brandEn).brand.loading;
   const [i, setI] = useState(0);
   useEffect(() => {
     if (still) return;
     const id = setInterval(() => setI((n) => n + 1), 2600);
     return () => clearInterval(id);
   }, [still]);
-  const line = Array.isArray(lines) ? lines[i % lines.length] : undefined;
+  const line = lines[i % lines.length]!;
 
   return (
-    <div
-      role="status"
-      aria-live="polite"
-      className={`flex flex-col items-center gap-5 text-center ${compact ? 'p-4' : 'p-12'}`}
-    >
-      <KaziMark
-        size={compact ? 64 : 104}
-        variant={still ? 'static' : 'hop'}
-        title={t('brand.loadingLabel')}
-      />
-      {line && (
-        <div
-          key={i}
-          className="flex min-h-10 items-center gap-2.5"
-          style={still ? undefined : { animation: 'kf-msg 2.6s ease both' }}
-        >
-          <span className={`kf-display font-bold ${compact ? 'text-lg' : 'text-xl'}`}>
-            {line.text}
-          </span>
-          {line.wink && <WinkFace />}
-        </div>
-      )}
-      {skeletonRows > 0 && (
-        <div aria-hidden="true" className="flex w-full max-w-[520px] flex-col gap-3">
-          {Array.from({ length: skeletonRows }, (_, r) => (
-            <div key={r} className="flex items-center gap-3">
-              <div className="kf-skel size-12 shrink-0 rounded-[14px]" />
-              <div className="flex flex-1 flex-col gap-2">
-                <div className="kf-skel h-3.5" style={{ width: `${70 - r * 8}%` }} />
-                <div className="kf-skel h-3" style={{ width: `${45 - r * 5}%` }} />
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+    <div className="kf-fade-in flex flex-col items-center gap-3 text-center">
+      <KaziMark size={72} variant={still ? 'static' : 'hop'} title="" />
+      <div
+        key={i}
+        className="flex min-h-14 items-center gap-2.5"
+        style={still ? undefined : { animation: 'kf-msg 2.6s ease both' }}
+      >
+        <span className="kf-display text-lg font-bold">{line.text}</span>
+        {line.wink && <WinkFace />}
+      </div>
     </div>
   );
 }

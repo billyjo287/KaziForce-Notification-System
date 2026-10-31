@@ -85,7 +85,9 @@
       "lowTitle": "Kazi 5 mpya karibu nawe",
       "lowBody": "Zinasubiri kwenye muhtasari wako wa kila siku",
       "scamTitle": "Lipa KES 5,000 kupata kazi yako ya Dubai!",
-      "blocked": "Ujumbe 3 wa utapeli umezuiwa leo. Karibu."
+      "blocked": "Ujumbe 3 wa utapeli umezuiwa leo. Karibu.",
+      "pause": "Simamisha uhuishaji",
+      "play": "Endeleza uhuishaji"
     },
     "channels": {
       "title": "Arifa zinakufikia unapoangalia",

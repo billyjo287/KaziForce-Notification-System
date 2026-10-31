@@ -173,8 +173,8 @@ export default function UiKitPage() {
         <Section title={t('uiKit.empty')}>
           <EmptyState
             icon={Inbox}
-            title={t('alerts.empty.tabTitle', { category: t('priority.urgent') })}
-            body={t('alerts.empty.tabBody')}
+            title={t('alerts.empty.urgent.title')}
+            body={t('alerts.empty.urgent.body')}
             headingLevel="h2"
           />
         </Section>

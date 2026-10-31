@@ -157,12 +157,19 @@ test('a new worker signs up and completes onboarding', async ({ page }, testInfo
   await expectNoSeriousA11yIssues(page);
   await page.getByRole('button', { name: 'Finish' }).click();
 
-  // Workers start on Home since the design refresh; a new worker has nothing waiting yet.
-  await expect(page).toHaveURL(/\/worker\/home$/);
+  // "You're all set" (design refresh): the tick and confetti, then one way on.
+  await expect(page.getByRole('heading', { level: 1, name: /all set/ })).toBeFocused();
+  await expectNoSeriousA11yIssues(page);
+  await expectNoHorizontalScroll(page);
+  await page.getByRole('button', { name: 'Show me jobs' }).click();
+  await expect(page).toHaveURL(/\/worker\/jobs$/);
+
+  // A new worker has nothing waiting yet: Home says so, and the empty inbox has its chai cup.
+  await page.goto('/worker/home');
   await expect(page.getByText('Nothing new right now.', { exact: false })).toBeVisible();
   await page.goto('/worker/alerts');
   await expect(
-    page.getByRole('heading', { name: /Nothing under "Act now" right now/ }),
+    page.getByRole('heading', { name: 'Nothing urgent. Enjoy your chai.' }),
   ).toBeVisible();
 });
 

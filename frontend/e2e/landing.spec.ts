@@ -13,25 +13,40 @@ test.describe('Landing page', () => {
     }
   });
 
-  test('the alerts sort themselves: the scam is swept away, then "Sorted for you"', async ({
+  test('the alerts sort themselves, in rounds: the scam drops in, is swept away, "Sorted for you"', async ({
     page,
   }) => {
+    test.setTimeout(60_000);
     const scripts = trackScripts(page);
     await page.goto('/');
+    // Watch the live page, not the ready-made copy it replaces (ADR 0010).
+    await expect(page.locator('[data-prerendered]')).toHaveCount(0);
     const demo = page.locator('.kf-hero-demo');
     // Screen readers get one sentence describing the picture.
     await expect(demo.locator('figcaption')).toContainText('a scam message asking for money');
     const scam = demo.getByText('Pay KES 5,000 to secure your Dubai job!');
-    // The whole show takes about 4 seconds, once.
-    await expect
-      .poll(() => scam.evaluate((el) => getComputedStyle(el.parentElement!).opacity), {
-        timeout: 8000,
-      })
-      .toBe('0');
-    await expect
-      .poll(() => demo.getByText('Sorted for you').evaluate((el) => getComputedStyle(el).opacity))
-      .toBe('1');
+    // The scam box (the one that drops in) is hidden until its turn, not shown from the start.
+    const scamBox = () =>
+      scam.evaluate((el) => getComputedStyle(el.parentElement!.parentElement!).opacity);
+    const swept = () => scam.evaluate((el) => getComputedStyle(el.parentElement!).opacity);
+    const sorted = () =>
+      demo.getByText('Sorted for you').evaluate((el) => getComputedStyle(el).opacity);
+    expect(await scamBox()).toBe('0');
+    // It drops in, then is swept away (about 6.5 s in), then "Sorted for you".
+    await expect.poll(scamBox, { timeout: 8000 }).toBe('1');
+    await expect.poll(swept, { timeout: 8000 }).toBe('0');
+    await expect.poll(sorted, { timeout: 4000 }).toBe('1');
     await expect(demo.getByText('3 spam messages blocked today.', { exact: false })).toBeVisible();
+    // About 12 s in, the next round starts: "Sorting…" again.
+    await expect.poll(sorted, { timeout: 10_000 }).toBe('0');
+
+    // It moves for more than 5 s, so it can be paused (WCAG 2.2.2): everything freezes.
+    await page.getByRole('button', { name: 'Pause animation' }).click();
+    const frozen = await sorted();
+    await page.waitForTimeout(1500);
+    expect(await sorted()).toBe(frozen);
+    await page.getByRole('button', { name: 'Play animation' }).click();
+    await expect(page.getByRole('button', { name: 'Pause animation' })).toBeVisible();
     // The old 3D picture is gone for good: no Three.js download.
     expect(scripts.filter((url) => /three|heroScene/i.test(url))).toEqual([]);
   });
@@ -41,6 +56,8 @@ test.describe('Landing page', () => {
     await page.goto('/');
     const demo = page.locator('.kf-hero-demo');
     await expect(demo.getByText('Sorted for you')).toBeVisible();
+    // Nothing moves, so there is nothing to pause.
+    await expect(page.getByRole('button', { name: 'Pause animation' })).toHaveCount(0);
     expect(
       await demo
         .getByText('Pay KES 5,000 to secure your Dubai job!')

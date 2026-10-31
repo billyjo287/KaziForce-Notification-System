@@ -1,10 +1,11 @@
-import { CheckCheck, Inbox, ShieldCheck } from 'lucide-react';
+import { CheckCheck, ShieldCheck } from 'lucide-react';
 import { AnimatePresence } from 'motion/react';
 import * as m from 'motion/react-m';
 import { Tabs } from 'radix-ui';
 import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router';
+import { ChaiCup } from '../../components/brand/ChaiCup';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { showToast } from '../../stores/toasts';
 import { AlertCard } from './AlertCard';
@@ -241,14 +242,16 @@ export function AlertsDashboard({
 
               {visible.length === 0 ? (
                 <EmptyState
-                  icon={Inbox}
+                  art={<ChaiCup />}
                   title={
                     inTab.length === 0
-                      ? t('alerts.empty.tabTitle', { category: t(`priority.${priority}`) })
+                      ? t(`alerts.empty.${priority}.title`)
                       : t('alerts.empty.filteredTitle')
                   }
                   body={
-                    inTab.length === 0 ? t('alerts.empty.tabBody') : t('alerts.empty.filteredBody')
+                    inTab.length === 0
+                      ? t(`alerts.empty.${priority}.body`)
+                      : t('alerts.empty.filteredBody')
                   }
                 />
               ) : (

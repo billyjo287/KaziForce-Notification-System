@@ -1,8 +1,8 @@
-# ADR 0014 — App shell size after the design refresh: 203 KB
+# ADR 0014 — App shell size after the design refresh: 205 KB
 
 - **Status:** Accepted
 - **Date:** 2026-10-31
-- **Phase:** design refresh, Step 6 (employer dashboard)
+- **Phase:** design refresh, Step 6 (employer dashboard); raised again in Step 8 (moments)
 
 ## Context
 
@@ -28,8 +28,26 @@ for example from the link in an SMS, is 1–3 KB over. The extra is the shared a
 Billy accepted the measured size: the bundle check (`frontend/scripts/bundle-report.mjs`) now
 fails above **203 KB** instead of 200 KB. This stays within the PRD's "about 200 KB".
 
+## Update, Step 8 (moments): 205 KB
+
+The shared moments every page can show (the hopping-logo loader, the chai-cup empty inbox, the
+offline banner with signal bars, the "4 ☺ 4" page and the shaking error tile) add 1.3 KB to the
+first visit. Measured after the change:
+
+| First visit to | Size |
+|---|---|
+| /worker/home | 191.4 KB |
+| /employer/home | 193.7 KB |
+| /worker/alerts | 202.3 KB |
+| /employer/alerts | 204.0 KB |
+
+To keep it small, the loader's hopping logo and its lines are a separate download that uses
+only React. Making the 404 page a separate download was tried and made the first visit bigger
+(+0.7 KB), because it split the shared router code into extra files, so it stays in the main
+file. Billy accepted a limit of **205 KB** (+2 KB, about 15 ms on "Fast 3G").
+
 ## Consequences
 
-- CI passes again; any later growth beyond 203 KB still fails the build.
+- CI passes again; any later growth beyond 205 KB still fails the build.
 - 3 KB on a "Fast 3G" connection is about 20 ms, so the person does not notice it.
 - If Alerts is reworked later, the limit should go back to 200 KB.

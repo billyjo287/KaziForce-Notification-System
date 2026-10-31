@@ -58,7 +58,10 @@
     "spam": "Blocked scam"
   },
   "offline": {
-    "message": "You are offline. New alerts will appear when you are back online.",
+    "title": "You’re offline. Don’t worry.",
+    "bodySms": "Urgent alerts will still reach you by SMS. We’ll catch up the moment you’re back.",
+    "body": "New alerts will show up the moment you’re back.",
+    "chip": "SMS alerts are on",
     "reconnecting": "Reconnecting… New alerts will appear as soon as we are back."
   },
   "alerts": {
@@ -85,8 +88,18 @@
     "empty": {
       "filteredTitle": "Nothing to show",
       "filteredBody": "No alerts match this choice. Choose \"All\" to see everything in this category.",
-      "tabTitle": "Nothing under \"{{category}}\" right now",
-      "tabBody": "When something new arrives, it will show up here."
+      "urgent": {
+        "title": "Nothing urgent. Enjoy your chai.",
+        "body": "When something can’t wait, you’ll see it here straight away."
+      },
+      "medium": {
+        "title": "Nothing here for now.",
+        "body": "Messages and updates will show up here."
+      },
+      "low": {
+        "title": "Quiet day.",
+        "body": "Small updates wait here until your daily summary."
+      }
     },
     "error": {
       "title": "We could not load your alerts",
@@ -119,11 +132,12 @@
     "logout": "Log out"
   },
   "errors": {
-    "notFoundTitle": "We cannot find that page",
-    "notFoundBody": "The link may be old or mistyped.",
-    "genericTitle": "Something went wrong",
-    "genericBody": "Please reload the page. If it keeps happening, try again later.",
-    "reload": "Reload the page"
+    "notFoundTitle": "This page went for lunch and didn’t come back.",
+    "notFoundBody": "Let’s get you somewhere more useful.",
+    "notFoundCta": "Take me home",
+    "genericTitle": "Something tripped on our side.",
+    "genericBody": "It’s not you. Please give it another go. If it keeps happening, try again a little later.",
+    "reload": "Try again"
   },
   "apiErrors": {
     "generic": "Something went wrong. Please try again.",

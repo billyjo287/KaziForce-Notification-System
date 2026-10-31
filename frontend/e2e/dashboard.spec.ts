@@ -133,9 +133,7 @@ test.describe('Other pages pass axe and fit the screen', () => {
 
   test('the developer component gallery is not in the built site', async ({ page }) => {
     await page.goto('/ui-kit?theme=light');
-    await expect(
-      page.getByRole('heading', { level: 1, name: 'We cannot find that page' }),
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: /went for lunch/ })).toBeVisible();
   });
 });
 

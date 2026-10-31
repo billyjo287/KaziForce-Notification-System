@@ -48,6 +48,16 @@ describe('Alerts dashboard', () => {
     expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
   });
 
+  it('an empty inbox: a chai cup and a line for the category', async () => {
+    vi.mocked(api.get).mockResolvedValue({ data: { items: [] } });
+    renderAlerts();
+    expect(
+      await screen.findByRole('heading', { name: 'Nothing urgent. Enjoy your chai.' }),
+    ).toBeVisible();
+    await userEvent.click(screen.getByRole('tab', { name: /When you're free/ }));
+    expect(await screen.findByRole('heading', { name: 'Quiet day.' })).toBeVisible();
+  });
+
   it('shows priority as a word, not only a colour', async () => {
     renderAlerts();
     const panel = await screen.findByRole('tabpanel', { name: /Act now/ });
