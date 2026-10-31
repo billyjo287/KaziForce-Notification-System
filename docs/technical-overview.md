@@ -153,7 +153,7 @@ checks (dependency audits and secret scan).
 | NFR-1 app shell size | ≤ ~200 KB gzipped | 191–194 KB for a first visit to Home; 202–204 KB straight to Alerts (ADR 0014) |
 | NFR-1 page load (LCP) | < 2.5 s on "Fast 3G" | Landing, log in, sign up: **1.1–1.3 s** with Chrome's Fast 3G throttling (was 4.1–4.4 s): met. Lighthouse's simulation, which adds opening a new connection: 4.0–4.5 s (was 5.2–5.4 s; its floor for any page is 2.9 s). Slow 4G: 1.1–1.4 s ([accessibility.md](accessibility.md), ADR 0010) |
 | Classifier (`rules-v0` baseline → `rules-v1`) | priority weighted F1 ≥ 85%; spam accuracy ≥ 95%, false positives < 5% | On a hand-written held-out set of 177 messages (60 Kiswahili, 30 scams): weighted F1 63.5%, spam accuracy 88.7% → 89.3%, false positives 0%. Not met: the trained models (Phase 9) must close the gap ([testing-report.md](testing-report.md), section 7) |
-| NFR-4 accessibility | WCAG 2.2 AA | axe: no serious issues on any page; Lighthouse accessibility 100; keyboard-only and 200% zoom tests pass |
+| NFR-4 accessibility | WCAG 2.2 AA | axe: no serious issues on any page; Lighthouse accessibility 100 on all 22 pages tested after the design refresh, phone and desktop (one landing run scored 96 mid-animation, 100 on the re-run); reduced-motion, 320 px, keyboard-only and 200% zoom tests pass |
 
 Two bottlenecks were found and fixed by the load test (database connection pool; one-at-a-time
 outbox), one resilience gap by the restart test (live alerts lost during a Redis restart), and

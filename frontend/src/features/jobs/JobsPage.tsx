@@ -113,7 +113,7 @@ function FindJobs() {
             <ul className="flex flex-col gap-3">
               {data.items.map((job) => (
                 <li key={job.id}>
-                  <JobCard job={job} to={`/worker/jobs/${job.id}`} />
+                  <JobCard headingLevel={2} job={job} to={`/worker/jobs/${job.id}`} />
                 </li>
               ))}
             </ul>
@@ -169,6 +169,7 @@ function MyApplications() {
       {data.map((application) => (
         <li key={application.id}>
           <JobCard
+            headingLevel={2}
             job={{ ...application.job, myApplication: null }}
             to={`/worker/jobs/${application.job.id}`}
             footer={

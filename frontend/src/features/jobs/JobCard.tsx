@@ -8,9 +8,24 @@ import { relativeTime } from '../../lib/relativeTime';
 import type { Job } from '../../types/api';
 import './strings';
 
-/** One job in a list. The title is the link; the rest is plain text (one tap target). */
-export function JobCard({ job, to, footer }: { job: Job; to?: string; footer?: ReactNode }) {
+/**
+ * One job in a list. The title is the link; the rest is plain text (one tap target). The title
+ * is a level-2 heading when the list sits straight under the page's heading, level 3 under a
+ * section heading, so screen-reader users never meet a skipped level.
+ */
+export function JobCard({
+  job,
+  to,
+  footer,
+  headingLevel = 3,
+}: {
+  job: Job;
+  to?: string;
+  footer?: ReactNode;
+  headingLevel?: 2 | 3;
+}) {
   const { t, i18n } = useTranslation();
+  const Title = headingLevel === 2 ? 'h2' : 'h3';
   const skillName = useSkillName();
 
   return (
@@ -31,7 +46,7 @@ export function JobCard({ job, to, footer }: { job: Job; to?: string; footer?: R
           </>
         )}
       </div>
-      <h3 className="text-lg leading-snug font-bold">
+      <Title className="text-lg leading-snug font-bold">
         {to ? (
           // The whole card is clickable through this link's stretched area.
           <Link
@@ -43,7 +58,7 @@ export function JobCard({ job, to, footer }: { job: Job; to?: string; footer?: R
         ) : (
           job.title
         )}
-      </h3>
+      </Title>
       <p className="text-ink-muted">{job.employer.name}</p>
       <ul className="flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:gap-x-5">
         <li className="flex items-center gap-2">

@@ -62,6 +62,7 @@ export default function MyJobsPage() {
               style={{ animationDelay: `${Math.min(index, 7) * 70}ms` }}
             >
               <JobCard
+                headingLevel={2}
                 job={job}
                 to={`/employer/jobs/${job.id}`}
                 footer={

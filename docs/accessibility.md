@@ -16,6 +16,38 @@ a slow connection can use every screen without help (PRD sections 2, 6 and NFR-4
 | Screen reader (what it announces) | `e2e/screen-reader.spec.ts` reads the accessibility tree: landmarks, one heading per page, names and help of every control, a polite live region for new alerts | Passes; trees reviewed by hand (below) |
 | Lighthouse accessibility | Landing, log-in and Alerts pages, mobile profile | **100** on all three |
 
+## Design refresh, Step 9 (polish), 1 November 2026
+
+After the new look (logo, colours, fonts, motion), every check above was run again, plus these.
+
+| Check | How | Result |
+| --- | --- | --- |
+| Reduced motion | `e2e/polish.spec.ts`: the device setting on the landing, log-in and sign-up pages and 19 pages after logging in (worker, employer, admin and the 404 page); then the in-app "Reduce motion" switch alone. After each page loads, no animation may still be running | Nothing moves; the landing demo shows the finished picture with no Pause button |
+| Smallest phones (320 px) | `e2e/polish.spec.ts`: the same 19 pages at 320 px, plus axe on each side's first page in dark mode | No sideways scrolling after one fix (below); no serious axe problems |
+| Keyboard only | `e2e/polish.spec.ts`: the sun/moon switch and the demo's Pause button on the landing page; the alert tabs with the arrow keys and opening an alert with Enter; "Post a job" on the employer home; the admin menu; "Take me home" on the 404 page | Passes |
+| Lighthouse accessibility (12.x) | 22 pages (public, worker, employer, admin), each on the mobile and desktop profiles, logged in where needed: 44 runs | **96 to 100** (target 95). After the fix below, re-run: **100** on every page |
+
+Fixed in this step:
+
+1. **Page numbers on the admin delivery log** ("Previous · Page 1 of 3 · Next") were 37 px too
+   wide for a 320 px phone. On small screens the page number now sits on its own line above
+   the two buttons.
+2. **Skipped heading level on the jobs lists** (worker Find jobs, employer My jobs and
+   applicants, admin Jobs): job titles were level-3 headings straight under the page's
+   level-1 heading. They are now level 2 there (level 3 stays on the worker home, where they
+   sit under a section heading). Lighthouse 98 → 100 on those pages.
+
+Not changed, with reasons:
+
+- **Landing page, desktop: 96 on one run (100 on the re-run).** Lighthouse took its snapshot while
+  the third sample alert in the "alerts sort themselves" demo was still fading in, so its
+  text was briefly see-through. Once it lands, the text meets the contrast rules; the demo is
+  decoration (hidden from screen readers, with a sentence in its place) and can be paused.
+- **"Label in name" note on worker pages** (experimental, not scored): the menu link shows
+  "Alerts" with "1" on the next line, and its name is "Alerts 1 unread". The name does start
+  with the visible words (fixed in Phase 8: "Fixed in this pass", item 1); Lighthouse only trips over the line
+  break.
+
 ## Fixed in this pass
 
 1. **Label in Name (WCAG 2.5.3).** The phone menu showed "5 Alerts" but announced "Alerts, 5

@@ -49,7 +49,7 @@ export default function ApplicantsPage() {
       {data && (
         <>
           <h1 className="sr-only">{`${t('employer.applicants.title')}: ${data.job.title}`}</h1>
-          <JobCard job={data.job} />
+          <JobCard headingLevel={2} job={data.job} />
           {data.job.status === 'held' ? (
             <FormAlert tone="success" className="mt-4">
               {t('employer.heldNotice')}

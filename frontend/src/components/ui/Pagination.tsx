@@ -9,14 +9,20 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
-/** "Previous · Page 2 of 5 · Next" (only shown when there is more than one page). */
+/**
+ * "Previous · Page 2 of 5 · Next" (only shown when there is more than one page). On the
+ * smallest phones the page number sits on its own line above the two buttons, so they fit.
+ */
 export function Pagination({ page, total, pageSize, onPageChange }: PaginationProps) {
   const { t } = useTranslation();
   const pages = Math.max(1, Math.ceil(total / pageSize));
   if (pages <= 1) return null;
 
   return (
-    <nav aria-label={t('common.pages')} className="mt-6 flex items-center justify-between gap-3">
+    <nav
+      aria-label={t('common.pages')}
+      className="mt-6 flex flex-wrap items-center justify-between gap-3"
+    >
       <button
         type="button"
         disabled={page <= 1}
@@ -26,7 +32,12 @@ export function Pagination({ page, total, pageSize, onPageChange }: PaginationPr
         <ChevronLeft aria-hidden="true" className="size-5" />
         {t('common.previous')}
       </button>
-      <span aria-live="polite">{t('common.pageOf', { page, pages })}</span>
+      <span
+        aria-live="polite"
+        className="order-first basis-full text-center sm:order-none sm:basis-auto"
+      >
+        {t('common.pageOf', { page, pages })}
+      </span>
       <button
         type="button"
         disabled={page >= pages}

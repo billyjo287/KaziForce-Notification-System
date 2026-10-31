@@ -366,6 +366,7 @@ export function AdminJobsPage() {
             {data.items.map((job) => (
               <li key={job.id}>
                 <JobCard
+                  headingLevel={2}
                   job={job}
                   footer={
                     <div className="flex flex-wrap items-center gap-3">
