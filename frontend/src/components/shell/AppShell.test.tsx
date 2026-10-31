@@ -2,42 +2,74 @@ import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { renderWithRouter } from '../../test/renderWithRouter';
+import { ADMIN_NAV } from './adminNav';
 import { AppShell } from './AppShell';
+import { WorkerShell } from './WorkerShell';
+import { NAV } from './navConfig';
 
 describe('AppShell', () => {
-  it('worker menu has Alerts, Jobs, Messages and Settings, with the unread count spoken', () => {
+  it('worker menu: big buttons across the top, unread count spoken, the bell wiggles for "Act now"', () => {
     renderWithRouter(
-      <AppShell role="worker" unreadCount={3}>
+      <WorkerShell unreadCount={3} urgentCount={1}>
         <p>page</p>
-      </AppShell>,
+      </WorkerShell>,
       '/worker/alerts',
     );
-    // Two menus exist (sidebar and phone bottom bar); CSS shows one at a time.
-    const [menu] = screen.getAllByRole('navigation', { name: 'Main menu' });
-    const links = within(menu!).getAllByRole('link');
-
+    // One menu on every screen size (no sidebar, no bottom bar).
+    const menus = screen.getAllByRole('navigation', { name: 'Main menu' });
+    expect(menus).toHaveLength(1);
+    const links = within(menus[0]!).getAllByRole('link');
     expect(links.map((l) => l.getAttribute('aria-label'))).toEqual([
+      'Home',
+      'Find jobs',
       'Alerts 3 unread',
-      'Jobs',
       'Messages',
-      'Settings',
+      'Daily summary',
+      'Alert settings',
     ]);
-    expect(links[0]).toHaveAttribute('aria-current', 'page');
+    expect(links[2]).toHaveAttribute('aria-current', 'page');
+    // The bell in the top bar goes to Alerts too, and wiggles while something needs acting on.
+    const bell = screen.getAllByRole('link', { name: 'Alerts 3 unread' })[0]!;
+    expect(bell.querySelector('svg')).toHaveClass('kf-wiggle');
   });
 
-  it('employer menu says "My jobs"', () => {
+  it('the bell stays still when nothing needs acting on now', () => {
     renderWithRouter(
-      <AppShell role="business" unreadCount={0}>
+      <WorkerShell unreadCount={2} urgentCount={0}>
+        <p>page</p>
+      </WorkerShell>,
+      '/worker/home',
+    );
+    const bell = screen.getAllByRole('link', { name: 'Alerts 2 unread' })[0]!;
+    expect(bell.querySelector('svg')).not.toHaveClass('kf-wiggle');
+  });
+
+  it('employer menu: Home first, "My jobs", the Employer pill and "Post a job" at hand', () => {
+    renderWithRouter(
+      <AppShell role="business" nav={NAV.business} unreadCount={0}>
         <p>page</p>
       </AppShell>,
-      '/employer/alerts',
+      '/employer/home',
     );
-    expect(screen.getAllByRole('link', { name: 'My jobs' }).length).toBeGreaterThan(0);
+    const [sidebar, bottomBar] = screen.getAllByRole('navigation', { name: 'Main menu' });
+    expect(
+      within(sidebar!)
+        .getAllByRole('link')
+        .map((l) => l.textContent),
+    ).toEqual(['Home', 'Alerts', 'My jobs', 'Messages', 'Settings']);
+    // Phones: 3 pages and "More" (Messages, Settings).
+    expect(within(bottomBar!).getAllByRole('listitem')).toHaveLength(4);
+    expect(within(bottomBar!).getByRole('button', { name: 'More' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Post a job' })).toHaveAttribute(
+      'href',
+      '/employer/jobs/new',
+    );
+    expect(screen.getAllByText('Employer').length).toBeGreaterThan(0);
   });
 
   it('admin phone menu keeps 4 items and puts the rest behind "More"', async () => {
     renderWithRouter(
-      <AppShell role="admin" unreadCount={0}>
+      <AppShell role="admin" nav={ADMIN_NAV} unreadCount={0}>
         <p>page</p>
       </AppShell>,
       '/admin/overview',

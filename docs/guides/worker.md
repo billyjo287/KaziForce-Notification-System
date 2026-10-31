@@ -6,8 +6,10 @@ It works on any phone or computer with a web browser. You do not need to install
 ## 1. Create your account
 
 1. Open KaziForce and tap **Get started**.
-2. Choose **I'm looking for work**, then type your name, email and a password. Type the
-   password twice so we know it is right.
+2. Choose **I'm looking for work**. Then answer one question per screen: your email, your name
+   and a password (tap **Show** to check what you typed). If the email looks mistyped, for
+   example `gmial.com`, we ask "Did you mean gmail.com?".
+   We email you a 6-digit code: type it in to finish creating your account.
 3. **Your phone number.** Type your Kenyan mobile number and tick the box to agree to receive
    messages. We send you a 6-digit code by SMS. Type it in and tap **Confirm**.
 4. **How should we reach you?** Tell us if you use WhatsApp on this number, and where you check
@@ -89,6 +91,10 @@ Every change saves at once. If you change something by mistake, tap **Undo**.
 
 ## Need help?
 
+- **Log in** with your email or your phone number, then your password. On a new phone or
+  computer we also send you a 6-digit code: choose **By SMS** or **By email**. Tick
+  **Remember this phone or computer for 30 days** (not on a shared computer) and you will not
+  need a code there next time.
 - Forgot your password? On the log-in page tap **Forgot your password?** and we email you a
   link.
 - If an alert asks you to **send money** to get a job, it is a scam. KaziForce never asks for

@@ -10,6 +10,7 @@ import { ThemeToggle } from '../brand/ThemeToggle';
 import { ThemeSelect } from '../ThemeSelect';
 import { useToasts } from '../../stores/toasts';
 import { AppShell } from './AppShell';
+import { NAV } from './navConfig';
 import WelcomeBanner from './WelcomeBanner';
 
 vi.mock('../../lib/api', async (importOriginal) => ({
@@ -92,7 +93,7 @@ describe('log out on every page', () => {
     vi.mocked(api.post).mockResolvedValue({ data: {} });
     useAuth.setState({ status: 'user', user: wanjiru, accessToken: 'token', justLoggedIn: false });
     const { router } = renderWithRouter(
-      <AppShell role="worker" unreadCount={0}>
+      <AppShell role="worker" nav={NAV.worker} unreadCount={0}>
         <p>page</p>
       </AppShell>,
       '/worker/jobs',

@@ -23,9 +23,12 @@ export function JobCard({ job, to, footer }: { job: Job; to?: string; footer?: R
         )}
         {job.status !== 'open' && <Badge>{t(`jobs.${job.status}`)}</Badge>}
         {job.myApplication && (
-          <Badge tone="success" icon={CircleCheck}>
-            {t('jobs.applied')}
-          </Badge>
+          <>
+            <Badge tone="success" icon={CircleCheck}>
+              {t('jobs.applied')}
+            </Badge>
+            <span className="text-kf-faint">{t('jobs.appliedHint')}</span>
+          </>
         )}
       </div>
       <h3 className="text-lg leading-snug font-bold">

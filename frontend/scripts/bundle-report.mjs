@@ -37,11 +37,26 @@ const sum = (files) => [...files].reduce((total, f) => total + gzipKb(f), 0);
 
 const entry = chunks.find((c) => c.isEntry).file;
 const entrySet = closure(entry);
-const appShell = union(entrySet, closure(chunkFor('src/app/appRoutes.tsx')));
+// Each side downloads only its own frame; every page (Alerts included) is its own download.
+// The budget applies to each side's first visit: the frame plus the first page.
+const workerFrame = union(entrySet, closure(chunkFor('src/app/workerLayout.tsx')));
+const employerFrame = union(entrySet, closure(chunkFor('src/app/appRoutes.tsx')));
+const alertsPage = closure(chunkFor('src/features/alerts/AlertsPage.tsx'));
+const homeVisit = union(workerFrame, closure(chunkFor('src/features/home/WorkerHomePage.tsx')));
+const employerHomeVisit = union(
+  employerFrame,
+  closure(chunkFor('src/features/home/EmployerHomePage.tsx')),
+);
+const workerAlertsVisit = union(workerFrame, alertsPage);
+const alertsVisit = union(employerFrame, alertsPage);
+const appShell = union(workerFrame, employerFrame);
+const employerShell = alertsVisit;
 const landing = union(entrySet, closure(chunkFor('src/features/landing/LandingPage.tsx')));
 
 const motionAll = closure(chunkFor('src/lib/motionFeatures.ts'));
-const motionEngine = new Set([...motionAll].filter((f) => !appShell.has(f)));
+const motionEngine = new Set(
+  [...motionAll].filter((f) => !appShell.has(f) && !employerShell.has(f)),
+);
 
 // socket.io-client (live alerts) is downloaded only after logging in.
 const liveAll = new Set(
@@ -49,7 +64,7 @@ const liveAll = new Set(
     .filter((c) => c.modules.some((m) => m.includes('/node_modules/socket.io-client/')))
     .flatMap((c) => [...closure(c.file)]),
 );
-const live = new Set([...liveAll].filter((f) => !appShell.has(f)));
+const live = new Set([...liveAll].filter((f) => !appShell.has(f) && !employerShell.has(f)));
 
 const cssFiles = readdirSync(join(DIST, 'assets')).filter((f) => f.endsWith('.css'));
 const cssKb = cssFiles.reduce((t, f) => t + gzipKb(`assets/${f}`), 0);
@@ -60,17 +75,22 @@ const brandFonts = fontFiles.filter((f) => /^(figtree|bricolage)/.test(f));
 const fontKb = brandFonts.reduce((t, f) => t + rawKb(`assets/${f}`), 0);
 
 const rows = [
-  ['App shell (first visit to /worker/alerts)', appShell],
+  ['Worker frame (around every worker page)', workerFrame],
+  ['Employer frame (around every employer page)', employerFrame],
+  ['First visit to /worker/home (frame + Home)', homeVisit],
+  ['First visit to /worker/alerts (frame + Alerts)', workerAlertsVisit],
+  ['First visit to /employer/home (frame + Home)', employerHomeVisit],
+  ['First visit to /employer/alerts (frame + Alerts)', alertsVisit],
   ['Animation engine, extra (app only, loaded right after the first paint)', motionEngine],
   ['Live connection for new alerts, extra (loaded after logging in)', live],
   ['Landing page (first visit to /)', landing],
 ];
 
 const problems = [];
-const threeInApp = containsLibrary(appShell, 'three');
+const threeInApp = containsLibrary(union(appShell, employerShell), 'three');
 const threeInLanding = containsLibrary(landing, 'three');
-const gsapInApp = containsLibrary(appShell, 'gsap');
-const socketInApp = containsLibrary(appShell, 'socket.io-client');
+const gsapInApp = containsLibrary(union(appShell, employerShell), 'gsap');
+const socketInApp = containsLibrary(union(appShell, employerShell), 'socket.io-client');
 if (socketInApp.length)
   problems.push(`socket.io-client found in the app shell: ${socketInApp.join(', ')}`);
 if (!live.size) problems.push('socket.io-client chunk not found (report is wrong?)');
@@ -80,7 +100,12 @@ if (threeInLanding.length)
     `Three.js found in the landing page's first download: ${threeInLanding.join(', ')}`,
   );
 if (gsapInApp.length) problems.push(`GSAP found in the app bundle: ${gsapInApp.join(', ')}`);
-const appShellKb = sum(appShell);
+const appShellKb = Math.max(
+  sum(homeVisit),
+  sum(workerAlertsVisit),
+  sum(employerHomeVisit),
+  sum(alertsVisit),
+);
 if (appShellKb > APP_SHELL_BUDGET_KB)
   problems.push(
     `App shell JS is ${appShellKb.toFixed(1)} KB, over the ${APP_SHELL_BUDGET_KB} KB budget`,

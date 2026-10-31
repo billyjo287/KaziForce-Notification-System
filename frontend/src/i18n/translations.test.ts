@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import en from './locales/en.json';
 import sw from './locales/sw.json';
 import adminEn from './locales/admin.en.json';
+import workerHomeEn from './locales/workerHome.en.json';
+import workerHomeSw from './locales/workerHome.sw.json';
 import brandEn from './locales/brand.en.json';
 import brandSw from './locales/brand.sw.json';
 import jobsEn from './locales/jobs.en.json';
@@ -42,6 +44,7 @@ describe('translations', () => {
     expect(keys(uiKitSw).sort()).toEqual(keys(uiKitEn).sort());
     expect(keys(adminSw).sort()).toEqual(keys(adminEn).sort());
     expect(keys(authSw).sort()).toEqual(keys(authEn).sort());
+    expect(keys(workerHomeSw).sort()).toEqual(keys(workerHomeEn).sort());
     expect(keys(brandSw).sort()).toEqual(keys(brandEn).sort());
     expect(keys(jobsSw).sort()).toEqual(keys(jobsEn).sort());
     expect(keys(alertFeedbackSw).sort()).toEqual(keys(alertFeedbackEn).sort());

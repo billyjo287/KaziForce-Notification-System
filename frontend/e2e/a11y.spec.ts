@@ -29,7 +29,7 @@ test('keyboard only: log in, skip to the content, see where the focus is, open a
   await tabTo(page, page.getByLabel('Password', { exact: true }));
   await page.keyboard.type(PASSWORD);
   await page.keyboard.press('Enter');
-  await page.waitForURL(/\/worker\/alerts/);
+  await page.waitForURL(/\/worker\/home/);
 
   // The first Tab shows "Skip to main content"; Enter moves past the menu.
   await page.goto('/worker/jobs?theme=light');

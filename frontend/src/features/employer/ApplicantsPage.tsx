@@ -16,6 +16,7 @@ import { showToast } from '../../stores/toasts';
 import type { Applicant, JobDelivery } from '../../types/api';
 import { FormAlert } from '../../components/ui/FormAlert';
 import { JobCard } from '../jobs/JobCard';
+import { initialsOf } from '../../components/shell/initials';
 import { ApplicantDelivery, JobAlertReach } from './DeliveryStatus';
 import './strings';
 
@@ -131,9 +132,17 @@ function ApplicantCard({
   }
 
   return (
-    <article className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4">
+    <article className="flex flex-col gap-3 rounded-kf-lg border border-line bg-surface p-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-lg font-bold">{name}</h3>
+        <div className="flex min-w-0 items-center gap-3">
+          <span
+            aria-hidden="true"
+            className="grid size-12 shrink-0 place-items-center rounded-full bg-kf-primary-soft text-lg font-bold text-kf-on-primary-soft"
+          >
+            {initialsOf(name)}
+          </span>
+          <h3 className="text-lg font-bold break-words">{name}</h3>
+        </div>
         <ApplicationStatusBadge status={applicant.status} viewer="business" />
       </div>
       <p className="text-ink-muted">
@@ -156,6 +165,25 @@ function ApplicantCard({
         </blockquote>
       )}
       <ApplicantDelivery status={delivery} />
+      {/* After Accept: a green line with a tick that draws itself, and what to do next (the toast
+          already announced the change, so this is not announced again). */}
+      {applicant.status === 'accepted' && (
+        <p className="flex items-center gap-3 rounded-kf bg-kf-success-bg p-3 font-bold text-kf-success-fg">
+          <svg aria-hidden="true" viewBox="0 0 24 24" className="kf-pop size-7 shrink-0">
+            <circle cx="12" cy="12" r="11" className="fill-kf-success-solid" />
+            <path
+              d="M7 12.5l3.2 3.2L17 9"
+              fill="none"
+              stroke="white"
+              strokeWidth="2.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="kf-draw"
+            />
+          </svg>
+          {t('employer.applicants.pickedNote', { name })}
+        </p>
+      )}
       <div className="flex flex-wrap gap-3">
         {!decided && (
           <>

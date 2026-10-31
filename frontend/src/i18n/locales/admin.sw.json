@@ -249,5 +249,19 @@
       "medium": "Inafaa kujua leo: kwenye programu na kwa barua pepe.",
       "low": "Inaweza kusubiri: kwenye programu na kwenye muhtasari wa kila siku."
     }
+  },
+  "apiErrors": {
+    "cannot_suspend_admin": "Akaunti za msimamizi haziwezi kusimamishwa.",
+    "already_removed": "Kazi hii tayari imeondolewa."
+  },
+  "nav": {
+    "overview": "Muhtasari",
+    "users": "Watumiaji",
+    "adminJobs": "Kazi",
+    "spam": "Kagua taka",
+    "deliveryLogs": "Kumbukumbu za utumaji",
+    "announcements": "Matangazo",
+    "models": "Matoleo ya modeli",
+    "auditLog": "Kumbukumbu ya ukaguzi"
   }
 }

@@ -40,5 +40,10 @@
       "everythingHelp": "Kila arifa inakufikia pia kwa barua pepe.",
       "finish": "Maliza"
     }
+  },
+  "apiErrors": {
+    "phone_taken": "Nambari hii tayari inatumiwa na akaunti nyingine.",
+    "code_wrong": "Msimbo huo si sahihi. Angalia SMS kisha ujaribu tena.",
+    "code_expired": "Msimbo huu umeisha muda. Omba mpya."
   }
 }

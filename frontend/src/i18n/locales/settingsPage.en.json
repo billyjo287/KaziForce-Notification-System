@@ -110,7 +110,35 @@
           "help": "The letters your phone or computer already uses. Nothing to download."
         }
       }
-    }
+    },
+    "title": "Settings",
+    "display": "Display and language",
+    "language": {
+      "label": "Language",
+      "help": "The language used in the app and in your messages."
+    },
+    "textSize": {
+      "label": "Text size",
+      "help": "Large makes all text and buttons bigger.",
+      "normal": "Normal",
+      "large": "Large"
+    },
+    "reduceMotion": {
+      "label": "Reduce motion",
+      "help": "Turns off movement and animation on the screen."
+    },
+    "saved": "Saved",
+    "account": "Account",
+    "profileLink": "Your profile",
+    "profileLinkHelp": "Name, place, skills and phone number.",
+    "companyLink": "Company profile",
+    "companyLinkHelp": "Company name, place and phone number.",
+    "logoutHelp": "Log out on this device.",
+    "logoutAll": "Log out of all devices",
+    "logoutAllHelp": "Use this if you lost a phone or logged in on someone else's device.",
+    "logoutAllTitle": "Log out of all devices?",
+    "logoutAllBody": "You will need to log in again on every phone and computer, including this one.",
+    "logoutAllConfirm": "Log out everywhere"
   },
   "channels": {
     "whatsapp": "WhatsApp",
@@ -124,5 +152,15 @@
   },
   "apiErrors": {
     "password_wrong": "That password is not right."
+  },
+  "theme": {
+    "label": "Screen colours",
+    "settingsLabel": "Appearance",
+    "settingsHelp": "Light colours, dark colours, or the same as your phone or computer.",
+    "options": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "Same as device"
+    }
   }
 }

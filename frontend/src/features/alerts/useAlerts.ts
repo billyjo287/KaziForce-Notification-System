@@ -94,6 +94,17 @@ export function useAlerts() {
   return { status, alerts: query.data ?? [], actions, refetch: query.refetch } as const;
 }
 
+/** Unread "Act now" alerts (the bell wiggles while there are any). Same cached data. */
+export function useUrgentUnreadCount(): number {
+  const { data } = useQuery({
+    queryKey: KEY,
+    queryFn: fetchAlerts,
+    select: (alerts) =>
+      alerts.filter((a) => a.priority === 'urgent' && !a.readAt && !a.markedNotImportant).length,
+  });
+  return data ?? 0;
+}
+
 /** Unread alerts still shown (the menu badge). Shares the same cached data. */
 export function useUnreadCount(): number {
   const { data } = useQuery({

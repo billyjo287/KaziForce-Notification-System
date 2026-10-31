@@ -1,43 +1,27 @@
-// The frame of each logged-in side (guard + app shell) and the Alerts pages.
-// Loaded as its own download, so visitors of the public landing page never pay for it.
-// Other pages are separate downloads too (see router.tsx).
+// The employer side's frame (guard + sidebar shell). Workers (workerLayout.tsx) and admins
+// (adminLayout.tsx) have their own, so each side downloads only its own frame. Visitors of the
+// public landing page never download any of them; every page, Alerts included, is a separate
+// download (see router.tsx).
 import { Outlet } from 'react-router';
 import { AppShell } from '../components/shell/AppShell';
-import { AlertsPage } from '../features/alerts/AlertsPage';
+import { NAV } from '../components/shell/navConfig';
 import { useUnreadCount } from '../features/alerts/useAlerts';
 import { useLiveAlerts } from '../features/alerts/useLiveAlerts';
 import { RequireAuth } from './RequireAuth';
 
-function AlertsSideShell({ role }: { role: 'worker' | 'business' }) {
+function EmployerShell() {
   // The menu badge shows unread alerts on every page of this side; new ones arrive live.
   const unreadCount = useUnreadCount();
-  useLiveAlerts(role);
+  useLiveAlerts('business');
   return (
-    <AppShell role={role} unreadCount={unreadCount}>
+    <AppShell role="business" nav={NAV.business} unreadCount={unreadCount}>
       <Outlet />
     </AppShell>
   );
 }
 
-export const WorkerLayout = () => (
-  <RequireAuth role="worker">
-    <AlertsSideShell role="worker" />
-  </RequireAuth>
-);
-
 export const EmployerLayout = () => (
   <RequireAuth role="business">
-    <AlertsSideShell role="business" />
+    <EmployerShell />
   </RequireAuth>
 );
-
-export const AdminLayout = () => (
-  <RequireAuth role="admin">
-    <AppShell role="admin" unreadCount={0}>
-      <Outlet />
-    </AppShell>
-  </RequireAuth>
-);
-
-export const WorkerAlerts = () => <AlertsPage role="worker" />;
-export const EmployerAlerts = () => <AlertsPage role="business" />;

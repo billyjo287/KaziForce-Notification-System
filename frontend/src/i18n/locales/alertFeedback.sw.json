@@ -19,5 +19,8 @@
       "skip": "Ruka",
       "thanks": "Asante. Tutatumia hii kuboresha arifa zako."
     }
+  },
+  "apiErrors": {
+    "not_marked": "Kwanza weka arifa hii kuwa si muhimu."
   }
 }

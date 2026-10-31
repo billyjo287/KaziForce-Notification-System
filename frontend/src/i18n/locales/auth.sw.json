@@ -117,5 +117,15 @@
   "demoCode": {
     "title": "Msimbo wa majaribio",
     "help": "Kwa maonyesho, msimbo unaonyeshwa hapa badala ya kutumwa kwa SMS au barua pepe."
+  },
+  "apiErrors": {
+    "wrong_credentials": "Barua pepe, nambari ya simu au nenosiri si sahihi. Viangalie kisha ujaribu tena.",
+    "email_taken": "Tayari kuna akaunti yenye barua pepe hii. Jaribu kuingia badala yake.",
+    "reset_link_invalid": "Kiungo hiki kimeisha muda au kimeshatumika. Omba kipya.",
+    "login_code_wrong": "Msimbo huo si sahihi. Uangalie kisha ujaribu tena.",
+    "login_code_expired": "Msimbo huu umeisha muda. Bonyeza \"Anza upya\" kupata mpya.",
+    "identifier_invalid": "Andika barua pepe kama jina@gmail.com, au nambari ya simu ya Kenya kama 0712 345 678.",
+    "code_too_soon": "Tafadhali subiri sekunde chache kabla ya kuomba msimbo mpya.",
+    "code_channel_unavailable": "Njia hii haipatikani kwa akaunti yako. Chagua barua pepe."
   }
 }

@@ -44,3 +44,6 @@ export function AlertsPage({ role }: { role: AlertRole }) {
 
   return <AlertsDashboard role={role} alerts={alerts} actions={actions} />;
 }
+
+export const WorkerAlerts = () => <AlertsPage role="worker" />;
+export const EmployerAlerts = () => <AlertsPage role="business" />;

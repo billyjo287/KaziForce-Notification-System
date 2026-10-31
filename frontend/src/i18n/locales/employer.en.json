@@ -44,14 +44,15 @@
       "emptyBody": "We will tell you when someone applies.",
       "accept": "Accept",
       "reject": "Reject",
-      "acceptedToast": "{{name}} accepted.",
-      "rejectedToast": "{{name}} not selected.",
+      "acceptedToast": "Done. We’ll let {{name}} know shortly.",
+      "rejectedToast": "Declined kindly. We’ll let {{name}} know.",
       "undone": "Change undone.",
       "note": "Their note",
       "skills": "Skills",
       "from": "Lives in {{place}}",
       "message": "Message {{name}}",
-      "appliedOn": "Applied {{when}}"
+      "appliedOn": "Applied {{when}}",
+      "pickedNote": "You picked {{name}}. Send them a message with the time and place."
     },
     "company": {
       "title": "Company profile",
@@ -62,5 +63,8 @@
     "removedReason": "Removed: {{reason}}",
     "heldNotice": "Our team is checking this job before workers see it, because it looked like it asks workers for money. No alerts have been sent yet.",
     "heldShort": "Waiting for a quick check by our team"
+  },
+  "apiErrors": {
+    "undo_too_late": "It is too late to undo this change."
   }
 }

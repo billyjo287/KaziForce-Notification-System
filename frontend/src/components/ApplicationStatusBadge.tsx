@@ -2,6 +2,8 @@ import { CircleCheck, CircleX, Eye, Send } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { ApplicationStatus } from '../types/api';
 import { Badge, type BadgeTone } from './ui/Badge';
+// Its words arrive with the job pages' words (only job and applicant pages show it).
+import '../features/jobs/strings';
 
 const STYLE = {
   received: { icon: Send, tone: 'neutral' },

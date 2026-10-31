@@ -1,6 +1,8 @@
 import { ChevronDown, MonitorSmartphone, Moon, Sun } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSettings, type Theme } from '../stores/settings';
+// Its words live with the Settings page's words (Settings is where the full choice is).
+import '../features/settings/strings';
 
 const ICONS = { light: Sun, dark: Moon, system: MonitorSmartphone } as const;
 const THEMES: Theme[] = ['light', 'dark', 'system'];

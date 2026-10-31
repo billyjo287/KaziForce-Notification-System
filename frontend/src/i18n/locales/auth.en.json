@@ -117,5 +117,15 @@
   "demoCode": {
     "title": "Demo code",
     "help": "For the presentation, the code is shown here instead of being sent by SMS or email."
+  },
+  "apiErrors": {
+    "wrong_credentials": "The email, phone number or password is not right. Check them and try again.",
+    "email_taken": "An account with this email already exists. Try logging in instead.",
+    "reset_link_invalid": "This link has expired or was already used. Ask for a new one.",
+    "login_code_wrong": "That code is not right. Check it and try again.",
+    "login_code_expired": "This code has expired. Press \"Start again\" for a new one.",
+    "identifier_invalid": "Type an email address like name@gmail.com, or a Kenyan mobile number like 0712 345 678.",
+    "code_too_soon": "Please wait a few seconds before asking for a new code.",
+    "code_channel_unavailable": "This way is not available for your account. Choose email."
   }
 }

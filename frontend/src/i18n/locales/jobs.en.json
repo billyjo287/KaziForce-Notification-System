@@ -43,6 +43,25 @@
       "findJobs": "Find jobs",
       "appliedOn": "Applied {{when}}"
     },
-    "held": "Waiting for a check"
+    "held": "Waiting for a check",
+    "appliedHint": "Fingers crossed for you"
+  },
+  "applicationStatus": {
+    "worker": {
+      "received": "Sent, waiting",
+      "reviewed": "Seen by the employer",
+      "accepted": "You got the job",
+      "rejected": "Not selected this time"
+    },
+    "employer": {
+      "received": "New",
+      "reviewed": "Seen",
+      "accepted": "Accepted",
+      "rejected": "Not selected"
+    }
+  },
+  "apiErrors": {
+    "job_closed": "This job is no longer open.",
+    "already_applied": "You have already applied for this job."
   }
 }

@@ -1,4 +1,4 @@
-import { CheckCheck, Inbox } from 'lucide-react';
+import { CheckCheck, Inbox, ShieldCheck } from 'lucide-react';
 import { AnimatePresence } from 'motion/react';
 import * as m from 'motion/react-m';
 import { Tabs } from 'radix-ui';
@@ -177,7 +177,7 @@ export function AlertsDashboard({
                 <Tabs.Trigger
                   key={priority}
                   value={priority}
-                  className="group relative flex min-h-16 min-w-fit flex-1 flex-col items-center justify-center gap-0.5 overflow-hidden rounded-xl border-2 border-line bg-surface px-2 pt-2 pb-3 text-center font-bold text-ink-muted transition-colors duration-150 hover:border-line-strong data-[state=active]:border-line-strong data-[state=active]:text-ink"
+                  className="group relative flex min-h-16 min-w-fit flex-1 flex-col items-center justify-center gap-0.5 overflow-hidden rounded-kf border-2 border-line bg-surface px-2 pt-2 pb-3 text-center font-bold text-ink-muted transition-colors duration-150 hover:border-line-strong data-[state=active]:border-ink data-[state=active]:bg-ink data-[state=active]:text-canvas"
                 >
                   {/* Thick coloured bar under the chosen tab (plus bold text and a border). */}
                   <span
@@ -187,14 +187,16 @@ export function AlertsDashboard({
                   <span className="flex flex-col items-center gap-0.5 sm:flex-row sm:gap-1.5">
                     <Icon
                       aria-hidden="true"
-                      className={`size-5 shrink-0 ${text}`}
+                      className={`size-5 shrink-0 ${text} group-data-[state=active]:text-current`}
                       strokeWidth={2.5}
                     />
                     <span className="leading-tight whitespace-nowrap">
                       {t(`priority.${priority}`)}
                     </span>
                   </span>
-                  <span className={`text-sm font-medium ${count > 0 ? text : 'text-ink-muted'}`}>
+                  <span
+                    className={`text-sm font-medium group-data-[state=active]:text-current ${count > 0 ? text : 'text-ink-muted'}`}
+                  >
                     {t('alerts.tabUnread', { count })}
                   </span>
                 </Tabs.Trigger>
@@ -252,15 +254,20 @@ export function AlertsDashboard({
               ) : (
                 <ul className="flex flex-col gap-3">
                   <AnimatePresence initial={false} mode="popLayout">
-                    {visible.map((alert) => (
+                    {visible.map((alert, index) => (
                       <m.li
                         key={alert.id}
                         layout
-                        // New live alerts slide in from above; others fade in place.
-                        initial={alert.arrivedLive ? { opacity: 0, y: -24 } : { opacity: 0 }}
+                        // New live alerts slide in from above; the others rise in one after
+                        // another (70 ms apart, the first 8 only).
+                        initial={alert.arrivedLive ? { opacity: 0, y: -24 } : { opacity: 0, y: 12 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, x: -32 }}
-                        transition={cardTransition}
+                        transition={
+                          alert.arrivedLive
+                            ? cardTransition
+                            : { ...cardTransition, delay: Math.min(index, 8) * 0.07 }
+                        }
                       >
                         <AlertCard
                           ref={(el) => {
@@ -279,6 +286,13 @@ export function AlertsDashboard({
             </Tabs.Content>
           ))}
         </Tabs.Root>
+        <p className="mt-6 flex items-start gap-2 rounded-kf border border-line bg-surface p-4 text-ink-muted">
+          <ShieldCheck
+            aria-hidden="true"
+            className="mt-0.5 size-5 shrink-0 text-kf-success-solid"
+          />
+          {t('alerts.scamCheck')}
+        </p>
       </div>
 
       {/* ---------- Detail ---------- */}

@@ -13,9 +13,14 @@ hear about it at once, and you can see who got the alert and who saw it.
    someone applies. You can skip this and do it later in **Settings**.
 4. Add your company name and place under **Settings > Company profile**.
 
+After logging in you start on **Home**: anything marked **Act now**, how many new applicants
+are waiting, and your latest jobs with their state (for example **Needs workers soon** or
+**Being checked**). Tap a job to see its applicants. On a phone, **Messages** and **Settings**
+are under **More** in the bottom menu.
+
 ## 2. Post a job
 
-1. Tap **My jobs**, then **Post a job**.
+1. Tap **Post a job** (on Home, or under the logo on a computer).
 2. Fill in:
    - **Job title**, for example "Warehouse packers needed today".
    - **What will the worker do?** Hours, place and what to bring.

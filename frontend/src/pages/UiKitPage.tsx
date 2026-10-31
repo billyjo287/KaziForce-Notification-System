@@ -4,6 +4,7 @@ import { Bell, Clock, Inbox, TriangleAlert } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
+import '../features/settings/strings';
 import { LanguageToggle } from '../components/LanguageToggle';
 import { Logo } from '../components/Logo';
 import { Badge } from '../components/ui/Badge';

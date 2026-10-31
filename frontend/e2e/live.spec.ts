@@ -46,6 +46,7 @@ test('new alerts slide in live, in the right category, and "Open" goes straight 
 }, testInfo) => {
   const stamp = `${testInfo.project.name} ${Date.now()}`;
   await logIn(page, 'worker1@example.com');
+  await page.goto('/worker/alerts'); // workers start on Home since the design refresh
   await expect(page.getByRole('heading', { level: 1, name: 'Alerts' })).toBeVisible();
 
   // An announcement appears under "When you're free" without a refresh.
@@ -82,6 +83,7 @@ test('offline: shows the banner, then catches up on alerts sent meanwhile', asyn
 }, testInfo) => {
   const title = `Sent while offline ${testInfo.project.name} ${Date.now()}`;
   await logIn(page, 'worker1@example.com');
+  await page.goto('/worker/alerts'); // workers start on Home since the design refresh
   await expect(page.getByRole('heading', { level: 1, name: 'Alerts' })).toBeVisible();
 
   await context.setOffline(true);

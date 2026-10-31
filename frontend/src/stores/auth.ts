@@ -67,9 +67,9 @@ export const useAuth = create<AuthState>()((set) => ({
 
 /** Where each side starts after logging in. */
 export function homePath(role: Role): string {
-  if (role === 'business') return '/employer/alerts';
+  if (role === 'business') return '/employer/home';
   if (role === 'admin') return '/admin/overview';
-  return '/worker/alerts';
+  return '/worker/home';
 }
 
 /** URL prefix of each side. */

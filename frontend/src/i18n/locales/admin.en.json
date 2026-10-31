@@ -249,5 +249,19 @@
       "medium": "Worth knowing today: in the app and by email.",
       "low": "Can wait: in the app and in the daily summary."
     }
+  },
+  "apiErrors": {
+    "cannot_suspend_admin": "Admin accounts cannot be suspended.",
+    "already_removed": "This job was already removed."
+  },
+  "nav": {
+    "overview": "Overview",
+    "users": "Users",
+    "adminJobs": "Jobs",
+    "spam": "Spam review",
+    "deliveryLogs": "Delivery logs",
+    "announcements": "Announcements",
+    "models": "Model versions",
+    "auditLog": "Audit log"
   }
 }

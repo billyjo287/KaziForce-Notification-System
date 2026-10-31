@@ -19,5 +19,8 @@
       "skip": "Skip",
       "thanks": "Thank you. We will use this to improve your alerts."
     }
+  },
+  "apiErrors": {
+    "not_marked": "Mark the alert as not important first."
   }
 }

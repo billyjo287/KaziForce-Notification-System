@@ -74,7 +74,9 @@ test('employer posts a job → worker applies → employer accepts', async ({ br
   await expectNoSeriousA11yIssues(employer);
 
   await applicant.getByRole('button', { name: 'Accept' }).click();
-  await expect(employer.getByText('Brian Kiprono accepted.', { exact: true })).toBeVisible();
+  await expect(
+    employer.getByText('Done. We’ll let Brian Kiprono know shortly.', { exact: true }),
+  ).toBeVisible();
   await expect(applicant.getByText('Accepted')).toBeVisible();
   await employer.getByRole('button', { name: 'Undo' }).click();
   await expect(employer.getByText('Change undone.', { exact: true })).toBeVisible();
@@ -144,7 +146,10 @@ test('a new worker signs up and completes onboarding', async ({ page }, testInfo
   await expectNoSeriousA11yIssues(page);
   await page.getByRole('button', { name: 'Finish' }).click();
 
-  await expect(page).toHaveURL(/\/worker\/alerts$/);
+  // Workers start on Home since the design refresh; a new worker has nothing waiting yet.
+  await expect(page).toHaveURL(/\/worker\/home$/);
+  await expect(page.getByText('Nothing new right now.', { exact: false })).toBeVisible();
+  await page.goto('/worker/alerts');
   await expect(
     page.getByRole('heading', { name: /Nothing under "Act now" right now/ }),
   ).toBeVisible();

@@ -99,6 +99,19 @@ test.describe('Admin', () => {
 });
 
 test.describe('Employer', () => {
+  test('starts on Home: greeting, counts, and the jobs table scrolls inside its own box', async ({
+    page,
+  }) => {
+    await logIn(page, 'employer1@example.com');
+    await expect(page).toHaveURL(/\/employer\/home$/);
+    await expect(page.getByRole('heading', { level: 1, name: /^Habari/ })).toBeVisible();
+    await expect(page.getByRole('region', { name: 'Your jobs in numbers' })).toBeVisible();
+    await expect(page.getByRole('table')).toBeVisible();
+    await page.waitForLoadState('networkidle');
+    await expectNoSeriousA11yIssues(page);
+    await expectNoHorizontalScroll(page);
+  });
+
   test('a job page shows who got the job alert and who saw it', async ({ page }) => {
     await logIn(page, 'employer1@example.com');
     await page.goto('/employer/jobs?theme=light');

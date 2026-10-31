@@ -55,8 +55,12 @@ export default function MyJobsPage() {
       )}
       {data && data.length > 0 && (
         <ul className="flex flex-col gap-3">
-          {data.map((job) => (
-            <li key={job.id}>
+          {data.map((job, index) => (
+            <li
+              key={job.id}
+              className="kf-rise"
+              style={{ animationDelay: `${Math.min(index, 7) * 70}ms` }}
+            >
               <JobCard
                 job={job}
                 to={`/employer/jobs/${job.id}`}

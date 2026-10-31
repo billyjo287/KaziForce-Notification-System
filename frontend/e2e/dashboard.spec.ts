@@ -32,6 +32,7 @@ test.describe('Worker Alerts dashboard (real data)', () => {
   test('never downloads Three.js or the landing page code', async ({ page }) => {
     const scripts = trackScripts(page);
     await logIn(page, 'worker1@example.com');
+    await page.goto('/worker/alerts'); // workers start on Home since the design refresh
     await expect(page.getByRole('tab', { name: /Act now/ })).toBeVisible();
     await page.waitForLoadState('networkidle');
     expect(scripts.filter((url) => /heroScene|LandingPage|three/i.test(url))).toEqual([]);
@@ -39,6 +40,7 @@ test.describe('Worker Alerts dashboard (real data)', () => {
 
   test('"Not important to me" can be undone', async ({ page }) => {
     await logIn(page, 'worker1@example.com');
+    await page.goto('/worker/alerts'); // workers start on Home since the design refresh
     await page.getByRole('tab', { name: /Check today/ }).click();
     // The seeded message (other tests may add more messages from the same employer).
     const card = page
@@ -59,6 +61,7 @@ test.describe('Worker Alerts dashboard (real data)', () => {
 
   test('keyboard: the first Tab reaches "Skip to main content"', async ({ page }) => {
     await logIn(page, 'worker1@example.com');
+    await page.goto('/worker/alerts'); // workers start on Home since the design refresh
     await expect(page.getByRole('heading', { level: 1, name: 'Alerts' })).toBeVisible();
     await page.keyboard.press('Tab');
     await expect(page.getByRole('link', { name: 'Skip to main content' })).toBeFocused();
@@ -72,6 +75,7 @@ test.describe('Worker Alerts dashboard (real data)', () => {
       ),
     );
     await logIn(page, 'worker1@example.com');
+    await page.goto('/worker/alerts'); // workers start on Home since the design refresh
     await expect(page.getByRole('tab', { name: /Act now/ })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.dataset.textSize)).toBe('large');
     await expectNoHorizontalScroll(page);
@@ -79,6 +83,7 @@ test.describe('Worker Alerts dashboard (real data)', () => {
 
   test('a loading error is explained in plain words', async ({ page }) => {
     await logIn(page, 'worker1@example.com');
+    await page.goto('/worker/alerts'); // workers start on Home since the design refresh
     await page.route('**/api/notifications', (route) => route.abort());
     await page.reload();
     await expect(page.getByRole('alert')).toContainText('We could not load your alerts', {
@@ -90,8 +95,11 @@ test.describe('Worker Alerts dashboard (real data)', () => {
 
 test.describe('Other pages pass axe and fit the screen', () => {
   const pages: { who: string; path: string; password?: string }[] = [
+    { who: 'employer1@example.com', path: '/employer/home' },
     { who: 'employer1@example.com', path: '/employer/alerts' },
     { who: 'employer1@example.com', path: '/employer/jobs' },
+    { who: 'worker1@example.com', path: '/worker/home' },
+    { who: 'worker1@example.com', path: '/worker/summary' },
     { who: 'worker1@example.com', path: '/worker/jobs' },
     { who: 'worker1@example.com', path: '/worker/jobs?tab=applications' },
     { who: 'worker1@example.com', path: '/worker/messages' },
@@ -144,7 +152,12 @@ test.describe('Smallest phones (320px, PRD NFR-4)', () => {
   test('app pages fit a 320px screen', async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 640 });
     await logIn(page, 'employer1@example.com');
-    for (const path of ['/employer/alerts', '/employer/jobs', '/employer/jobs/new']) {
+    for (const path of [
+      '/employer/home',
+      '/employer/alerts',
+      '/employer/jobs',
+      '/employer/jobs/new',
+    ]) {
       await page.goto(path);
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
       await expectNoHorizontalScroll(page);
@@ -169,7 +182,7 @@ test.describe('Tablets and small laptops (768 and 1024 px, PRD NFR-7)', () => {
     {
       who: 'employer1@example.com',
       password: undefined,
-      paths: ['/employer/alerts', '/employer/jobs', '/employer/jobs/new'],
+      paths: ['/employer/home', '/employer/alerts', '/employer/jobs', '/employer/jobs/new'],
     },
     {
       who: ADMIN.email,
@@ -194,4 +207,26 @@ test.describe('Tablets and small laptops (768 and 1024 px, PRD NFR-7)', () => {
       });
     }
   }
+});
+
+test.describe('Worker menu across the top (design refresh)', () => {
+  test('Home first, every page one tap away, big buttons, no sideways scroll', async ({ page }) => {
+    await logIn(page, 'worker1@example.com');
+    await expect(page).toHaveURL(/\/worker\/home$/);
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Habari, Wanjiru');
+    const menu = page.getByRole('navigation', { name: 'Main menu' });
+    await expect(menu).toHaveCount(1);
+    for (const link of await menu.getByRole('link').all()) {
+      const box = await link.boundingBox();
+      expect(box!.height, 'menu buttons are at least 52 px tall').toBeGreaterThanOrEqual(52);
+    }
+    await menu.getByRole('link', { name: 'Daily summary' }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Daily summary' })).toBeVisible();
+    await expect(menu.getByRole('link', { name: 'Daily summary' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    await expectNoSeriousA11yIssues(page);
+    await expectNoHorizontalScroll(page);
+  });
 });

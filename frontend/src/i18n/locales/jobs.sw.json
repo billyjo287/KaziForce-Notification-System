@@ -43,6 +43,25 @@
       "findJobs": "Tafuta kazi",
       "appliedOn": "Uliomba {{when}}"
     },
-    "held": "Inasubiri ukaguzi"
+    "held": "Inasubiri ukaguzi",
+    "appliedHint": "Tunakuombea bahati njema"
+  },
+  "applicationStatus": {
+    "worker": {
+      "received": "Imetumwa, inasubiri",
+      "reviewed": "Imeonwa na mwajiri",
+      "accepted": "Umepata kazi",
+      "rejected": "Hukuchaguliwa wakati huu"
+    },
+    "employer": {
+      "received": "Mpya",
+      "reviewed": "Imeonwa",
+      "accepted": "Amekubaliwa",
+      "rejected": "Hakuchaguliwa"
+    }
+  },
+  "apiErrors": {
+    "job_closed": "Kazi hii haipo wazi tena.",
+    "already_applied": "Tayari umeomba kazi hii."
   }
 }

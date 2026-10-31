@@ -1,0 +1,60 @@
+{
+  "workerHome": {
+    "greeting": "Habari, {{name}}!",
+    "greetingNoName": "Habari!",
+    "waiting_zero": "Nothing new right now. We’ll shout if something important comes in.",
+    "waiting_one": "{{count}} unread alert is waiting for you.",
+    "waiting_other": "{{count}} unread alerts are waiting for you.",
+    "needsYou": "Needs you now",
+    "closesIn": "Closes in {{time}}",
+    "closed": "This has closed",
+    "open": "Open",
+    "waitingTitle": "Waiting for you",
+    "unread_one": "{{count}} unread",
+    "unread_other": "{{count}} unread",
+    "see": "See",
+    "jobsTitle": "Jobs near you",
+    "jobsIn": "Open jobs in {{place}}",
+    "jobsAll": "Open jobs you can apply for",
+    "seeAllJobs": "See all jobs",
+    "noJobs": "No open jobs here right now. New ones arrive as alerts.",
+    "jobsError": "We could not load jobs. Check your internet connection, then try again."
+  },
+  "dailySummary": {
+    "title": "Daily summary",
+    "intro": "Small updates that can wait, from the last 7 days. If the 8:00 email is on in Alert settings, the same things arrive by email each morning.",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "earlier": "Earlier this week",
+    "open": "Open"
+  },
+  "employerHome": {
+    "line_zero": "No new applicants right now. We’ll tell you the moment someone applies.",
+    "line_one": "{{count}} new applicant is waiting for your answer.",
+    "line_other": "{{count}} new applicants are waiting for your answer.",
+    "countsTitle": "Your jobs in numbers",
+    "stats": {
+      "open": "Open jobs",
+      "new": "New applicants",
+      "applicants": "All applicants",
+      "closed": "Closed jobs"
+    },
+    "jobsTitle": "Your jobs",
+    "seeAllJobs": "See all jobs",
+    "table": {
+      "job": "Job",
+      "state": "State",
+      "applicants": "Applicants",
+      "closes": "Closes"
+    },
+    "state": {
+      "urgent": "Needs workers soon",
+      "open": "Open",
+      "held": "Being checked",
+      "closed": "Closed",
+      "removed": "Removed"
+    },
+    "newTitle": "New applicants",
+    "newEmpty": "No new applicants yet. Urgent jobs reach workers' phones first."
+  }
+}

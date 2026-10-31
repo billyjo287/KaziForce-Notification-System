@@ -8,6 +8,7 @@ import { ErrorPage, NotFoundPage, PageSkeleton } from './pages/StatusPages';
 //   /login, /register, ...   account pages
 //   /worker, /employer, /admin   the logged-in app (shell + alerts), then one file per page
 const app = () => import('./app/appRoutes');
+const alerts = () => import('./features/alerts/AlertsPage');
 const guards = () => import('./app/RequireAuth');
 const admin = () => import('./features/admin/AdminPages');
 const messages = () => import('./features/messages/MessagesPages');
@@ -87,10 +88,25 @@ export const router = createBrowserRouter([
       // ---------- Worker ----------
       {
         path: 'worker',
-        lazy: async () => ({ Component: (await app()).WorkerLayout }),
+        lazy: async () => ({
+          Component: (await import('./app/workerLayout')).WorkerLayout,
+        }),
         children: [
-          { index: true, element: <Navigate to="alerts" replace /> },
-          { path: 'alerts', lazy: async () => ({ Component: (await app()).WorkerAlerts }) },
+          { index: true, element: <Navigate to="home" replace /> },
+          // Design refresh: the worker's first page, and the daily summary on screen.
+          {
+            path: 'home',
+            lazy: async () => ({
+              Component: (await import('./features/home/WorkerHomePage')).default,
+            }),
+          },
+          {
+            path: 'summary',
+            lazy: async () => ({
+              Component: (await import('./features/home/DailySummaryPage')).default,
+            }),
+          },
+          { path: 'alerts', lazy: async () => ({ Component: (await alerts()).WorkerAlerts }) },
           {
             path: 'jobs',
             lazy: async () => ({ Component: (await import('./features/jobs/JobsPage')).default }),
@@ -110,8 +126,14 @@ export const router = createBrowserRouter([
         path: 'employer',
         lazy: async () => ({ Component: (await app()).EmployerLayout }),
         children: [
-          { index: true, element: <Navigate to="alerts" replace /> },
-          { path: 'alerts', lazy: async () => ({ Component: (await app()).EmployerAlerts }) },
+          { index: true, element: <Navigate to="home" replace /> },
+          {
+            path: 'home',
+            lazy: async () => ({
+              Component: (await import('./features/home/EmployerHomePage')).default,
+            }),
+          },
+          { path: 'alerts', lazy: async () => ({ Component: (await alerts()).EmployerAlerts }) },
           {
             path: 'jobs',
             lazy: async () => ({
@@ -137,7 +159,7 @@ export const router = createBrowserRouter([
       // ---------- Admin ----------
       {
         path: 'admin',
-        lazy: async () => ({ Component: (await app()).AdminLayout }),
+        lazy: async () => ({ Component: (await import('./app/adminLayout')).AdminLayout }),
         children: [
           { index: true, element: <Navigate to="overview" replace /> },
           {

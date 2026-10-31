@@ -36,16 +36,15 @@
     "myJobs": "My jobs",
     "messages": "Messages",
     "settings": "Settings",
-    "overview": "Overview",
-    "users": "Users",
-    "adminJobs": "Jobs",
-    "spam": "Spam review",
-    "deliveryLogs": "Delivery logs",
-    "announcements": "Announcements",
-    "models": "Model versions",
-    "auditLog": "Audit log",
     "unreadCount_one": "{{count}} unread",
-    "unreadCount_other": "{{count}} unread"
+    "unreadCount_other": "{{count}} unread",
+    "postJob": "Post a job",
+    "home": "Home",
+    "findJobs": "Find jobs",
+    "dailySummary": "Daily summary",
+    "alertSettings": "Alert settings",
+    "bell": "Alerts",
+    "actNowCount": "{{count}} to act on now"
   },
   "roles": {
     "worker": "Worker",
@@ -113,38 +112,11 @@
     "markAllRead": "Mark all as read",
     "markedAllRead_one": "{{count}} alert marked as read.",
     "markedAllRead_other": "{{count}} alerts marked as read.",
-    "openAlert": "Open"
+    "openAlert": "Open",
+    "scamCheck": "Every alert is checked for scams before it reaches you."
   },
   "settings": {
-    "title": "Settings",
-    "display": "Display and language",
-    "language": {
-      "label": "Language",
-      "help": "The language used in the app and in your messages."
-    },
-    "textSize": {
-      "label": "Text size",
-      "help": "Large makes all text and buttons bigger.",
-      "normal": "Normal",
-      "large": "Large"
-    },
-    "reduceMotion": {
-      "label": "Reduce motion",
-      "help": "Turns off movement and animation on the screen."
-    },
-    "saved": "Saved",
-    "account": "Account",
-    "profileLink": "Your profile",
-    "profileLinkHelp": "Name, place, skills and phone number.",
-    "companyLink": "Company profile",
-    "companyLinkHelp": "Company name, place and phone number.",
-    "logout": "Log out",
-    "logoutHelp": "Log out on this device.",
-    "logoutAll": "Log out of all devices",
-    "logoutAllHelp": "Use this if you lost a phone or logged in on someone else's device.",
-    "logoutAllTitle": "Log out of all devices?",
-    "logoutAllBody": "You will need to log in again on every phone and computer, including this one.",
-    "logoutAllConfirm": "Log out everywhere"
+    "logout": "Log out"
   },
   "errors": {
     "notFoundTitle": "We cannot find that page",
@@ -157,29 +129,12 @@
     "generic": "Something went wrong. Please try again.",
     "network": "We cannot reach KaziForce. Check your internet connection and try again.",
     "server_error": "Something went wrong on our side. Please try again in a moment.",
-    "wrong_credentials": "The email, phone number or password is not right. Check them and try again.",
     "account_suspended": "This account has been suspended. Contact KaziForce if you think this is a mistake.",
-    "email_taken": "An account with this email already exists. Try logging in instead.",
     "rate_limited": "Too many tries. Please wait a few minutes and try again.",
-    "reset_link_invalid": "This link has expired or was already used. Ask for a new one.",
-    "phone_taken": "This number is already used by another account.",
-    "code_wrong": "That code is not right. Check the SMS and try again.",
-    "code_expired": "This code has expired. Ask for a new one.",
-    "job_closed": "This job is no longer open.",
-    "already_applied": "You have already applied for this job.",
-    "undo_too_late": "It is too late to undo this change.",
     "not_found": "We cannot find this. It may have been removed.",
     "not_allowed": "You are not allowed to do this.",
     "not_logged_in": "Please log in again.",
-    "invalid_input": "Some details are missing or not valid. Check the form.",
-    "cannot_suspend_admin": "Admin accounts cannot be suspended.",
-    "already_removed": "This job was already removed.",
-    "login_code_wrong": "That code is not right. Check it and try again.",
-    "login_code_expired": "This code has expired. Press \"Start again\" for a new one.",
-    "not_marked": "Mark the alert as not important first.",
-    "identifier_invalid": "Type an email address like name@gmail.com, or a Kenyan mobile number like 0712 345 678.",
-    "code_too_soon": "Please wait a few seconds before asking for a new code.",
-    "code_channel_unavailable": "This way is not available for your account. Choose email."
+    "invalid_input": "Some details are missing or not valid. Check the form."
   },
   "validation": {
     "required": "Please fill this in.",
@@ -211,29 +166,7 @@
       "body": "You are logged in."
     }
   },
-  "applicationStatus": {
-    "worker": {
-      "received": "Sent, waiting",
-      "reviewed": "Seen by the employer",
-      "accepted": "You got the job",
-      "rejected": "Not selected this time"
-    },
-    "employer": {
-      "received": "New",
-      "reviewed": "Seen",
-      "accepted": "Accepted",
-      "rejected": "Not selected"
-    }
-  },
   "theme": {
-    "label": "Screen colours",
-    "settingsLabel": "Appearance",
-    "settingsHelp": "Light colours, dark colours, or the same as your phone or computer.",
-    "options": {
-      "light": "Light",
-      "dark": "Dark",
-      "system": "Same as device"
-    },
     "toggle": {
       "label": "Dark mode",
       "toDark": "Lights off. Your eyes say asante.",

@@ -44,14 +44,15 @@
       "emptyBody": "Tutakujulisha mtu akiomba.",
       "accept": "Kubali",
       "reject": "Kataa",
-      "acceptedToast": "{{name}} amekubaliwa.",
-      "rejectedToast": "{{name}} hakuchaguliwa.",
+      "acceptedToast": "Sawa. Tutamjulisha {{name}} hivi punde.",
+      "rejectedToast": "Umekataa kwa upole. Tutamjulisha {{name}}.",
       "undone": "Mabadiliko yametenduliwa.",
       "note": "Ujumbe wake",
       "skills": "Ujuzi",
       "from": "Anaishi {{place}}",
       "message": "Mwandikie {{name}}",
-      "appliedOn": "Aliomba {{when}}"
+      "appliedOn": "Aliomba {{when}}",
+      "pickedNote": "Umemchagua {{name}}. Mtumie ujumbe kuhusu muda na mahali."
     },
     "company": {
       "title": "Wasifu wa kampuni",
@@ -62,5 +63,8 @@
     "removedReason": "Imeondolewa: {{reason}}",
     "heldNotice": "Timu yetu inakagua kazi hii kabla wafanyakazi hawajaiona, kwa sababu ilionekana kuomba pesa kutoka kwa wafanyakazi. Hakuna arifa iliyotumwa bado.",
     "heldShort": "Inasubiri ukaguzi mfupi wa timu yetu"
+  },
+  "apiErrors": {
+    "undo_too_late": "Ni kuchelewa mno kutendua mabadiliko haya."
   }
 }

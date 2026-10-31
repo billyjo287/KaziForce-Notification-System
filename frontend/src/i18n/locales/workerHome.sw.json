@@ -1,0 +1,60 @@
+{
+  "workerHome": {
+    "greeting": "Habari, {{name}}!",
+    "greetingNoName": "Habari!",
+    "waiting_zero": "Hakuna jipya kwa sasa. Tutakuambia kitu muhimu kikifika.",
+    "waiting_one": "Arifa {{count}} ambayo hujasoma inakusubiri.",
+    "waiting_other": "Arifa {{count}} ambazo hujasoma zinakusubiri.",
+    "needsYou": "Zinakuhitaji sasa",
+    "closesIn": "Inafungwa baada ya {{time}}",
+    "closed": "Imeshafungwa",
+    "open": "Fungua",
+    "waitingTitle": "Zinakusubiri",
+    "unread_one": "{{count}} hujasoma",
+    "unread_other": "{{count}} hujasoma",
+    "see": "Ona",
+    "jobsTitle": "Kazi karibu nawe",
+    "jobsIn": "Kazi zilizo wazi {{place}}",
+    "jobsAll": "Kazi zilizo wazi unazoweza kuomba",
+    "seeAllJobs": "Ona kazi zote",
+    "noJobs": "Hakuna kazi zilizo wazi hapa kwa sasa. Mpya zinafika kama arifa.",
+    "jobsError": "Hatukuweza kupakia kazi. Angalia muunganisho wako wa intaneti, kisha ujaribu tena."
+  },
+  "dailySummary": {
+    "title": "Muhtasari wa siku",
+    "intro": "Taarifa ndogo zinazoweza kusubiri, za siku 7 zilizopita. Kama barua pepe ya saa 2 asubuhi imewashwa kwenye Mipangilio ya arifa, mambo haya haya yanafika kwa barua pepe kila asubuhi.",
+    "today": "Leo",
+    "yesterday": "Jana",
+    "earlier": "Mapema wiki hii",
+    "open": "Fungua"
+  },
+  "employerHome": {
+    "line_zero": "Hakuna waombaji wapya sasa hivi. Tutakuambia mara mtu akiomba.",
+    "line_one": "Mwombaji {{count}} mpya anasubiri jibu lako.",
+    "line_other": "Waombaji {{count}} wapya wanasubiri jibu lako.",
+    "countsTitle": "Kazi zako kwa idadi",
+    "stats": {
+      "open": "Kazi zilizo wazi",
+      "new": "Waombaji wapya",
+      "applicants": "Waombaji wote",
+      "closed": "Kazi zilizofungwa"
+    },
+    "jobsTitle": "Kazi zako",
+    "seeAllJobs": "Ona kazi zote",
+    "table": {
+      "job": "Kazi",
+      "state": "Hali",
+      "applicants": "Waombaji",
+      "closes": "Inafungwa"
+    },
+    "state": {
+      "urgent": "Inahitaji wafanyakazi haraka",
+      "open": "Iko wazi",
+      "held": "Inakaguliwa",
+      "closed": "Imefungwa",
+      "removed": "Imeondolewa"
+    },
+    "newTitle": "Waombaji wapya",
+    "newEmpty": "Bado hakuna waombaji wapya. Kazi za haraka hufika kwenye simu za wafanyakazi kwanza."
+  }
+}

@@ -110,7 +110,35 @@
           "help": "Herufi ambazo simu au kompyuta yako tayari inatumia. Hakuna cha kupakua."
         }
       }
-    }
+    },
+    "title": "Mipangilio",
+    "display": "Mwonekano na lugha",
+    "language": {
+      "label": "Lugha",
+      "help": "Lugha inayotumika kwenye programu na kwenye ujumbe wako."
+    },
+    "textSize": {
+      "label": "Ukubwa wa maandishi",
+      "help": "Kubwa hufanya maandishi na vitufe vyote kuwa vikubwa zaidi.",
+      "normal": "Kawaida",
+      "large": "Kubwa"
+    },
+    "reduceMotion": {
+      "label": "Punguza mwendo",
+      "help": "Huzima mwendo na uhuishaji kwenye skrini."
+    },
+    "saved": "Imehifadhiwa",
+    "account": "Akaunti",
+    "profileLink": "Wasifu wako",
+    "profileLinkHelp": "Jina, mahali, ujuzi na nambari ya simu.",
+    "companyLink": "Wasifu wa kampuni",
+    "companyLinkHelp": "Jina la kampuni, mahali na nambari ya simu.",
+    "logoutHelp": "Toka kwenye kifaa hiki.",
+    "logoutAll": "Toka kwenye vifaa vyote",
+    "logoutAllHelp": "Tumia hii ukipoteza simu au uliingia kwenye kifaa cha mtu mwingine.",
+    "logoutAllTitle": "Toka kwenye vifaa vyote?",
+    "logoutAllBody": "Utahitaji kuingia tena kwenye kila simu na kompyuta, pamoja na hii.",
+    "logoutAllConfirm": "Toka kila mahali"
   },
   "channels": {
     "whatsapp": "WhatsApp",
@@ -124,5 +152,15 @@
   },
   "apiErrors": {
     "password_wrong": "Nenosiri hilo si sahihi."
+  },
+  "theme": {
+    "label": "Mwonekano wa skrini",
+    "settingsLabel": "Mwonekano",
+    "settingsHelp": "Rangi nyepesi, rangi nyeusi (giza), au kufuata simu au kompyuta yako.",
+    "options": {
+      "light": "Nyepesi",
+      "dark": "Giza",
+      "system": "Kama kifaa"
+    }
   }
 }

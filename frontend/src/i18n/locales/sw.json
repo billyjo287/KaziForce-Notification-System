@@ -36,16 +36,15 @@
     "myJobs": "Kazi zangu",
     "messages": "Ujumbe",
     "settings": "Mipangilio",
-    "overview": "Muhtasari",
-    "users": "Watumiaji",
-    "adminJobs": "Kazi",
-    "spam": "Kagua taka",
-    "deliveryLogs": "Kumbukumbu za utumaji",
-    "announcements": "Matangazo",
-    "models": "Matoleo ya modeli",
-    "auditLog": "Kumbukumbu ya ukaguzi",
     "unreadCount_one": "{{count}} haijasomwa",
-    "unreadCount_other": "{{count}} hazijasomwa"
+    "unreadCount_other": "{{count}} hazijasomwa",
+    "postJob": "Chapisha kazi",
+    "home": "Mwanzo",
+    "findJobs": "Tafuta kazi",
+    "dailySummary": "Muhtasari wa siku",
+    "alertSettings": "Mipangilio ya arifa",
+    "bell": "Arifa",
+    "actNowCount": "{{count}} za kushughulikia sasa"
   },
   "roles": {
     "worker": "Mfanyakazi",
@@ -113,38 +112,11 @@
     "markAllRead": "Weka zote kama zimesomwa",
     "markedAllRead_one": "Arifa {{count}} imewekwa kama imesomwa.",
     "markedAllRead_other": "Arifa {{count}} zimewekwa kama zimesomwa.",
-    "openAlert": "Fungua"
+    "openAlert": "Fungua",
+    "scamCheck": "Kila arifa inakaguliwa dhidi ya utapeli kabla ya kukufikia."
   },
   "settings": {
-    "title": "Mipangilio",
-    "display": "Mwonekano na lugha",
-    "language": {
-      "label": "Lugha",
-      "help": "Lugha inayotumika kwenye programu na kwenye ujumbe wako."
-    },
-    "textSize": {
-      "label": "Ukubwa wa maandishi",
-      "help": "Kubwa hufanya maandishi na vitufe vyote kuwa vikubwa zaidi.",
-      "normal": "Kawaida",
-      "large": "Kubwa"
-    },
-    "reduceMotion": {
-      "label": "Punguza mwendo",
-      "help": "Huzima mwendo na uhuishaji kwenye skrini."
-    },
-    "saved": "Imehifadhiwa",
-    "account": "Akaunti",
-    "profileLink": "Wasifu wako",
-    "profileLinkHelp": "Jina, mahali, ujuzi na nambari ya simu.",
-    "companyLink": "Wasifu wa kampuni",
-    "companyLinkHelp": "Jina la kampuni, mahali na nambari ya simu.",
-    "logout": "Toka",
-    "logoutHelp": "Toka kwenye kifaa hiki.",
-    "logoutAll": "Toka kwenye vifaa vyote",
-    "logoutAllHelp": "Tumia hii ukipoteza simu au uliingia kwenye kifaa cha mtu mwingine.",
-    "logoutAllTitle": "Toka kwenye vifaa vyote?",
-    "logoutAllBody": "Utahitaji kuingia tena kwenye kila simu na kompyuta, pamoja na hii.",
-    "logoutAllConfirm": "Toka kila mahali"
+    "logout": "Toka"
   },
   "errors": {
     "notFoundTitle": "Hatuwezi kupata ukurasa huo",
@@ -157,29 +129,12 @@
     "generic": "Kuna tatizo. Tafadhali jaribu tena.",
     "network": "Hatuwezi kufikia KaziForce. Angalia muunganisho wako wa intaneti kisha ujaribu tena.",
     "server_error": "Kuna tatizo upande wetu. Tafadhali jaribu tena baada ya muda mfupi.",
-    "wrong_credentials": "Barua pepe, nambari ya simu au nenosiri si sahihi. Viangalie kisha ujaribu tena.",
     "account_suspended": "Akaunti hii imesimamishwa. Wasiliana na KaziForce kama unafikiri ni kosa.",
-    "email_taken": "Tayari kuna akaunti yenye barua pepe hii. Jaribu kuingia badala yake.",
     "rate_limited": "Umejaribu mara nyingi mno. Tafadhali subiri dakika chache kisha ujaribu tena.",
-    "reset_link_invalid": "Kiungo hiki kimeisha muda au kimeshatumika. Omba kipya.",
-    "phone_taken": "Nambari hii tayari inatumiwa na akaunti nyingine.",
-    "code_wrong": "Msimbo huo si sahihi. Angalia SMS kisha ujaribu tena.",
-    "code_expired": "Msimbo huu umeisha muda. Omba mpya.",
-    "job_closed": "Kazi hii haipo wazi tena.",
-    "already_applied": "Tayari umeomba kazi hii.",
-    "undo_too_late": "Ni kuchelewa mno kutendua mabadiliko haya.",
     "not_found": "Hatuwezi kupata hiki. Huenda kimeondolewa.",
     "not_allowed": "Huruhusiwi kufanya hivi.",
     "not_logged_in": "Tafadhali ingia tena.",
-    "invalid_input": "Baadhi ya taarifa hazipo au si sahihi. Angalia fomu.",
-    "cannot_suspend_admin": "Akaunti za msimamizi haziwezi kusimamishwa.",
-    "already_removed": "Kazi hii tayari imeondolewa.",
-    "login_code_wrong": "Msimbo huo si sahihi. Uangalie kisha ujaribu tena.",
-    "login_code_expired": "Msimbo huu umeisha muda. Bonyeza \"Anza upya\" kupata mpya.",
-    "not_marked": "Kwanza weka arifa hii kuwa si muhimu.",
-    "identifier_invalid": "Andika barua pepe kama jina@gmail.com, au nambari ya simu ya Kenya kama 0712 345 678.",
-    "code_too_soon": "Tafadhali subiri sekunde chache kabla ya kuomba msimbo mpya.",
-    "code_channel_unavailable": "Njia hii haipatikani kwa akaunti yako. Chagua barua pepe."
+    "invalid_input": "Baadhi ya taarifa hazipo au si sahihi. Angalia fomu."
   },
   "validation": {
     "required": "Tafadhali jaza hapa.",
@@ -211,29 +166,7 @@
       "body": "Umeingia kwenye akaunti yako."
     }
   },
-  "applicationStatus": {
-    "worker": {
-      "received": "Imetumwa, inasubiri",
-      "reviewed": "Imeonwa na mwajiri",
-      "accepted": "Umepata kazi",
-      "rejected": "Hukuchaguliwa wakati huu"
-    },
-    "employer": {
-      "received": "Mpya",
-      "reviewed": "Imeonwa",
-      "accepted": "Amekubaliwa",
-      "rejected": "Hakuchaguliwa"
-    }
-  },
   "theme": {
-    "label": "Mwonekano wa skrini",
-    "settingsLabel": "Mwonekano",
-    "settingsHelp": "Rangi nyepesi, rangi nyeusi (giza), au kufuata simu au kompyuta yako.",
-    "options": {
-      "light": "Nyepesi",
-      "dark": "Giza",
-      "system": "Kama kifaa"
-    },
     "toggle": {
       "label": "Hali ya giza",
       "toDark": "Taa zimezimwa. Macho yako yanasema asante.",

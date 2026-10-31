@@ -1,15 +1,10 @@
 import {
   Bell,
   Briefcase,
-  Cpu,
-  LayoutDashboard,
-  Megaphone,
+  House,
   MessageCircle,
-  ScrollText,
-  Send,
   Settings,
-  ShieldAlert,
-  Users,
+  Sunrise,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -26,47 +21,42 @@ export interface NavItem {
 
 export interface RoleNav {
   basePath: string;
+  /**
+   * "top": a row of big buttons across the top of every page, on all screen sizes (workers,
+   * design refresh). "side": a sidebar on tablets and computers, a bottom bar on phones.
+   */
+  layout: 'top' | 'side';
   /** Every page, in order (sidebar on tablets/desktops). */
   items: NavItem[];
   /** Phones: at most 4 items in the bottom bar (PRD 6.6). Extra pages go behind "More". */
   bottomBar: string[];
 }
 
-export const NAV: Record<Role, RoleNav> = {
+export const NAV: Record<'worker' | 'business', RoleNav> = {
   worker: {
     basePath: '/worker',
+    layout: 'top',
     items: [
+      { key: 'home', path: 'home', icon: House },
+      { key: 'findJobs', path: 'jobs', icon: Briefcase },
       { key: 'alerts', path: 'alerts', icon: Bell, showsUnread: true },
-      { key: 'jobs', path: 'jobs', icon: Briefcase },
       { key: 'messages', path: 'messages', icon: MessageCircle },
-      { key: 'settings', path: 'settings', icon: Settings },
+      { key: 'dailySummary', path: 'summary', icon: Sunrise },
+      { key: 'alertSettings', path: 'settings', icon: Settings },
     ],
-    bottomBar: ['alerts', 'jobs', 'messages', 'settings'],
+    bottomBar: [],
   },
   business: {
     basePath: '/employer',
+    layout: 'side',
     items: [
+      { key: 'home', path: 'home', icon: House },
       { key: 'alerts', path: 'alerts', icon: Bell, showsUnread: true },
       { key: 'myJobs', path: 'jobs', icon: Briefcase },
       { key: 'messages', path: 'messages', icon: MessageCircle },
       { key: 'settings', path: 'settings', icon: Settings },
     ],
-    bottomBar: ['alerts', 'myJobs', 'messages', 'settings'],
-  },
-  admin: {
-    basePath: '/admin',
-    items: [
-      { key: 'overview', path: 'overview', icon: LayoutDashboard },
-      { key: 'spam', path: 'spam', icon: ShieldAlert },
-      { key: 'users', path: 'users', icon: Users },
-      { key: 'adminJobs', path: 'jobs', icon: Briefcase },
-      { key: 'deliveryLogs', path: 'delivery-logs', icon: Send },
-      { key: 'announcements', path: 'announcements', icon: Megaphone },
-      { key: 'models', path: 'models', icon: Cpu },
-      { key: 'auditLog', path: 'audit-log', icon: ScrollText },
-      { key: 'settings', path: 'settings', icon: Settings },
-    ],
-    // Three pages + "More" = 4 items: the ones an admin checks every day.
-    bottomBar: ['overview', 'spam', 'users'],
+    // Phones: Messages and Settings are behind "More" (4 places at most, "More" included).
+    bottomBar: ['home', 'alerts', 'myJobs'],
   },
 };

@@ -234,6 +234,10 @@ Now that the server has a public HTTPS address, providers can report back. Use `
   opt-out `.../<AFRICASTALKING_WEBHOOK_SECRET>/optout`.
 - **Resend:** verify your own domain in Resend to send from it (and to anyone, not only your own
   address), then change `EMAIL_FROM`.
+  **Important for logging in:** new devices and sign-ups get a 6-digit code (ADR 0013). Without
+  a verified domain only your own address receives the email code, so other people could only
+  use SMS (if their phone is confirmed) and could not sign up. Until the domain is verified, set
+  `ACCOUNT_CODES=false` in `deploy/azure/.env` (password-only log-in, as before).
 
 The API refuses to start in sandbox or live mode if a provider key is missing, and says which.
 Going live (`CHANNEL_MODE=live`) costs money per message.

@@ -40,5 +40,10 @@
       "everythingHelp": "Every alert also comes to you by email.",
       "finish": "Finish"
     }
+  },
+  "apiErrors": {
+    "phone_taken": "This number is already used by another account.",
+    "code_wrong": "That code is not right. Check the SMS and try again.",
+    "code_expired": "This code has expired. Ask for a new one."
   }
 }
