@@ -69,6 +69,10 @@ const registerSchema = z.object({
   email,
   password,
   language: z.enum(['en', 'sw']).default('en'),
+  // Where the sign-up code goes (ADR 0015). SMS: to this phone number, with consent.
+  channel: z.enum(['email', 'sms']).default('email'),
+  phone: z.string().trim().max(30).optional(),
+  consentSms: z.boolean().optional(),
 });
 // "identifier" is an email or a phone number; older pages (and the tests) send "email".
 const loginSchema = z
@@ -84,6 +88,7 @@ const codeSchema = challengeSchema.extend({
   code: z.string().regex(/^\d{6}$/, 'Enter the 6 digits'),
   rememberDevice: z.boolean().default(false),
 });
+const channelSchema = z.enum(['sms', 'email']);
 const forgotSchema = z.object({ email });
 const resetSchema = z.object({ token: z.string().min(20).max(200), password });
 
@@ -130,6 +135,8 @@ export function authRoutes(limits: RateLimiters) {
     const input = parse(registerSchema, req.body);
     const existing = await prisma.user.findUnique({ where: { email: input.email } });
     if (existing) throw conflict('email_taken', 'An account with this email already exists.');
+    const phone =
+      env.ACCOUNT_CODES && input.channel === 'sms' ? await signupPhone(input) : undefined;
     // From here on only the hash: the typed password is never kept, not even in Redis.
     const details = {
       role: input.role,
@@ -144,21 +151,23 @@ export function authRoutes(limits: RateLimiters) {
       // nobody can take someone else's email address).
       const challengeId = await createChallenge({
         purpose: 'signup',
-        signup: details,
+        signup: { ...details, ...(phone && { consentSms: true }) },
         name: input.name,
         language: input.language,
         email: input.email,
+        phone,
       });
-      const sent = await sendCode(challengeId, 'signup', 'email');
+      const sent = await sendCode(challengeId, 'signup', input.channel);
       res.json({ codeRequired: true, challengeId, sent });
       return;
     }
     await createAccount(req, res, details);
   });
 
+  // "Send a new code" (the same way) and "Send it by email / SMS instead".
   router.post('/register/resend', limits.codeSend, async (req, res) => {
-    const { challengeId } = parse(challengeSchema, req.body);
-    res.json(await sendCode(challengeId, 'signup', 'email'));
+    const input = parse(challengeSchema.extend({ channel: channelSchema.optional() }), req.body);
+    res.json(await sendCode(input.challengeId, 'signup', input.channel));
   });
 
   router.post('/register/code', limits.lookup, async (req, res) => {
@@ -168,8 +177,34 @@ export function authRoutes(limits: RateLimiters) {
     if (await prisma.user.findUnique({ where: { email: challenge.signup.email } })) {
       throw conflict('email_taken', 'An account with this email already exists.');
     }
-    await createAccount(req, res, challenge.signup, input.rememberDevice);
+    // The code came by SMS: the phone is confirmed, the email not yet (confirmed later in the app).
+    const smsPhone = challenge.channel === 'sms' ? challenge.phone : undefined;
+    if (smsPhone && (await prisma.user.findUnique({ where: { phone: smsPhone } }))) {
+      throw conflict('phone_taken', 'This number is already used by another account.');
+    }
+    await createAccount(
+      req,
+      res,
+      challenge.signup,
+      input.rememberDevice,
+      smsPhone ? { phone: smsPhone, consent: !!challenge.signup.consentSms } : undefined,
+    );
   });
+
+  /** SMS sign-up: a Kenyan mobile number, not used by another account, and consent. */
+  async function signupPhone(input: { phone?: string; consentSms?: boolean }) {
+    const parsed = parseIdentifier(input.phone ?? '');
+    if (parsed?.kind !== 'phone') {
+      throw badRequest('phone_invalid', 'Use a Kenyan mobile number, for example 0712 345 678.');
+    }
+    if (input.consentSms !== true) {
+      throw badRequest('consent_required', 'Please agree to receive messages.');
+    }
+    if (await prisma.user.findUnique({ where: { phone: parsed.phone } })) {
+      throw conflict('phone_taken', 'This number is already used by another account.');
+    }
+    return parsed.phone;
+  }
 
   /** Creates the account with the recommended settings and logs it in (201). */
   async function createAccount(
@@ -183,12 +218,22 @@ export function authRoutes(limits: RateLimiters) {
       language: 'en' | 'sw';
     },
     rememberDevice = false,
+    /** Signed up with an SMS code: the confirmed phone and the consent given with it. */
+    bySms?: { phone: string; consent: boolean },
   ) {
+    const now = new Date();
     const user = await prisma.user.create({
       data: {
         role: input.role,
         name: input.name,
         email: input.email,
+        ...(bySms && {
+          emailVerifiedAt: null,
+          phone: bySms.phone,
+          phoneVerified: true,
+          consentSmsWhatsapp: bySms.consent,
+          consentAt: bySms.consent ? now : null,
+        }),
         language: input.language,
         passwordHash: input.passwordHash,
         lastLoginAt: new Date(),
@@ -234,10 +279,10 @@ export function authRoutes(limits: RateLimiters) {
 
     // A new phone or computer: the password was right, now a code by SMS or email.
     if (env.ACCOUNT_CODES && !(await isTrustedDevice(req, user.id))) {
-      const contact = {
-        phone: user.phoneVerified && user.phone && !user.smsOptedOutAt ? user.phone : undefined,
-        email: user.email,
-      };
+      const phone =
+        user.phoneVerified && user.phone && !user.smsOptedOutAt ? user.phone : undefined;
+      // An email address that was never confirmed (SMS sign-up) gets no codes while SMS works.
+      const contact = { phone, email: user.emailVerifiedAt || !phone ? user.email : undefined };
       const challengeId = await createChallenge({
         purpose: 'login',
         userId: user.id,
@@ -258,7 +303,7 @@ export function authRoutes(limits: RateLimiters) {
 
   // "Where should we send your code?": SMS or email (also "Send again" and "Use email instead").
   router.post('/login/send', limits.codeSend, async (req, res) => {
-    const input = parse(challengeSchema.extend({ channel: z.enum(['sms', 'email']) }), req.body);
+    const input = parse(challengeSchema.extend({ channel: channelSchema }), req.body);
     res.json(await sendCode(input.challengeId, 'login', input.channel));
   });
 
@@ -285,7 +330,7 @@ export function authRoutes(limits: RateLimiters) {
     await startSession(res, user, userAgent);
     await prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
 
-    if (!seenDevice) {
+    if (!seenDevice && user.emailVerifiedAt) {
       const settings = `${env.PUBLIC_APP_URL}/${user.role === 'business' ? 'employer' : user.role}/settings`;
       sendEmail({
         to: user.email,
@@ -350,6 +395,38 @@ export function authRoutes(limits: RateLimiters) {
     res.status(204).end();
   });
 
+  // After an SMS sign-up: "Confirm your email" in the app. A code to the email address; once it
+  // is typed, emails (alerts, daily summary, password reset) can be sent there.
+  router.post('/email/send', requireAuth, limits.codeSend, async (req, res) => {
+    const me = currentUser(req);
+    const user = await prisma.user.findUniqueOrThrow({ where: { id: me.id } });
+    if (user.emailVerifiedAt) {
+      throw badRequest('email_confirmed', 'Your email is already confirmed.');
+    }
+    const challengeId = await createChallenge({
+      purpose: 'email',
+      userId: user.id,
+      name: user.name,
+      language: user.language,
+      email: user.email,
+    });
+    res.json({ challengeId, sent: await sendCode(challengeId, 'email', 'email') });
+  });
+
+  router.post('/email/resend', requireAuth, limits.codeSend, async (req, res) => {
+    const { challengeId } = parse(challengeSchema, req.body);
+    res.json(await sendCode(challengeId, 'email', 'email'));
+  });
+
+  router.post('/email/code', requireAuth, limits.lookup, async (req, res) => {
+    const me = currentUser(req);
+    const input = parse(codeSchema, req.body);
+    const challenge = await checkCode(input.challengeId, 'email', input.code);
+    if (challenge.userId !== me.id) throw unauthorized();
+    await prisma.user.update({ where: { id: me.id }, data: { emailVerifiedAt: new Date() } });
+    await loggedInResponse(res, me.id);
+  });
+
   router.post('/logout-all', requireAuth, async (req, res) => {
     const me = currentUser(req);
     await endAllSessions(me.id);
@@ -363,7 +440,8 @@ export function authRoutes(limits: RateLimiters) {
   router.post('/forgot-password', limits.passwordReset, async (req, res) => {
     const input = parse(forgotSchema, req.body);
     const user = await prisma.user.findUnique({ where: { email: input.email } });
-    if (user && user.status === 'active') {
+    // Never to an address that was not confirmed: it may be a typo, someone else's inbox.
+    if (user && user.status === 'active' && user.emailVerifiedAt) {
       const token = randomToken();
       await prisma.passwordResetToken.create({
         data: {

@@ -1,7 +1,8 @@
 // 6-digit codes that confirm who it is (ACCOUNT_CODES, ADR 0013):
 // - log in on a new phone or computer: after the right password, a code by SMS (verified phone
 //   only) or email, the person chooses;
-// - sign up: a code by email, so every account's email address is known to work.
+// - sign up: a code by email or by SMS to the phone number typed, the person chooses (ADR 0015);
+// - confirm the email address later, in the app, after an SMS sign-up.
 // "Remember this phone or computer for 30 days" lets that device skip the code next time.
 //
 // A code is valid 5 minutes, allows 5 wrong tries and can be sent again after 30 seconds (at most
@@ -29,12 +30,12 @@ export const TRUSTED_DEVICE_DAYS = 30;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 export type CodeChannel = 'sms' | 'email';
-type Purpose = 'login' | 'signup';
+type Purpose = 'login' | 'signup' | 'email';
 
 /** Kept in Redis while a code is being asked for. */
 interface Challenge {
   purpose: Purpose;
-  /** Log-in: who is logging in. */
+  /** Log-in and email confirmation: whose account it is. */
   userId?: string;
   /** Sign-up: the new account, created only once the code is right (the password as a hash). */
   signup?: {
@@ -43,12 +44,17 @@ interface Challenge {
     email: string;
     passwordHash: string;
     language: Language;
+    /** SMS sign-up: agreed to get SMS and WhatsApp messages (Kenya Data Protection Act). */
+    consentSms?: boolean;
   };
   name: string;
   language: Language;
-  /** Where the code may go: the verified phone (log-in only) and the email address. */
+  /**
+   * Where the code may go: a verified phone (log-in) or the number typed (sign-up), and the
+   * email address (left out at log-in when it is not confirmed and a phone can be used).
+   */
   phone?: string;
-  email: string;
+  email?: string;
   channel?: CodeChannel;
   codeHash?: string;
   codeExpiresAt?: number;
@@ -137,19 +143,23 @@ async function loadChallenge(challengeId: string, purpose: Purpose): Promise<Cha
 export function codeOptions(challenge: Pick<Challenge, 'phone' | 'email'>) {
   return [
     ...(challenge.phone ? [{ channel: 'sms' as const, to: maskPhone(challenge.phone) }] : []),
-    { channel: 'email' as const, to: maskEmail(challenge.email) },
+    ...(challenge.email ? [{ channel: 'email' as const, to: maskEmail(challenge.email) }] : []),
   ];
 }
 
-/** Sends a new code (the first one, again, or the other way). */
+/**
+ * Sends a new code (the first one, again, or the other way). Without a channel: the same way as
+ * the last one, or email.
+ */
 export async function sendCode(
   challengeId: string,
   purpose: Purpose,
-  channel: CodeChannel,
+  requested?: CodeChannel,
 ): Promise<CodeSent> {
   const challenge = await loadChallenge(challengeId, purpose);
+  const channel = requested ?? challenge.channel ?? 'email';
   const to = channel === 'sms' ? challenge.phone : challenge.email;
-  if (!to) throw badRequest('code_channel_unavailable', 'This account has no verified phone.');
+  if (!to) throw badRequest('code_channel_unavailable', 'This code cannot be sent that way.');
 
   const now = Date.now();
   if (challenge.lastSentAt && now - challenge.lastSentAt < RESEND_SECONDS * 1000) {
@@ -178,7 +188,9 @@ export async function sendCode(
     sendEmail({ to, ...codeEmail(challenge.name, code, purpose, challenge.language) });
   }
   if (env.OTP_DEMO_MODE)
-    logger.info(`[demo code] ${purpose} code for ${maskEmail(challenge.email)}: ${code}`);
+    logger.info(
+      `[demo code] ${purpose} code for ${channel === 'sms' ? maskPhone(to) : maskEmail(to)}: ${code}`,
+    );
 
   return {
     channel,
@@ -229,6 +241,33 @@ function codeSms(code: string, purpose: Purpose, language: Language) {
 
 function codeEmail(name: string, code: string, purpose: Purpose, language: Language) {
   const first = name.split(' ')[0] ?? name;
+  if (purpose === 'email') {
+    return language === 'sw'
+      ? {
+          subject: `${code} ni msimbo wako wa KaziForce`,
+          text: `Habari ${first},
+
+Andika msimbo huu kwenye KaziForce kuthibitisha barua pepe yako:
+
+${code}
+
+Unafanya kazi kwa dakika 5. Kama hukuomba hili, puuza barua pepe hii.
+
+KaziForce`,
+        }
+      : {
+          subject: `${code} is your KaziForce code`,
+          text: `Hello ${first},
+
+Type this code in KaziForce to confirm your email address:
+
+${code}
+
+It works for 5 minutes. If you did not ask for this, ignore this email.
+
+KaziForce`,
+        };
+  }
   if (language === 'sw') {
     return {
       subject: `${code} ni msimbo wako wa KaziForce`,

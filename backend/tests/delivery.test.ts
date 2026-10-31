@@ -207,7 +207,7 @@ describe('urgent: first choice, with a safety net', () => {
       escalatedTo: 'sms',
     });
     expect(sms.test.sent[0]!.text).toMatch(
-      /^KaziForce \(Urgent\): You have an urgent new message\. Open: http:\/\/localhost:4000\/o\/\w{8}$/,
+      /^KaziForce \(Act now\): You have an urgent new message\. Open: http:\/\/localhost:4000\/o\/\w{8}$/,
     );
   });
 

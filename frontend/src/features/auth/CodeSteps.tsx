@@ -19,12 +19,13 @@ interface OtpCredential {
 
 /**
  * "Where should we send your code?" (when there is a choice), then "Enter the code". Shared by
- * log-in (SMS or email) and sign-up (email). The code is checked as soon as the sixth digit is
+ * log-in (SMS or email) and sign-up (the way chosen on the page before, or the other one). The code is checked as soon as the sixth digit is
  * typed or pasted; "Send a new code" and "Send it by email instead" wait 30 seconds.
  */
 export function CodeSteps({
   greetingName,
   options,
+  smsUnavailable = false,
   initialSent,
   title,
   step,
@@ -34,6 +35,11 @@ export function CodeSteps({
 }: {
   greetingName?: string;
   options: CodeOption[];
+  /**
+   * Log-in without a confirmed phone: SMS is shown greyed out, with how to get it, instead of
+   * sending the email at once (ADR 0015).
+   */
+  smsUnavailable?: boolean;
   /** Sign-up: the first code is sent with the sign-up itself. */
   initialSent?: CodeSent;
   title?: string;
@@ -85,9 +91,10 @@ export function CodeSteps({
     }
   }
 
-  // Only one way to send it (no verified phone): no question to ask, send it at once.
+  // Only one way to send it: no question to ask, send it at once.
+  const choosing = options.length > 1 || smsUnavailable;
   useEffect(() => {
-    if (sent || options.length !== 1 || autoSent.current) return;
+    if (sent || choosing || options.length !== 1 || autoSent.current) return;
     autoSent.current = true;
     void sendBy(options[0]!.channel);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -168,7 +175,7 @@ export function CodeSteps({
           focusOnShow
         />
         {error && <FormAlert>{error}</FormAlert>}
-        {options.length > 1 && (
+        {choosing && (
           <form
             noValidate
             className="flex flex-col gap-5"
@@ -183,19 +190,32 @@ export function CodeSteps({
               name="channel"
               value={choice}
               onChange={setChoice}
-              choices={options.map((o) => ({
-                value: o.channel,
-                label: o.channel === 'sms' ? t('auth.code.sms') : t('auth.code.email'),
-                help: t('auth.code.to', { to: o.to }),
-                icon: o.channel === 'sms' ? MessageSquareText : Mail,
-              }))}
+              choices={[
+                ...options.map((o) => ({
+                  value: o.channel,
+                  label: o.channel === 'sms' ? t('auth.code.sms') : t('auth.code.email'),
+                  help: t('auth.code.to', { to: o.to }),
+                  icon: o.channel === 'sms' ? MessageSquareText : Mail,
+                })),
+                ...(smsUnavailable
+                  ? [
+                      {
+                        value: 'sms' as const,
+                        label: t('auth.code.sms'),
+                        help: t('auth.code.smsUnavailable'),
+                        icon: MessageSquareText,
+                        disabled: true,
+                      },
+                    ]
+                  : []),
+              ]}
             />
             <Button type="submit" size="lg" disabled={busy || expired}>
               {busy ? t('auth.code.sending') : t('auth.code.send')}
             </Button>
           </form>
         )}
-        {options.length === 1 && !error && (
+        {!choosing && !error && (
           <p role="status" className="text-lg">
             {t('auth.code.sending')}
           </p>

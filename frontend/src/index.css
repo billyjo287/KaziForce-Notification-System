@@ -48,7 +48,24 @@
   --kf-duration-slow: 300ms;
 }
 
-:root[data-theme='dark'] {
+/* An always-dark area (theme.css, .kf-dark-area): the names above are worked out again there,
+   from that area's dark colours. */
+.kf-dark-area {
+  --kf-canvas: var(--kf-bg);
+  --kf-ink: var(--kf-text);
+  --kf-ink-muted: var(--kf-muted);
+  --kf-urgent: var(--kf-urgent-fg);
+  --kf-urgent-soft: var(--kf-urgent-bg);
+  --kf-urgent-bar: var(--kf-bar-urgent);
+  --kf-important: var(--kf-medium-fg);
+  --kf-important-soft: var(--kf-medium-bg);
+  --kf-later: var(--kf-low-fg);
+  --kf-later-soft: var(--kf-low-bg);
+  color: var(--kf-text);
+}
+
+:root[data-theme='dark'],
+.kf-dark-area {
   --kf-on-urgent: #1f0a08; /* dark text on the lighter dark-mode urgent colour */
   --kf-important-bar: #e3a43c;
   --kf-later-bar: #8a96b0;

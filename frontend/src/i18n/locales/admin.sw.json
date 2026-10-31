@@ -83,7 +83,7 @@
       "failed": "Imeshindikana"
     },
     "overview": {
-      "title": "Muhtasari",
+      "title": "Muhtasari wa mfumo",
       "intro": "Hali ya arifa kwa sasa. Ukurasa huu hujisasisha kila sekunde 30.",
       "updated": "Imesasishwa {{when}}",
       "errorTitle": "Hatukuweza kupakia muhtasari",
@@ -128,6 +128,10 @@
         "title": "Zilizoshindwa kufika hivi karibuni",
         "none": "Hakuna zilizoshindwa katika saa 24 zilizopita.",
         "all": "Ona zote zilizoshindwa"
+      },
+      "status": {
+        "ok": "Njia zote zinafanya kazi",
+        "check": "Baadhi ya ujumbe unahitaji kuangaliwa"
       }
     },
     "logs": {
@@ -154,7 +158,7 @@
       "title": "Kipaumbele cha “{{title}}” kiwe kipi?",
       "body": "Jibu lako linahifadhiwa ili kufundisha modeli ya baadaye. Halitumi arifa tena.",
       "save": "Hifadhi kipaumbele",
-      "saved": "Kipaumbele kimehifadhiwa"
+      "saved": "Imepokelewa. Marekebisho haya yatasaidia kufunza modeli."
     },
     "spam": {
       "title": "Ukaguzi wa taka",
@@ -166,7 +170,7 @@
       "why": "Sababu: {{reasons}}",
       "confirm": "Ndiyo, ni taka",
       "release": "Si taka: ipeleke",
-      "confirmed": "Imebaki imezuiwa. Asante.",
+      "confirmed": "Imezuiwa. Huo hautamsumbua mtu tena.",
       "releaseTitle": "Peleka “{{title}}” kwa {{name}}?",
       "releaseBody": "Itatumwa sasa. Chagua umuhimu wake.",
       "releasePriority": "Kipaumbele",

@@ -83,7 +83,7 @@
       "failed": "Failed"
     },
     "overview": {
-      "title": "Overview",
+      "title": "System overview",
       "intro": "How notifications are doing right now. This page updates itself every 30 seconds.",
       "updated": "Updated {{when}}",
       "errorTitle": "We could not load the overview",
@@ -128,6 +128,10 @@
         "title": "Latest failed deliveries",
         "none": "No failed deliveries in the last 24 hours.",
         "all": "See all failed deliveries"
+      },
+      "status": {
+        "ok": "All channels running",
+        "check": "Some sends need a look"
       }
     },
     "logs": {
@@ -154,7 +158,7 @@
       "title": "What should the priority of “{{title}}” be?",
       "body": "Your answer is saved to teach the future model. It does not resend the alert.",
       "save": "Save priority",
-      "saved": "Priority saved"
+      "saved": "Noted. This correction will help train the model."
     },
     "spam": {
       "title": "Spam review",
@@ -166,7 +170,7 @@
       "why": "Why: {{reasons}}",
       "confirm": "Yes, it is spam",
       "release": "Not spam: deliver it",
-      "confirmed": "Kept blocked. Thank you.",
+      "confirmed": "Blocked. That one won’t bother anyone again.",
       "releaseTitle": "Deliver “{{title}}” to {{name}}?",
       "releaseBody": "It will be sent now. Choose how important it is.",
       "releasePriority": "Priority",

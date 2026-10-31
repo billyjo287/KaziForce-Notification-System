@@ -402,15 +402,17 @@ export function meRoutes(limits: RateLimiters) {
         data: { deletionRequestedAt: requestedAt },
       });
       const side = user.role === 'business' ? 'employer' : 'worker';
-      sendEmail({
-        to: user.email,
-        ...deletionRequestedEmail(
-          user.name,
-          deletionDate(requestedAt),
-          `${env.PUBLIC_APP_URL}/${side}/settings`,
-          user.language,
-        ),
-      });
+      if (user.emailVerifiedAt) {
+        sendEmail({
+          to: user.email,
+          ...deletionRequestedEmail(
+            user.name,
+            deletionDate(requestedAt),
+            `${env.PUBLIC_APP_URL}/${side}/settings`,
+            user.language,
+          ),
+        });
+      }
     }
     await sendMe(res, me.id);
   });

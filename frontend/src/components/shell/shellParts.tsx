@@ -64,6 +64,7 @@ export function PageContent({ children }: { children: ReactNode }) {
   return (
     <>
       <OfflineBanner />
+
       <m.div
         key={location.pathname}
         initial={{ opacity: 0, y: 6 }}

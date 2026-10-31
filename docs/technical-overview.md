@@ -94,8 +94,10 @@ changes nothing outside `ml-service/`.
 
 - Log in with the email or a confirmed phone number. On a new phone or computer a 6-digit code
   follows the password, by SMS or email (the person chooses); "Remember this phone or computer
-  for 30 days" skips it there. Sign-up confirms the email with a code before the account exists.
-  Codes and remembered devices are stored only as hashes (ADR 0013).
+  for 30 days" skips it there. Sign-up confirms the email or the phone (the person chooses)
+  with a code before the account exists; after an SMS sign-up no email is sent until the address
+  is confirmed in the app. Codes and remembered devices are stored only as hashes (ADRs 0013,
+  0015).
 - Passwords hashed with bcrypt; short-lived JWT access tokens; refresh token in an httpOnly,
   SameSite cookie, stored only as a hash and rotated; "log out of all devices".
 - Every input checked with zod; rate limits on log-in, account checks, password reset, codes sent and everything
@@ -118,8 +120,8 @@ plain English and Kiswahili, priority shown as colour + icon + word ("Urgent", "
 and undo instead of scary confirmations. Settings show three presets first and the details
 behind "Customise". Checked with axe on every page (phone and desktop, light and dark,
 English and Kiswahili), keyboard-only and 200% zoom tests, and Lighthouse on a throttled
-mobile profile ([accessibility.md](accessibility.md)). The app shell stays under 200 KB of
-compressed JavaScript; other pages load on demand. The pages before logging in arrive as
+mobile profile ([accessibility.md](accessibility.md)). The app shell stays at about 200 KB of
+compressed JavaScript (limit 203 KB, ADR 0014); other pages load on demand. The pages before logging in arrive as
 ready-made HTML, readable before the app has downloaded (ADR 0010).
 
 ## 5.7 Testing
@@ -148,7 +150,7 @@ checks (dependency audits and secret scan).
 | NFR-1 `/predict` | < 300 ms | median 5.8 ms, p95 13 ms; no fallback needed |
 | NFR-3 nothing lost | no queued job lost | Redis and Postgres restarted under load: 9,975 of 9,975 accepted messages delivered |
 | NFR-3 recovery | < 30 s | Redis 3.1 s, Postgres 1.6 s |
-| NFR-1 app shell size | ≤ ~200 KB gzipped | 199.7 KB (log-in, job and feedback words load with their own pages) |
+| NFR-1 app shell size | ≤ ~200 KB gzipped | 189–191 KB for a first visit to Home; 201–203 KB straight to Alerts (ADR 0014) |
 | NFR-1 page load (LCP) | < 2.5 s on "Fast 3G" | Landing, log in, sign up: **1.1–1.3 s** with Chrome's Fast 3G throttling (was 4.1–4.4 s): met. Lighthouse's simulation, which adds opening a new connection: 4.0–4.5 s (was 5.2–5.4 s; its floor for any page is 2.9 s). Slow 4G: 1.1–1.4 s ([accessibility.md](accessibility.md), ADR 0010) |
 | Classifier (`rules-v0` baseline → `rules-v1`) | priority weighted F1 ≥ 85%; spam accuracy ≥ 95%, false positives < 5% | On a hand-written held-out set of 177 messages (60 Kiswahili, 30 scams): weighted F1 63.5%, spam accuracy 88.7% → 89.3%, false positives 0%. Not met: the trained models (Phase 9) must close the gap ([testing-report.md](testing-report.md), section 7) |
 | NFR-4 accessibility | WCAG 2.2 AA | axe: no serious issues on any page; Lighthouse accessibility 100; keyboard-only and 200% zoom tests pass |

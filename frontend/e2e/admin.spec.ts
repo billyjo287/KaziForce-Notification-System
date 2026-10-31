@@ -17,7 +17,7 @@ test.describe('Admin', () => {
   }) => {
     await asAdmin(page);
     await expect(page).toHaveURL(/\/admin\/overview$/);
-    await expect(page.getByRole('heading', { level: 1, name: 'Overview' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'System overview' })).toBeVisible();
     await expect(page.getByText('Alerts created today')).toBeVisible();
     await expect(page.getByRole('meter', { name: /^In the app: .+ got through$/ })).toBeVisible();
     await expect(page.getByText('New alerts being sorted').filter({ visible: true })).toBeVisible();

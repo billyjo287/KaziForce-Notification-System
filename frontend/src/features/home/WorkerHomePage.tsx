@@ -9,6 +9,7 @@ import { usePageTitle } from '../../lib/usePageTitle';
 import { useAuth } from '../../stores/auth';
 import type { Alert, Priority } from '../alerts/types';
 import { useAlerts } from '../alerts/useAlerts';
+import { ConfirmEmailReminder } from '../auth/ConfirmEmailReminder';
 import { JobCard } from '../jobs/JobCard';
 import { UrgentBanner } from './UrgentBanner';
 import './strings';
@@ -42,6 +43,7 @@ export default function WorkerHomePage() {
 
   return (
     <div className="flex flex-col gap-8">
+      <ConfirmEmailReminder />
       <div>
         <h1 className="text-4xl font-extrabold">
           {firstName

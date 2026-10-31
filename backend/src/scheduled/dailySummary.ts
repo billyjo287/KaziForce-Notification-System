@@ -181,6 +181,7 @@ export async function summaryRecipients(prisma: PrismaClient, until: Date): Prom
         status: 'active',
         deletionRequestedAt: null,
         role: { not: 'admin' },
+        emailVerifiedAt: { not: null },
         preference: { dailySummary: true },
       },
     },
@@ -201,6 +202,7 @@ export async function buildSummaryFor(
     where: { id: userId },
     select: {
       email: true,
+      emailVerifiedAt: true,
       role: true,
       language: true,
       status: true,
@@ -212,6 +214,7 @@ export async function buildSummaryFor(
     !user ||
     user.status !== 'active' ||
     user.deletionRequestedAt ||
+    !user.emailVerifiedAt ||
     user.role === 'admin' ||
     !user.preference?.dailySummary
   ) {

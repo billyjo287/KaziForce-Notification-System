@@ -9,7 +9,11 @@ It works on any phone or computer with a web browser. You do not need to install
 2. Choose **I'm looking for work**. Then answer one question per screen: your email, your name
    and a password (tap **Show** to check what you typed). If the email looks mistyped, for
    example `gmial.com`, we ask "Did you mean gmail.com?".
-   We email you a 6-digit code: type it in to finish creating your account.
+   Then choose where we send your 6-digit code: **By email**, or **By SMS** (type your Kenyan
+   mobile number and tick the box to agree to receive messages). Type the code to finish
+   creating your account. If you chose SMS, your phone is already confirmed (step 3 is skipped);
+   confirm your email later from **Home** or **Settings**, because we send no emails until you
+   do.
 3. **Your phone number.** Type your Kenyan mobile number and tick the box to agree to receive
    messages. We send you a 6-digit code by SMS. Type it in and tap **Confirm**.
 4. **How should we reach you?** Tell us if you use WhatsApp on this number, and where you check

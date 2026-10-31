@@ -50,7 +50,7 @@ export class EmailAdapter extends ChannelAdapter {
   }
 
   addressFor(r: Recipient) {
-    return r.email || null;
+    return r.email && r.emailVerifiedAt ? r.email : null;
   }
 
   protected override async sendMock(message: OutgoingMessage): Promise<SendResult> {

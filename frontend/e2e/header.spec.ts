@@ -50,7 +50,7 @@ test('sign-up: one question per screen, a typo hint and password rules ticked of
   await page.getByLabel('Your full name').fill('Test Mtu');
   await page.getByRole('button', { name: 'Continue' }).click();
   await page.getByLabel('Choose a password').fill('12345678');
-  await page.getByRole('button', { name: 'Create account' }).click();
+  await page.getByRole('button', { name: 'Continue' }).click();
   await expect(
     page.getByText('This password is too easy to guess.', { exact: false }),
   ).toBeVisible();

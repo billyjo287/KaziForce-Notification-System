@@ -25,6 +25,7 @@ const person = (overrides: Partial<Recipient> = {}): Recipient => ({
   role: 'worker',
   language: 'en',
   email: 'wanjiru@example.com',
+  emailVerifiedAt: now,
   phone: '+254712345678',
   phoneVerified: true,
   consentSmsWhatsapp: true,
@@ -68,6 +69,12 @@ describe('channel router: "first choice, with a safety net"', () => {
       now: ['sms'],
       escalation: { to: 'email', windowMs: 10 * 60_000 },
     });
+  });
+
+  it('an email address not confirmed yet (SMS sign-up) is never used', () => {
+    const recipient = person({ usesWhatsApp: false, emailVerifiedAt: null });
+    expect(plan('urgent', { recipient })).toEqual({ now: ['sms'], escalation: null });
+    expect(adapters.email.addressFor(recipient)).toBeNull();
   });
 
   it('deadline in 8 minutes -> window is 4 minutes', () => {

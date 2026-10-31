@@ -124,6 +124,8 @@ test.describe('Other pages pass axe and fit the screen', () => {
     test(`${path} (logged out)`, async ({ page }) => {
       await page.goto(`${path}?theme=light`);
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+      // Check the live page, not the ready-made copy (ADR 0010): the swap replays the fade-in.
+      await expect(page.locator('[data-prerendered]')).toHaveCount(0);
       await expectNoSeriousA11yIssues(page);
       await expectNoHorizontalScroll(page);
     });

@@ -66,6 +66,7 @@ const include = {
       role: true,
       language: true,
       email: true,
+      emailVerifiedAt: true,
       phone: true,
       phoneVerified: true,
       consentSmsWhatsapp: true,

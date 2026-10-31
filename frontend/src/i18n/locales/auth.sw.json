@@ -62,7 +62,8 @@
       "useEmail": "Utume kwa barua pepe badala yake",
       "useSms": "Utume kwa SMS badala yake",
       "restart": "Anza upya",
-      "invalid": "Andika tarakimu 6."
+      "invalid": "Andika tarakimu 6.",
+      "smsUnavailable": "Thibitisha namba ya simu kwenye Mipangilio ili kupata misimbo kwa SMS."
     },
     "register": {
       "title": "Fungua akaunti yako",
@@ -91,9 +92,16 @@
       "passwordCommon": "Nenosiri hili ni rahisi mno kukisia. Jaribu maneno machache pamoja, kama sentensi fupi.",
       "submit": "Fungua akaunti",
       "creating": "Inafungua akaunti yako…",
-      "codeTitle": "Angalia barua pepe yako",
       "haveAccount": "Tayari una akaunti?",
-      "login": "Ingia"
+      "login": "Ingia",
+      "sendIntro": "Tunatuma msimbo wa tarakimu 6 kuhakikisha kuwa ni wewe kweli.",
+      "byEmailHelp": "Kwa {{to}}",
+      "bySmsHelp": "Kwa namba ya simu ya Kenya utakayoandika baadaye",
+      "phone": "Namba yako ya simu",
+      "phoneHelp": "Namba ya simu ya Kenya, kwa mfano 0712 345 678.",
+      "consent": "Nakubali kupokea ujumbe wa WhatsApp na SMS kutoka KaziForce kuhusu kazi na akaunti yangu.",
+      "consentHelp": "Unaweza kubadilisha hili wakati wowote kwenye Mipangilio.",
+      "consentNeeded": "Weka alama kwenye kisanduku ili kupata msimbo kwa SMS."
     },
     "forgot": {
       "title": "Umesahau nenosiri?",
@@ -112,6 +120,13 @@
       "missingToken": "Kiungo hiki hakijakamilika. Omba kipya.",
       "askAgain": "Omba kiungo kipya",
       "confirmPassword": "Andika nenosiri jipya tena"
+    },
+    "confirmEmail": {
+      "title": "Thibitisha barua pepe yako",
+      "body": "Hatutumi barua pepe kwa {{email}} hadi uithibitishe. Inachukua dakika moja.",
+      "send": "Nitumie msimbo",
+      "sent": "Tumetuma msimbo wa tarakimu 6 kwa {{email}}. Kama hauko kwenye kikasha, angalia folda ya barua taka.",
+      "done": "Asante. Barua pepe yako imethibitishwa."
     }
   },
   "demoCode": {
@@ -126,6 +141,10 @@
     "login_code_expired": "Msimbo huu umeisha muda. Bonyeza \"Anza upya\" kupata mpya.",
     "identifier_invalid": "Andika barua pepe kama jina@gmail.com, au nambari ya simu ya Kenya kama 0712 345 678.",
     "code_too_soon": "Tafadhali subiri sekunde chache kabla ya kuomba msimbo mpya.",
-    "code_channel_unavailable": "Njia hii haipatikani kwa akaunti yako. Chagua barua pepe."
+    "code_channel_unavailable": "Njia hii haipatikani kwa akaunti yako. Chagua barua pepe.",
+    "phone_invalid": "Andika namba ya simu ya Kenya, kwa mfano 0712 345 678.",
+    "consent_required": "Weka alama kwenye kisanduku ili kupata msimbo kwa SMS.",
+    "phone_taken": "Namba hii tayari inatumiwa na akaunti nyingine. Chagua barua pepe, au tumia namba nyingine.",
+    "email_confirmed": "Barua pepe yako tayari imethibitishwa."
   }
 }

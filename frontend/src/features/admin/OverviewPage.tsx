@@ -2,6 +2,7 @@ import { ArrowRight, TriangleAlert } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
+import { CountUp } from '../../components/brand/CountUp';
 import { Card } from '../../components/ui/Card';
 import { ChoiceCards } from '../../components/ui/ChoiceCards';
 import { HelpText } from '../../components/ui/Field';
@@ -25,7 +26,10 @@ export default function OverviewPage() {
 
   return (
     <div className="max-w-5xl">
-      <h1 className="text-3xl font-bold">{t('admin.overview.title')}</h1>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <h1 className="text-3xl font-bold">{t('admin.overview.title')}</h1>
+        {data && <SystemStatus data={data} />}
+      </div>
       <p className="mt-2 text-lg text-ink-muted">{t('admin.overview.intro')}</p>
       {data && (
         <p className="mt-1 text-ink-muted" aria-live="polite">
@@ -87,6 +91,26 @@ function OverviewBody({ data }: { data: Overview }) {
   );
 }
 
+/**
+ * "All channels running" with a live green dot, worked out only from what the overview already
+ * says: the queues could be read and nothing failed today. Otherwise a calm amber "needs a look".
+ */
+function SystemStatus({ data }: { data: Overview }) {
+  const { t } = useTranslation();
+  const ok = data.queues !== null && data.today.failedDeliveries === 0;
+  return ok ? (
+    <p className="inline-flex items-center gap-2 rounded-full bg-kf-success-bg px-3 py-1 font-bold text-kf-success-fg">
+      <span aria-hidden="true" className="kf-live size-2.5 rounded-full bg-kf-success-solid" />
+      {t('admin.overview.status.ok')}
+    </p>
+  ) : (
+    <p className="inline-flex items-center gap-2 rounded-full bg-kf-medium-bg px-3 py-1 font-bold text-kf-medium-fg">
+      <TriangleAlert aria-hidden="true" className="size-4" />
+      {t('admin.overview.status.check')}
+    </p>
+  );
+}
+
 /** One big number with a plain label (and an icon + words when it needs attention). */
 function Tile({
   label,
@@ -102,14 +126,17 @@ function Tile({
   const { i18n } = useTranslation();
   return (
     <li
-      className={`flex flex-col gap-1 rounded-xl border bg-surface p-4 ${warn ? 'border-urgent' : 'border-line'}`}
+      className={`flex flex-col gap-1 rounded-kf-lg border bg-surface p-5 ${warn ? 'border-urgent' : 'border-line'}`}
     >
       <span className="flex items-center gap-2 text-ink-muted">
         {warn && <TriangleAlert aria-hidden="true" className="size-5 shrink-0 text-urgent" />}
         {label}
       </span>
-      <span className="text-4xl font-bold tabular-nums">
-        {value.toLocaleString(i18n.language === 'sw' ? 'sw-KE' : 'en-KE')}
+      <span className="text-4xl font-extrabold tabular-nums">
+        <CountUp
+          value={value}
+          format={(n) => n.toLocaleString(i18n.language === 'sw' ? 'sw-KE' : 'en-KE')}
+        />
       </span>
       {link && (
         <Link
@@ -148,8 +175,8 @@ function ChannelRates({ channels }: { channels: Overview['channels'] }) {
           ]}
         />
         <ul className="flex flex-col gap-5">
-          {channels[period].map((rate) => (
-            <RateMeter key={rate.channel} rate={rate} />
+          {channels[period].map((rate, index) => (
+            <RateMeter key={rate.channel} rate={rate} index={index} />
           ))}
         </ul>
       </section>
@@ -158,7 +185,7 @@ function ChannelRates({ channels }: { channels: Overview['channels'] }) {
 }
 
 /** A meter: the share that got through, on a track of the same hue. The number is written too. */
-function RateMeter({ rate }: { rate: ChannelRate }) {
+function RateMeter({ rate, index }: { rate: ChannelRate; index: number }) {
   const { t, i18n } = useTranslation();
   const channel = t(`admin.channels.${rate.channel}`);
   const total = rate.delivered + rate.failed;
@@ -189,9 +216,13 @@ function RateMeter({ rate }: { rate: ChannelRate }) {
           aria-valuenow={Math.round(rate.rate * 100)}
           className="h-3 overflow-hidden rounded-full bg-primary-soft"
         >
+          {/* Fills from the left once, one channel after another. */}
           <div
-            className="h-full rounded-full bg-primary"
-            style={{ width: `${Math.max(rate.rate * 100, rate.rate > 0 ? 2 : 0)}%` }}
+            className="kf-fill h-full rounded-full bg-primary"
+            style={{
+              width: `${Math.max(rate.rate * 100, rate.rate > 0 ? 2 : 0)}%`,
+              animationDelay: `${index * 80}ms`,
+            }}
           />
         </div>
       )}

@@ -38,20 +38,23 @@ export function AppShell({ role, nav, unreadCount, children }: AppShellProps) {
   const bottomItems = nav.items.filter((item) => nav.bottomBar.includes(item.key));
   const moreItems = nav.items.filter((item) => !nav.bottomBar.includes(item.key));
   const moreActive = moreItems.some((item) => location.pathname.startsWith(href(item)));
+  // Admins (design refresh): the menu and the phone top bar are always dark, in both themes.
+  const darkMenu = role === 'admin' ? 'kf-dark-area' : '';
 
   return (
     <ShellFrame className="min-h-dvh md:flex">
       {/* ---------- Sidebar (tablet and desktop) ---------- */}
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-line bg-surface p-5 md:sticky md:top-0 md:flex md:h-dvh">
+      <aside
+        className={`hidden w-64 shrink-0 flex-col border-r border-line bg-surface p-5 md:sticky md:top-0 md:flex md:h-dvh ${darkMenu}`}
+      >
         <Link to={nav.basePath} className="self-start rounded-lg px-2">
           <Logo />
         </Link>
         {/* Employers (design refresh): an amber "Employer" pill and "Post a job" always at hand. */}
+        {role === 'admin' && <RolePill role={role} className="mt-3 mb-8 self-start" />}
         {role === 'business' ? (
           <>
-            <span className="mt-3 mb-6 self-start rounded-full bg-kf-medium-bg px-3 py-0.5 font-bold text-kf-medium-fg">
-              {t('roles.business')}
-            </span>
+            <RolePill role={role} className="mt-3 mb-6 self-start" />
             <Link
               to="/employer/jobs/new"
               className={buttonClasses('primary', 'md', 'kf-press mb-6 w-full')}
@@ -61,7 +64,7 @@ export function AppShell({ role, nav, unreadCount, children }: AppShellProps) {
             </Link>
           </>
         ) : (
-          <span className="mb-8" />
+          role !== 'admin' && <span className="mb-8" />
         )}
         <nav aria-label={t('nav.label')} className="-mx-1 overflow-y-auto px-1">
           <ul className="flex flex-col gap-1">
@@ -123,16 +126,14 @@ export function AppShell({ role, nav, unreadCount, children }: AppShellProps) {
         {/* Phones: logo, the light/dark toggle and Log out. It scrolls away with the page so
                 it never covers what the person is reading; the menu stays at the bottom.
                 Settings keeps the full choice (light, dark, same as device). */}
-        <header className="flex flex-wrap items-center justify-between gap-2 border-b border-line bg-surface px-4 py-2 md:hidden">
+        <header
+          className={`flex flex-wrap items-center justify-between gap-2 border-b border-line bg-surface px-4 py-2 md:hidden ${darkMenu}`}
+        >
           <span className="flex items-center gap-2">
             <Link to={nav.basePath} className="kf-logo-link rounded-lg">
               <Logo markClassName="h-8" />
             </Link>
-            {role === 'business' && (
-              <span className="rounded-full bg-kf-medium-bg px-2.5 py-0.5 text-sm font-bold text-kf-medium-fg">
-                {t('roles.business')}
-              </span>
-            )}
+            {role !== 'worker' && <RolePill role={role} className="text-sm" />}
           </span>
           <span className="flex items-center gap-2">
             <ThemeToggle />
@@ -201,6 +202,18 @@ export function AppShell({ role, nav, unreadCount, children }: AppShellProps) {
         </Suspense>
       )}
     </ShellFrame>
+  );
+}
+
+/** "Employer" (amber) or "Admin" (mint) next to the logo. */
+function RolePill({ role, className = '' }: { role: Role; className?: string }) {
+  const { t } = useTranslation();
+  const colours =
+    role === 'admin' ? 'bg-kf-accent text-kf-on-accent' : 'bg-kf-medium-bg text-kf-medium-fg';
+  return (
+    <span className={`rounded-full px-3 py-0.5 font-bold ${colours} ${className}`}>
+      {t(`roles.${role}`)}
+    </span>
   );
 }
 

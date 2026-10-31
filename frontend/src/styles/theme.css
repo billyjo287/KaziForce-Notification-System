@@ -114,7 +114,9 @@
 }
 
 /* ---------- 2. Dark theme: chosen in the app, or "Same as device" on a dark device ---------- */
-:root[data-theme='dark'] {
+/* .kf-dark-area: a part of the page that is always dark, in both themes (the admin's menu). */
+:root[data-theme='dark'],
+.kf-dark-area {
   --kf-bg: #0e1022;
   --kf-surface: #171a33;
   --kf-surface-2: #1e2240;
@@ -220,6 +222,12 @@
 /* The logo files swap with the theme (Logo.tsx shows both; one is hidden). */
 .kf-only-dark {
   display: none;
+}
+.kf-dark-area .kf-only-light {
+  display: none !important;
+}
+.kf-dark-area .kf-only-dark {
+  display: inline-block !important;
 }
 :root[data-theme='dark'] .kf-only-light {
   display: none;

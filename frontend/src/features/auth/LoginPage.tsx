@@ -170,6 +170,7 @@ export default function LoginPage() {
         <CodeSteps
           greetingName={challenge.firstName}
           options={challenge.options}
+          smsUnavailable={!challenge.options.some((o) => o.channel === 'sms')}
           send={async (channel) =>
             (
               await api.post<CodeSent>('/auth/login/send', {

@@ -18,6 +18,7 @@ import { usePageTitle } from '../../lib/usePageTitle';
 import { sidePath, useAuth } from '../../stores/auth';
 import { useSettings, type Font, type TextSize, type Theme } from '../../stores/settings';
 import { showToast } from '../../stores/toasts';
+import { ConfirmEmailReminder } from '../auth/ConfirmEmailReminder';
 import './strings';
 
 const TEXT_SIZES: TextSize[] = ['normal', 'large'];
@@ -54,6 +55,9 @@ export function SettingsPage() {
   return (
     <div className="max-w-2xl">
       <h1 className="mb-6 text-3xl font-bold">{t('settings.title')}</h1>
+      <div className="mb-6 empty:hidden">
+        <ConfirmEmailReminder />
+      </div>
 
       <ChannelSuggestionCard enabled={!!user && user.role !== 'admin'} />
 

@@ -48,7 +48,7 @@ enum NotificationType {
   announcement
 }
 
-// Shown to users as "Urgent", "Important" and "For later".
+// Shown to users as "Act now", "Check today" and "When you're free".
 enum Priority {
   urgent
   medium
@@ -120,6 +120,10 @@ enum ApplicationStatus {
 model User {
   id                    String     @id @default(uuid()) @db.Uuid
   email                 String     @unique
+  // When the email address was confirmed with a code. Set at once for email sign-ups (and for
+  // accounts made before this existed); empty after an SMS sign-up until the person confirms it
+  // in the app. No email is sent to an address that is not confirmed (ADR 0015).
+  emailVerifiedAt       DateTime?  @default(now())
   passwordHash          String
   name                  String
   role                  Role

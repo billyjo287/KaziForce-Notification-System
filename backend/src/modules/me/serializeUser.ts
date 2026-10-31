@@ -20,6 +20,8 @@ export function serializeUser(user: UserWithProfile) {
     language: user.language,
     phone: user.phone,
     phoneVerified: user.phoneVerified,
+    // False after an SMS sign-up until the email address is confirmed (ADR 0015).
+    emailConfirmed: user.emailVerifiedAt !== null,
     usesWhatsApp: user.usesWhatsApp,
     companyName: user.companyName,
     location: user.location ? { id: user.location.id, name: user.location.name } : null,

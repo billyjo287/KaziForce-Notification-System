@@ -111,11 +111,14 @@ function SpamCard({ item, onRelease }: { item: SpamItem; onRelease: () => void }
   const errorMessage = useApiErrorMessage();
   const reasons = (item.explanation ?? []).map((e) => reason(e.feature));
   const percent = scorePercent(item.spamScore, i18n.language);
+  // "Confirm spam": the message is struck through and the card sweeps away while the list
+  // refreshes. If the request fails, the card comes back as it was.
+  const blocking = confirm.isPending || confirm.isSuccess;
 
   return (
     <article
       aria-labelledby={`spam-${item.id}`}
-      className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
+      className={`flex flex-col gap-3 rounded-kf-lg border border-line bg-surface p-5 ${blocking ? 'kf-sweep' : ''}`}
     >
       <div>
         <h2 id={`spam-${item.id}`} className="text-lg font-bold break-words">
@@ -131,7 +134,9 @@ function SpamCard({ item, onRelease }: { item: SpamItem; onRelease: () => void }
           {relativeTime(new Date(item.createdAt), i18n.language)}
         </p>
       </div>
-      <blockquote className="rounded-lg border-l-4 border-urgent bg-canvas p-3 break-words whitespace-pre-line">
+      <blockquote
+        className={`rounded-lg border-l-4 border-urgent bg-canvas p-3 break-words whitespace-pre-line ${blocking ? 'line-through' : ''}`}
+      >
         {item.message}
       </blockquote>
       <p>

@@ -17,6 +17,8 @@ export interface Recipient {
   role: 'worker' | 'business' | 'admin';
   language: Language;
   email: string;
+  /** Null after an SMS sign-up until the address is confirmed: no email is sent before that. */
+  emailVerifiedAt: Date | null;
   phone: string | null;
   phoneVerified: boolean;
   consentSmsWhatsapp: boolean;

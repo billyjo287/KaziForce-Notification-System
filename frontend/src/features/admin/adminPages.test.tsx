@@ -143,7 +143,9 @@ describe('spam review', () => {
     expect(screen.getByText(/Why: payment request/)).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Yes, it is spam' }));
     expect(api.post).toHaveBeenCalledWith('/admin/review/spam/s1/confirm');
-    expect(await screen.findByText('Kept blocked. Thank you.')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Blocked. That one won’t bother anyone again.'),
+    ).toBeInTheDocument();
   });
 
   it('"Not spam" asks for the priority, then delivers it', async () => {

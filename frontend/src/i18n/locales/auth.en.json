@@ -62,7 +62,8 @@
       "useEmail": "Send it by email instead",
       "useSms": "Send it by SMS instead",
       "restart": "Start again",
-      "invalid": "Enter the 6 digits."
+      "invalid": "Enter the 6 digits.",
+      "smsUnavailable": "Confirm a phone number in Settings to get codes by SMS."
     },
     "register": {
       "title": "Create your account",
@@ -91,9 +92,16 @@
       "passwordCommon": "This password is too easy to guess. Try a few words together, like a short sentence.",
       "submit": "Create account",
       "creating": "Creating your account…",
-      "codeTitle": "Check your email",
       "haveAccount": "Already have an account?",
-      "login": "Log in"
+      "login": "Log in",
+      "sendIntro": "We send a 6-digit code to check that it is really you.",
+      "byEmailHelp": "To {{to}}",
+      "bySmsHelp": "To a Kenyan mobile number you type next",
+      "phone": "Your phone number",
+      "phoneHelp": "A Kenyan mobile number, for example 0712 345 678.",
+      "consent": "I agree to receive WhatsApp and SMS messages from KaziForce about jobs and my account.",
+      "consentHelp": "You can change this at any time in Settings.",
+      "consentNeeded": "Tick the box to get your code by SMS."
     },
     "forgot": {
       "title": "Forgot your password?",
@@ -112,6 +120,13 @@
       "missingToken": "This link is not complete. Ask for a new one.",
       "askAgain": "Ask for a new link",
       "confirmPassword": "Type the new password again"
+    },
+    "confirmEmail": {
+      "title": "Confirm your email address",
+      "body": "We do not send emails to {{email}} until you confirm it. It takes one minute.",
+      "send": "Send me a code",
+      "sent": "We sent a 6-digit code to {{email}}. If it is not in your inbox, check the spam folder.",
+      "done": "Thank you. Your email address is confirmed."
     }
   },
   "demoCode": {
@@ -126,6 +141,10 @@
     "login_code_expired": "This code has expired. Press \"Start again\" for a new one.",
     "identifier_invalid": "Type an email address like name@gmail.com, or a Kenyan mobile number like 0712 345 678.",
     "code_too_soon": "Please wait a few seconds before asking for a new code.",
-    "code_channel_unavailable": "This way is not available for your account. Choose email."
+    "code_channel_unavailable": "This way is not available for your account. Choose email.",
+    "phone_invalid": "Type a Kenyan mobile number, for example 0712 345 678.",
+    "consent_required": "Tick the box to get your code by SMS.",
+    "phone_taken": "This number is already used by another account. Choose email, or use another number.",
+    "email_confirmed": "Your email address is already confirmed."
   }
 }

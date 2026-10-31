@@ -79,8 +79,8 @@ describe('AppShell', () => {
 
     await userEvent.click(within(bottomBar).getByRole('button', { name: 'More' }));
     // The menu's code downloads on first open, which can take a moment.
-    const dialog = await screen.findByRole('dialog', { name: 'More pages' }, { timeout: 10_000 });
+    const dialog = await screen.findByRole('dialog', { name: 'More pages' }, { timeout: 25_000 });
     expect(within(dialog).getByRole('link', { name: 'Delivery logs' })).toBeInTheDocument();
-    // The lazy download can be slow when the whole test suite runs at once.
-  }, 20_000);
+    // The lazy download can be slow when the whole test suite runs at once (12 s seen).
+  }, 30_000);
 });

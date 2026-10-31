@@ -1,8 +1,18 @@
-import { ArrowLeft, Briefcase, Check, Circle, Lightbulb, UserRound } from 'lucide-react';
+import {
+  ArrowLeft,
+  Briefcase,
+  Check,
+  Circle,
+  Lightbulb,
+  Mail,
+  MessageSquareText,
+  UserRound,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { Button } from '../../components/ui/Button';
+import { Checkbox } from '../../components/ui/Checkbox';
 import { ChoiceCards } from '../../components/ui/ChoiceCards';
 import { FormAlert } from '../../components/ui/FormAlert';
 import { Input } from '../../components/ui/Input';
@@ -11,21 +21,22 @@ import { api, apiErrorCode } from '../../lib/api';
 import { useApiErrorMessage } from '../../lib/useApiErrorMessage';
 import { usePageTitle } from '../../lib/usePageTitle';
 import { useAuth } from '../../stores/auth';
-import type { CodeSent, Session, SignupCodeStep } from '../../types/api';
+import type { CodeChannel, CodeSent, Session, SignupCodeStep } from '../../types/api';
 import { AuthLayout, StepHeading } from './AuthLayout';
 import { CodeSteps } from './CodeSteps';
 import { isCommonPassword, parseIdentifier, rememberAccount, suggestEmail } from './identifier';
 
 type SignUpRole = 'worker' | 'business';
-type StepName = 'role' | 'email' | 'exists' | 'name' | 'password' | 'code';
-const TOTAL = 5;
+type StepName = 'role' | 'email' | 'exists' | 'name' | 'password' | 'send' | 'code';
+const TOTAL = 6;
 const STEP_NUMBER: Record<StepName, number> = {
   role: 1,
   email: 2,
   exists: 2,
   name: 3,
   password: 4,
-  code: 5,
+  send: 5,
+  code: 6,
 };
 
 /** What was typed so far (never the password): kept if the page reloads or the network drops. */
@@ -34,13 +45,19 @@ interface Draft {
   role?: SignUpRole;
   email: string;
   name: string;
+  /** Step 5: where the code goes, and the phone number for SMS. */
+  channel?: CodeChannel;
+  phone?: string;
 }
 const DRAFT = 'kf.signupDraft';
 function loadDraft(): Draft | null {
   try {
     const saved = JSON.parse(sessionStorage.getItem(DRAFT) ?? 'null') as Draft | null;
-    // A code cannot survive a reload (it is tied to the page): continue from the password.
-    if (saved) return { ...saved, step: saved.step === 'code' ? 'password' : saved.step };
+    // The password and a code cannot survive a reload: continue from the password.
+    if (saved) {
+      const later = saved.step === 'send' || saved.step === 'code';
+      return { ...saved, step: later ? 'password' : saved.step };
+    }
     return null;
   } catch {
     return null;
@@ -59,8 +76,9 @@ function saveDraft(draft: Draft | null) {
  * Sign-up, one question per screen (GOV.UK "one thing per page"):
  * 1 looking for work or hiring, 2 email (with "Did you mean gmail.com?", and "You already have
  * an account" instead of an error), 3 name, 4 password (rules ticked off while typing),
- * 5 the code sent to the email. The account is created only after the code. Admins are never
- * created here (only by the seed script).
+ * 5 the code by email or by SMS (with the phone number and consent; ADR 0015), 6 the code.
+ * The account is created only after the code. Admins are never created here (only by the seed
+ * script).
  */
 export default function RegisterPage() {
   const { t, i18n } = useTranslation();
@@ -81,6 +99,8 @@ export default function RegisterPage() {
   const [suggestion, setSuggestion] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [challenge, setChallenge] = useState<SignupCodeStep | null>(null);
+  const [consent, setConsent] = useState(false);
+  const [consentError, setConsentError] = useState<string | null>(null);
 
   useEffect(() => saveDraft(draft), [draft]);
 
@@ -88,6 +108,7 @@ export default function RegisterPage() {
   function goTo(step: StepName) {
     setError(null);
     setFieldError(null);
+    setConsentError(null);
     update({ step });
   }
   const step = { step: STEP_NUMBER[draft.step], total: TOTAL };
@@ -159,7 +180,26 @@ export default function RegisterPage() {
       setFieldError(t('validation.tooLong'));
       return;
     }
-    setFieldError(null);
+    goTo('send');
+  }
+
+  const channel = draft.channel ?? 'email';
+
+  // Step 5: send the code (the account details go with it; nothing is saved before the code).
+  async function onSend(event: React.FormEvent) {
+    event.preventDefault();
+    let phone: string | undefined;
+    if (channel === 'sms') {
+      const who = parseIdentifier(draft.phone ?? '');
+      const phoneError =
+        who?.kind === 'phone'
+          ? null
+          : t(draft.phone ? 'apiErrors.phone_invalid' : 'validation.required');
+      setFieldError(phoneError);
+      setConsentError(consent ? null : t('auth.register.consentNeeded'));
+      if (phoneError || !consent) return;
+      phone = who!.value;
+    }
     setError(null);
     setBusy(true);
     try {
@@ -169,6 +209,8 @@ export default function RegisterPage() {
         email: draft.email,
         password,
         language: i18n.language,
+        channel,
+        ...(phone && { phone, consentSms: true }),
       });
       if ('codeRequired' in data) {
         setChallenge(data);
@@ -179,7 +221,9 @@ export default function RegisterPage() {
       }
     } catch (e) {
       setBusy(false);
-      if (apiErrorCode(e) === 'email_taken') goTo('exists');
+      const code = apiErrorCode(e);
+      if (code === 'email_taken') goTo('exists');
+      else if (code === 'phone_taken' || code === 'phone_invalid') setFieldError(errorMessage(e));
       else setError(errorMessage(e));
     }
   }
@@ -195,13 +239,18 @@ export default function RegisterPage() {
       <AuthLayout>
         <CodeSteps
           step={step}
-          title={t('auth.register.codeTitle')}
-          options={[{ channel: 'email', to: challenge.sent.to }]}
+          // SMS sign-up: "Send it by email instead" too (the email is then the one confirmed).
+          options={
+            challenge.sent.channel === 'sms'
+              ? [challenge.sent, { channel: 'email', to: draft.email }]
+              : [challenge.sent]
+          }
           initialSent={challenge.sent}
-          send={async () =>
+          send={async (by) =>
             (
               await api.post<CodeSent>('/auth/register/resend', {
                 challengeId: challenge.challengeId,
+                channel: by,
               })
             ).data
           }
@@ -222,6 +271,79 @@ export default function RegisterPage() {
             goTo('password');
           }}
         />
+      </AuthLayout>
+    );
+  }
+
+  if (draft.step === 'send') {
+    return (
+      <AuthLayout>
+        <StepHeading
+          {...step}
+          title={t('auth.code.chooseTitle')}
+          intro={t('auth.register.sendIntro')}
+          focusOnShow
+        />
+        {error && <FormAlert>{error}</FormAlert>}
+        <form onSubmit={(e) => void onSend(e)} noValidate className="flex flex-col gap-5">
+          <ChoiceCards<CodeChannel>
+            legend={t('auth.code.chooseTitle')}
+            hideLegend
+            name="channel"
+            value={channel}
+            onChange={(value) => {
+              update({ channel: value });
+              setFieldError(null);
+              setConsentError(null);
+            }}
+            choices={[
+              {
+                value: 'email',
+                label: t('auth.code.email'),
+                help: t('auth.register.byEmailHelp', { to: draft.email }),
+                icon: Mail,
+              },
+              {
+                value: 'sms',
+                label: t('auth.code.sms'),
+                help: t('auth.register.bySmsHelp'),
+                icon: MessageSquareText,
+              },
+            ]}
+          />
+          {channel === 'sms' && (
+            <>
+              <Input
+                label={t('auth.register.phone')}
+                help={t('auth.register.phoneHelp')}
+                name="phone"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                value={draft.phone ?? ''}
+                onChange={(e) => {
+                  update({ phone: e.target.value });
+                  if (fieldError) setFieldError(null);
+                }}
+                error={fieldError ?? undefined}
+              />
+              <Checkbox
+                label={t('auth.register.consent')}
+                help={t('auth.register.consentHelp')}
+                checked={consent}
+                onChange={(e) => {
+                  setConsent(e.target.checked);
+                  if (e.target.checked) setConsentError(null);
+                }}
+                error={consentError ?? undefined}
+              />
+            </>
+          )}
+          <Button type="submit" size="lg" disabled={busy}>
+            {busy ? t('auth.code.sending') : t('auth.code.send')}
+          </Button>
+        </form>
+        {back('password')}
       </AuthLayout>
     );
   }
@@ -383,8 +505,8 @@ export default function RegisterPage() {
               </li>
             ))}
           </ul>
-          <Button type="submit" size="lg" disabled={busy}>
-            {busy ? t('auth.register.creating') : t('auth.register.submit')}
+          <Button type="submit" size="lg">
+            {t('auth.login.continue')}
           </Button>
         </form>
         {back('name')}

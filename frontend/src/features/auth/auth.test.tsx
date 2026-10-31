@@ -6,6 +6,7 @@ import { api } from '../../lib/api';
 import { useAuth } from '../../stores/auth';
 import { renderWithRouter } from '../../test/renderWithRouter';
 import { formatPhone, isCommonPassword, parseIdentifier, suggestEmail } from './identifier';
+import ConfirmEmailBanner from './ConfirmEmailBanner';
 import LoginPage from './LoginPage';
 import RegisterPage from './RegisterPage';
 
@@ -236,6 +237,32 @@ describe('Log in', () => {
     });
   });
 
+  it('no confirmed phone: SMS is shown greyed out, with how to get it', async () => {
+    replies({
+      '/auth/check': [{ exists: true, kind: 'email' }],
+      '/auth/login': [
+        {
+          codeRequired: true,
+          challengeId: 'challenge-2',
+          firstName: 'Amina',
+          options: [{ channel: 'email', to: 'am•••@example.com' }],
+        },
+      ],
+    });
+    renderWithRouter(<LoginPage />, '/login');
+    await continueTo('amina@example.com');
+    await userEvent.type(await screen.findByLabelText('Password'), 'Password123!');
+    await userEvent.click(screen.getByRole('button', { name: 'Log in' }));
+    const sms = await screen.findByRole('radio', { name: /By SMS/ });
+    expect(sms).toBeDisabled();
+    expect(
+      screen.getByText('Confirm a phone number in Settings to get codes by SMS.'),
+    ).toBeVisible();
+    expect(screen.getByRole('radio', { name: /By email/ })).toBeChecked();
+    // Nothing is sent until the person presses "Send my code".
+    expect(api.post).not.toHaveBeenCalledWith('/auth/login/send', expect.anything());
+  });
+
   it('a remembered account is greeted by name; "Not you?" forgets it', async () => {
     localStorage.setItem(
       'kf.rememberedAccount',
@@ -258,7 +285,7 @@ describe('Sign up', () => {
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
       'What brings you to KaziForce?',
     );
-    expect(screen.getByText('Step 1 of 5')).toBeVisible();
+    expect(screen.getByText('Step 1 of 6')).toBeVisible();
     await next();
     expect(screen.getByText('Please choose one.')).toBeInTheDocument();
 
@@ -322,23 +349,30 @@ describe('Sign up', () => {
 
     expect(screen.getByRole('heading', { level: 1, name: 'Choose a password' })).toBeVisible();
     await userEvent.type(screen.getByLabelText('Choose a password'), 'password123');
-    await userEvent.click(screen.getByRole('button', { name: 'Create account' }));
+    await next();
     expect(screen.getByText(/too easy to guess/)).toBeVisible();
     await userEvent.clear(screen.getByLabelText('Choose a password'));
     await userEvent.type(screen.getByLabelText('Choose a password'), 'green mango tree');
-    await userEvent.click(screen.getByRole('button', { name: 'Create account' }));
+    await next();
+
+    // Step 5: by email (chosen already) or SMS.
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Where should we send your code?' }),
+    ).toBeVisible();
+    expect(screen.getByRole('radio', { name: /By email/ })).toBeChecked();
+    expect(api.post).toHaveBeenCalledTimes(1); // nothing sent before "Send my code"
+    await userEvent.click(screen.getByRole('button', { name: 'Send my code' }));
     expect(api.post).toHaveBeenCalledWith('/auth/register', {
       role: 'worker',
       name: 'Amina Hassan',
       email: 'amina@example.com',
       password: 'green mango tree',
       language: 'en',
+      channel: 'email',
     });
 
-    expect(
-      await screen.findByRole('heading', { level: 1, name: 'Check your email' }),
-    ).toHaveFocus();
-    expect(screen.getByText('Step 5 of 5')).toBeVisible();
+    expect(await screen.findByRole('heading', { level: 1, name: 'Enter the code' })).toHaveFocus();
+    expect(screen.getByText('Step 6 of 6')).toBeVisible();
     expect(screen.getByText(/We sent a 6-digit code to am•••@example.com/)).toBeVisible();
     await userEvent.type(screen.getByLabelText('6-digit code'), '123456');
     await vi.waitFor(() => expect(useAuth.getState().status).toBe('user'));
@@ -351,6 +385,48 @@ describe('Sign up', () => {
     expect(sessionStorage.getItem('kf.signupDraft')).toBeNull();
   });
 
+  it('the code by SMS: a Kenyan number and consent, and "Send it by email instead"', async () => {
+    replies({
+      '/auth/check': [{ exists: false, kind: 'email' }],
+      '/auth/register': [
+        {
+          codeRequired: true,
+          challengeId: 'signup-2',
+          sent: { channel: 'sms', to: '07•• ••• 678', expiresInSeconds: 300, resendInSeconds: 30 },
+        },
+      ],
+    });
+    renderWithRouter(<RegisterPage />, '/register');
+    await userEvent.click(screen.getByRole('radio', { name: /I'm looking for work/ }));
+    await next();
+    await userEvent.type(screen.getByLabelText('Email address'), 'juma@example.com');
+    await next();
+    await userEvent.type(await screen.findByLabelText('Your full name'), 'Juma Otieno');
+    await next();
+    await userEvent.type(screen.getByLabelText('Choose a password'), 'green mango tree');
+    await next();
+
+    await userEvent.click(screen.getByRole('radio', { name: /By SMS/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Send my code' }));
+    expect(screen.getByText('Please fill this in.')).toBeVisible();
+    expect(screen.getByText('Tick the box to get your code by SMS.')).toBeVisible();
+    await userEvent.type(screen.getByLabelText('Your phone number'), '0712 345 678');
+    await userEvent.click(screen.getByRole('checkbox', { name: /I agree to receive/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Send my code' }));
+    expect(api.post).toHaveBeenLastCalledWith('/auth/register', {
+      role: 'worker',
+      name: 'Juma Otieno',
+      email: 'juma@example.com',
+      password: 'green mango tree',
+      language: 'en',
+      channel: 'sms',
+      phone: '+254712345678',
+      consentSms: true,
+    });
+    expect(await screen.findByText('We sent a 6-digit code by SMS to 07•• ••• 678.')).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Send it by email instead' })).toBeInTheDocument();
+  });
+
   it('keeps the answers (never the password) if the page reloads', async () => {
     renderWithRouter(<RegisterPage />, '/register');
     await userEvent.click(screen.getByRole('radio', { name: /I'm hiring/ }));
@@ -359,5 +435,36 @@ describe('Sign up', () => {
     const saved = JSON.parse(sessionStorage.getItem('kf.signupDraft')!);
     expect(saved).toMatchObject({ step: 'email', role: 'business', email: 'boss@example.com' });
     expect(JSON.stringify(saved)).not.toContain('password');
+  });
+});
+
+describe('Confirm your email (after an SMS sign-up)', () => {
+  it('sends a code to the email, and the sixth digit confirms it', async () => {
+    const user = { ...SESSION.user, emailConfirmed: false } as never;
+    useAuth.setState({ status: 'user', user, accessToken: 'token' });
+    replies({
+      '/auth/email/send': [
+        {
+          challengeId: 'email-1',
+          sent: {
+            channel: 'email',
+            to: 'wo•••@example.com',
+            expiresInSeconds: 300,
+            resendInSeconds: 30,
+          },
+        },
+      ],
+      '/auth/email/code': [{ user: { ...SESSION.user, emailConfirmed: true } }],
+    });
+    renderWithRouter(<ConfirmEmailBanner />, '/worker/home');
+    expect(screen.getByRole('heading', { name: 'Confirm your email address' })).toBeVisible();
+    expect(screen.getByText(/We do not send emails to worker1@example.com/)).toBeVisible();
+    await userEvent.click(screen.getByRole('button', { name: 'Send me a code' }));
+    await userEvent.type(await screen.findByLabelText('6-digit code'), '123456');
+    await vi.waitFor(() => expect(useAuth.getState().user?.emailConfirmed).toBe(true));
+    expect(api.post).toHaveBeenLastCalledWith('/auth/email/code', {
+      challengeId: 'email-1',
+      code: '123456',
+    });
   });
 });

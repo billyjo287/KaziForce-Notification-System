@@ -13,7 +13,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { useEmployerJobs } from '../../api/hooks';
-import { useCountUp } from '../../components/brand/hooks';
+import { CountUp } from '../../components/brand/CountUp';
 import { Badge, type BadgeTone } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { buttonClasses } from '../../components/ui/buttonStyles';
@@ -24,6 +24,7 @@ import { usePageTitle } from '../../lib/usePageTitle';
 import { useAuth } from '../../stores/auth';
 import type { Job } from '../../types/api';
 import { useAlerts } from '../alerts/useAlerts';
+import { ConfirmEmailReminder } from '../auth/ConfirmEmailReminder';
 import '../employer/strings';
 import { UrgentBanner } from './UrgentBanner';
 import './strings';
@@ -71,6 +72,7 @@ export default function EmployerHomePage() {
 
   return (
     <div className="flex flex-col gap-8">
+      <ConfirmEmailReminder />
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-4xl font-extrabold">
@@ -208,15 +210,12 @@ export default function EmployerHomePage() {
 
 /** One count: the number counts up once when the page opens (not with reduced motion). */
 function Stat({ icon: Icon, label, value }: { icon: LucideIcon; label: string; value: number }) {
-  const shown = Math.round(useCountUp(value));
   return (
     <li className="flex flex-col gap-2 rounded-kf-lg border border-line bg-surface p-5">
       <Icon aria-hidden="true" className="size-6 text-kf-primary-text" />
-      {/* Screen readers get the real number at once, not the counting. */}
-      <span aria-hidden="true" className="text-4xl font-extrabold tabular-nums">
-        {shown}
+      <span className="text-4xl font-extrabold tabular-nums">
+        <CountUp value={value} />
       </span>
-      <span className="sr-only">{value}</span>
       <span className="text-ink-muted">{label}</span>
     </li>
   );

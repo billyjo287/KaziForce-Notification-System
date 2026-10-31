@@ -7,8 +7,11 @@ hear about it at once, and you can see who got the alert and who saw it.
 
 1. Open KaziForce and tap **Get started**.
 2. Choose **I'm hiring**, then answer one question per screen: email, name and a password.
-   Type the 6-digit code we email you to finish. When you log in on a new phone or computer,
-   we send another code, by SMS or email (you choose).
+   Then choose where we send your 6-digit code: **By email**, or **By SMS** (type your phone
+   number and tick the box to agree to messages). Type the code to finish. If you chose SMS,
+   confirm your email later from **Home** or **Settings**: we send no emails until you do.
+   When you log in on a new phone or computer, we send another code, by SMS or email (you
+   choose; SMS needs a confirmed phone number).
 3. Add your phone number and confirm it with the 6-digit SMS code, so we can reach you when
    someone applies. You can skip this and do it later in **Settings**.
 4. Add your company name and place under **Settings > Company profile**.

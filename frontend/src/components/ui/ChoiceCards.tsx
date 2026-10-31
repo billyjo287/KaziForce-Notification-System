@@ -9,6 +9,8 @@ export interface Choice<T extends string> {
   /** One line under the label. */
   help?: string;
   icon?: LucideIcon;
+  /** Shown but cannot be picked (greyed out); `help` says why. */
+  disabled?: boolean;
 }
 
 interface ChoiceCardsProps<T extends string> {
@@ -55,20 +57,26 @@ export function ChoiceCards<T extends string>({
           return (
             <label
               key={choice.value}
-              className="flex min-h-14 cursor-pointer items-start gap-3 rounded-xl border-2 border-line-strong bg-surface p-4 transition-colors duration-150 hover:bg-canvas has-checked:border-primary has-checked:bg-primary-soft has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-focus"
+              className={`flex min-h-14 items-start gap-3 rounded-xl border-2 p-4 transition-colors duration-150 has-checked:border-primary has-checked:bg-primary-soft has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-focus ${
+                choice.disabled
+                  ? 'cursor-not-allowed border-dashed border-line-strong bg-canvas'
+                  : 'cursor-pointer border-line-strong bg-surface hover:bg-canvas'
+              }`}
             >
               <input
                 type="radio"
                 name={name}
                 value={choice.value}
                 checked={value === choice.value}
+                disabled={choice.disabled}
                 onChange={() => onChange(choice.value)}
                 className="mt-1 size-5 shrink-0 accent-(--kf-primary) focus-visible:outline-none"
               />
               {Icon && (
                 <Icon aria-hidden="true" className="mt-0.5 size-6 shrink-0 text-kf-primary-text" />
               )}
-              <span className="flex flex-col">
+              {/* Long words (an email address in the help) wrap instead of widening the page. */}
+              <span className="flex min-w-0 flex-col [overflow-wrap:anywhere]">
                 <span className="text-lg font-bold">{choice.label}</span>
                 {choice.help && <span className="text-ink-muted">{choice.help}</span>}
               </span>

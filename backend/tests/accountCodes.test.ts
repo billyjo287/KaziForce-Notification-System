@@ -1,6 +1,6 @@
-// Log-in by email or phone, and the 6-digit codes (ACCOUNT_CODES, ADR 0013): after the password on
-// a new device (by SMS or email, the person chooses), at sign-up (by email), and "Remember this
-// phone or computer for 30 days".
+// Log-in by email or phone, and the 6-digit codes (ACCOUNT_CODES, ADRs 0013 and 0015): after the
+// password on a new device (by SMS or email, the person chooses), at sign-up (by email or SMS),
+// confirming the email later, and "Remember this phone or computer for 30 days".
 import request from 'supertest';
 import { afterAll, afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { env, validateEnv } from '../src/config/env.js';
@@ -23,6 +23,11 @@ const send = (challengeId: string, channel: 'sms' | 'email') =>
 const enter = (challengeId: string, code: string, rememberDevice = false) =>
   request(app).post('/api/auth/login/code').send({ challengeId, code, rememberDevice });
 const wrongCode = (code: string) => (code === '000000' ? '111111' : '000000');
+/** A Kenyan number nobody uses yet, as typed and as stored. */
+const newPhone = () => {
+  const digits = String(Math.floor(Math.random() * 1e8)).padStart(8, '0');
+  return { typed: `07${digits}`, e164: `+2547${digits}` };
+};
 const cookieNamed = (res: request.Response, name: string) =>
   [res.headers['set-cookie']].flat().find((c) => c?.startsWith(`${name}=`));
 
@@ -224,6 +229,87 @@ describe('codes on', () => {
     expect(cookieNamed(done, 'kf_device')).toBeTruthy();
     expect(await prisma.user.findUnique({ where: { email } })).not.toBeNull();
     await enterSignup(code).expect(400);
+  });
+
+  it('sign-up by SMS: a Kenyan number and consent; the email is confirmed later in the app', async () => {
+    const email = uniqueEmail('smssignup');
+    const phone = newPhone();
+    const register = (extra: object) =>
+      request(app)
+        .post('/api/auth/register')
+        .send({ role: 'worker', name: 'Juma Otieno', email, password: PASSWORD, ...extra });
+    const noConsent = await register({ channel: 'sms', phone: phone.typed }).expect(400);
+    expect(noConsent.body.error.code).toBe('consent_required');
+    const badNumber = await register({ channel: 'sms', phone: '12345', consentSms: true });
+    expect(badNumber.body.error.code).toBe('phone_invalid');
+    const taken = await register({ channel: 'sms', phone: '0700 000 004', consentSms: true });
+    expect(taken.status).toBe(409);
+    expect(taken.body.error.code).toBe('phone_taken');
+
+    const start = await register({ channel: 'sms', phone: phone.typed, consentSms: true }).expect(
+      200,
+    );
+    expect(start.body.sent).toMatchObject({ channel: 'sms', to: maskPhone(phone.e164) });
+    const done = await request(app)
+      .post('/api/auth/register/code')
+      .send({ challengeId: start.body.challengeId, code: start.body.sent.mockCode })
+      .expect(201);
+    expect(done.body.user).toMatchObject({ phoneVerified: true, emailConfirmed: false });
+    const user = await prisma.user.findUniqueOrThrow({ where: { email } });
+    expect(user).toMatchObject({
+      phone: phone.e164,
+      consentSmsWhatsapp: true,
+      emailVerifiedAt: null,
+    });
+
+    // Log-in: the unconfirmed email gets no code while SMS works.
+    const next = await login(email).expect(200);
+    expect(next.body.options).toEqual([{ channel: 'sms', to: maskPhone(phone.e164) }]);
+
+    // "Confirm your email" in the app.
+    const token = done.body.accessToken as string;
+    const sent = await request(app).post('/api/auth/email/send').set(auth(token)).expect(200);
+    expect(sent.body.sent).toMatchObject({ channel: 'email', to: 'sm•••@example.com' });
+    const confirmed = await request(app)
+      .post('/api/auth/email/code')
+      .set(auth(token))
+      .send({ challengeId: sent.body.challengeId, code: sent.body.sent.mockCode })
+      .expect(200);
+    expect(confirmed.body.user.emailConfirmed).toBe(true);
+    const again = await request(app).post('/api/auth/email/send').set(auth(token)).expect(400);
+    expect(again.body.error.code).toBe('email_confirmed');
+  });
+
+  it('sign-up: SMS chosen, then "send it by email instead" confirms the email, not the phone', async () => {
+    const email = uniqueEmail('switch');
+    const phone = newPhone();
+    const start = await request(app)
+      .post('/api/auth/register')
+      .send({
+        role: 'business',
+        name: 'Faith Wambui',
+        email,
+        password: PASSWORD,
+        channel: 'sms',
+        phone: phone.typed,
+        consentSms: true,
+      })
+      .expect(200);
+    // Waiting 30 seconds is the page's job; here the wait is skipped.
+    const key = `kf:account-code:${sha256(start.body.challengeId)}`;
+    const saved = JSON.parse((await redis.get(key))!) as { lastSentAt: number };
+    await redis.set(key, JSON.stringify({ ...saved, lastSentAt: 0 }), 'KEEPTTL');
+    const byEmail = await request(app)
+      .post('/api/auth/register/resend')
+      .send({ challengeId: start.body.challengeId, channel: 'email' })
+      .expect(200);
+    expect(byEmail.body.channel).toBe('email');
+    const done = await request(app)
+      .post('/api/auth/register/code')
+      .send({ challengeId: start.body.challengeId, code: byEmail.body.mockCode })
+      .expect(201);
+    expect(done.body.user).toMatchObject({ emailConfirmed: true, phoneVerified: false });
+    expect((await prisma.user.findUniqueOrThrow({ where: { email } })).phone).toBeNull();
   });
 
   it('sign-up: an email that is already used never gets a code', async () => {

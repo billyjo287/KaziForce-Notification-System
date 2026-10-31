@@ -72,6 +72,8 @@ export interface User {
   language: Language;
   phone: string | null;
   phoneVerified: boolean;
+  /** False after an SMS sign-up until the email address is confirmed (ADR 0015). */
+  emailConfirmed?: boolean;
   usesWhatsApp: boolean;
   companyName: string | null;
   location: Place | null;
