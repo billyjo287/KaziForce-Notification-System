@@ -370,21 +370,24 @@
     opacity: 0;
   }
 }
+/* The logo head's hop (loader). It moves in the logo's own units (100 = the whole mark), not
+   screen pixels: -16 is about a sixth of the mark (11 px on the 72 px loader), a clear jump that
+   stays inside the tile. The design pack's -9 shrank to a 6 px jitter on screen. */
 @keyframes kf-hop {
   0%,
   100% {
     transform: translateY(0) scale(1, 1);
   }
-  10% {
-    transform: scale(1.15, 0.85);
+  12% {
+    transform: translateY(0) scale(1.2, 0.8);
   }
-  40% {
-    transform: translateY(-9px) scale(0.92, 1.08);
+  45% {
+    transform: translateY(-16px) scale(0.9, 1.1);
   }
-  70% {
-    transform: scale(1.1, 0.9);
+  72% {
+    transform: translateY(0) scale(1.15, 0.85);
   }
-  85% {
+  86% {
     transform: none;
   }
 }

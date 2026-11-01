@@ -44,7 +44,11 @@ export default function KaziLoader({ language, still }: { language: string; stil
   const line = lines[i % lines.length]!;
 
   return (
-    <div className="kf-fade-in flex flex-col items-center gap-3 text-center">
+    // Fades in after 0.4 s, so a quick load shows only the grey placeholders instead of a flash.
+    <div
+      className="kf-fade-in flex flex-col items-center gap-3 text-center"
+      style={{ animationDelay: '0.4s' }}
+    >
       <KaziMark size={72} variant={still ? 'static' : 'hop'} title="" />
       <div
         key={i}
