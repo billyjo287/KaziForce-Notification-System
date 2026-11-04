@@ -160,6 +160,8 @@ export default defineConfig(({ mode, isSsrBuild }) => ({
     environment: 'jsdom',
     include: ['src/**/*.test.{ts,tsx}'],
     setupFiles: ['./src/test/setup.ts'],
+    // Tests cover the app as it ships (sign-up codes on), whatever .env says for a demo.
+    env: { VITE_ACCOUNT_CODES: 'true' },
     // Generous per-test limit for the same reason (see src/test/setup.ts).
     testTimeout: 15_000,
   },

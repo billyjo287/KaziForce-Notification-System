@@ -192,6 +192,12 @@ export const router = createBrowserRouter([
               Component: (await import('./features/admin/ModelsPage')).default,
             }),
           },
+          {
+            path: 'notification-rules',
+            lazy: async () => ({
+              Component: (await import('./features/admin/NotificationRulesPage')).default,
+            }),
+          },
           { path: 'users', lazy: async () => ({ Component: (await admin()).UsersPage }) },
           { path: 'users/:id', lazy: async () => ({ Component: (await admin()).UserDetailPage }) },
           { path: 'jobs', lazy: async () => ({ Component: (await admin()).AdminJobsPage }) },

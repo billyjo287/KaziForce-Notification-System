@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarClock, EyeOff, MapPin } from 'lucide-react';
+import { ArrowLeft, CalendarClock, EyeOff, Mail, MapPin } from 'lucide-react';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
@@ -25,13 +25,15 @@ interface AlertDetailProps {
   alert: Alert;
   onBack: () => void;
   onNotImportant: () => void;
+  /** Back to unread (SRS FR-NOT-025), e.g. to deal with it later. */
+  onMarkUnread: () => void;
   /** The main action was used (recorded as "clicked"). */
   onMainAction: () => void;
 }
 
 /** Full alert with its one main action. Phones show it as its own page, desktops beside the list. */
 export const AlertDetail = forwardRef<HTMLHeadingElement, AlertDetailProps>(function AlertDetail(
-  { role, alert, onBack, onNotImportant, onMainAction },
+  { role, alert, onBack, onNotImportant, onMarkUnread, onMainAction },
   headingRef,
 ) {
   const { t, i18n } = useTranslation();
@@ -113,6 +115,14 @@ export const AlertDetail = forwardRef<HTMLHeadingElement, AlertDetailProps>(func
             {t('alerts.detail.notImportantHelp')}
           </p>
         </div>
+        <button
+          type="button"
+          onClick={onMarkUnread}
+          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl px-3 font-bold text-kf-primary-text underline-offset-4 hover:underline"
+        >
+          <Mail aria-hidden="true" className="size-5" />
+          {t('alerts.detail.markUnread')}
+        </button>
       </div>
     </article>
   );

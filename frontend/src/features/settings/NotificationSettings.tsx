@@ -18,14 +18,17 @@ import type {
   PreferencesChange,
   PresetName,
   QuietHours,
+  SummaryFrequency,
   Threshold,
 } from '../../types/api';
+import { AlertTypeSettings } from './AlertTypeSettings';
 import '../onboarding/strings';
 import './strings';
 
 const ICONS = { whatsapp: MessageCircle, sms: MessageSquare, email: Mail };
 const PRESETS: PresetName[] = ['recommended', 'urgent_only', 'everything'];
 const THRESHOLDS: Threshold[] = ['everything', 'urgent_and_important', 'urgent_only'];
+const FREQUENCIES: SummaryFrequency[] = ['daily', 'weekly', 'monthly'];
 const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
 
 /**
@@ -180,6 +183,24 @@ export function NotificationSettings() {
                     save({ dailySummary: on }, { dailySummary: prefs.dailySummary })
                   }
                 />
+                {prefs.dailySummary && (
+                  <Select
+                    label={t('settings.notifications.summary.frequency')}
+                    help={t('settings.notifications.summary.frequencyHelp')}
+                    value={prefs.summaryFrequency}
+                    options={FREQUENCIES.map((value) => ({
+                      value,
+                      label: t(`settings.notifications.summary.frequencies.${value}`),
+                    }))}
+                    onValueChange={(value) =>
+                      save(
+                        { summaryFrequency: value as SummaryFrequency },
+                        { summaryFrequency: prefs.summaryFrequency },
+                      )
+                    }
+                  />
+                )}
+                <AlertTypeSettings prefs={prefs} save={save} />
               </div>
             )}
           </div>

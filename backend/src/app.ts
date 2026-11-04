@@ -13,6 +13,7 @@ import {
 import { adminRoutes } from './modules/admin/adminRoutes.js';
 import { monitoringRoutes } from './modules/admin/monitoringRoutes.js';
 import { reviewRoutes } from './modules/admin/reviewRoutes.js';
+import { settingsRoutes } from './modules/admin/settingsRoutes.js';
 import { authRoutes } from './modules/auth/authRoutes.js';
 import { applicationRoutes, employerRoutes } from './modules/marketplace/applicationRoutes.js';
 import { jobRoutes } from './modules/marketplace/jobRoutes.js';
@@ -102,6 +103,7 @@ export function createApp({
   api.use('/admin', adminRoutes(limits));
   api.use('/admin', reviewRoutes());
   api.use('/admin', monitoringRoutes());
+  api.use('/admin', settingsRoutes());
   app.use('/api', api);
 
   app.use((_req, res) => {

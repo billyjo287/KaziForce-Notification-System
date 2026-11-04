@@ -196,4 +196,32 @@ describe('Alerts dashboard', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'Arifa' })).toBeInTheDocument();
     expect(screen.getAllByText('Sasa hivi').length).toBeGreaterThan(0);
   });
+
+  it('"Mark as unread" puts an opened alert back to unread (FR-NOT-025)', async () => {
+    renderAlerts();
+    expect(await screen.findByText('You have 4 unread alerts.')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: /Warehouse packers needed today/ }));
+    expect(await screen.findByText('You have 3 unread alerts.')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Mark as unread' }));
+    expect(api.patch).toHaveBeenLastCalledWith('/notifications', { ids: ['a1'], read: false });
+    expect(await screen.findByText('Marked as unread.')).toBeInTheDocument();
+    expect(screen.getByText('You have 4 unread alerts.')).toBeInTheDocument();
+  });
+
+  it('search asks the server, across the whole history, and opens a result (FR-NOT-027)', async () => {
+    const old = { ...createNotifications()[0]!, id: 'old1', title: 'Old job: Loaders in Thika' };
+    vi.mocked(api.get).mockImplementation(async (_url, config) =>
+      (config as { params?: { q?: string } } | undefined)?.params?.q
+        ? { data: { items: [old] } }
+        : { data: { items: createNotifications() } },
+    );
+    renderAlerts();
+    await userEvent.type(await screen.findByLabelText('Search your alerts'), 'thika');
+    expect(await screen.findByText('1 alert with “thika”')).toBeInTheDocument();
+    expect(api.get).toHaveBeenCalledWith('/notifications', { params: { q: 'thika' } });
+    await userEvent.click(screen.getByRole('button', { name: /Old job: Loaders in Thika/ }));
+    expect(
+      await screen.findByRole('heading', { level: 2, name: 'Old job: Loaders in Thika' }),
+    ).toHaveFocus();
+  });
 });

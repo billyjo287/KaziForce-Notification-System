@@ -252,6 +252,51 @@
       "urgent": "Haiwezi kusubiri: inatumwa kwa WhatsApp au SMS mara moja.",
       "medium": "Inafaa kujua leo: kwenye programu na kwa barua pepe.",
       "low": "Inaweza kusubiri: kwenye programu na kwenye muhtasari wa kila siku."
+    },
+    "rules": {
+      "title": "Kanuni za arifa",
+      "intro": "Arifa ambazo kila mtu lazima apate, na maneno yanayotumika katika SMS na barua pepe. Kila badiliko huhifadhiwa kwenye kumbukumbu za ukaguzi.",
+      "loadError": "Hatukuweza kupakia kanuni za arifa.",
+      "saveError": "Haijahifadhiwa. Tafadhali jaribu tena.",
+      "types": {
+        "new_job": "Kazi mpya",
+        "application_update": "Habari za maombi (kwa wafanyakazi)",
+        "new_applicant": "Waombaji wapya (kwa waajiri)",
+        "message": "Ujumbe",
+        "announcement": "Habari kutoka KaziForce"
+      },
+      "always": {
+        "title": "Tuma kila wakati",
+        "help": "Ikiwashwa, watu hawawezi kuzima aina hii wala kuizuia kwenye njia zao. Itumie tu kwa mambo ambayo watu hawapaswi kukosa.",
+        "onHelp": "Kila mtu hupata hizi. Mipangilio inazionyesha kama “Huwashwa kila wakati”.",
+        "offHelp": "Watu wanaweza kuzima hizi katika mipangilio yao.",
+        "madeMandatory": "“{{type}}” sasa hutumwa kila wakati.",
+        "madeOptional": "Watu sasa wanaweza kuzima “{{type}}”."
+      },
+      "wording": {
+        "title": "Maneno ya SMS na barua pepe",
+        "help": "Kila SMS na barua pepe hutengenezwa kwa mstari mmoja mfupi pamoja na kiungo. Andika maneno ya kawaida tu: bila majina wala taarifa nyingine binafsi, kwa sababu simu inaweza kupotea. WhatsApp huendelea kutumia violezo vyake vilivyoidhinishwa, vinavyotumia mstari huo huo.",
+        "type": "Aina ya arifa",
+        "language": "Lugha",
+        "normal": "Arifa za kawaida",
+        "urgent": "Arifa za “Sasa hivi”",
+        "line": "Mstari",
+        "count": "Herufi {{count}} kati ya {{max}}",
+        "smsPreview": "SMS itasomeka hivi:",
+        "emailPreview": "Kichwa cha barua pepe kitasomeka hivi:",
+        "usingDefault": "Inatumia maneno ya kawaida ya mfumo.",
+        "custom": "Toleo {{version}}, limehifadhiwa na {{name}} tarehe {{date}}.",
+        "defaultWas": "Maneno ya kawaida ya mfumo: “{{text}}”",
+        "save": "Hifadhi toleo jipya",
+        "backToDefault": "Rudi kwenye maneno ya kawaida",
+        "saved": "Imehifadhiwa. SMS na barua pepe zitaitumia ndani ya dakika moja.",
+        "reset": "Imerudi kwenye maneno ya kawaida.",
+        "errors": {
+          "wording_empty": "Andika angalau herufi 3.",
+          "wording_too_long": "Tumia herufi 80 au chache, ili SMS ibaki ujumbe mmoja.",
+          "wording_characters": "Tumia herufi na alama za kawaida tu (bila emoji wala alama za nukuu zilizopinda)."
+        }
+      }
     }
   },
   "apiErrors": {
@@ -266,6 +311,7 @@
     "deliveryLogs": "Kumbukumbu za utumaji",
     "announcements": "Matangazo",
     "models": "Matoleo ya modeli",
-    "auditLog": "Kumbukumbu ya ukaguzi"
+    "auditLog": "Kumbukumbu ya ukaguzi",
+    "rules": "Kanuni za arifa"
   }
 }

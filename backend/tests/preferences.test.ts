@@ -13,6 +13,7 @@ import { queueConnection } from '../src/lib/queue.js';
 import { redis } from '../src/lib/redis.js';
 import { PRESETS } from '../src/modules/me/presets.js';
 import { UserPreferenceManager } from '../src/preferences/UserPreferenceManager.js';
+import { normalizeCategorySettings } from '../src/preferences/categories.js';
 import { PASSWORD, auth, testApp, uniqueEmail } from './helpers.js';
 
 const app = testApp();
@@ -44,6 +45,12 @@ describe('notification settings API', () => {
       urgentOnBothChannels: false,
       quietHours: { enabled: true, start: '21:00', end: '07:00' },
       dailySummary: true,
+      summaryFrequency: 'daily',
+      // Every alert type on, on every channel (ADR 0016).
+      categorySettings: normalizeCategorySettings(null),
+      categories: ['new_job', 'application_update', 'message', 'announcement'],
+      // The starting rule from the migration: News from KaziForce is always sent.
+      mandatoryCategories: ['announcement'],
       usesWhatsApp: false,
       phoneVerified: false,
       optedOut: { whatsapp: false, sms: false },

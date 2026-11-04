@@ -29,6 +29,16 @@ function fakeServer() {
     urgentOnBothChannels: false,
     quietHours: { enabled: true, start: '21:00', end: '07:00' },
     dailySummary: true,
+    summaryFrequency: 'daily',
+    categorySettings: {
+      new_job: { enabled: true, channels: ['whatsapp', 'sms', 'email'] },
+      application_update: { enabled: true, channels: ['whatsapp', 'sms', 'email'] },
+      new_applicant: { enabled: true, channels: ['whatsapp', 'sms', 'email'] },
+      message: { enabled: true, channels: ['whatsapp', 'sms', 'email'] },
+      announcement: { enabled: true, channels: ['whatsapp', 'sms', 'email'] },
+    },
+    categories: ['new_job', 'application_update', 'message', 'announcement'],
+    mandatoryCategories: ['announcement'],
     usesWhatsApp: true,
     phoneVerified: true,
     optedOut: { whatsapp: false, sms: false },
@@ -40,7 +50,17 @@ function fakeServer() {
     for (const [c, s] of Object.entries(change.channelSettings ?? {})) {
       Object.assign(channelSettings[c as keyof typeof channelSettings], s);
     }
-    saved = { ...saved, ...change, channelSettings, preset: change.preset ?? 'custom' };
+    const categorySettings = structuredClone(saved.categorySettings);
+    for (const [c, s] of Object.entries(change.categorySettings ?? {})) {
+      Object.assign(categorySettings[c as keyof typeof categorySettings], s);
+    }
+    saved = {
+      ...saved,
+      ...change,
+      channelSettings,
+      categorySettings,
+      preset: change.preset ?? 'custom',
+    };
     return { data: { preferences: saved, user: { id: 'u1' } } };
   });
 }
@@ -124,7 +144,7 @@ describe('notification settings (FR-5)', () => {
       screen.getByText('You changed some settings under Customise, so none of these is picked.'),
     ).toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole('switch', { name: 'Daily summary email' }));
+    await userEvent.click(screen.getByRole('switch', { name: 'Summary email' }));
     expect(patched()[1]).toEqual({ dailySummary: false });
   });
 
@@ -166,5 +186,25 @@ describe('notification settings (FR-5)', () => {
       ),
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument();
+  });
+
+  it('types of alerts (ADR 0016): off, kept away from a channel, locked when mandatory; how often', async () => {
+    renderSettings();
+    await userEvent.click(await screen.findByRole('button', { name: 'Customise' }));
+    expect(screen.getByRole('combobox', { name: 'How often' })).toHaveTextContent('Every day');
+
+    await userEvent.click(screen.getByRole('switch', { name: 'New jobs near you' }));
+    expect(patched()).toEqual([{ categorySettings: { new_job: { enabled: false } } }]);
+    expect(await screen.findByText(/Off: no pop-ups, no SMS or email/)).toBeVisible();
+
+    const messages = screen.getByRole('group', { name: 'Outside the app, send “Messages” by:' });
+    await userEvent.click(within(messages).getByRole('checkbox', { name: 'Email' }));
+    expect(patched()[1]).toEqual({
+      categorySettings: { message: { channels: ['whatsapp', 'sms'] } },
+    });
+
+    // News from KaziForce is "Always send": no switch, and the reason is shown.
+    expect(screen.queryByRole('switch', { name: 'News from KaziForce' })).toBeNull();
+    expect(screen.getByText(/Always on\. KaziForce sends these to everyone/)).toBeVisible();
   });
 });

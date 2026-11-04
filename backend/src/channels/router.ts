@@ -18,6 +18,9 @@
 // channel can reach them (e.g. WhatsApp only for people who use it, with a verified number and
 // consent, who have not replied STOP). The channel itself decides that last part (addressFor),
 // so a new channel needs no change here.
+//
+// Per category (ADR 0016): the person may keep a category away from some channels
+// (categoryChannels). That only narrows the list above; mandatory categories pass every channel.
 import type { Channel, Priority } from '../generated/prisma/client.js';
 import { PRESETS, type ChannelSettings, type Threshold } from '../modules/me/presets.js';
 import { quietHoursEndAt, type QuietHours } from '../preferences/quietHours.js';
@@ -56,10 +59,12 @@ export function usableChannels(
   preferences: Preferences,
   recipient: Recipient,
   adapters: Adapters,
+  categoryChannels?: readonly ExternalChannel[],
 ): ExternalChannel[] {
   return preferences.channelOrder
     .filter((c): c is ExternalChannel => c !== 'in_app')
     .filter((c, i, all) => all.indexOf(c) === i)
+    .filter((c) => !categoryChannels || categoryChannels.includes(c))
     .filter((c) => {
       const setting = settingFor(preferences.channelSettings, c);
       const adapter = adapters[c];
@@ -104,8 +109,16 @@ export function planDelivery(input: {
   deadlineAt: Date | null;
   now: Date;
   windowMinutes: number;
+  /** The channels this alert's category may use (the person's per-category setting). */
+  categoryChannels?: readonly ExternalChannel[];
 }): DeliveryPlan {
-  const usable = usableChannels(input.priority, input.preferences, input.recipient, input.adapters);
+  const usable = usableChannels(
+    input.priority,
+    input.preferences,
+    input.recipient,
+    input.adapters,
+    input.categoryChannels,
+  );
   if (input.priority !== 'urgent') {
     const quietUntil =
       usable.length > 0 && input.preferences.quietHours

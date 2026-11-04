@@ -63,8 +63,37 @@
         "same": "Choose two different times."
       },
       "summary": {
-        "label": "Daily summary email",
-        "help": "At 8:00 in the morning: the less important things from the day before. No news, no email."
+        "label": "Summary email",
+        "help": "The less important things, together in one email. No news, no email.",
+        "frequency": "How often",
+        "frequencyHelp": "At 8:00 in the morning, with everything since the last summary.",
+        "frequencies": {
+          "daily": "Every day",
+          "weekly": "Every Monday",
+          "monthly": "On the 1st of each month"
+        }
+      },
+      "types": {
+        "title": "Types of alerts",
+        "help": "Switch off what you do not need, or choose how each type reaches you outside the app.",
+        "names": {
+          "new_job": "New jobs near you",
+          "application_update": "News about your job applications",
+          "new_applicant": "People who apply for your jobs",
+          "message": "Messages",
+          "announcement": "News from KaziForce"
+        },
+        "helps": {
+          "new_job": "Jobs that match your place or skills.",
+          "application_update": "When an employer reviews, accepts or turns down your application.",
+          "new_applicant": "When a worker applies for a job you posted.",
+          "message": "When someone writes to you.",
+          "announcement": "Service news for everyone."
+        },
+        "channels": "Outside the app, send “{{type}}” by:",
+        "channelsHelp": "You always see them in the app. Untick everything to keep them in the app only.",
+        "offNote": "Off: no pop-ups, no SMS or email. You can still find them in your alerts list.",
+        "mandatory": "Always on. KaziForce sends these to everyone, because they matter for your account or safety."
       }
     },
     "delete": {

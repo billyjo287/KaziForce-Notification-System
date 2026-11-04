@@ -91,6 +91,12 @@ enum Preset {
   custom
 }
 
+enum SummaryFrequency {
+  daily
+  weekly // Mondays
+  monthly // the 1st of the month
+}
+
 enum TextSize {
   normal
   large
@@ -170,6 +176,8 @@ model User {
   passwordResetTokens    PasswordResetToken[]
   phoneVerifications     PhoneVerification[]
   auditActions           AuditLog[]           @relation("AuditActor")
+  wordingChanges         MessageWording[]
+  notificationRules      NotificationRule[]
 
   @@index([role, status])
 }
@@ -301,24 +309,31 @@ model DomainEvent {
 
 // One row per user. Identity and consent live on User; how and when to be notified lives here.
 model UserPreference {
-  id                       String    @id @default(uuid()) @db.Uuid
-  userId                   String    @unique @db.Uuid
-  preset                   Preset    @default(recommended)
+  id                       String           @id @default(uuid()) @db.Uuid
+  userId                   String           @unique @db.Uuid
+  preset                   Preset           @default(recommended)
   // External channels in order of preference. In-app is always on, so it is not listed.
-  channelOrder             Channel[] @default([whatsapp, sms, email])
+  channelOrder             Channel[]        @default([whatsapp, sms, email])
   // Per external channel: { "whatsapp": { "enabled": true, "threshold": "urgent_only" }, ... }
   // threshold is one of "everything" | "urgent_and_important" | "urgent_only"
   channelSettings          Json
-  urgentOnBothChannels     Boolean   @default(false)
+  urgentOnBothChannels     Boolean          @default(false)
   // { "enabled": true, "start": "21:00", "end": "07:00" } in Africa/Nairobi time
   quietHours               Json
-  dailySummary             Boolean   @default(true)
-  textSize                 TextSize  @default(normal)
-  reduceMotion             Boolean   @default(false)
+  dailySummary             Boolean          @default(true)
+  // How often the summary email comes when dailySummary is on: every day, on Mondays, or on the
+  // 1st of the month (08:00 Africa/Nairobi). SRS FR-NOT-037.
+  summaryFrequency         SummaryFrequency @default(daily)
+  // Per alert category ("new_job", "message", ...): { "message": { "enabled": false,
+  // "channels": ["email"] } }. Missing = on, every channel. Categories an admin made mandatory
+  // (NotificationRule) ignore this. SRS FR-NOT-031 and FR-NOT-032.
+  categorySettings         Json?
+  textSize                 TextSize         @default(normal)
+  reduceMotion             Boolean          @default(false)
   // FR-4b: the "you reply faster on SMS" suggestion is shown once only
   channelSuggestionShownAt DateTime?
-  createdAt                DateTime  @default(now())
-  updatedAt                DateTime  @updatedAt
+  createdAt                DateTime         @default(now())
+  updatedAt                DateTime         @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -374,6 +389,10 @@ model Notification {
   // Set when an external send (email, SMS, WhatsApp) waits for the person's quiet hours to end.
   // Only URGENT gets through during quiet hours; in-app delivery is never held.
   heldUntil DateTime?
+
+  // The person had switched this category off: kept quietly in their history (marked read, no
+  // live push, no SMS/email, not in the summary). Also a training signal.
+  mutedByPreference Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -456,6 +475,38 @@ model MLMetadata {
   createdAt    DateTime  @default(now())
 
   @@map("MLMetadata")
+}
+
+// ---------- Admin-controlled notification settings ----------
+
+// "Always send": an admin marks an alert category mandatory, so people can neither switch it off
+// nor untick its channels (SRS FR-NOT-035). One row per category; missing = not mandatory.
+model NotificationRule {
+  category    String   @id @db.VarChar(40)
+  mandatory   Boolean  @default(false)
+  updatedById String?  @db.Uuid
+  updatedAt   DateTime @updatedAt
+
+  updatedBy User? @relation(fields: [updatedById], references: [id], onDelete: SetNull)
+}
+
+// The wording of SMS and email alerts, editable by admins (SRS FR-NOT-003,
+// FR-NOT-011). Rows are never changed: every save adds a new version, and the newest version of
+// a (category, language, urgent) is the one used. text = null means "back to the built-in
+// wording" (channels/messages.ts). Plain text only, no personal details (CLAUDE.md decision 10).
+model MessageWording {
+  id          String   @id @default(uuid()) @db.Uuid
+  category    String   @db.VarChar(40)
+  language    Language
+  urgent      Boolean
+  text        String?  @db.VarChar(80)
+  version     Int
+  createdById String?  @db.Uuid
+  createdAt   DateTime @default(now())
+
+  createdBy User? @relation(fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@unique([category, language, urgent, version])
 }
 
 // ---------- Host marketplace tables ----------

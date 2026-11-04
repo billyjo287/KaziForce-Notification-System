@@ -117,7 +117,8 @@
       "openMessage": "Fungua ujumbe",
       "notImportant": "Si muhimu kwangu",
       "notImportantHelp": "Tutakuonyesha arifa chache kama hii.",
-      "choose": "Chagua arifa upande wa kushoto uione hapa."
+      "choose": "Chagua arifa upande wa kushoto uione hapa.",
+      "markUnread": "Weka kuwa haijasomwa"
     },
     "tabsLabel": "Aina za arifa",
     "tabUnread_one": "{{count}} mpya",
@@ -126,7 +127,17 @@
     "markedAllRead_one": "Arifa {{count}} imewekwa kama imesomwa.",
     "markedAllRead_other": "Arifa {{count}} zimewekwa kama zimesomwa.",
     "openAlert": "Fungua",
-    "scamCheck": "Kila arifa inakaguliwa dhidi ya utapeli kabla ya kukufikia."
+    "scamCheck": "Kila arifa inakaguliwa dhidi ya utapeli kabla ya kukufikia.",
+    "markedUnread": "Imewekwa kuwa haijasomwa.",
+    "search": {
+      "label": "Tafuta katika arifa zako",
+      "count_one": "Arifa {{count}} yenye “{{words}}”",
+      "count_other": "Arifa {{count}} zenye “{{words}}”",
+      "noneTitle": "Hakuna kilichopatikana.",
+      "noneBody": "Jaribu maneno machache, au angalia tahajia.",
+      "errorTitle": "Hatukuweza kutafuta sasa hivi.",
+      "errorBody": "Tafadhali angalia mtandao wako na ujaribu tena."
+    }
   },
   "settings": {
     "logout": "Toka"

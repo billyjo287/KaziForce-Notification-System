@@ -63,8 +63,37 @@
         "same": "Chagua nyakati mbili tofauti."
       },
       "summary": {
-        "label": "Barua pepe ya muhtasari wa kila siku",
-        "help": "Saa 2 asubuhi (8:00): mambo yasiyo ya haraka ya siku iliyopita. Bila habari, hakuna barua pepe."
+        "label": "Barua pepe ya muhtasari",
+        "help": "Mambo yasiyo ya haraka, pamoja katika barua pepe moja. Bila habari, hakuna barua pepe.",
+        "frequency": "Mara ngapi",
+        "frequencyHelp": "Saa 2:00 asubuhi, pamoja na yote tangu muhtasari uliopita.",
+        "frequencies": {
+          "daily": "Kila siku",
+          "weekly": "Kila Jumatatu",
+          "monthly": "Tarehe 1 ya kila mwezi"
+        }
+      },
+      "types": {
+        "title": "Aina za arifa",
+        "help": "Zima usichohitaji, au chagua jinsi kila aina inavyokufikia nje ya programu.",
+        "names": {
+          "new_job": "Kazi mpya karibu nawe",
+          "application_update": "Habari kuhusu maombi yako ya kazi",
+          "new_applicant": "Watu wanaoomba kazi zako",
+          "message": "Ujumbe",
+          "announcement": "Habari kutoka KaziForce"
+        },
+        "helps": {
+          "new_job": "Kazi zinazolingana na eneo au ujuzi wako.",
+          "application_update": "Mwajiri anapokagua, kukubali au kukataa ombi lako.",
+          "new_applicant": "Mfanyakazi anapoomba kazi uliyochapisha.",
+          "message": "Mtu anapokuandikia.",
+          "announcement": "Habari za huduma kwa kila mtu."
+        },
+        "channels": "Nje ya programu, tuma “{{type}}” kwa:",
+        "channelsHelp": "Utaziona kwenye programu kila wakati. Ondoa alama zote ili zibaki kwenye programu tu.",
+        "offNote": "Imezimwa: hakuna arifa za ghafla, SMS wala barua pepe. Bado utazipata kwenye orodha ya arifa zako.",
+        "mandatory": "Huwashwa kila wakati. KaziForce hutuma hizi kwa kila mtu, kwa sababu ni muhimu kwa akaunti au usalama wako."
       }
     },
     "delete": {

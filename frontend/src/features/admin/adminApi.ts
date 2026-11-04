@@ -189,6 +189,60 @@ export const useSendAnnouncement = () =>
     api.post('/admin/announcements', input),
   );
 
+// ---------- Notification rules and wording (ADR 0016) ----------
+
+export type RuleCategory =
+  'new_job' | 'application_update' | 'new_applicant' | 'message' | 'announcement';
+
+export interface NotificationRule {
+  category: RuleCategory;
+  mandatory: boolean;
+  updatedAt: string | null;
+  updatedBy: string | null;
+}
+
+export interface WordingRow {
+  category: RuleCategory;
+  language: 'en' | 'sw';
+  urgent: boolean;
+  /** The built-in wording. */
+  defaultText: string;
+  /** The saved wording in use, or null when the built-in one is used. */
+  text: string | null;
+  version: number;
+  updatedAt: string | null;
+  updatedBy: string | null;
+}
+
+export const useNotificationRules = () =>
+  useQuery({
+    queryKey: ['admin', 'notificationRules'],
+    queryFn: async () =>
+      (await api.get<{ items: NotificationRule[] }>('/admin/notification-rules')).data.items,
+  });
+
+export const useSetRule = () =>
+  useAdminMutation(({ category, mandatory }: { category: RuleCategory; mandatory: boolean }) =>
+    api.put(`/admin/notification-rules/${category}`, { mandatory }),
+  );
+
+export const useWording = () =>
+  useQuery({
+    queryKey: ['admin', 'wording'],
+    queryFn: async () => (await api.get<{ items: WordingRow[] }>('/admin/wording')).data.items,
+  });
+
+/** Saves a new version; text null = back to the built-in wording. */
+export const useSaveWording = () =>
+  useAdminMutation(
+    (input: {
+      category: RuleCategory;
+      language: 'en' | 'sw';
+      urgent: boolean;
+      text: string | null;
+    }) => api.post('/admin/wording', input),
+  );
+
 export const useModels = () =>
   useQuery({
     queryKey: ['admin', 'models'],

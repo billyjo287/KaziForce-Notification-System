@@ -26,6 +26,16 @@ export interface QuietHours {
 }
 
 /** The notification part of Settings (PRD FR-5), from GET /me/preferences. */
+/** Alert categories (the "Types of alerts" in Settings; ADR 0016). */
+export type AlertCategory =
+  'new_job' | 'application_update' | 'new_applicant' | 'message' | 'announcement';
+export interface CategorySetting {
+  enabled: boolean;
+  /** The external channels this type may use. */
+  channels: ExternalChannel[];
+}
+export type SummaryFrequency = 'daily' | 'weekly' | 'monthly';
+
 export interface NotificationPreferences {
   preset: PresetName | 'custom';
   /** The person's channels in order (WhatsApp only if they use it). */
@@ -34,6 +44,12 @@ export interface NotificationPreferences {
   urgentOnBothChannels: boolean;
   quietHours: QuietHours;
   dailySummary: boolean;
+  summaryFrequency: SummaryFrequency;
+  categorySettings: Record<AlertCategory, CategorySetting>;
+  /** The types this side of the app gets, in display order. */
+  categories: AlertCategory[];
+  /** Types an admin made "Always send": shown locked on. */
+  mandatoryCategories: AlertCategory[];
   usesWhatsApp: boolean;
   phoneVerified: boolean;
   /** Replied STOP (WhatsApp) or opted out with the network (SMS). */
@@ -49,6 +65,8 @@ export interface PreferencesChange {
   channelSettings?: Partial<Record<ExternalChannel, Partial<ChannelSettings[ExternalChannel]>>>;
   quietHours?: QuietHours;
   dailySummary?: boolean;
+  summaryFrequency?: SummaryFrequency;
+  categorySettings?: Partial<Record<AlertCategory, Partial<CategorySetting>>>;
 }
 export type ApplicationStatus = 'received' | 'reviewed' | 'accepted' | 'rejected';
 

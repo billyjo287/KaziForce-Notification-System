@@ -5,6 +5,8 @@
 //          -> in-app delivery: DeliveryLog row + live push to the user's Socket.IO room -> SENT
 //          -> external channels (channels/delivery.ts): WhatsApp / SMS / email by priority and
 //             the person's preferences, with the urgent safety net.
+//   A category the person switched off (and an admin did not make mandatory) is saved quietly
+//   instead: marked read and mutedByPreference, no live push, no external channels (ADR 0016).
 import { Worker } from 'bullmq';
 import type { Redis } from 'ioredis';
 import type { Logger } from 'pino';
@@ -28,6 +30,8 @@ export interface WorkerOptions {
   mlTimeoutMs: number;
   /** Plans and queues the external channels (channels/delivery.ts). Tests may leave it out. */
   dispatch?: (notificationId: string) => Promise<unknown>;
+  /** True when the person switched this category off (ADR 0016). Tests may leave it out. */
+  isMuted?: (recipientId: string, category: string) => Promise<boolean>;
   concurrency?: number;
 }
 
@@ -40,6 +44,7 @@ export function startNotificationWorker({
   mlServiceUrl,
   mlTimeoutMs,
   dispatch,
+  isMuted,
   concurrency = 20,
 }: WorkerOptions) {
   const inApp = new InAppAdapter({ mode: 'live', logger }, publisher, prefix);
@@ -124,6 +129,17 @@ export function startNotificationWorker({
     }
 
     const sentAt = new Date();
+    // If the check fails, deliver: a missed alert is worse than an unwanted one.
+    const muted = isMuted
+      ? await isMuted(input.recipientId, input.category).catch(() => false)
+      : false;
+    if (muted) {
+      await prisma.notification.update({
+        where: { id },
+        data: { ...classification, status: 'sent', mutedByPreference: true, readAt: sentAt },
+      });
+      return 'sent';
+    }
     const [notification] = await prisma.$transaction([
       prisma.notification.update({
         where: { id },

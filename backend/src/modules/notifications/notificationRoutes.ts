@@ -36,15 +36,30 @@ const feedbackSchema = z.object({
   note: z.string().trim().max(300).optional(),
 });
 
+const searchSchema = z.object({ q: z.string().trim().max(100).optional() });
+
 export function notificationRoutes() {
   const router = Router();
   router.use(requireAuth);
 
   router.get('/', async (req, res) => {
     const me = currentUser(req);
+    // ?q=words: search the person's whole history, title and text (SRS FR-NOT-027).
+    const { q } = parse(searchSchema, req.query);
+    const words = q?.split(/\s+/).filter(Boolean) ?? [];
     const notifications = await prisma.notification.findMany({
       // Spam is never shown; notifications still being processed are not ready yet.
-      where: { recipientId: me.id, status: { in: ['sent', 'held', 'failed'] } },
+      where: {
+        recipientId: me.id,
+        status: { in: ['sent', 'held', 'failed'] },
+        // Every word must appear, in the title or the text (any letter case).
+        AND: words.map((word) => ({
+          OR: [
+            { title: { contains: word, mode: 'insensitive' as const } },
+            { message: { contains: word, mode: 'insensitive' as const } },
+          ],
+        })),
+      },
       include,
       orderBy: { createdAt: 'desc' },
       take: 200,

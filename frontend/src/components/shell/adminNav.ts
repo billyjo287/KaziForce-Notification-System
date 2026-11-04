@@ -8,6 +8,7 @@ import {
   Send,
   Settings,
   ShieldAlert,
+  SlidersHorizontal,
   Users,
 } from 'lucide-react';
 import type { RoleNav } from './navConfig';
@@ -24,6 +25,7 @@ export const ADMIN_NAV: RoleNav = {
     { key: 'adminJobs', path: 'jobs', icon: Briefcase },
     { key: 'deliveryLogs', path: 'delivery-logs', icon: Send },
     { key: 'announcements', path: 'announcements', icon: Megaphone },
+    { key: 'rules', path: 'notification-rules', icon: SlidersHorizontal },
     { key: 'models', path: 'models', icon: Cpu },
     { key: 'auditLog', path: 'audit-log', icon: ScrollText },
     { key: 'settings', path: 'settings', icon: Settings },

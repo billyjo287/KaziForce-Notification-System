@@ -12,6 +12,7 @@ import { startDelivery } from './channels/delivery.js';
 import { startNotificationWorker } from './pipeline/notificationWorker.js';
 import { startOutboxRelay } from './pipeline/outboxRelay.js';
 import { UserPreferenceManager } from './preferences/UserPreferenceManager.js';
+import { createMandatoryCategories, effectiveCategorySetting } from './preferences/categories.js';
 import { startScheduledJobs } from './scheduled/scheduledJobs.js';
 
 const connection = queueConnection();
@@ -26,6 +27,7 @@ const adapters = createAdapters({
   mockFailChannels: env.MOCK_FAIL_CHANNELS,
 });
 const preferences = new UserPreferenceManager(prisma, redis, env.QUEUE_PREFIX, logger);
+const mandatory = createMandatoryCategories(prisma);
 const delivery = startDelivery({
   prisma,
   connection: deliveryConnection,
@@ -33,6 +35,7 @@ const delivery = startDelivery({
   logger,
   adapters,
   preferences,
+  mandatory,
   publicApiUrl: env.PUBLIC_API_URL,
   publicAppUrl: env.PUBLIC_APP_URL,
   windowMinutes: env.ESCALATION_WINDOW_MINUTES,
@@ -48,6 +51,12 @@ const worker = startNotificationWorker({
   mlServiceUrl: env.ML_SERVICE_URL,
   mlTimeoutMs: env.ML_TIMEOUT_MS,
   dispatch: delivery.dispatch,
+  isMuted: async (userId, category) =>
+    !effectiveCategorySetting(
+      (await preferences.get(userId)).categorySettings,
+      category,
+      await mandatory.get(),
+    ).enabled,
 });
 const relay = startOutboxRelay({ prisma, queue, databaseUrl: env.DATABASE_URL, logger });
 

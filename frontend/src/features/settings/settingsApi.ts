@@ -21,7 +21,12 @@ function applyChange(old: NotificationPreferences, change: PreferencesChange) {
     const c = channel as keyof typeof channelSettings;
     channelSettings[c] = { ...channelSettings[c], ...setting };
   }
-  return { ...old, ...change, channelSettings };
+  const categorySettings = { ...old.categorySettings };
+  for (const [category, setting] of Object.entries(change.categorySettings ?? {})) {
+    const c = category as keyof typeof categorySettings;
+    categorySettings[c] = { ...categorySettings[c], ...setting };
+  }
+  return { ...old, ...change, channelSettings, categorySettings };
 }
 
 /** Saves one change straight away (no Save button); shows it before the server answers. */

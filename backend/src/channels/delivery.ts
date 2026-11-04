@@ -27,8 +27,14 @@ import {
   type HeldJobData,
 } from '../lib/queue.js';
 import type { UserPreferenceManager } from '../preferences/UserPreferenceManager.js';
+import {
+  createMandatoryCategories,
+  effectiveCategorySetting,
+  type MandatoryCategories,
+} from '../preferences/categories.js';
 import { SendError, type OutgoingMessage, type Recipient } from './ChannelAdapter.js';
-import { emailContent, shortText, summaryFor } from './messages.js';
+import { emailContent, shortText } from './messages.js';
+import { createWording, type Wording } from './wording.js';
 import {
   nextChannel,
   planDelivery,
@@ -50,6 +56,10 @@ export interface DeliveryOptions {
   adapters: Adapters;
   /** Cached preferences (Redis), cleared whenever the person changes them. */
   preferences: UserPreferenceManager;
+  /** Categories an admin made mandatory (ADR 0016); made here if not given. */
+  mandatory?: MandatoryCategories;
+  /** Admin-edited SMS and email wording (ADR 0016); the built-in wording if not given. */
+  wording?: Wording;
   publicApiUrl: string;
   publicAppUrl: string;
   windowMinutes: number;
@@ -100,6 +110,19 @@ const reachable = (n: Loaded) =>
 
 export function startDelivery(options: DeliveryOptions) {
   const { prisma, connection, prefix, logger, adapters, preferences } = options;
+  const mandatory = options.mandatory ?? createMandatoryCategories(prisma);
+  const wording = options.wording ?? createWording(prisma);
+
+  /** The person's preferences and the channels this alert's category may use. */
+  async function settingsFor(n: Loaded) {
+    const prefs = await preferences.get(n.recipientId);
+    const category = effectiveCategorySetting(
+      prefs.categorySettings,
+      n.category,
+      await mandatory.get(),
+    );
+    return { prefs, categoryChannels: category.channels };
+  }
   const clock = options.now ?? (() => new Date());
   const channels = Object.keys(adapters) as ExternalChannel[];
   const queueOptions = {
@@ -143,9 +166,13 @@ export function startDelivery(options: DeliveryOptions) {
     // Released after quiet hours, but the person has already seen it in the app.
     if (n.heldUntil && isOpened(n)) return null;
 
+    // Switched off by the person (and not mandatory): kept quietly in the app only.
+    if (n.mutedByPreference) return null;
+    const { prefs, categoryChannels } = await settingsFor(n);
     const plan = planDelivery({
       priority: priorityOf(n),
-      preferences: await preferences.get(n.recipientId),
+      preferences: prefs,
+      categoryChannels,
       recipient: recipientOf(n),
       adapters,
       deadlineAt: n.deadlineAt,
@@ -185,12 +212,8 @@ export function startDelivery(options: DeliveryOptions) {
     if (!n || !reachable(n) || priorityOf(n) !== 'urgent' || isOpened(n)) return null;
     // The window check escalates once; a failure always moves on (so a message gets through).
     if (reason === 'window' && n.escalatedAt) return null;
-    const usable = usableChannels(
-      'urgent',
-      await preferences.get(n.recipientId),
-      recipientOf(n),
-      adapters,
-    );
+    const { prefs, categoryChannels } = await settingsFor(n);
+    const usable = usableChannels('urgent', prefs, recipientOf(n), adapters, categoryChannels);
     const next = nextChannel(
       usable,
       n.deliveries.map((d) => d.channel),
@@ -208,7 +231,7 @@ export function startDelivery(options: DeliveryOptions) {
   async function buildMessage(n: Loaded, channel: ExternalChannel, to: string) {
     const priority = priorityOf(n);
     const { language } = n.recipient;
-    const summary = summaryFor(n.category, priority, language);
+    const summary = await wording.summary(n.category, priority, language);
     const link = await trackedLinkFor(prisma, options.publicApiUrl, n.id, channel);
     const message: OutgoingMessage = {
       notificationId: n.id,

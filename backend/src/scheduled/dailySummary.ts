@@ -1,10 +1,32 @@
-// The daily summary email (PRD FR-8): at 08:00 Africa/Nairobi, everyone with the setting on gets
-// the last 24 hours of LOW notifications, grouped by category, each with a link into the app, and
-// a "Manage your notification preferences" button. Nothing to summarise = no email.
-import type { Language, PrismaClient, Role } from '../generated/prisma/client.js';
+// The summary email (PRD FR-8): at 08:00 Africa/Nairobi, everyone with the setting on gets the
+// LOW notifications of their period, grouped by category, each with a link into the app, and a
+// "Manage your notification preferences" button. Nothing to summarise = no email.
+// How often is the person's choice (SRS FR-NOT-037, ADR 0016): every day (the last 24 hours),
+// on Mondays (the last 7 days) or on the 1st of the month (the last month).
+import type { Language, PrismaClient, Role, SummaryFrequency } from '../generated/prisma/client.js';
 import { emailButton, emailLayout, escapeHtml } from '../channels/messages.js';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+const TIMEZONE = 'Africa/Nairobi';
+
+/** Which summaries are due at `until`: daily always, weekly on Mondays, monthly on the 1st. */
+export function frequenciesDue(until: Date): SummaryFrequency[] {
+  const weekday = until.toLocaleDateString('en-GB', { timeZone: TIMEZONE, weekday: 'short' });
+  const day = Number(until.toLocaleDateString('en-GB', { timeZone: TIMEZONE, day: 'numeric' }));
+  const due: SummaryFrequency[] = ['daily'];
+  if (weekday === 'Mon') due.push('weekly');
+  if (day === 1) due.push('monthly');
+  return due;
+}
+
+/** The start of the period a summary covers. Nairobi has no daylight saving, so UTC is safe. */
+export function periodStart(until: Date, frequency: SummaryFrequency): Date {
+  if (frequency === 'daily') return new Date(until.getTime() - DAY_MS);
+  if (frequency === 'weekly') return new Date(until.getTime() - 7 * DAY_MS);
+  const start = new Date(until);
+  start.setUTCMonth(start.getUTCMonth() - 1);
+  return start;
+}
 /** Longer groups show the newest ones and "and 4 more", so the email stays short. */
 const MAX_PER_GROUP = 8;
 
@@ -22,10 +44,10 @@ const WORDS: Record<
     headings: Record<string, string>;
     other: string;
     subject: (count: number) => string;
-    intro: string;
+    intro: Record<SummaryFrequency, string>;
     more: (count: number) => string;
     button: string;
-    footer: string;
+    footer: Record<SummaryFrequency, string>;
   }
 > = {
   en: {
@@ -38,11 +60,22 @@ const WORDS: Record<
     },
     other: 'Other updates',
     subject: (n) => `Your KaziForce summary: ${n} ${n === 1 ? 'update' : 'updates'}`,
-    intro:
-      'Here is what happened in the last 24 hours. None of it was urgent, so we saved it for this email.',
+    intro: {
+      daily:
+        'Here is what happened in the last 24 hours. None of it was urgent, so we saved it for this email.',
+      weekly:
+        'Here is what happened in the last 7 days. None of it was urgent, so we saved it for this email.',
+      monthly:
+        'Here is what happened in the last month. None of it was urgent, so we saved it for this email.',
+    },
     more: (n) => `and ${n} more in the app`,
     button: 'Manage your notification preferences',
-    footer: 'You get this email once a day because the daily summary is on. No news, no email.',
+    footer: {
+      daily: 'You get this email once a day because the summary is on. No news, no email.',
+      weekly: 'You get this email every Monday because the summary is on. No news, no email.',
+      monthly:
+        'You get this email on the 1st of each month because the summary is on. No news, no email.',
+    },
   },
   sw: {
     headings: {
@@ -54,12 +87,24 @@ const WORDS: Record<
     },
     other: 'Taarifa nyingine',
     subject: (n) => `Muhtasari wako wa KaziForce: taarifa ${n}`,
-    intro:
-      'Haya ndiyo yaliyotokea katika saa 24 zilizopita. Hakuna lililokuwa la haraka, kwa hivyo tuliyahifadhi kwa barua pepe hii.',
+    intro: {
+      daily:
+        'Haya ndiyo yaliyotokea katika saa 24 zilizopita. Hakuna lililokuwa la haraka, kwa hivyo tuliyahifadhi kwa barua pepe hii.',
+      weekly:
+        'Haya ndiyo yaliyotokea katika siku 7 zilizopita. Hakuna lililokuwa la haraka, kwa hivyo tuliyahifadhi kwa barua pepe hii.',
+      monthly:
+        'Haya ndiyo yaliyotokea katika mwezi uliopita. Hakuna lililokuwa la haraka, kwa hivyo tuliyahifadhi kwa barua pepe hii.',
+    },
     more: (n) => `na mengine ${n} kwenye programu`,
     button: 'Dhibiti mipangilio ya arifa zako',
-    footer:
-      'Unapokea barua pepe hii mara moja kwa siku kwa sababu muhtasari wa kila siku umewashwa. Bila habari, hakuna barua pepe.',
+    footer: {
+      daily:
+        'Unapokea barua pepe hii mara moja kwa siku kwa sababu muhtasari umewashwa. Bila habari, hakuna barua pepe.',
+      weekly:
+        'Unapokea barua pepe hii kila Jumatatu kwa sababu muhtasari umewashwa. Bila habari, hakuna barua pepe.',
+      monthly:
+        'Unapokea barua pepe hii tarehe 1 ya kila mwezi kwa sababu muhtasari umewashwa. Bila habari, hakuna barua pepe.',
+    },
   },
 };
 
@@ -107,15 +152,19 @@ export function summaryEmail(input: {
   groups: SummaryGroup[];
   /** The person's side of the app, e.g. http://localhost:5173/worker */
   appUrl: string;
+  frequency?: SummaryFrequency;
 }) {
   const w = WORDS[input.language];
+  const frequency = input.frequency ?? 'daily';
+  const intro = w.intro[frequency];
+  const footer = w.footer[frequency];
   const count = input.groups.reduce((total, g) => total + g.items.length + g.more, 0);
   const subject = w.subject(count);
   const alertLink = (id: string) => `${input.appUrl}/alerts?open=${id}`;
   const settingsUrl = `${input.appUrl}/settings#notifications`;
 
   const text = [
-    w.intro,
+    intro,
     ...input.groups.flatMap((g) => [
       '',
       `${g.heading} (${g.items.length + g.more})`,
@@ -125,7 +174,7 @@ export function summaryEmail(input: {
     '',
     `${w.button}: ${settingsUrl}`,
     '',
-    w.footer,
+    footer,
   ].join('\n');
 
   const link = (href: string, label: string) =>
@@ -148,47 +197,58 @@ export function summaryEmail(input: {
   const html = emailLayout({
     language: input.language,
     subject,
-    preview: w.intro,
+    preview: intro,
     body: `<h1 style="margin:0 0 12px;font-size:24px;line-height:1.3;font-weight:bold;">${escapeHtml(subject)}</h1>
-            <p style="margin:0;font-size:16px;line-height:1.5;">${escapeHtml(w.intro)}</p>
+            <p style="margin:0;font-size:16px;line-height:1.5;">${escapeHtml(intro)}</p>
             ${groupsHtml}
             <div style="height:28px;"></div>
             ${emailButton(w.button, settingsUrl)}
-            <p style="margin:28px 0 0;font-size:14px;line-height:1.5;color:#57534e;">${escapeHtml(w.footer)}</p>`,
+            <p style="margin:28px 0 0;font-size:14px;line-height:1.5;color:#57534e;">${escapeHtml(footer)}</p>`,
   });
   return { subject, text, html, count };
 }
 
 const sidePath = (role: Role) => (role === 'business' ? 'employer' : 'worker');
 
-/** LOW notifications of the 24 hours before `until`, not spam, not marked "Not important to me". */
-const lowNotificationsWhere = (until: Date) => ({
-  createdAt: { gt: new Date(until.getTime() - DAY_MS), lte: until },
+/**
+ * LOW notifications between `from` and `until`: not spam, not marked "Not important to me", not
+ * in a category the person switched off.
+ */
+const lowNotificationsWhere = (from: Date, until: Date) => ({
+  createdAt: { gt: from, lte: until },
   isSpam: false,
   markedNotImportant: false,
+  mutedByPreference: false,
   OR: [
     { correctedPriority: 'low' as const },
     { correctedPriority: null, predictedPriority: 'low' as const },
   ],
 });
 
-/** Who gets a summary this morning: the setting is on, the account is in use, there is news. */
+/**
+ * Who gets a summary this morning: the setting is on and due today (daily, Monday, the 1st),
+ * the account is in use, and there is news in their period.
+ */
 export async function summaryRecipients(prisma: PrismaClient, until: Date): Promise<string[]> {
-  const rows = await prisma.notification.findMany({
-    where: {
-      ...lowNotificationsWhere(until),
-      recipient: {
-        status: 'active',
-        deletionRequestedAt: null,
-        role: { not: 'admin' },
-        emailVerifiedAt: { not: null },
-        preference: { dailySummary: true },
+  const ids = new Set<string>();
+  for (const frequency of frequenciesDue(until)) {
+    const rows = await prisma.notification.findMany({
+      where: {
+        ...lowNotificationsWhere(periodStart(until, frequency), until),
+        recipient: {
+          status: 'active',
+          deletionRequestedAt: null,
+          role: { not: 'admin' },
+          emailVerifiedAt: { not: null },
+          preference: { dailySummary: true, summaryFrequency: frequency },
+        },
       },
-    },
-    distinct: ['recipientId'],
-    select: { recipientId: true },
-  });
-  return rows.map((r) => r.recipientId);
+      distinct: ['recipientId'],
+      select: { recipientId: true },
+    });
+    for (const row of rows) ids.add(row.recipientId);
+  }
+  return [...ids];
 }
 
 /** One person's summary email, or null if there is nothing to send (checked again here). */
@@ -207,7 +267,7 @@ export async function buildSummaryFor(
       language: true,
       status: true,
       deletionRequestedAt: true,
-      preference: { select: { dailySummary: true } },
+      preference: { select: { dailySummary: true, summaryFrequency: true } },
     },
   });
   if (
@@ -221,13 +281,17 @@ export async function buildSummaryFor(
     return null;
   }
   const items = await prisma.notification.findMany({
-    where: { recipientId: userId, ...lowNotificationsWhere(until) },
+    where: {
+      recipientId: userId,
+      ...lowNotificationsWhere(periodStart(until, user.preference.summaryFrequency), until),
+    },
     select: { id: true, category: true, title: true, createdAt: true },
   });
   if (items.length === 0) return null;
   const email = summaryEmail({
     language: user.language,
     groups: groupForSummary(items, user.language),
+    frequency: user.preference.summaryFrequency,
     appUrl: `${publicAppUrl.replace(/\/$/, '')}/${sidePath(user.role)}`,
   });
   return { to: user.email, ...email };

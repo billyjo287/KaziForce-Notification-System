@@ -9,6 +9,7 @@ import type { Overview, SpamItem } from './adminApi';
 import AnnouncementsPage from './AnnouncementsPage';
 import DeliveryLogsPage from './DeliveryLogsPage';
 import OverviewPage from './OverviewPage';
+import NotificationRulesPage from './NotificationRulesPage';
 import SpamReviewPage from './SpamReviewPage';
 
 vi.mock('../../lib/api', async (importOriginal) => ({
@@ -283,5 +284,96 @@ describe('employer: who got the job alert', () => {
     expect(screen.queryByText('Waiting to be sent')).not.toBeInTheDocument();
     expect(screen.getByText('Your latest update: seen')).toBeInTheDocument();
     expect(screen.getByText('Your last message: delivered, not opened yet')).toBeInTheDocument();
+  });
+});
+
+describe('notification rules (ADR 0016)', () => {
+  const wordingRow = (urgent: boolean, text: string | null) => ({
+    category: 'new_job',
+    language: 'en',
+    urgent,
+    defaultText: urgent ? 'An urgent job near you' : 'A new job near you',
+    text,
+    version: text ? 2 : 0,
+    updatedAt: text ? '2026-11-03T09:00:00Z' : null,
+    updatedBy: text ? 'Admin' : null,
+  });
+
+  beforeEach(() => {
+    vi.mocked(api.get).mockImplementation(async (url) =>
+      url === '/admin/notification-rules'
+        ? {
+            data: {
+              items: [
+                { category: 'new_job', mandatory: false, updatedAt: null, updatedBy: null },
+                { category: 'announcement', mandatory: true, updatedAt: null, updatedBy: null },
+              ],
+            },
+          }
+        : {
+            data: { items: [wordingRow(false, null), wordingRow(true, 'Urgent: a job close by')] },
+          },
+    );
+    vi.mocked(api.post).mockResolvedValue({ data: { version: 1 } });
+  });
+
+  it('"Always send" switches save at once (FR-NOT-035)', async () => {
+    const put = vi.fn().mockResolvedValue({ data: {} });
+    (api as unknown as { put: typeof put }).put = put;
+    renderWithRouter(
+      <>
+        <NotificationRulesPage />
+        <Toaster />
+      </>,
+    );
+    expect(await screen.findByRole('switch', { name: 'News from KaziForce' })).toBeChecked();
+    await userEvent.click(screen.getByRole('switch', { name: 'New jobs' }));
+    expect(put).toHaveBeenCalledWith('/admin/notification-rules/new_job', { mandatory: true });
+    expect(await screen.findByText('“New jobs” is now always sent.')).toBeInTheDocument();
+  });
+
+  it('wording: live SMS preview, 80-character limit, new version, back to default (FR-NOT-003/011)', async () => {
+    renderWithRouter(
+      <>
+        <NotificationRulesPage />
+        <Toaster />
+      </>,
+    );
+    const normal = await screen.findByRole('heading', { level: 3, name: 'Normal alerts' });
+    const form = normal.closest('form')!;
+    const line = within(form).getByLabelText('The line');
+    await userEvent.clear(line);
+    await userEvent.type(line, 'A job near you today');
+    expect(
+      within(form).getByText(
+        'KaziForce: A job near you today. Open: https://api.kaziforce.co.ke/o/k7Qp2xZa',
+      ),
+    ).toBeInTheDocument();
+    await userEvent.click(within(form).getByRole('button', { name: 'Save new version' }));
+    expect(api.post).toHaveBeenCalledWith('/admin/wording', {
+      category: 'new_job',
+      language: 'en',
+      urgent: false,
+      text: 'A job near you today',
+    });
+
+    await userEvent.type(line, ' '.padEnd(70, 'x'));
+    expect(within(form).getByText(/Use at most 80 characters/)).toBeInTheDocument();
+    expect(within(form).getByRole('button', { name: 'Save new version' })).toBeDisabled();
+
+    // The urgent one has saved wording: it can go back to the built-in line.
+    const urgent = screen
+      .getByRole('heading', { level: 3, name: '“Act now” alerts' })
+      .closest('form')!;
+    expect(within(urgent).getByText(/Version 2, saved by Admin/)).toBeInTheDocument();
+    await userEvent.click(
+      within(urgent).getByRole('button', { name: 'Back to the built-in wording' }),
+    );
+    expect(api.post).toHaveBeenLastCalledWith('/admin/wording', {
+      category: 'new_job',
+      language: 'en',
+      urgent: true,
+      text: null,
+    });
   });
 });

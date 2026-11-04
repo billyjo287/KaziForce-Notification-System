@@ -117,7 +117,8 @@
       "openMessage": "Open message",
       "notImportant": "Not important to me",
       "notImportantHelp": "We will show you fewer alerts like this one.",
-      "choose": "Choose an alert on the left to see it here."
+      "choose": "Choose an alert on the left to see it here.",
+      "markUnread": "Mark as unread"
     },
     "tabsLabel": "Alert categories",
     "tabUnread_one": "{{count}} new",
@@ -126,7 +127,17 @@
     "markedAllRead_one": "{{count}} alert marked as read.",
     "markedAllRead_other": "{{count}} alerts marked as read.",
     "openAlert": "Open",
-    "scamCheck": "Every alert is checked for scams before it reaches you."
+    "scamCheck": "Every alert is checked for scams before it reaches you.",
+    "markedUnread": "Marked as unread.",
+    "search": {
+      "label": "Search your alerts",
+      "count_one": "{{count}} alert with “{{words}}”",
+      "count_other": "{{count}} alerts with “{{words}}”",
+      "noneTitle": "Nothing found.",
+      "noneBody": "Try fewer words, or check the spelling.",
+      "errorTitle": "We could not search just now.",
+      "errorBody": "Please check your connection and try again."
+    }
   },
   "settings": {
     "logout": "Log out"

@@ -28,7 +28,10 @@ import { isCommonPassword, parseIdentifier, rememberAccount, suggestEmail } from
 
 type SignUpRole = 'worker' | 'business';
 type StepName = 'role' | 'email' | 'exists' | 'name' | 'password' | 'send' | 'code';
-const TOTAL = 6;
+// VITE_ACCOUNT_CODES=false (with ACCOUNT_CODES=false on the server): no code at sign-up, so the
+// account is made straight after the password and the two code steps are skipped.
+const CODES = import.meta.env.VITE_ACCOUNT_CODES !== 'false';
+const TOTAL = CODES ? 6 : 4;
 const STEP_NUMBER: Record<StepName, number> = {
   role: 1,
   email: 2,
@@ -180,7 +183,8 @@ export default function RegisterPage() {
       setFieldError(t('validation.tooLong'));
       return;
     }
-    goTo('send');
+    if (CODES) goTo('send');
+    else void createAccount('email');
   }
 
   const channel = draft.channel ?? 'email';
@@ -200,6 +204,10 @@ export default function RegisterPage() {
       if (phoneError || !consent) return;
       phone = who!.value;
     }
+    await createAccount(channel, phone);
+  }
+
+  async function createAccount(by: CodeChannel, phone?: string) {
     setError(null);
     setBusy(true);
     try {
@@ -209,7 +217,7 @@ export default function RegisterPage() {
         email: draft.email,
         password,
         language: i18n.language,
-        channel,
+        channel: by,
         ...(phone && { phone, consentSms: true }),
       });
       if ('codeRequired' in data) {
@@ -505,7 +513,7 @@ export default function RegisterPage() {
               </li>
             ))}
           </ul>
-          <Button type="submit" size="lg">
+          <Button type="submit" size="lg" disabled={busy}>
             {t('auth.login.continue')}
           </Button>
         </form>

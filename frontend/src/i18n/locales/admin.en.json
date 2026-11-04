@@ -252,6 +252,51 @@
       "urgent": "Cannot wait: sent by WhatsApp or SMS at once.",
       "medium": "Worth knowing today: in the app and by email.",
       "low": "Can wait: in the app and in the daily summary."
+    },
+    "rules": {
+      "title": "Notification rules",
+      "intro": "Which alerts everyone must get, and the words used in SMS and email alerts. Every change is saved in the audit log.",
+      "loadError": "We could not load the notification rules.",
+      "saveError": "That was not saved. Please try again.",
+      "types": {
+        "new_job": "New jobs",
+        "application_update": "Application updates (for workers)",
+        "new_applicant": "New applicants (for employers)",
+        "message": "Messages",
+        "announcement": "News from KaziForce"
+      },
+      "always": {
+        "title": "Always send",
+        "help": "When this is on, people cannot switch this type off or keep it away from their channels. Use it only for things people must not miss.",
+        "onHelp": "Everyone gets these. Settings show them as “Always on”.",
+        "offHelp": "People can switch these off in their settings.",
+        "madeMandatory": "“{{type}}” is now always sent.",
+        "madeOptional": "People can now switch off “{{type}}”."
+      },
+      "wording": {
+        "title": "SMS and email wording",
+        "help": "Each SMS and email is built from one short line plus a link. Write plain words only: no names or other personal details, because a phone can be lost. WhatsApp keeps its approved templates, which use the same line.",
+        "type": "Type of alert",
+        "language": "Language",
+        "normal": "Normal alerts",
+        "urgent": "“Act now” alerts",
+        "line": "The line",
+        "count": "{{count}} of {{max}} characters",
+        "smsPreview": "The SMS will read:",
+        "emailPreview": "The email subject will read:",
+        "usingDefault": "Using the built-in wording.",
+        "custom": "Version {{version}}, saved by {{name}} on {{date}}.",
+        "defaultWas": "Built-in wording: “{{text}}”",
+        "save": "Save new version",
+        "backToDefault": "Back to the built-in wording",
+        "saved": "Saved. SMS and emails use it within a minute.",
+        "reset": "Back to the built-in wording.",
+        "errors": {
+          "wording_empty": "Write at least 3 characters.",
+          "wording_too_long": "Use at most 80 characters, so the SMS stays one message.",
+          "wording_characters": "Use plain letters and punctuation only (no emoji or curly quotes)."
+        }
+      }
     }
   },
   "apiErrors": {
@@ -266,6 +311,7 @@
     "deliveryLogs": "Delivery logs",
     "announcements": "Announcements",
     "models": "Model versions",
-    "auditLog": "Audit log"
+    "auditLog": "Audit log",
+    "rules": "Notification rules"
   }
 }

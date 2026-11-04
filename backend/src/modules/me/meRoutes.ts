@@ -14,7 +14,12 @@ import { sendSms } from '../../lib/sms.js';
 import { sha256, sixDigitCode } from '../../lib/tokens.js';
 import { parse } from '../../lib/validate.js';
 import { currentUser, requireAuth } from '../../middleware/auth.js';
-import { userPreferences } from '../../preferences/index.js';
+import { mandatoryCategories, userPreferences } from '../../preferences/index.js';
+import {
+  CATEGORIES,
+  CATEGORIES_FOR,
+  normalizeCategorySettings,
+} from '../../preferences/categories.js';
 import { TIME_PATTERN } from '../../preferences/quietHours.js';
 import {
   normalizeChannelSettings,
@@ -60,6 +65,17 @@ const channelSetting = z
   .partial()
   .strict();
 const time = z.string().regex(TIME_PATTERN, 'Use a time like 21:00');
+/** One alert category: on/off and the external channels it may use (ADR 0016). */
+const categorySetting = z
+  .object({
+    enabled: z.boolean(),
+    channels: z
+      .array(channelName)
+      .max(3)
+      .refine((list) => new Set(list).size === list.length, 'Each channel once'),
+  })
+  .partial()
+  .strict();
 
 /**
  * Every field is optional: the settings screen saves one change at a time, and "Undo" sends the
@@ -87,6 +103,8 @@ const preferencesSchema = z
         path: ['end'],
       }),
     dailySummary: z.boolean(),
+    summaryFrequency: z.enum(['daily', 'weekly', 'monthly']),
+    categorySettings: z.partialRecord(z.enum(CATEGORIES), categorySetting),
   })
   .partial()
   .strict()
@@ -120,10 +138,23 @@ type Reach = {
   smsOptedOutAt: Date | null;
 };
 
-/** What the settings screen shows: the preferences plus why a channel may not reach the person. */
-function serializePreferences(preferences: UserPreferences, reach: Reach) {
+/**
+ * What the settings screen shows: the preferences plus why a channel may not reach the person,
+ * the alert categories this side of the app gets, and which of them an admin made mandatory.
+ */
+async function serializePreferences(
+  preferences: UserPreferences,
+  reach: Reach,
+  role: 'worker' | 'business',
+) {
+  const mandatory = await mandatoryCategories.get();
+  const categories = CATEGORIES_FOR[role];
   return {
     ...preferences,
+    // Older cached copies may not have it yet.
+    categorySettings: normalizeCategorySettings(preferences.categorySettings),
+    categories,
+    mandatoryCategories: categories.filter((c) => mandatory.has(c)),
     channelOrder: completeOrder(preferences.channelOrder, reach.usesWhatsApp),
     usesWhatsApp: reach.usesWhatsApp,
     phoneVerified: reach.phoneVerified,
@@ -307,7 +338,7 @@ export function meRoutes(limits: RateLimiters) {
       userPreferences.get(me.id),
       prisma.user.findUniqueOrThrow({ where: { id: me.id }, select: reachSelect }),
     ]);
-    res.json({ preferences: serializePreferences(preferences, reach) });
+    res.json({ preferences: await serializePreferences(preferences, reach, me.role) });
   });
 
   // One change (or an undo) at a time. Saved at once; the cached copy is cleared.
@@ -349,6 +380,17 @@ export function meRoutes(limits: RateLimiters) {
         ),
       );
     }
+    // Per category: merged into what is saved. Mandatory ones are saved too, but have no effect
+    // while an admin keeps them mandatory.
+    let categorySettings = current.categorySettings;
+    if (input.categorySettings) {
+      const merged = normalizeCategorySettings(current.categorySettings);
+      for (const [category, change] of Object.entries(input.categorySettings)) {
+        const key = category as keyof typeof merged;
+        merged[key] = { ...merged[key], ...change };
+      }
+      categorySettings = normalizeCategorySettings(merged);
+    }
     // Switching WhatsApp or SMS on here (logged in) is the person's own choice: it undoes a STOP.
     const switchedOn = (c: 'whatsapp' | 'sms') => input.channelSettings?.[c]?.enabled === true;
 
@@ -363,6 +405,8 @@ export function meRoutes(limits: RateLimiters) {
             channelOrder,
             channelSettings,
             dailySummary,
+            summaryFrequency: input.summaryFrequency,
+            categorySettings,
             preset: presetFor(channelSettings, dailySummary),
             urgentOnBothChannels: input.urgentOnBothChannels,
             quietHours: input.quietHours,
@@ -378,7 +422,7 @@ export function meRoutes(limits: RateLimiters) {
       prisma.user.findUniqueOrThrow({ where: { id: me.id }, include: userWithProfile }),
     ]);
     res.json({
-      preferences: serializePreferences(preferences, updated),
+      preferences: await serializePreferences(preferences, updated, me.role),
       user: serializeUser(user),
     });
   });

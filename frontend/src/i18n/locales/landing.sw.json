@@ -17,7 +17,7 @@
       "line2": "Usikose",
       "line3": "kilicho",
       "highlight": "muhimu.",
-      "body": "KaziForce hutuma arifa za kazi za dharura moja kwa moja kwenye WhatsApp au SMS yako, na hupanga mengine yote kwa utulivu.",
+      "body": "KaziForce inakuunganisha na kazi karibu nawe na kupanga kila arifa kwa ajili yako, ili za haraka zikufikie kwanza, kupitia programu, SMS, WhatsApp au barua pepe, na nyingine zisubiri muhtasari wako.",
       "worker": "Ninatafuta kazi",
       "business": "Ninaajiri",
       "ticks": {
@@ -27,46 +27,50 @@
       }
     },
     "how": {
-      "title": "Jinsi arifa za KaziForce zinavyofanya kazi",
-      "checkTitle": "Tunakagua kila arifa",
-      "checkBody": "Kazi bandia na ujumbe unaokuomba kutuma pesa huzuiwa kabla ya kukufikia.",
-      "sortTitle": "Tunapanga kwa uharaka",
-      "sortBody": "Kila arifa huwekwa alama ya Sasa hivi, Angalia leo au Ukipata nafasi, ili ujue cha kufanya kwanza.",
-      "sendTitle": "Tunaituma unapoangalia",
-      "sendBody": "Arifa za dharura huenda kwenye WhatsApp au SMS. Ukikosa moja, tunajaribu chaguo lako linalofuata."
+      "title": "Hatua tatu rahisi. Bila menyu za kuchanganya.",
+      "eyebrow": "Jinsi inavyofanya kazi",
+      "signupTitle": "Jisajili kwa dakika moja",
+      "signupBody": "Barua pepe yako, jina lako na nenosiri. Swali moja kwa kila skrini, kwa Kiingereza au Kiswahili.",
+      "tellTitle": "Tuambie unachofanya au unachohitaji",
+      "tellBody": "Wafanyakazi huchagua ujuzi na eneo lao. Waajiri huchapisha kazi kwa kubofya mara chache.",
+      "alertTitle": "Pata arifa sahihi kwa wakati sahihi",
+      "alertBody": "Ofa za kazi na kazi zinazofungwa hivi karibuni huja kwanza. Mengine husubiri muhtasari wako."
     },
     "levels": {
-      "title": "Arifa mahiri, rahisi kutofautisha",
-      "body": "Kila arifa ina rangi, picha na neno, kwa hivyo hutahitaji kubahatisha.",
-      "urgent": "Kazi zinazofungwa hivi karibuni, au ofa ya kazi uliyopokea.",
-      "medium": "Ujumbe na taarifa kuhusu maombi yako.",
-      "low": "Vidokezo na habari. Tunazituma pia kwenye barua pepe moja ya kila siku.",
-      "spam": "Kazi bandia na maombi ya pesa yanazuiwa. Huyaoni kamwe."
-    },
-    "control": {
-      "title": "Wewe ndiye mwenye udhibiti",
-      "channels": "Chagua kinachokuja kwanza: WhatsApp, SMS au barua pepe.",
-      "quiet": "Saa za utulivu: hatutakusumbua usiku, isipokuwa kwa ofa za kazi za dharura.",
-      "notImportant": "Gusa \"Si muhimu kwangu\" ili uone arifa chache kama hiyo.",
-      "language": "Tumia KaziForce kwa Kiingereza au Kiswahili."
+      "title": "Kila arifa hupangwa kabla haijakufikia.",
+      "body": "Mfumo wetu husoma kila ujumbe na kuamua umuhimu wake. Ulaghai huzuiwa, arifa za haraka hutumwa mara moja, na taarifa ndogo hukusanywa pamoja ili simu yako isilie siku nzima.",
+      "urgent": "Ofa za kazi na kazi zinazofungwa hivi karibuni. Ukiikosa, tunajaribu njia yako inayofuata.",
+      "medium": "Ujumbe na habari kuhusu maombi yako ya kazi.",
+      "low": "Kazi mpya karibu nawe na vidokezo. Barua pepe moja kwa siku, wiki au mwezi: wewe uchague.",
+      "spam": "Ofa za kazi bandia na ujumbe wa ulaghai unaoomba pesa hunaswa na kuzuiwa.",
+      "eyebrow": "Arifa mahiri",
+      "urgentTitle": "Hutumwa mara moja, kwa chaguo lako la kwanza",
+      "mediumTitle": "Hutumwa kwenye programu na kwa barua pepe",
+      "lowTitle": "Huhifadhiwa kwa muhtasari wako",
+      "spamTitle": "Huzuiwa kabla haijakufikia"
     },
     "employers": {
-      "title": "Kwa waajiri",
-      "body": "Chapisha kazi na wafanyakazi wanaofaa wanapata habari ndani ya dakika chache. Unaweza kuona kila mfanyakazi alipopokea ujumbe wako.",
-      "cta": "Chapisha kazi"
+      "title": "Jaza nafasi ya kazi bila kupiga simu.",
+      "cta": "Chapisha kazi",
+      "eyebrow": "Kwa waajiri",
+      "ticks": {
+        "post": "Chapisha kazi kwa chini ya dakika mbili",
+        "applied": "Jua mara moja mfanyakazi anapoomba",
+        "reach": "Ona wafanyakazi wangapi walipokea arifa ya kazi yako"
+      }
     },
     "footer": {
       "project": "Mradi wa mwanafunzi katika Chuo Kikuu cha Strathmore, Nairobi.",
       "privacy": "Arifa za WhatsApp na SMS hazina taarifa zako binafsi kamwe.",
-      "tagline": "Arifa za kazi zinazokufikia kwa wakati: kazi za haraka kwa SMS au WhatsApp, mengine kwa utulivu na mpangilio.",
+      "tagline": "Arifa za kazi papo hapo kwa wafanyakazi wa Kenya. Imetengenezwa Nairobi, kwa chai nyingi.",
       "copyright": "© {{year}} KaziForce. Haki zote zimehifadhiwa.",
       "columns": {
-        "product": "KaziForce",
-        "account": "Akaunti yako"
+        "product": "Jukwaa",
+        "account": "Msaada"
       },
       "links": {
         "how": "Jinsi inavyofanya kazi",
-        "levels": "Viwango vya arifa",
+        "levels": "Arifa mahiri",
         "employers": "Kwa waajiri",
         "login": "Ingia",
         "register": "Fungua akaunti",
@@ -78,40 +82,44 @@
       "sorting": "Inapanga…",
       "sorted": "Zimepangwa kwa ajili yako",
       "description": "Mfano: arifa mpya zinajipanga zenyewe kuwa Sasa hivi, Angalia leo na Ukipata nafasi, na ujumbe wa utapeli unaoomba pesa unanaswa na kuondolewa.",
-      "urgentTitle": "Wapakiaji wa ghala wanahitajika leo",
-      "urgentBody": "Industrial Area · KSh 1,200 kwa siku · inafungwa baada ya saa 2",
+      "urgentTitle": "Ofa ya kazi: Usafi wa nyumba, Kilimani",
+      "urgentBody": "Mama Njeri Cleaning anakuhitaji kesho saa 2 asubuhi. Jibu ndani ya saa 2.",
       "mediumTitle": "Ujumbe kutoka Mwangi Logistics",
       "mediumBody": "Unaweza kuanza saa moja asubuhi kesho?",
-      "lowTitle": "Kazi 5 mpya karibu nawe",
-      "lowBody": "Zinasubiri kwenye muhtasari wako wa kila siku",
-      "scamTitle": "Lipa KES 5,000 kupata kazi yako ya Dubai!",
+      "lowTitle": "Kazi 4 mpya zimechapishwa karibu nawe",
+      "lowBody": "Imehifadhiwa kwa muhtasari wako wa kila siku",
+      "scamTitle": "“Lipa KES 5,000 kupata kazi yako ya Dubai”",
       "blocked": "Ujumbe 3 wa utapeli umezuiwa leo. Karibu.",
       "pause": "Simamisha uhuishaji",
       "play": "Endeleza uhuishaji"
     },
     "channels": {
-      "title": "Arifa zinakufikia unapoangalia",
-      "inApp": "Ndani ya programu",
+      "title": "Arifa zako zinakufikia popote ulipo:",
+      "inApp": "Kwenye programu",
       "sms": "SMS",
       "whatsapp": "WhatsApp",
       "email": "Barua pepe"
     },
     "workers": {
-      "title": "Kwa wafanyakazi",
-      "body": "Sikia kuhusu kazi inayokufaa kwanza, bila simu yako kulia siku nzima.",
-      "cta": "Ninatafuta kazi"
+      "title": "Pata kazi ya kudumu karibu na nyumbani.",
+      "cta": "Anza kutafuta kazi",
+      "eyebrow": "Kwa wafanyakazi",
+      "ticks": {
+        "near": "Ona kazi karibu nawe, na malipo yameonyeshwa wazi kwa KES",
+        "sms": "Usikose ofa ya kazi, hata bila bando la data",
+        "control": "Chagua jinsi arifa zinavyokufikia: WhatsApp, SMS au barua pepe"
+      }
     },
     "everyone": {
-      "title": "Rahisi kutumia, uwe na miaka 18 au 80",
-      "text": "Herufi kubwa na wazi, pamoja na mpangilio wa Herufi kubwa na mitindo ya herufi rahisi kusoma.",
-      "language": "Kila skrini kwa Kiingereza na Kiswahili.",
-      "slow": "Inatumia data kidogo: inafanya kazi kwenye simu ya kawaida na mtandao wa polepole.",
-      "calm": "Hali ya giza na Punguza mwendo, kwa kusoma kwa starehe."
+      "title": "Rahisi kutumia, uwe na miaka 18 au 80.",
+      "body": "Vitufe vikubwa, maneno wazi, na msaada kwa Kiingereza au Kiswahili. Ukiweza kutuma SMS, unaweza kutumia KaziForce.",
+      "textTile": "Maandishi makubwa, rahisi kusoma",
+      "languageTile": "Kiswahili kimejengwa ndani",
+      "smsTile": "Arifa bila intaneti"
     },
     "cta": {
       "title": "Uko tayari? Inachukua dakika moja kujiunga.",
-      "sub": "Ni muda mfupi kuliko kusubiri matatu ijae.",
-      "button": "Fungua akaunti yako bure"
+      "sub": "Huo ni muda mfupi kuliko kusubiri matatu ijae."
     }
   }
 }

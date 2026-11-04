@@ -6,8 +6,15 @@
 // database just before a change and stores the old copy just after it is removed.
 import type { Redis } from 'ioredis';
 import type { Logger } from 'pino';
-import type { Channel, Preset, Prisma, PrismaClient } from '../generated/prisma/client.js';
+import type {
+  Channel,
+  Preset,
+  Prisma,
+  PrismaClient,
+  SummaryFrequency,
+} from '../generated/prisma/client.js';
 import { PRESETS, type ChannelSettings, type ExternalChannel } from '../modules/me/presets.js';
+import { normalizeCategorySettings, type CategorySettings } from './categories.js';
 import { NO_QUIET_HOURS, normalizeQuietHours, type QuietHours } from './quietHours.js';
 
 const CACHE_SECONDS = 300;
@@ -21,6 +28,8 @@ export interface UserPreferences {
   urgentOnBothChannels: boolean;
   quietHours: QuietHours;
   dailySummary: boolean;
+  summaryFrequency: SummaryFrequency;
+  categorySettings: CategorySettings;
 }
 
 /** Used when a person has no preferences row (e.g. admins): the Recommended preset. */
@@ -31,6 +40,8 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   urgentOnBothChannels: false,
   quietHours: NO_QUIET_HOURS,
   dailySummary: true,
+  summaryFrequency: 'daily',
+  categorySettings: normalizeCategorySettings(null),
 };
 
 /** Settings saved as JSON: anything missing or broken falls back to the Recommended preset. */
@@ -71,6 +82,8 @@ type Row = {
   urgentOnBothChannels: boolean;
   quietHours: unknown;
   dailySummary: boolean;
+  summaryFrequency: SummaryFrequency;
+  categorySettings: unknown;
 };
 
 export function toPreferences(row: Row | null): UserPreferences {
@@ -82,6 +95,8 @@ export function toPreferences(row: Row | null): UserPreferences {
     urgentOnBothChannels: row.urgentOnBothChannels,
     quietHours: normalizeQuietHours(row.quietHours),
     dailySummary: row.dailySummary,
+    summaryFrequency: row.summaryFrequency,
+    categorySettings: normalizeCategorySettings(row.categorySettings),
   };
 }
 
@@ -92,6 +107,8 @@ const select = {
   urgentOnBothChannels: true,
   quietHours: true,
   dailySummary: true,
+  summaryFrequency: true,
+  categorySettings: true,
 } as const;
 
 export class UserPreferenceManager {

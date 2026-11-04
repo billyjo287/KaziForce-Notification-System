@@ -34,6 +34,7 @@ const PAGES: { who: string; password?: string; paths: string[] }[] = [
       '/admin/spam',
       '/admin/announcements',
       '/admin/models',
+      '/admin/notification-rules',
       '/admin/audit-log',
     ],
   },

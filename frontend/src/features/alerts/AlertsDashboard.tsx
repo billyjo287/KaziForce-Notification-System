@@ -19,6 +19,8 @@ import { PRIORITIES, type Alert, type AlertRole, type Priority } from './types';
 const NotImportantFeedback = lazy(async () => ({
   default: (await import('./NotImportantFeedback')).NotImportantFeedback,
 }));
+// The same for search results: downloaded when someone starts typing a search.
+const AlertSearchResults = lazy(() => import('./AlertSearchResults'));
 
 type Filter = 'all' | 'unread' | 'last7days';
 const FILTERS: Filter[] = ['all', 'unread', 'last7days'];
@@ -43,7 +45,9 @@ function firstTabWithUnread(alerts: Alert[]): Priority {
 
 /**
  * Alerts dashboard (worker and employer). One tab per category: Urgent, Important, For later.
- * Every tab has the same filters (All, Unread, Last 7 days) and "Mark all as read".
+ * Every tab has the same filters (All, Unread, Last 7 days) and "Mark all as read". Above them, a
+ * search box looks through the whole history (SRS FR-NOT-027); an open alert can be marked as
+ * unread again (FR-NOT-025).
  * Phones and tablets: list OR detail (one thing per screen). Laptops (>= 1024px): side by side.
  */
 export function AlertsDashboard({
@@ -67,6 +71,10 @@ export function AlertsDashboard({
   const [selectedId, setSelectedId] = useState<string | null>(linked?.id ?? null);
   // After "Not important to me": the optional "why?" card for that alert.
   const [feedbackFor, setFeedbackFor] = useState<Alert | null>(null);
+  const [search, setSearch] = useState('');
+  // A search result older than the newest 200 (not in `alerts`), opened from the results.
+  const [foundAlert, setFoundAlert] = useState<Alert | null>(null);
+  const searching = search.trim().length >= 2;
   const [now] = useState(() => Date.now());
   const pageHeading = useRef<HTMLHeadingElement>(null);
   const detailHeading = useRef<HTMLHeadingElement>(null);
@@ -74,7 +82,8 @@ export function AlertsDashboard({
   const lastOpenedId = useRef<string | null>(null);
   const focusAfterClose = useRef<'card' | 'heading'>('card');
 
-  const selected = shown.find((a) => a.id === selectedId) ?? null;
+  const selected =
+    shown.find((a) => a.id === selectedId) ?? (foundAlert?.id === selectedId ? foundAlert : null);
   const unreadTotal = shown.filter((a) => a.readAt === null).length;
   const inTab = useMemo(() => shown.filter((a) => a.priority === tab).sort(byNewest), [shown, tab]);
   const visible = inTab.filter((a) => matches(a, filter, now));
@@ -106,6 +115,13 @@ export function AlertsDashboard({
     focusAfterClose.current = 'card';
     setSelectedId(id);
     markRead(id);
+  }
+
+  function markUnread(id: string) {
+    focusAfterClose.current = 'card';
+    markManyUnread([id]);
+    setSelectedId(null);
+    showToast({ message: t('alerts.markedUnread') });
   }
 
   function markAllRead() {
@@ -161,134 +177,163 @@ export function AlertsDashboard({
           </Suspense>
         )}
 
-        <Tabs.Root
-          value={tab}
-          onValueChange={(value) => {
-            setTab(value as Priority);
+        <label htmlFor="alert-search" className="mb-2 block font-bold">
+          {t('alerts.search.label')}
+        </label>
+        <input
+          id="alert-search"
+          type="search"
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
             setSelectedId(null);
           }}
-        >
-          {/* One tab per category: colour + icon + word + how many are new. */}
-          {/* Wraps onto a second row only when the words would not fit (very small screens or Large text). */}
-          <Tabs.List aria-label={t('alerts.tabsLabel')} className="flex flex-wrap gap-2">
-            {PRIORITIES.map((priority) => {
-              const { icon: Icon, text, bar } = PRIORITY_STYLE[priority];
-              const count = shown.filter((a) => a.priority === priority && !a.readAt).length;
-              return (
-                <Tabs.Trigger
-                  key={priority}
-                  value={priority}
-                  className="group relative flex min-h-16 min-w-fit flex-1 flex-col items-center justify-center gap-0.5 overflow-hidden rounded-kf border-2 border-line bg-surface px-2 pt-2 pb-3 text-center font-bold text-ink-muted transition-colors duration-150 hover:border-line-strong data-[state=active]:border-ink data-[state=active]:bg-ink data-[state=active]:text-canvas"
-                >
-                  {/* Thick coloured bar under the chosen tab (plus bold text and a border). */}
-                  <span
-                    aria-hidden="true"
-                    className={`absolute inset-x-0 bottom-0 h-1.5 opacity-0 group-data-[state=active]:opacity-100 ${bar}`}
-                  />
-                  <span className="flex flex-col items-center gap-0.5 sm:flex-row sm:gap-1.5">
-                    <Icon
+          className="mb-5 min-h-12 w-full rounded-kf border-2 border-line-strong bg-surface px-3 text-lg"
+        />
+
+        {searching ? (
+          <Suspense fallback={null}>
+            <AlertSearchResults
+              query={search.trim()}
+              selectedId={selectedId}
+              onOpen={(alert) => {
+                setFoundAlert(alert);
+                open(alert.id);
+              }}
+            />
+          </Suspense>
+        ) : (
+          <Tabs.Root
+            value={tab}
+            onValueChange={(value) => {
+              setTab(value as Priority);
+              setSelectedId(null);
+            }}
+          >
+            {/* One tab per category: colour + icon + word + how many are new. */}
+            {/* Wraps onto a second row only when the words would not fit (very small screens or Large text). */}
+            <Tabs.List aria-label={t('alerts.tabsLabel')} className="flex flex-wrap gap-2">
+              {PRIORITIES.map((priority) => {
+                const { icon: Icon, text, bar } = PRIORITY_STYLE[priority];
+                const count = shown.filter((a) => a.priority === priority && !a.readAt).length;
+                return (
+                  <Tabs.Trigger
+                    key={priority}
+                    value={priority}
+                    className="group relative flex min-h-16 min-w-fit flex-1 flex-col items-center justify-center gap-0.5 overflow-hidden rounded-kf border-2 border-line bg-surface px-2 pt-2 pb-3 text-center font-bold text-ink-muted transition-colors duration-150 hover:border-line-strong data-[state=active]:border-ink data-[state=active]:bg-ink data-[state=active]:text-canvas"
+                  >
+                    {/* Thick coloured bar under the chosen tab (plus bold text and a border). */}
+                    <span
                       aria-hidden="true"
-                      className={`size-5 shrink-0 ${text} group-data-[state=active]:text-current`}
-                      strokeWidth={2.5}
+                      className={`absolute inset-x-0 bottom-0 h-1.5 opacity-0 group-data-[state=active]:opacity-100 ${bar}`}
                     />
-                    <span className="leading-tight whitespace-nowrap">
-                      {t(`priority.${priority}`)}
+                    <span className="flex flex-col items-center gap-0.5 sm:flex-row sm:gap-1.5">
+                      <Icon
+                        aria-hidden="true"
+                        className={`size-5 shrink-0 ${text} group-data-[state=active]:text-current`}
+                        strokeWidth={2.5}
+                      />
+                      <span className="leading-tight whitespace-nowrap">
+                        {t(`priority.${priority}`)}
+                      </span>
                     </span>
-                  </span>
-                  <span
-                    className={`text-sm font-medium group-data-[state=active]:text-current ${count > 0 ? text : 'text-ink-muted'}`}
-                  >
-                    {t('alerts.tabUnread', { count })}
-                  </span>
-                </Tabs.Trigger>
-              );
-            })}
-          </Tabs.List>
-
-          {PRIORITIES.map((priority) => (
-            <Tabs.Content key={priority} value={priority} className="mt-5 outline-none">
-              <p className="mb-4 text-ink-muted">{t(`alerts.groups.${priority}`)}</p>
-
-              {/* The same filters in every category. */}
-              <div className="mb-5 flex flex-wrap items-center gap-2">
-                <div role="group" aria-label={t('alerts.filters.label')} className="contents">
-                  {FILTERS.map((f) => (
-                    <button
-                      key={f}
-                      type="button"
-                      aria-pressed={filter === f}
-                      onClick={() => setFilter(f)}
-                      className={`min-h-11 rounded-full border-2 px-4 font-bold transition-colors duration-150 ${
-                        filter === f
-                          ? 'border-primary bg-primary text-on-primary'
-                          : 'border-line-strong bg-surface text-ink hover:bg-canvas'
-                      }`}
+                    <span
+                      className={`text-sm font-medium group-data-[state=active]:text-current ${count > 0 ? text : 'text-ink-muted'}`}
                     >
-                      {t(`alerts.filters.${f}`)}
-                    </button>
-                  ))}
-                </div>
-                {unreadInTab.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={markAllRead}
-                    className="inline-flex min-h-11 items-center gap-2 rounded-lg px-2 font-bold text-kf-primary-text underline-offset-4 hover:underline"
-                  >
-                    <CheckCheck aria-hidden="true" className="size-5" />
-                    {t('alerts.markAllRead')}
-                  </button>
-                )}
-              </div>
+                      {t('alerts.tabUnread', { count })}
+                    </span>
+                  </Tabs.Trigger>
+                );
+              })}
+            </Tabs.List>
 
-              {visible.length === 0 ? (
-                <EmptyState
-                  art={<ChaiCup />}
-                  title={
-                    inTab.length === 0
-                      ? t(`alerts.empty.${priority}.title`)
-                      : t('alerts.empty.filteredTitle')
-                  }
-                  body={
-                    inTab.length === 0
-                      ? t(`alerts.empty.${priority}.body`)
-                      : t('alerts.empty.filteredBody')
-                  }
-                />
-              ) : (
-                <ul className="flex flex-col gap-3">
-                  <AnimatePresence initial={false} mode="popLayout">
-                    {visible.map((alert, index) => (
-                      <m.li
-                        key={alert.id}
-                        layout
-                        // New live alerts slide in from above; the others rise in one after
-                        // another (70 ms apart, the first 8 only).
-                        initial={alert.arrivedLive ? { opacity: 0, y: -24 } : { opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, x: -32 }}
-                        transition={
-                          alert.arrivedLive
-                            ? cardTransition
-                            : { ...cardTransition, delay: Math.min(index, 8) * 0.07 }
-                        }
+            {PRIORITIES.map((priority) => (
+              <Tabs.Content key={priority} value={priority} className="mt-5 outline-none">
+                <p className="mb-4 text-ink-muted">{t(`alerts.groups.${priority}`)}</p>
+
+                {/* The same filters in every category. */}
+                <div className="mb-5 flex flex-wrap items-center gap-2">
+                  <div role="group" aria-label={t('alerts.filters.label')} className="contents">
+                    {FILTERS.map((f) => (
+                      <button
+                        key={f}
+                        type="button"
+                        aria-pressed={filter === f}
+                        onClick={() => setFilter(f)}
+                        className={`min-h-11 rounded-full border-2 px-4 font-bold transition-colors duration-150 ${
+                          filter === f
+                            ? 'border-primary bg-primary text-on-primary'
+                            : 'border-line-strong bg-surface text-ink hover:bg-canvas'
+                        }`}
                       >
-                        <AlertCard
-                          ref={(el) => {
-                            if (el) cardRefs.current.set(alert.id, el);
-                            else cardRefs.current.delete(alert.id);
-                          }}
-                          alert={alert}
-                          selected={alert.id === selectedId}
-                          onOpen={open}
-                        />
-                      </m.li>
+                        {t(`alerts.filters.${f}`)}
+                      </button>
                     ))}
-                  </AnimatePresence>
-                </ul>
-              )}
-            </Tabs.Content>
-          ))}
-        </Tabs.Root>
+                  </div>
+                  {unreadInTab.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={markAllRead}
+                      className="inline-flex min-h-11 items-center gap-2 rounded-lg px-2 font-bold text-kf-primary-text underline-offset-4 hover:underline"
+                    >
+                      <CheckCheck aria-hidden="true" className="size-5" />
+                      {t('alerts.markAllRead')}
+                    </button>
+                  )}
+                </div>
+
+                {visible.length === 0 ? (
+                  <EmptyState
+                    art={<ChaiCup />}
+                    title={
+                      inTab.length === 0
+                        ? t(`alerts.empty.${priority}.title`)
+                        : t('alerts.empty.filteredTitle')
+                    }
+                    body={
+                      inTab.length === 0
+                        ? t(`alerts.empty.${priority}.body`)
+                        : t('alerts.empty.filteredBody')
+                    }
+                  />
+                ) : (
+                  <ul className="flex flex-col gap-3">
+                    <AnimatePresence initial={false} mode="popLayout">
+                      {visible.map((alert, index) => (
+                        <m.li
+                          key={alert.id}
+                          layout
+                          // New live alerts slide in from above; the others rise in one after
+                          // another (70 ms apart, the first 8 only).
+                          initial={
+                            alert.arrivedLive ? { opacity: 0, y: -24 } : { opacity: 0, y: 12 }
+                          }
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, x: -32 }}
+                          transition={
+                            alert.arrivedLive
+                              ? cardTransition
+                              : { ...cardTransition, delay: Math.min(index, 8) * 0.07 }
+                          }
+                        >
+                          <AlertCard
+                            ref={(el) => {
+                              if (el) cardRefs.current.set(alert.id, el);
+                              else cardRefs.current.delete(alert.id);
+                            }}
+                            alert={alert}
+                            selected={alert.id === selectedId}
+                            onOpen={open}
+                          />
+                        </m.li>
+                      ))}
+                    </AnimatePresence>
+                  </ul>
+                )}
+              </Tabs.Content>
+            ))}
+          </Tabs.Root>
+        )}
         <p className="mt-6 flex items-start gap-2 rounded-kf border border-line bg-surface p-4 text-ink-muted">
           <ShieldCheck
             aria-hidden="true"
@@ -316,6 +361,7 @@ export function AlertsDashboard({
                   alert={selected}
                   onBack={() => setSelectedId(null)}
                   onNotImportant={() => markNotImportant(selected)}
+                  onMarkUnread={() => markUnread(selected.id)}
                   onMainAction={() => markClicked(selected.id)}
                 />
               </m.div>

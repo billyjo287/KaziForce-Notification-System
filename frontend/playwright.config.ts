@@ -60,7 +60,8 @@ export default defineConfig({
     {
       command: 'npm run build && npm run preview',
       url: 'http://localhost:4173',
-      env: { VITE_API_URL: API },
+      // Sign-up code screens on, as deployed, whatever .env says for a demo.
+      env: { VITE_API_URL: API, VITE_ACCOUNT_CODES: 'true' },
       reuseExistingServer: false,
       timeout: 180_000,
     },

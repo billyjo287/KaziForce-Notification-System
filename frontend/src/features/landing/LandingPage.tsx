@@ -1,20 +1,15 @@
 import {
-  Accessibility,
   Ban,
   Bell,
+  BriefcaseBusiness,
   Check,
   Clock,
-  Languages,
-  ListOrdered,
   LockKeyhole,
   Mail,
   MessageCircle,
   MessageSquareText,
-  MoonStar,
-  ShieldCheck,
-  Smartphone,
+  Search,
   TriangleAlert,
-  Wifi,
   type LucideIcon,
 } from 'lucide-react';
 import { useRef } from 'react';
@@ -51,11 +46,7 @@ const CHANNELS: { key: 'inApp' | 'sms' | 'whatsapp' | 'email'; icon: LucideIcon 
   { key: 'email', icon: Mail },
 ];
 
-const STEPS: { key: 'check' | 'sort' | 'send'; icon: LucideIcon }[] = [
-  { key: 'check', icon: ShieldCheck },
-  { key: 'sort', icon: ListOrdered },
-  { key: 'send', icon: Smartphone },
-];
+const STEPS = ['signup', 'tell', 'alert'] as const;
 
 const LEVELS: { key: 'urgent' | 'medium' | 'low'; icon: LucideIcon; tone: BadgeTone }[] = [
   { key: 'urgent', icon: TriangleAlert, tone: 'urgent' },
@@ -63,14 +54,18 @@ const LEVELS: { key: 'urgent' | 'medium' | 'low'; icon: LucideIcon; tone: BadgeT
   { key: 'low', icon: Clock, tone: 'later' },
 ];
 
-const CONTROLS = ['channels', 'quiet', 'notImportant', 'language'] as const;
+const WORKER_TICKS = ['near', 'sms', 'control'] as const;
+const EMPLOYER_TICKS = ['post', 'applied', 'reach'] as const;
 
-const EVERYONE: { key: 'text' | 'language' | 'slow' | 'calm'; icon: LucideIcon }[] = [
-  { key: 'text', icon: Accessibility },
-  { key: 'language', icon: Languages },
-  { key: 'slow', icon: Wifi },
-  { key: 'calm', icon: MoonStar },
-];
+/** The three tiles beside "Easy to use": a big sample, then what it means. */
+const TILES = [
+  { key: 'textTile', sample: 'Aa' },
+  { key: 'languageTile', sample: 'SW' },
+  { key: 'smsTile', sample: 'SMS' },
+] as const;
+
+/** Small capitals above a section heading ("HOW IT WORKS"). */
+const EYEBROW = 'text-sm font-bold tracking-wider uppercase';
 
 /** Footer links: only to sections of this page and pages that exist. */
 const FOOTER_COLUMNS = [
@@ -98,6 +93,20 @@ const FOOTER_LINK =
 /** The mint "I'm hiring" button: dark text on mint in both themes. */
 const MINT_BUTTON =
   'inline-flex min-h-14 items-center justify-center gap-2 rounded-xl bg-kf-accent px-7 text-lg font-bold text-kf-on-accent transition-opacity duration-150 hover:opacity-90';
+
+/** A tick list on the workers and employers cards. */
+function Ticks({ items }: { items: string[] }) {
+  return (
+    <ul className="mt-6 flex flex-col gap-3">
+      {items.map((text) => (
+        <li key={text} className="flex items-start gap-3 text-lg">
+          <Check aria-hidden="true" className="mt-1 size-5 shrink-0" strokeWidth={3} />
+          {text}
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 /**
  * Public landing page (design refresh, handover section 6): what KaziForce alerts do, in plain
@@ -197,9 +206,11 @@ export default function LandingPage() {
             <p className="mt-6 max-w-xl text-xl text-ink-muted">{t('landing.hero.body')}</p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Link to="/register" className={buttonClasses('primary', 'lg', 'kf-press')}>
+                <Search aria-hidden="true" className="size-5" />
                 {t('landing.hero.worker')}
               </Link>
               <Link to="/register" className={`${MINT_BUTTON} kf-press`}>
+                <BriefcaseBusiness aria-hidden="true" className="size-5" />
                 {t('landing.hero.business')}
               </Link>
             </div>
@@ -245,21 +256,21 @@ export default function LandingPage() {
         {/* ---------- How it works ---------- */}
         <section id="how" aria-labelledby="how-title" className="scroll-mt-4 py-16 md:py-20">
           <div className="mx-auto max-w-6xl px-4 sm:px-8">
-            <h2 id="how-title" data-reveal className="text-4xl font-extrabold">
+            <p data-reveal className={`${EYEBROW} text-kf-primary-text`}>
+              {t('landing.how.eyebrow')}
+            </p>
+            <h2 id="how-title" data-reveal className="mt-2 max-w-xl text-4xl font-extrabold">
               {t('landing.how.title')}
             </h2>
             <ol className="mt-10 grid gap-5 md:grid-cols-3">
-              {STEPS.map(({ key, icon: Icon }, index) => (
+              {STEPS.map((key, index) => (
                 <li
                   key={key}
                   data-reveal
                   className="kf-lift group rounded-kf-lg border border-line bg-surface p-6"
                 >
-                  <span className="flex items-center gap-3">
-                    <span className="kf-display grid size-12 shrink-0 place-items-center rounded-kf bg-primary text-xl font-extrabold text-on-primary transition-transform duration-200 group-hover:-rotate-6">
-                      {index + 1}
-                    </span>
-                    <Icon aria-hidden="true" className="size-6 text-kf-primary-text" />
+                  <span className="kf-display grid size-11 place-items-center rounded-kf bg-kf-primary-soft text-xl font-extrabold text-kf-primary-text transition-transform duration-200 group-hover:-rotate-6">
+                    {index + 1}
                   </span>
                   <h3 className="mt-5 text-xl font-bold">{t(`landing.how.${key}Title`)}</h3>
                   <p className="mt-2 text-ink-muted">{t(`landing.how.${key}Body`)}</p>
@@ -277,28 +288,35 @@ export default function LandingPage() {
           // A mint focus ring: the usual indigo ring would not show on the dark band.
           style={{ '--kf-focus': 'var(--kf-accent)' } as React.CSSProperties}
         >
-          <div className="mx-auto max-w-6xl px-4 sm:px-8">
-            <h2 id="levels-title" data-reveal className="text-4xl font-extrabold">
-              {t('landing.levels.title')}
-            </h2>
-            <p data-reveal className="mt-3 max-w-2xl text-lg text-kf-on-inverse-2">
-              {t('landing.levels.body')}
-            </p>
-            <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-8 lg:grid-cols-[1fr_1.15fr]">
+            <div>
+              <p data-reveal className={`${EYEBROW} text-kf-accent`}>
+                {t('landing.levels.eyebrow')}
+              </p>
+              <h2 id="levels-title" data-reveal className="mt-2 text-4xl font-extrabold">
+                {t('landing.levels.title')}
+              </h2>
+              <p data-reveal className="mt-4 text-lg text-kf-on-inverse-2">
+                {t('landing.levels.body')}
+              </p>
+            </div>
+            <ul className="grid gap-4 sm:grid-cols-2">
               {LEVELS.map(({ key, icon, tone }) => (
-                <li key={key} data-reveal className="rounded-kf-lg bg-kf-surface p-6 text-kf-text">
+                <li key={key} data-reveal className="rounded-kf-lg bg-kf-surface p-5 text-kf-text">
                   <Badge tone={tone} icon={icon}>
                     {t(`priority.${key}`)}
                   </Badge>
-                  <p className="mt-4 text-lg">{t(`landing.levels.${key}`)}</p>
+                  <h3 className="mt-3 text-lg font-bold">{t(`landing.levels.${key}Title`)}</h3>
+                  <p className="mt-1 text-ink-muted">{t(`landing.levels.${key}`)}</p>
                 </li>
               ))}
-              <li data-reveal className="rounded-kf-lg bg-kf-surface p-6 text-kf-text">
+              <li data-reveal className="rounded-kf-lg bg-kf-surface p-5 text-kf-text">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-kf-spam-bg px-2.5 py-0.5 font-bold text-kf-spam-fg">
                   <Ban aria-hidden="true" className="size-4" strokeWidth={2.5} />
                   {t('priority.spam')}
                 </span>
-                <p className="mt-4 text-lg">{t('landing.levels.spam')}</p>
+                <h3 className="mt-3 text-lg font-bold">{t('landing.levels.spamTitle')}</h3>
+                <p className="mt-1 text-ink-muted">{t('landing.levels.spam')}</p>
               </li>
             </ul>
           </div>
@@ -312,18 +330,9 @@ export default function LandingPage() {
               data-reveal
               className="scroll-mt-4 rounded-kf-xl bg-kf-primary-soft p-8 text-kf-on-primary-soft sm:p-10"
             >
-              <h2 className="text-3xl font-extrabold">{t('landing.workers.title')}</h2>
-              <p className="mt-3 text-lg">{t('landing.workers.body')}</p>
-              <ul className="mt-6 flex flex-col gap-3">
-                {CONTROLS.map((key) => (
-                  <li key={key} className="flex items-start gap-3 text-lg">
-                    <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-full bg-primary text-on-primary">
-                      <Check aria-hidden="true" className="size-4" strokeWidth={3} />
-                    </span>
-                    {t(`landing.control.${key}`)}
-                  </li>
-                ))}
-              </ul>
+              <p className={EYEBROW}>{t('landing.workers.eyebrow')}</p>
+              <h2 className="mt-2 text-3xl font-extrabold">{t('landing.workers.title')}</h2>
+              <Ticks items={WORKER_TICKS.map((key) => t(`landing.workers.ticks.${key}`))} />
               <Link to="/register" className={buttonClasses('primary', 'lg', 'kf-press mt-8')}>
                 {t('landing.workers.cta')}
               </Link>
@@ -333,9 +342,13 @@ export default function LandingPage() {
               data-reveal
               className="scroll-mt-4 rounded-kf-xl bg-kf-medium-bg p-8 text-kf-medium-fg sm:p-10"
             >
-              <h2 className="text-3xl font-extrabold">{t('landing.employers.title')}</h2>
-              <p className="mt-3 text-lg">{t('landing.employers.body')}</p>
-              <Link to="/login" className={`${MINT_BUTTON} kf-press mt-8`}>
+              <p className={EYEBROW}>{t('landing.employers.eyebrow')}</p>
+              <h2 className="mt-2 text-3xl font-extrabold">{t('landing.employers.title')}</h2>
+              <Ticks items={EMPLOYER_TICKS.map((key) => t(`landing.employers.ticks.${key}`))} />
+              <Link
+                to="/register"
+                className="kf-press mt-8 inline-flex min-h-14 items-center justify-center rounded-xl bg-kf-inverse px-7 text-lg font-bold text-kf-on-inverse transition-opacity duration-150 hover:opacity-90"
+              >
                 {t('landing.employers.cta')}
               </Link>
             </div>
@@ -343,18 +356,29 @@ export default function LandingPage() {
         </section>
 
         {/* ---------- Built for everyone ---------- */}
-        <section aria-labelledby="everyone-title" className="bg-surface py-16 md:py-20">
-          <div className="mx-auto max-w-6xl px-4 sm:px-8">
-            <h2 id="everyone-title" data-reveal className="text-4xl font-extrabold">
-              {t('landing.everyone.title')}
-            </h2>
-            <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {EVERYONE.map(({ key, icon: Icon }) => (
-                <li key={key} data-reveal className="flex flex-col gap-3">
-                  <span className="grid size-12 place-items-center rounded-kf bg-kf-primary-soft text-kf-primary-text">
-                    <Icon aria-hidden="true" className="size-6" />
+        <section aria-labelledby="everyone-title" className="pb-16 md:pb-20">
+          <div
+            data-reveal
+            className="mx-auto grid max-w-6xl items-center gap-8 rounded-kf-xl border border-line bg-surface p-8 sm:p-10 lg:grid-cols-[1fr_1.1fr]"
+            // Same outer width as the cards above: 16 px (32 px on bigger screens) from the edge.
+            style={{ marginInline: 'max(1rem, calc((100% - 72rem) / 2 + 2rem))' }}
+          >
+            <div>
+              <h2 id="everyone-title" className="text-3xl font-extrabold">
+                {t('landing.everyone.title')}
+              </h2>
+              <p className="mt-3 text-lg text-ink-muted">{t('landing.everyone.body')}</p>
+            </div>
+            <ul className="grid gap-3 sm:grid-cols-3">
+              {TILES.map(({ key, sample }) => (
+                <li key={key} className="kf-lift rounded-kf-lg bg-kf-surface-2 p-5">
+                  <span
+                    aria-hidden="true"
+                    className="kf-display block text-3xl font-extrabold text-kf-primary-text"
+                  >
+                    {sample}
                   </span>
-                  <p className="text-lg">{t(`landing.everyone.${key}`)}</p>
+                  <p className="mt-2 font-bold">{t(`landing.everyone.${key}`)}</p>
                 </li>
               ))}
             </ul>
@@ -373,9 +397,17 @@ export default function LandingPage() {
               </h2>
               <p className="mt-2 text-lg opacity-90">{t('landing.cta.sub')}</p>
             </div>
-            <Link to="/register" className={`${MINT_BUTTON} kf-press shrink-0`}>
-              {t('landing.cta.button')}
-            </Link>
+            <div className="flex shrink-0 flex-col gap-3 sm:flex-row">
+              <Link
+                to="/register"
+                className="kf-press inline-flex min-h-14 items-center justify-center rounded-xl bg-white px-7 text-lg font-bold text-primary transition-opacity duration-150 hover:opacity-90"
+              >
+                {t('landing.hero.worker')}
+              </Link>
+              <Link to="/register" className={`${MINT_BUTTON} kf-press`}>
+                {t('landing.hero.business')}
+              </Link>
+            </div>
           </div>
         </section>
       </main>
