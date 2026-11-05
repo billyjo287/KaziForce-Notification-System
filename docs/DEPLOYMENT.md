@@ -158,6 +158,9 @@ Fill in every `CHANGE-ME` (each line has a comment explaining it):
 | `AFRICASTALKING_WEBHOOK_SECRET` | the second random secret |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | the first admin account (password 12+ characters) |
 | `RESEND_API_KEY`, `TWILIO_*`, `AFRICASTALKING_API_KEY` | your sandbox keys ([sandbox-test.md](sandbox-test.md)) |
+| `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` | browser pop-ups (ADR 0017): on your laptop run `npm run push:keys -w backend` and paste both lines. Make a **new** pair for the server; do not reuse the ones in `backend/.env`. Empty = pop-ups off |
+| `VAPID_SUBJECT` | `mailto:` + your email (push services contact it if something goes wrong) |
+| `ACCOUNT_CODES` | `true` (log-in and sign-up codes). Set `false` only until Resend has a verified domain (step 10), and then also set `VITE_ACCOUNT_CODES=false` on Vercel (step 8) |
 
 `CHANNEL_MODE=sandbox` uses the providers' test accounts. With `mock`, nothing is sent: SMS
 codes appear only in the logs and emails (such as password resets) are not delivered, because
@@ -203,6 +206,8 @@ docker compose logs -f api worker
    - **Environment variables:**
      - `VITE_API_URL` = `https://<server address>`
      - `VITE_SAME_ORIGIN_API` = `true`
+     - `VITE_ACCOUNT_CODES`: leave it out (codes on). Add it as `false` only if the server has
+       `ACCOUNT_CODES=false`; both must agree or sign-up asks for a code that never comes.
 3. **Deploy.** Your site is at `https://<project>.vercel.app`. If that differs from
    `FRONTEND_ORIGIN` / `PUBLIC_APP_URL` in `deploy/azure/.env`, fix both on the server and run:
 
