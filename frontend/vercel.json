@@ -7,7 +7,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://YOUR-SERVER.cloudapp.azure.com/api/:path*"
+      "destination": "https://kaziforce-api.spaincentral.cloudapp.azure.com/api/:path*"
     },
     { "source": "/login", "destination": "/login.html" },
     { "source": "/register", "destination": "/register.html" },
