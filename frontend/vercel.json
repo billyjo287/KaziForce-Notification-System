@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "cd .. && npx -y npm@11.20.0 ci",
+  "installCommand": "cd .. && npx -y npm@11.20.0 ci --workspace frontend --include-workspace-root=false",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
