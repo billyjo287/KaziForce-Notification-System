@@ -3,7 +3,7 @@
 import type { Channel, Preset } from '../../generated/prisma/client.js';
 
 export type Threshold = 'everything' | 'urgent_and_important' | 'urgent_only';
-export type ExternalChannel = Exclude<Channel, 'in_app'>;
+export type ExternalChannel = Exclude<Channel, 'in_app' | 'push'>;
 export type ChannelSettings = Record<ExternalChannel, { enabled: boolean; threshold: Threshold }>;
 
 export const PRESETS: Record<

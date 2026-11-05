@@ -4,6 +4,7 @@
 import bcrypt from 'bcrypt';
 import { Router } from 'express';
 import { z } from 'zod';
+import type { Prisma } from '../../generated/prisma/client.js';
 import { channelSuggestion } from '../../channels/suggestion.js';
 import { env } from '../../config/env.js';
 import { badRequest, conflict, forbidden } from '../../lib/httpError.js';
@@ -163,6 +164,29 @@ async function serializePreferences(
   };
 }
 
+/**
+ * SRS FR-NOT-038: every change to someone's notification settings is kept in the audit log, as
+ * that person's own action on their account (shown on the admin's page for that person, not in
+ * the main audit list). Only the settings sent, never contact details.
+ */
+async function auditPreferenceChange(userId: string, change: Record<string, unknown>) {
+  await prisma.auditLog.create({
+    data: {
+      actorId: userId,
+      action: 'preferences.changed',
+      targetType: 'user',
+      targetId: userId,
+      metadata: change as Prisma.InputJsonObject,
+    },
+  });
+}
+
+/** What a browser gives after "Allow notifications" (PushSubscription.toJSON()). */
+const pushSubscriptionSchema = z.object({
+  endpoint: z.url().max(1000).startsWith('https://'),
+  keys: z.object({ p256dh: z.string().min(10).max(200), auth: z.string().min(8).max(100) }),
+});
+
 export function meRoutes(limits: RateLimiters) {
   const router = Router();
   router.use(requireAuth);
@@ -303,6 +327,7 @@ export function meRoutes(limits: RateLimiters) {
       },
     });
     await userPreferences.invalidate(me.id);
+    await auditPreferenceChange(me.id, input);
     await sendMe(res, me.id);
   });
 
@@ -327,6 +352,7 @@ export function meRoutes(limits: RateLimiters) {
       },
     });
     await userPreferences.invalidate(me.id);
+    await auditPreferenceChange(me.id, { preset });
     await sendMe(res, me.id);
   });
 
@@ -415,6 +441,7 @@ export function meRoutes(limits: RateLimiters) {
       },
     });
     await userPreferences.invalidate(me.id);
+    await auditPreferenceChange(me.id, input);
 
     const [preferences, updated, user] = await Promise.all([
       userPreferences.get(me.id),
@@ -425,6 +452,45 @@ export function meRoutes(limits: RateLimiters) {
       preferences: await serializePreferences(preferences, updated, me.role),
       user: serializeUser(user),
     });
+  });
+
+  // ---------- Browser pop-ups on this device (Web Push, ADR 0017) ----------
+
+  // The server's public key (null = pop-ups are not set up, so the switch is hidden).
+  router.get('/push', (req, res) => {
+    if (currentUser(req).role === 'admin') throw forbidden();
+    res.json({ publicKey: env.VAPID_PUBLIC_KEY || null });
+  });
+
+  // "Pop-ups on this device: on". Saved per browser; the same browser moves to whoever is
+  // logged in on it now.
+  router.post('/push', async (req, res) => {
+    const me = currentUser(req);
+    if (me.role === 'admin') throw forbidden();
+    if (!env.VAPID_PUBLIC_KEY) throw conflict('push_not_set_up', 'Pop-ups are not set up.');
+    const input = parse(pushSubscriptionSchema, req.body);
+    const data = {
+      userId: me.id,
+      p256dh: input.keys.p256dh,
+      auth: input.keys.auth,
+      userAgent: req.get('user-agent')?.slice(0, 500) ?? null,
+    };
+    await prisma.pushSubscription.upsert({
+      where: { endpoint: input.endpoint },
+      create: { endpoint: input.endpoint, ...data },
+      update: data,
+    });
+    await auditPreferenceChange(me.id, { browserPopups: true });
+    res.status(201).json({ ok: true });
+  });
+
+  // "Pop-ups on this device: off".
+  router.delete('/push', async (req, res) => {
+    const me = currentUser(req);
+    const { endpoint } = parse(z.object({ endpoint: z.url().max(1000) }), req.body);
+    await prisma.pushSubscription.deleteMany({ where: { endpoint, userId: me.id } });
+    await auditPreferenceChange(me.id, { browserPopups: false });
+    res.json({ ok: true });
   });
 
   // ---------- Account deletion (NFR-2, DR-4) ----------

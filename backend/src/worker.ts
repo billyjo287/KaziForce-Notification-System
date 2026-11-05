@@ -13,6 +13,8 @@ import { startNotificationWorker } from './pipeline/notificationWorker.js';
 import { startOutboxRelay } from './pipeline/outboxRelay.js';
 import { UserPreferenceManager } from './preferences/UserPreferenceManager.js';
 import { createMandatoryCategories, effectiveCategorySetting } from './preferences/categories.js';
+import { PushAdapter } from './channels/PushAdapter.js';
+import { createWording } from './channels/wording.js';
 import { startScheduledJobs } from './scheduled/scheduledJobs.js';
 
 const connection = queueConnection();
@@ -28,6 +30,24 @@ const adapters = createAdapters({
 });
 const preferences = new UserPreferenceManager(prisma, redis, env.QUEUE_PREFIX, logger);
 const mandatory = createMandatoryCategories(prisma);
+const wording = createWording(prisma);
+// Browser pop-ups only when the server has its key pair (ADR 0017).
+const pushAdapter =
+  env.VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_KEY
+    ? new PushAdapter(
+        { mode: env.CHANNEL_MODE, logger },
+        {
+          prisma,
+          preferences,
+          wording,
+          vapid: {
+            publicKey: env.VAPID_PUBLIC_KEY,
+            privateKey: env.VAPID_PRIVATE_KEY,
+            subject: env.VAPID_SUBJECT,
+          },
+        },
+      )
+    : undefined;
 const delivery = startDelivery({
   prisma,
   connection: deliveryConnection,
@@ -36,6 +56,7 @@ const delivery = startDelivery({
   adapters,
   preferences,
   mandatory,
+  wording,
   publicApiUrl: env.PUBLIC_API_URL,
   publicAppUrl: env.PUBLIC_APP_URL,
   windowMinutes: env.ESCALATION_WINDOW_MINUTES,
@@ -51,6 +72,7 @@ const worker = startNotificationWorker({
   mlServiceUrl: env.ML_SERVICE_URL,
   mlTimeoutMs: env.ML_TIMEOUT_MS,
   dispatch: delivery.dispatch,
+  browserPush: pushAdapter ? (id) => pushAdapter.notify(id) : undefined,
   isMuted: async (userId, category) =>
     !effectiveCategorySetting(
       (await preferences.get(userId)).categorySettings,

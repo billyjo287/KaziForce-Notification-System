@@ -24,7 +24,7 @@ test.describe('Landing page', () => {
     const demo = page.locator('.kf-hero-demo');
     // Screen readers get one sentence describing the picture.
     await expect(demo.locator('figcaption')).toContainText('a scam message asking for money');
-    const scam = demo.getByText('Pay KES 5,000 to secure your Dubai job!');
+    const scam = demo.getByText('“Pay KES 5,000 to secure your Dubai job”');
     // The scam box (the one that drops in) is hidden until its turn, not shown from the start.
     const scamBox = () =>
       scam.evaluate((el) => getComputedStyle(el.parentElement!.parentElement!).opacity);
@@ -60,7 +60,7 @@ test.describe('Landing page', () => {
     await expect(page.getByRole('button', { name: 'Pause animation' })).toHaveCount(0);
     expect(
       await demo
-        .getByText('Pay KES 5,000 to secure your Dubai job!')
+        .getByText('“Pay KES 5,000 to secure your Dubai job”')
         .evaluate((el) => getComputedStyle(el.parentElement!).opacity),
     ).toBe('0');
   });

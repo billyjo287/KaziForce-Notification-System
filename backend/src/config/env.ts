@@ -52,6 +52,15 @@ const envSchema = z.object({
   SMTP_PORT: z.coerce.number().int().positive().default(1025),
   EMAIL_FROM: z.string().default('KaziForce <alerts@kaziforce.local>'),
 
+  // ---- Browser pop-ups (Web Push, ADR 0017) ----
+  // A key pair that proves pop-ups come from this server. Make one with
+  // `npm run push:keys -w backend`. Empty = pop-ups switched off (the switch is hidden). Pop-ups
+  // go through the browser makers' free push services, so they work in every CHANNEL_MODE.
+  VAPID_PUBLIC_KEY: z.string().default(''),
+  VAPID_PRIVATE_KEY: z.string().default(''),
+  // Who to contact about this server's pop-ups (required by the push services).
+  VAPID_SUBJECT: z.string().default('mailto:alerts@kaziforce.local'),
+
   // ---- Channels (Phase 5) ----
   // Where this API is reachable from the internet: tracked links (/o/...) and provider webhooks.
   PUBLIC_API_URL: z.url().default('http://localhost:4000'),

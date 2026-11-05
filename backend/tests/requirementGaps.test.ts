@@ -423,3 +423,35 @@ describe('FR-NOT-003/011: editable SMS and email wording', () => {
     );
   });
 });
+
+describe('FR-NOT-038: history of preference changes', () => {
+  it('every change is kept as the person’s own action, on their admin page, not in the main list', async () => {
+    const { token, id } = await newAccount();
+    await request(app)
+      .patch('/api/me/preferences')
+      .set(auth(token))
+      .send({ quietHours: { enabled: true, start: '22:00', end: '06:00' } });
+    await request(app)
+      .patch('/api/me/preferences')
+      .set(auth(token))
+      .send({ categorySettings: { message: { enabled: false } } });
+
+    const rows = await prisma.auditLog.findMany({
+      where: { actorId: id, action: 'preferences.changed' },
+      orderBy: { createdAt: 'asc' },
+    });
+    expect(rows.map((r) => r.metadata)).toEqual([
+      { quietHours: { enabled: true, start: '22:00', end: '06:00' } },
+      { categorySettings: { message: { enabled: false } } },
+    ]);
+    const detail = await admin.get(`/users/${id}`);
+    expect(detail.body.history.map((h: { action: string }) => h.action)).toEqual([
+      'preferences.changed',
+      'preferences.changed',
+    ]);
+    const list = await admin.get('/audit-log');
+    expect(
+      list.body.items.some((e: { action: string }) => e.action === 'preferences.changed'),
+    ).toBe(false);
+  });
+});

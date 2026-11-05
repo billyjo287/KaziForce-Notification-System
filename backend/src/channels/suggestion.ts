@@ -10,7 +10,7 @@ import type { Channel, PrismaClient } from '../generated/prisma/client.js';
 export const MIN_ALERTS = 5;
 export const WIN_SHARE = 0.8;
 
-type External = Exclude<Channel, 'in_app'>;
+type External = Exclude<Channel, 'in_app' | 'push'>;
 
 export interface ChannelSuggestion {
   channel: External;

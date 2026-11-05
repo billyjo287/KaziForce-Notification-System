@@ -67,7 +67,12 @@
         "notification_released": "Alipeleka arifa iliyozuiwa kama taka",
         "notification_spam_confirmed": "Alithibitisha kwamba arifa ni taka",
         "notification_priority_corrected": "Alisahihisha kipaumbele cha arifa",
-        "export_training_data": "Alipakua data ya mafunzo"
+        "export_training_data": "Alipakua data ya mafunzo",
+        "preferences_changed": "Alibadilisha mipangilio yake ya arifa",
+        "notification_rule_mandatory": "Aliweka aina ya arifa “Tuma kila wakati”",
+        "notification_rule_optional": "Aliruhusu watu kuzima aina ya arifa",
+        "wording_changed": "Alibadilisha maneno ya SMS na barua pepe",
+        "wording_reset": "Alirudisha maneno ya kawaida ya SMS na barua pepe"
       }
     },
     "channels": {

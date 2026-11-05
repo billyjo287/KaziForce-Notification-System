@@ -298,14 +298,17 @@ export function adminRoutes(limits: RateLimiters) {
   // ---------- Audit log ----------
   router.get('/audit-log', async (req, res) => {
     const { page } = parse(z.object({ page: pageQuery }), req.query);
+    // Admin actions only: people's own settings changes (FR-NOT-038) are on each user's page.
+    const where = { NOT: { action: { startsWith: 'preferences.' } } };
     const [entries, total] = await Promise.all([
       prisma.auditLog.findMany({
+        where,
         include: { actor: { select: { name: true } } },
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * PAGE_SIZE,
         take: PAGE_SIZE,
       }),
-      prisma.auditLog.count(),
+      prisma.auditLog.count({ where }),
     ]);
     // Human-readable names for the things acted on.
     const userIds = entries.filter((e) => e.targetType === 'user').map((e) => e.targetId);

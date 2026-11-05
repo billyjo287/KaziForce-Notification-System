@@ -75,6 +75,7 @@ enum Channel {
   whatsapp
   sms
   email
+  push // browser pop-up (Web Push), sent with every in-app alert to devices that allowed it
 }
 
 enum DeliveryStatus {
@@ -177,6 +178,7 @@ model User {
   phoneVerifications     PhoneVerification[]
   auditActions           AuditLog[]           @relation("AuditActor")
   wordingChanges         MessageWording[]
+  pushSubscriptions      PushSubscription[]
   notificationRules      NotificationRule[]
 
   @@index([role, status])
@@ -475,6 +477,25 @@ model MLMetadata {
   createdAt    DateTime  @default(now())
 
   @@map("MLMetadata")
+}
+
+// A browser (phone or computer) that allowed KaziForce pop-ups (Web Push; SRS FR-NOT-016..020,
+// ADR 0017). One row per browser; removed when the person switches pop-ups off or the push
+// service says the subscription has expired (404/410).
+model PushSubscription {
+  id         String    @id @default(uuid()) @db.Uuid
+  userId     String    @db.Uuid
+  // The push service's address for this browser, and the keys that encrypt each message.
+  endpoint   String    @unique @db.VarChar(1000)
+  p256dh     String    @db.VarChar(200)
+  auth       String    @db.VarChar(100)
+  userAgent  String?   @db.VarChar(500)
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 // ---------- Admin-controlled notification settings ----------

@@ -94,6 +94,18 @@
         "channelsHelp": "Utaziona kwenye programu kila wakati. Ondoa alama zote ili zibaki kwenye programu tu.",
         "offNote": "Imezimwa: hakuna arifa za ghafla, SMS wala barua pepe. Bado utazipata kwenye orodha ya arifa zako.",
         "mandatory": "Huwashwa kila wakati. KaziForce hutuma hizi kwa kila mtu, kwa sababu ni muhimu kwa akaunti au usalama wako."
+      },
+      "popups": {
+        "label": "Arifa za ghafla kwenye simu au kompyuta hii",
+        "help": "Arifa huonekana hata KaziForce ikiwa imefungwa. Huonyesha mstari mfupi tu, bila majina wala maelezo. Usiku (saa zako za utulivu) huja bila sauti.",
+        "unsupported": "Kivinjari hiki hakiwezi kuonyesha arifa za ghafla. Kwenye iPhone, kwanza ongeza KaziForce kwenye skrini ya mwanzo (Shiriki, kisha “Ongeza kwenye Skrini ya Mwanzo”), kisha uifungue kutoka hapo.",
+        "blocked": "Arifa za ghafla zimezuiwa kwa KaziForce kwenye kivinjari hiki. Ili kuziruhusu, gusa kufuli au “i” karibu na anwani ya tovuti, kisha ruhusu Arifa.",
+        "error": "Haikufanya kazi. Tafadhali jaribu tena.",
+        "done": {
+          "on": "Arifa za ghafla zimewashwa kwa kifaa hiki.",
+          "off": "Arifa za ghafla zimezimwa kwa kifaa hiki.",
+          "blocked": "Arifa za ghafla zilizuiwa. Unaweza kuziruhusu katika mipangilio ya kivinjari."
+        }
       }
     },
     "delete": {

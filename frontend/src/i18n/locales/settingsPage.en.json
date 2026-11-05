@@ -94,6 +94,18 @@
         "channelsHelp": "You always see them in the app. Untick everything to keep them in the app only.",
         "offNote": "Off: no pop-ups, no SMS or email. You can still find them in your alerts list.",
         "mandatory": "Always on. KaziForce sends these to everyone, because they matter for your account or safety."
+      },
+      "popups": {
+        "label": "Pop-ups on this phone or computer",
+        "help": "Alerts pop up even when KaziForce is closed. They show a short line only, never names or details. At night (your quiet hours) they arrive without sound.",
+        "unsupported": "This browser cannot show pop-ups. On an iPhone, first add KaziForce to your Home Screen (Share, then “Add to Home Screen”), then open it from there.",
+        "blocked": "Pop-ups are blocked for KaziForce in this browser. To allow them, tap the lock or the “i” next to the web address, then allow Notifications.",
+        "error": "That did not work. Please try again.",
+        "done": {
+          "on": "Pop-ups are on for this device.",
+          "off": "Pop-ups are off for this device.",
+          "blocked": "Pop-ups were blocked. You can allow them in the browser’s settings."
+        }
       }
     },
     "delete": {

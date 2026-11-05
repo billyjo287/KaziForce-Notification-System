@@ -30,6 +30,8 @@ export interface WorkerOptions {
   mlTimeoutMs: number;
   /** Plans and queues the external channels (channels/delivery.ts). Tests may leave it out. */
   dispatch?: (notificationId: string) => Promise<unknown>;
+  /** Browser pop-ups for this alert (channels/PushAdapter.ts, ADR 0017); left out without keys. */
+  browserPush?: (notificationId: string) => Promise<unknown>;
   /** True when the person switched this category off (ADR 0016). Tests may leave it out. */
   isMuted?: (recipientId: string, category: string) => Promise<boolean>;
   concurrency?: number;
@@ -44,6 +46,7 @@ export function startNotificationWorker({
   mlServiceUrl,
   mlTimeoutMs,
   dispatch,
+  browserPush,
   isMuted,
   concurrency = 20,
 }: WorkerOptions) {
@@ -157,6 +160,13 @@ export function startNotificationWorker({
     } catch (error) {
       // Already saved as sent: the app fetches it on its next load or reconnect.
       logger.warn({ err: error, notificationId: id }, 'Live push failed');
+    }
+    if (browserPush) {
+      try {
+        await browserPush(id);
+      } catch (error) {
+        logger.warn({ err: error, notificationId: id }, 'Browser pop-ups failed');
+      }
     }
     if (dispatch) {
       try {

@@ -26,7 +26,7 @@ import { PRESETS, type ChannelSettings, type Threshold } from '../modules/me/pre
 import { quietHoursEndAt, type QuietHours } from '../preferences/quietHours.js';
 import type { ChannelAdapter, Recipient } from './ChannelAdapter.js';
 
-export type ExternalChannel = Exclude<Channel, 'in_app'>;
+export type ExternalChannel = Exclude<Channel, 'in_app' | 'push'>;
 
 export interface Preferences {
   channelOrder: Channel[];

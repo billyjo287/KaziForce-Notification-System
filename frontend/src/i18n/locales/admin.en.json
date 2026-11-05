@@ -67,7 +67,12 @@
         "notification_released": "Delivered an alert that was blocked as spam",
         "notification_spam_confirmed": "Confirmed an alert is spam",
         "notification_priority_corrected": "Corrected the priority of an alert",
-        "export_training_data": "Downloaded training data"
+        "export_training_data": "Downloaded training data",
+        "preferences_changed": "Changed their notification settings",
+        "notification_rule_mandatory": "Made an alert type “Always send”",
+        "notification_rule_optional": "Let people switch off an alert type",
+        "wording_changed": "Changed the SMS and email wording",
+        "wording_reset": "Put back the built-in SMS and email wording"
       }
     },
     "channels": {

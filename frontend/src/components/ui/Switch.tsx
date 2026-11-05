@@ -8,10 +8,12 @@ interface SwitchProps {
   help?: string;
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
+  /** While a change is being made (e.g. the browser is asking for permission). */
+  disabled?: boolean;
 }
 
 /** On/off setting: label and help on the left, a large switch on the right. */
-export function Switch({ label, help, checked, onCheckedChange }: SwitchProps) {
+export function Switch({ label, help, checked, onCheckedChange, disabled }: SwitchProps) {
   const id = useId();
   const helpId = help ? `${id}-help` : undefined;
 
@@ -27,8 +29,9 @@ export function Switch({ label, help, checked, onCheckedChange }: SwitchProps) {
         id={id}
         checked={checked}
         onCheckedChange={onCheckedChange}
+        disabled={disabled}
         aria-describedby={describedBy(helpId)}
-        className="relative mt-0.5 inline-flex h-8 w-14 shrink-0 items-center rounded-full border-2 border-line-strong bg-canvas transition-colors duration-150 data-[state=checked]:border-primary data-[state=checked]:bg-primary"
+        className="relative mt-0.5 inline-flex h-8 w-14 shrink-0 items-center rounded-full border-2 border-line-strong bg-canvas transition-colors duration-150 data-[state=checked]:border-primary data-[state=checked]:bg-primary disabled:cursor-wait disabled:opacity-60"
       >
         {/* The thumb moves AND changes colour, so on/off is clear without colour alone. */}
         <RadixSwitch.Thumb className="block size-6 translate-x-0.5 rounded-full bg-line-strong transition-transform duration-150 ease-out-soft data-[state=checked]:translate-x-6 data-[state=checked]:bg-on-primary" />
