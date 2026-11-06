@@ -840,6 +840,11 @@ describe('Phase 5: urgent alerts reach the provider fast (NFR-1)', () => {
         `slowest ${Math.max(...timings).toFixed(0)} ms`,
     );
     expect(p95).toBeLessThan(2000);
+    // Every one was marked as planned, so the dispatch sweeper (BT-06) leaves them alone.
+    const unplanned = await prisma.notification.count({
+      where: { recipientId: worker.user.id, status: 'sent', dispatchedAt: null },
+    });
+    expect(unplanned).toBe(0);
   });
 });
 

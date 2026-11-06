@@ -63,7 +63,13 @@ deployment step, not code.
    It is linked from the first sign-up step, the landing page footer and Settings, and loads only
    when opened (the app shell stays at 202.4 KB). The contact email comes from
    `VITE_PRIVACY_EMAIL`; without one, the page says how to reach the team from an account.
-7. **Usability test kit** (BT-25): `docs/usability-test.md` (5 people, 5 tasks, SUS in English
+7. **Outside channels are never lost half-way** (BT-06, added 7 November):
+   - `Notification.dispatchedAt` is set once the WhatsApp, SMS and email jobs are planned;
+   - `pipeline/dispatchSweeper.ts` (in the worker, every 30 s) plans them again for alerts that
+     are SENT, not switched off, still not dispatched after 30 s, and from the last hour;
+   - the job ids keep a repeat from sending twice;
+   - the migration marks every existing alert as dispatched, so nothing old is sent again.
+8. **Usability test kit** (BT-25): `docs/usability-test.md` (5 people, 5 tasks, SUS in English
    and Kiswahili, a results table). Billy runs it.
 
 **Not changed:** password reset to an unconfirmed email. The audit (BT-03) said codes-off
@@ -75,8 +81,8 @@ it. A change made during the fixes was undone.
 
 ## Consequences
 
-- One small migration (`priorityReviewedAt`). It runs on the server by itself at the next
-  `update.sh` (the `migrate` container).
+- Two small migrations (`priorityReviewedAt`, `dispatchedAt`). They run on the server by
+  themselves at the next `update.sh` (the `migrate` container).
 - Logs on the server are less useful for debugging a single message: use the notification id in
   the log line and look at its DeliveryLog rows instead.
 - A browser whose push service is not one of the four is refused. All current browsers use one of

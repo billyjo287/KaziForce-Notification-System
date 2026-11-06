@@ -176,7 +176,10 @@ export function startNotificationWorker({
     if (dispatch) {
       try {
         await dispatch(id);
+        // Planned: the dispatch sweeper leaves it alone from now on (BT-06).
+        await prisma.notification.update({ where: { id }, data: { dispatchedAt: new Date() } });
       } catch (error) {
+        // Left without dispatchedAt: the dispatch sweeper tries again within a minute.
         logger.error({ err: error, notificationId: id }, 'Could not queue external channels');
       }
     }

@@ -10,6 +10,7 @@ import { redis } from './lib/redis.js';
 import { createAdapters } from './channels/index.js';
 import { startDelivery } from './channels/delivery.js';
 import { startNotificationWorker } from './pipeline/notificationWorker.js';
+import { startDispatchSweeper } from './pipeline/dispatchSweeper.js';
 import { startOutboxRelay } from './pipeline/outboxRelay.js';
 import { UserPreferenceManager } from './preferences/UserPreferenceManager.js';
 import { createMandatoryCategories, effectiveCategorySetting } from './preferences/categories.js';
@@ -81,6 +82,8 @@ const worker = startNotificationWorker({
     ).enabled,
 });
 const relay = startOutboxRelay({ prisma, queue, databaseUrl: env.DATABASE_URL, logger });
+// Alerts sent in the app whose outside channels were never planned (worker stopped in between).
+const dispatchSweeper = startDispatchSweeper({ prisma, dispatch: delivery.dispatch, logger });
 
 const scheduledConnection = queueConnection();
 const scheduled = startScheduledJobs({
@@ -120,6 +123,7 @@ logger.info(
 async function shutdown(signal: string) {
   logger.info(`${signal} received, stopping the worker`);
   await relay.stop();
+  dispatchSweeper.stop();
   await worker.close(); // lets the current jobs finish
   await delivery.close();
   await scheduled.close();

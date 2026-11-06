@@ -399,6 +399,10 @@ model Notification {
   // live push, no SMS/email, not in the summary). Also a training signal.
   mutedByPreference Boolean @default(false)
 
+  // When the outside channels were planned (WhatsApp / SMS / email jobs queued) after the in-app
+  // delivery. Empty on a SENT alert = half-done: the dispatch sweeper plans it again (BT-06).
+  dispatchedAt DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
