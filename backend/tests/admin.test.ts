@@ -281,6 +281,9 @@ describe('spam review', () => {
     expect(res.body).toEqual({ priority: 'low', correctedPriority: 'low' });
     res = await post(`/admin/notifications/${n.id}/priority`, { priority: 'medium' });
     expect(res.body).toEqual({ priority: 'medium', correctedPriority: null });
+    // Agreeing with the model still records that a person checked it (BT-14).
+    const checked = await prisma.notification.findUniqueOrThrow({ where: { id: n.id } });
+    expect(checked.priorityReviewedAt).not.toBeNull();
     const actions = await prisma.auditLog.findMany({ where: { targetId: n.id } });
     expect(actions.map((a) => a.action)).toEqual([
       'notification.priority_corrected',
@@ -380,6 +383,9 @@ describe('anonymised training export', () => {
     expect(mine[col('predicted_priority')]).toBe('medium');
     expect(mine[col('corrected_priority')]).toBe('urgent');
     expect(mine[col('label_priority')]).toBe('urgent');
+    expect(mine[col('priority_label_source')]).toBe('admin');
+    const unchecked = rows.find((r) => r[col('title')] === 'Second one')!;
+    expect(unchecked[col('priority_label_source')]).toBe('model');
     expect(mine[col('opened')]).toBe('true');
     expect(mine[col('opened_via')]).toBe('in_app');
     expect(Number(mine[col('response_seconds')])).toBeGreaterThanOrEqual(89);

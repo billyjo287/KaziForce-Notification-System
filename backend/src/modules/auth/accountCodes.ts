@@ -13,6 +13,7 @@ import { env } from '../../config/env.js';
 import type { Language } from '../../generated/prisma/client.js';
 import { badRequest } from '../../lib/httpError.js';
 import { logger } from '../../lib/logger.js';
+import { maskEmail, maskPhone } from '../../lib/mask.js';
 import { sendEmail } from '../../lib/mailer.js';
 import { prisma } from '../../lib/prisma.js';
 import { redis } from '../../lib/redis.js';
@@ -107,14 +108,8 @@ export function findAccount(identifier: Identifier) {
 
 // ---------- Masked addresses ("w•••@gmail.com", "07•• ••• 678") ----------
 
-export function maskEmail(email: string): string {
-  const [local = '', domain = ''] = email.split('@');
-  return `${local.slice(0, local.length > 3 ? 2 : 1)}•••@${domain}`;
-}
-
-export function maskPhone(phone: string): string {
-  return `0${phone.slice(4, 5)}•• ••• ${phone.slice(-3)}`;
-}
+// (Kept in lib/mask.ts, shared with the log lines; re-exported here for the existing callers.)
+export { maskEmail, maskPhone };
 
 // ---------- Challenges ----------
 

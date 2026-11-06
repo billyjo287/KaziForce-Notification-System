@@ -120,7 +120,7 @@ test.describe('Other pages pass axe and fit the screen', () => {
     });
   }
 
-  for (const path of ['/login', '/register', '/forgot-password']) {
+  for (const path of ['/login', '/register', '/forgot-password', '/privacy']) {
     test(`${path} (logged out)`, async ({ page }) => {
       await page.goto(`${path}?theme=light`);
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible();

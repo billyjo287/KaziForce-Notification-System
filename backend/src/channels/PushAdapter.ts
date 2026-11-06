@@ -22,6 +22,7 @@ import {
   type SendResult,
 } from './ChannelAdapter.js';
 import type { Wording } from './wording.js';
+import { isPushServiceUrl } from './pushServices.js';
 
 export interface PushPayload {
   title: string;
@@ -127,6 +128,12 @@ export class PushAdapter extends ChannelAdapter {
     let accepted = 0;
     const errors: string[] = [];
     for (const s of subscriptions) {
+      // Saved before the push-service check existed (or changed in the database): never sent to.
+      if (!isPushServiceUrl(s.endpoint)) {
+        await prisma.pushSubscription.deleteMany({ where: { id: s.id } });
+        errors.push('not a push service address');
+        continue;
+      }
       try {
         await this.sendPush(
           { endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } },

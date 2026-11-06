@@ -14,6 +14,7 @@ import type { RateLimiters } from '../../lib/rateLimits.js';
 import { sendSms } from '../../lib/sms.js';
 import { sha256, sixDigitCode } from '../../lib/tokens.js';
 import { parse } from '../../lib/validate.js';
+import { isPushServiceUrl } from '../../channels/pushServices.js';
 import { currentUser, requireAuth } from '../../middleware/auth.js';
 import { mandatoryCategories, userPreferences } from '../../preferences/index.js';
 import {
@@ -183,7 +184,8 @@ async function auditPreferenceChange(userId: string, change: Record<string, unkn
 
 /** What a browser gives after "Allow notifications" (PushSubscription.toJSON()). */
 const pushSubscriptionSchema = z.object({
-  endpoint: z.url().max(1000).startsWith('https://'),
+  // Only the browsers' own push services: never any other address (BT-05).
+  endpoint: z.url().max(1000).refine(isPushServiceUrl, 'Not a browser push service address'),
   keys: z.object({ p256dh: z.string().min(10).max(200), auth: z.string().min(8).max(100) }),
 });
 

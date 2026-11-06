@@ -85,13 +85,16 @@ const alertFor = (recipientId: string, priority: 'urgent' | 'low') =>
 
 describe('browser pop-ups (FR-NOT-018)', () => {
   it('every browser gets the summary line only: no names, no message words', async () => {
-    const user = await personWithBrowsers(['https://push.example/a', 'https://push.example/b']);
+    const user = await personWithBrowsers([
+      'https://fcm.googleapis.com/fcm/send/a',
+      'https://fcm.googleapis.com/fcm/send/b',
+    ]);
     const n = await alertFor(user.id, 'urgent');
     expect(await adapter.notify(n.id)).toBe(2);
     const mine = sent.filter((s) => s.payload.tag === n.id);
     expect(mine.map((s) => s.endpoint)).toEqual([
-      'https://push.example/a',
-      'https://push.example/b',
+      'https://fcm.googleapis.com/fcm/send/a',
+      'https://fcm.googleapis.com/fcm/send/b',
     ]);
     expect(mine[0]!.payload).toEqual({
       title: 'KaziForce: Act now',
@@ -111,7 +114,7 @@ describe('browser pop-ups (FR-NOT-018)', () => {
 
   it('during quiet hours a non-urgent pop-up is silent (FR-NOT-020); urgent is not', async () => {
     clock = new Date('2026-11-04T20:00:00Z'); // 23:00 in Nairobi
-    const user = await personWithBrowsers(['https://push.example/night']);
+    const user = await personWithBrowsers(['https://fcm.googleapis.com/fcm/send/night']);
     const low = await alertFor(user.id, 'low');
     const urgent = await alertFor(user.id, 'urgent');
     await adapter.notify(low.id);
@@ -122,7 +125,7 @@ describe('browser pop-ups (FR-NOT-018)', () => {
   });
 
   it('an expired browser (410) is removed at once and never tried again', async () => {
-    const user = await personWithBrowsers(['https://push.example/gone']);
+    const user = await personWithBrowsers(['https://fcm.googleapis.com/fcm/send/gone']);
     const n = await alertFor(user.id, 'urgent');
     expect(await adapter.notify(n.id)).toBe(0);
     expect(await prisma.pushSubscription.count({ where: { userId: user.id } })).toBe(0);
@@ -182,6 +185,18 @@ describe('"Pop-ups on this device" API', () => {
       .set(auth(token))
       .send({ ...subscription, endpoint: 'http://not-secure.example/x' });
     expect(bad.status).toBe(400);
+    // Any other https:// address is refused too: the server only talks to push services (BT-05).
+    for (const endpoint of [
+      'https://evil.example/collect',
+      'https://fcm.googleapis.com.evil.example/x',
+      'https://fcm.googleapis.com:8443/fcm/send/x',
+    ]) {
+      const refused = await request(app)
+        .post('/api/me/push')
+        .set(auth(token))
+        .send({ ...subscription, endpoint });
+      expect(refused.status).toBe(400);
+    }
     expect(
       (await request(app).post('/api/me/push').set(auth(token)).send(subscription)).status,
     ).toBe(201);

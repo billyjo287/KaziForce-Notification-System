@@ -731,6 +731,13 @@ describe('Phase 4: priority and spam from /predict', () => {
   it('if the ML service is too slow, the Node rules decide (rules_fallback), and nothing is lost', async () => {
     const { worker, application } = await conversation();
     const socket = await openSocket(worker.token);
+    // Pretend a trained model is the active one: a fallback must not hand "active" back to the
+    // rules (BT-13). The real active version is restored afterwards.
+    const active = await prisma.mLMetadata.findMany({ where: { isActive: true } });
+    await prisma.mLMetadata.updateMany({ data: { isActive: false } });
+    await prisma.mLMetadata.create({
+      data: { version: 'ml-test-active', algorithm: 'test', isActive: true },
+    });
     ml.setMode('slow', 900);
     try {
       const arrived = nextNotification(socket, (n) => n.body === 'Can you start tonight at 6pm?');
@@ -748,8 +755,15 @@ describe('Phase 4: priority and spam from /predict', () => {
         predictedPriority: 'urgent',
         priorityConfidence: 0.75,
       });
+      const nowActive = await prisma.mLMetadata.findMany({ where: { isActive: true } });
+      expect(nowActive.map((m) => m.version)).toEqual(['ml-test-active']);
     } finally {
       ml.setMode('ok');
+      await prisma.mLMetadata.deleteMany({ where: { version: 'ml-test-active' } });
+      await prisma.mLMetadata.updateMany({
+        where: { version: { in: active.map((m) => m.version) } },
+        data: { isActive: true },
+      });
     }
   });
 

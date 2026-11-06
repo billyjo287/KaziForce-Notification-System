@@ -40,6 +40,11 @@ export const CSV_COLUMNS = [
   'corrected_spam',
   'label_priority',
   'label_spam',
+  // Where each label comes from (BT-14): "admin" = checked by a person; "model" = only the
+  // classifier's own answer. Train on "admin" rows (and hand-labelled sets), never on "model"
+  // rows alone, or the model only learns to copy the rules.
+  'priority_label_source',
+  'spam_label_source',
   // delivery and what the person did
   'status',
   'channels_sent',
@@ -158,6 +163,7 @@ type Source = {
   predictionSource: string | null;
   correctedPriority: string | null;
   correctedSpam: boolean | null;
+  priorityReviewedAt: Date | null;
   status: string;
   escalatedTo: Channel | null;
   heldUntil: Date | null;
@@ -215,6 +221,10 @@ export function toRow(
     corrected_spam: n.correctedSpam,
     label_priority: labelPriority,
     label_spam: n.correctedSpam ?? n.isSpam,
+    // A correction saved before priorityReviewedAt existed also counts as checked.
+    priority_label_source:
+      n.priorityReviewedAt || n.correctedPriority ? 'admin' : n.predictedPriority ? 'model' : null,
+    spam_label_source: n.correctedSpam !== null ? 'admin' : n.predictionSource ? 'model' : null,
     status: n.status,
     channels_sent: [...new Set(sent.map((d) => d.channel))].join(';'),
     escalated_to: n.escalatedTo,

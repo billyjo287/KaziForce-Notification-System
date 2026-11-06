@@ -177,6 +177,7 @@
     "logoutHelp": "Log out on this device.",
     "logoutAll": "Log out of all devices",
     "logoutAllHelp": "Use this if you lost a phone or logged in on someone else's device.",
+    "privacyLink": "How we use your information (Privacy)",
     "logoutAllTitle": "Log out of all devices?",
     "logoutAllBody": "You will need to log in again on every phone and computer, including this one.",
     "logoutAllConfirm": "Log out everywhere"

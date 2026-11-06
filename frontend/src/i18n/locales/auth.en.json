@@ -91,6 +91,8 @@
       "ruleCommon": "Not an easy guess like 12345678",
       "passwordCommon": "This password is too easy to guess. Try a few words together, like a short sentence.",
       "submit": "Create account",
+      "privacyNote": "We keep only what we need to send you the right alerts.",
+      "privacyLink": "How we use your information",
       "creating": "Creating your account…",
       "haveAccount": "Already have an account?",
       "login": "Log in",

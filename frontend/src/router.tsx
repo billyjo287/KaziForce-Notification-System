@@ -69,6 +69,11 @@ export const router = createBrowserRouter([
         path: 'reset-password',
         lazy: async () => ({ Component: (await passwordPages()).ResetPasswordPage }),
       },
+      // Privacy notice (BT-10): open to everyone, logged in or not.
+      {
+        path: 'privacy',
+        lazy: async () => ({ Component: (await import('./features/privacy/PrivacyPage')).default }),
+      },
       {
         path: 'onboarding',
         lazy: async () => ({

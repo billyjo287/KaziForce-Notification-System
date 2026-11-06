@@ -16,6 +16,7 @@ const PAGES: { who: string; password?: string; paths: string[] }[] = [
       '/worker/messages',
       '/worker/settings',
       '/worker/summary',
+      '/privacy',
       '/no-such-page',
     ],
   },

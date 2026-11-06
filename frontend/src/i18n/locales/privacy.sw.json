@@ -1,0 +1,72 @@
+{
+  "privacy": {
+    "title": "Faragha: jinsi tunavyotumia taarifa zako",
+    "updated": "Ilisasishwa: 7 Novemba 2026",
+    "intro": "KaziForce inafuata Sheria ya Ulinzi wa Data ya Kenya, 2019. Ukurasa huu unaeleza, kwa maneno rahisi, tunachohifadhi kukuhusu, kwa nini, nani mwingine anakiona, kwa muda gani, na unachoweza kufanya.",
+    "back": "Rudi kwenye ukurasa wa mwanzo",
+    "sections": {
+      "who": {
+        "heading": "Sisi ni nani",
+        "body": "KaziForce inaunganisha watu wanaotafuta kazi za muda mfupi na waajiri nchini Kenya. Toleo hili ni mradi wa mwanafunzi katika Chuo Kikuu cha Strathmore, Nairobi."
+      },
+      "collect": {
+        "heading": "Tunachohifadhi",
+        "items": [
+          "Akaunti yako: jina, barua pepe, nenosiri (huhifadhiwa likiwa limefichwa, haliwezi kusomwa), upande wako (mfanyakazi au mwajiri), lugha, eneo, ujuzi au jina la kampuni.",
+          "Nambari yako ya simu, ukiitoa tu, na kama ulikubali arifa za SMS na WhatsApp.",
+          "Unachofanya kwenye KaziForce: kazi unazotangaza au kuomba, ujumbe wako, na mipangilio ya arifa.",
+          "Arifa zako, na lini kila moja ilitumwa, ilifika, ilifunguliwa au ilitiwa alama “Si muhimu kwangu”.",
+          "Kwa usalama: simu na kompyuta unazoingia nazo, ili tukuombe msimbo kwenye kifaa kipya."
+        ]
+      },
+      "why": {
+        "heading": "Kwa nini tunakihifadhi",
+        "items": [
+          "Kuendesha akaunti yako na kukuonyesha kazi, maombi na ujumbe.",
+          "Kutuma kila arifa kwa njia sahihi: za haraka kwa kasi (WhatsApp au SMS ukiruhusu), nyingine kwa barua pepe au kwenye muhtasari wako.",
+          "Kulinda akaunti yako na kuzuia utapeli.",
+          "Kuboresha jinsi arifa zinavyopangwa. Kwa hili tunatumia nakala za arifa ambazo majina, nambari za simu na barua pepe zimeondolewa. Haziwezi kufuatiliwa hadi kwako."
+        ]
+      },
+      "share": {
+        "heading": "Nani mwingine anakiona",
+        "intro": "Huduma tunazohitaji tu kutuma arifa zako na kuendesha tovuti:",
+        "items": [
+          "Twilio (WhatsApp) na Africa’s Talking (SMS): nambari yako ya simu na muhtasari mfupi wenye kiungo. Kamwe si taarifa zako binafsi.",
+          "Resend (barua pepe): anwani yako ya barua pepe na barua tunayokutumia.",
+          "Huduma ya arifa ibukizi ya kivinjari chako (Google, Mozilla au Apple), ukiziwasha: muhtasari wa mstari mmoja tu.",
+          "Supabase (hifadhidata), Microsoft Azure (seva) na Vercel (tovuti): zinahifadhi na kuendesha KaziForce kwa niaba yetu."
+        ],
+        "never": "Hatuuzi taarifa zako kamwe na hatuzitumii kwa matangazo."
+      },
+      "abroad": {
+        "heading": "Zinahifadhiwa wapi",
+        "body": "Hifadhidata yetu iko Frankfurt (Ujerumani) na seva yetu Uhispania, zote katika Umoja wa Ulaya, wenye sheria imara za ulinzi wa data. Kutuma arifa kunaweza kupitia mifumo ya watoa huduma katika nchi nyingine."
+      },
+      "keep": {
+        "heading": "Tunazihifadhi kwa muda gani",
+        "items": [
+          "Akaunti yako: hadi uifute. Ukiomba, inafutwa ndani ya siku 14 (unaweza kubadili nia hadi wakati huo).",
+          "Kumbukumbu za jinsi arifa zilivyofikishwa: siku 180.",
+          "Misimbo ya kuingia na viungo vya kubadilisha nenosiri: vinaacha kufanya kazi ndani ya saa moja na vinaondolewa siku inayofuata.",
+          "Arifa ulizowatumia watu wengine zinabaki kwenye historia yao, lakini jina lako linabadilishwa kuwa “mtumiaji wa zamani” na maneno ya ujumbe wako yanaondolewa."
+        ]
+      },
+      "rights": {
+        "heading": "Haki zako",
+        "items": [
+          "Kuona na kurekebisha taarifa zako: Mipangilio → Wasifu wako.",
+          "Kuchagua kinachokufikia, na jinsi gani: Mipangilio ya arifa. Jibu STOP (au ACHA) kwa SMS au WhatsApp yoyote kusimamisha njia hiyo.",
+          "Kufuta akaunti yako na taarifa zako: Mipangilio → Futa akaunti yangu.",
+          "Kuomba nakala ya tunachohifadhi kukuhusu, au kupinga jinsi tunavyokitumia: wasiliana nasi (hapa chini).",
+          "Usiporidhika na jibu letu, unaweza kulalamika kwa Ofisi ya Kamishna wa Ulinzi wa Data (ODPC), www.odpc.go.ke."
+        ]
+      },
+      "contact": {
+        "heading": "Mawasiliano",
+        "withEmail": "Maswali kuhusu taarifa zako: andika kwa {{email}}. Tunajibu ndani ya siku 7.",
+        "withoutEmail": "Maswali kuhusu taarifa zako: tuma ujumbe kwa timu ya KaziForce kutoka kwenye akaunti yako, au muulize msimamizi. Tunajibu ndani ya siku 7."
+      }
+    }
+  }
+}

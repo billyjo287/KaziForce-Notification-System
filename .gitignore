@@ -2,6 +2,14 @@
 .env
 .env.*
 !.env.example
+# Server keys (the Azure SSH key, certificates): never inside the repository
+*.pem
+*.key
+
+# KaziForce's own specification documents (not ours to publish) and the thesis drafts (Word,
+# PDF, large): kept on this computer only. The repository is public.
+docs/requirements/
+docs/Write-up/
 
 # ---- Node ----
 node_modules/

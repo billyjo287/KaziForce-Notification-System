@@ -108,9 +108,14 @@ export function startNotificationWorker({
         mlDown = false;
         logger.info('ML service is answering again');
       }
-      await registerModel(verdict.modelVersion).catch((error: unknown) =>
-        logger.warn({ err: error }, 'Could not register the model version'),
-      );
+      // Only the ML service's own answers say which model is in use. A fallback answer comes
+      // from the Node copy of the rules and must not mark the rules "active" again each time the
+      // service is slow (BT-13); fallbacks are counted on the notifications instead.
+      if (verdict.predictionSource !== 'rules_fallback') {
+        await registerModel(verdict.modelVersion).catch((error: unknown) =>
+          logger.warn({ err: error }, 'Could not register the model version'),
+        );
+      }
       classification = {
         predictedPriority: verdict.priority,
         priorityConfidence: verdict.priorityConfidence,

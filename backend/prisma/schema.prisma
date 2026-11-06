@@ -373,6 +373,9 @@ model Notification {
   correctedSpam     Boolean?
   correctedById     String?   @db.Uuid
   correctedAt       DateTime?
+  // When an admin looked at the PRIORITY and chose one, even the predicted one (BT-14): a checked
+  // label, unlike the model's own guess. Spam is checked when correctedSpam is not null.
+  priorityReviewedAt DateTime?
 
   // ---- User interaction ----
   readAt               DateTime?

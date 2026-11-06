@@ -13,6 +13,9 @@ export const logger = pino({
       '*.password',
       '*.passwordHash',
       '*.token',
+      // Personal details, wherever an object passed to the logger has them (BT-04).
+      '*.phone',
+      '*.email',
     ],
     censor: '[hidden]',
   },

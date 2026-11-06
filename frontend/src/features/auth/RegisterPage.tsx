@@ -570,6 +570,13 @@ export default function RegisterPage() {
           {t('auth.register.login')}
         </Link>
       </p>
+      {/* Before anything is typed: what we keep and why (Data Protection Act, BT-10). */}
+      <p className="text-ink-muted">
+        {t('auth.register.privacyNote')}{' '}
+        <Link to="/privacy" className="font-bold text-kf-primary-text underline underline-offset-4">
+          {t('auth.register.privacyLink')}
+        </Link>
+      </p>
     </AuthLayout>
   );
 }

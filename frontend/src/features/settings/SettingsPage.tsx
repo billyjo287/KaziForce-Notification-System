@@ -205,6 +205,12 @@ export function SettingsPage() {
             <p className="text-ink-muted">{t('settings.logoutAllHelp')}</p>
           </div>
           {user && user.role !== 'admin' && <DeleteAccount />}
+          <Link
+            to="/privacy"
+            className="inline-flex min-h-11 items-center text-lg font-bold text-kf-primary-text underline underline-offset-4"
+          >
+            {t('settings.privacyLink')}
+          </Link>
         </div>
       </Card>
 

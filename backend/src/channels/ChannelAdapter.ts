@@ -7,6 +7,8 @@
 // the router does not change.
 import { randomUUID } from 'node:crypto';
 import type { Logger } from 'pino';
+import { env } from '../config/env.js';
+import { maskAddress } from '../lib/mask.js';
 import type { Channel, Language } from '../generated/prisma/client.js';
 
 export type ChannelMode = 'mock' | 'sandbox' | 'live';
@@ -90,7 +92,17 @@ export abstract class ChannelAdapter {
     if (this.options.mockFails) {
       throw new SendError(`Mock provider: simulated ${this.name} failure`);
     }
-    this.options.logger.info(`[mock ${this.name}] to ${message.to}: ${message.text}`);
+    // On your own computer the whole message is shown (that is how you read SMS codes in mock
+    // mode). Anywhere else only a masked address and the length: no phone numbers, codes or
+    // message text in server logs (BT-04).
+    if (env.NODE_ENV === 'development') {
+      this.options.logger.info(`[mock ${this.name}] to ${message.to}: ${message.text}`);
+    } else {
+      this.options.logger.info(
+        { notificationId: message.notificationId || undefined, chars: message.text.length },
+        `[mock ${this.name}] to ${maskAddress(message.to)}`,
+      );
+    }
     return { providerMessageId: `mock-${this.name}-${randomUUID()}` };
   }
 }

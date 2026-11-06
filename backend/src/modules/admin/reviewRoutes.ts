@@ -65,8 +65,10 @@ export function reviewRoutes() {
       {
         correctedSpam: false,
         status: 'queued',
-        ...(input.priority &&
-          input.priority !== n.predictedPriority && { correctedPriority: input.priority }),
+        ...(input.priority && {
+          priorityReviewedAt: new Date(),
+          ...(input.priority !== n.predictedPriority && { correctedPriority: input.priority }),
+        }),
       },
       input.priority ? { priority: input.priority } : {},
     );
@@ -196,7 +198,11 @@ export function reviewRoutes() {
       admin.id,
       id,
       'notification.priority_corrected',
-      { correctedPriority: input.priority === n.predictedPriority ? null : input.priority },
+      {
+        correctedPriority: input.priority === n.predictedPriority ? null : input.priority,
+        // Agreeing with the model is a label too: "checked, and it was right" (BT-14).
+        priorityReviewedAt: new Date(),
+      },
       { from: n.correctedPriority ?? n.predictedPriority, to: input.priority },
     );
     res.json({

@@ -41,4 +41,5 @@ when logging in. Many Kenyan workers check SMS more than email.
 - One small database change: `User.emailVerifiedAt` (migration `20261031111650_email_verified_at`).
 - Someone who signed up by SMS and never confirms the email cannot reset a forgotten password by
   email. They confirm the email first (in Settings). A reset by SMS is a possible later addition.
+  (Reviewed in the audit of 6 November 2026 and kept on purpose: ADR 0018.)
 - SMS sign-up costs one SMS per code in sandbox/live mode; mock mode prints it in the terminal.
