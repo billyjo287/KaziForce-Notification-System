@@ -6,8 +6,12 @@ import { prisma } from '../lib/prisma.js';
 import { redis } from '../lib/redis.js';
 import { UserPreferenceManager } from './UserPreferenceManager.js';
 import { createMandatoryCategories } from './categories.js';
+import { createPlatformPolicies } from './policies.js';
 
 export const userPreferences = new UserPreferenceManager(prisma, redis, env.QUEUE_PREFIX, logger);
 
 /** "Always send" categories (ADR 0016); the admin page clears this copy when it changes them. */
 export const mandatoryCategories = createMandatoryCategories(prisma);
+
+/** Platform-wide policies (ADR 0019); the admin page clears this copy when it changes them. */
+export const platformPolicies = createPlatformPolicies(prisma);

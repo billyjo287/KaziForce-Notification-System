@@ -13,6 +13,7 @@ import { LANGUAGES, type Language } from '../../i18n';
 import { useLogOut } from '../../lib/useLogOut';
 import { ChannelSuggestionCard } from './ChannelSuggestionCard';
 import { DeleteAccount } from './DeleteAccount';
+import { DownloadMyData } from './DownloadMyData';
 import { NotificationSettings } from './NotificationSettings';
 import { usePageTitle } from '../../lib/usePageTitle';
 import { sidePath, useAuth } from '../../stores/auth';
@@ -204,6 +205,7 @@ export function SettingsPage() {
             </Button>
             <p className="text-ink-muted">{t('settings.logoutAllHelp')}</p>
           </div>
+          <DownloadMyData />
           {user && user.role !== 'admin' && <DeleteAccount />}
           <Link
             to="/privacy"

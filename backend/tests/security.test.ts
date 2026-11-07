@@ -3,6 +3,7 @@
 import request from 'supertest';
 import { afterAll, describe, expect, it } from 'vitest';
 import { safeUrl } from '../src/app.js';
+import { accountKey } from '../src/lib/rateLimits.js';
 import { validateEnv } from '../src/config/env.js';
 import { prisma } from '../src/lib/prisma.js';
 import { auth, login, testApp } from './helpers.js';
@@ -100,5 +101,35 @@ describe('logs', () => {
     expect(safeUrl('/o/Ab3dEf7h')).toBe('/o/[hidden]');
     expect(safeUrl('/api/auth/reset?token=abc&x=1')).toBe('/api/auth/reset?token=[hidden]&x=1');
     expect(safeUrl('/api/jobs?page=2')).toBe('/api/jobs?page=2');
+  });
+});
+
+// BT-07: behind Vercel every request can come from a different (or a shared) address, and a
+// direct caller can fake theirs. The per-account limit counts tries on one ACCOUNT, wherever
+// they come from.
+describe('log-in limit per account', () => {
+  it('stops password guessing on one account even when every try comes from a new address', async () => {
+    const app = testApp({ account: 3 });
+    const tryLogin = (email: string, i: number) =>
+      request(app)
+        .post('/api/auth/login')
+        .set('X-Forwarded-For', `198.51.100.${i}`)
+        .send({ email, password: 'not-the-password' });
+    for (let i = 1; i <= 3; i++) {
+      expect((await tryLogin('victim.account@example.com', i)).status).toBe(401);
+    }
+    const blocked = await tryLogin('VICTIM.account@example.com ', 4);
+    expect(blocked.status).toBe(429);
+    expect(blocked.body.error.code).toBe('rate_limited');
+    // Someone else is not affected.
+    expect((await tryLogin('someone.else@example.com', 5)).status).toBe(401);
+  });
+
+  it('writes the same account the same way (case, spaces, 07.. or +2547..)', () => {
+    expect(accountKey({ email: ' Amina@Example.COM ' })).toBe('account:amina@example.com');
+    expect(accountKey({ identifier: '0712 345 678' })).toBe(
+      accountKey({ identifier: '+254712345678' }),
+    );
+    expect(accountKey({})).toBe('account:none');
   });
 });

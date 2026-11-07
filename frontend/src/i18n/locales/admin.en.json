@@ -97,7 +97,9 @@
         "spamBlocked": "Spam blocked today",
         "failed": "Failed deliveries (last 24 hours)",
         "spamWaiting": "Waiting for spam review",
-        "held": "Held until quiet hours end"
+        "held": "Held until quiet hours end",
+        "summariesSent": "Summary emails sent (last 24 hours)",
+        "summariesFailed": "Summary emails that failed (last 24 hours)"
       },
       "review": "Review them",
       "rates": {
@@ -269,6 +271,18 @@
         "new_applicant": "New applicants (for employers)",
         "message": "Messages",
         "announcement": "News from KaziForce"
+      },
+      "policy": {
+        "title": "For everyone",
+        "help": "Rules that apply to every account on KaziForce, above each person's own settings.",
+        "limitLabel": "Most SMS and WhatsApp messages per person per day",
+        "limitHelp": "For alerts that are not urgent. Urgent alerts always go. Above the limit, the alert still arrives in the app (and by email, if the person chose it).",
+        "none": "No limit",
+        "perDay_one": "{{count}} a day",
+        "perDay_other": "{{count}} a day",
+        "saved_one": "Now at most {{count}} SMS or WhatsApp message a day per person (urgent alerts always go).",
+        "saved_other": "Now at most {{count}} SMS and WhatsApp messages a day per person (urgent alerts always go).",
+        "savedNone": "No daily limit on SMS and WhatsApp messages."
       },
       "always": {
         "title": "Always send",

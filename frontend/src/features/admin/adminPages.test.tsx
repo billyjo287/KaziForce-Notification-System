@@ -44,6 +44,7 @@ const overview: Overview = {
   today: { notifications: 1234, spamBlocked: 3, failedDeliveries: 6 },
   spamWaiting: 2,
   heldNow: 4,
+  summaries: { sent: 12, failed: 1 },
   queues: [
     { name: 'notifications', waiting: 1, scheduled: 0, failed: 0 },
     { name: 'escalation', waiting: 0, scheduled: 7, failed: 0 },
@@ -68,6 +69,13 @@ describe('admin overview', () => {
 
     expect(await screen.findByText('1,234')).toBeInTheDocument();
     expect(screen.getByText('Waiting for spam review').closest('li')).toHaveTextContent('2');
+    // Summary emails are counted too (BT-09).
+    expect(screen.getByText('Summary emails sent (last 24 hours)').closest('li')).toHaveTextContent(
+      '12',
+    );
+    expect(
+      screen.getByText('Summary emails that failed (last 24 hours)').closest('li'),
+    ).toHaveTextContent('1');
     expect(screen.getByRole('link', { name: 'Review them' })).toHaveAttribute(
       'href',
       '/admin/spam',
@@ -301,18 +309,29 @@ describe('notification rules (ADR 0016)', () => {
 
   beforeEach(() => {
     vi.mocked(api.get).mockImplementation(async (url) =>
-      url === '/admin/notification-rules'
+      url === '/admin/notification-policy'
         ? {
             data: {
-              items: [
-                { category: 'new_job', mandatory: false, updatedAt: null, updatedBy: null },
-                { category: 'announcement', mandatory: true, updatedAt: null, updatedBy: null },
-              ],
+              dailyTextLimit: null,
+              choices: [null, 3, 5, 10],
+              updatedAt: null,
+              updatedBy: null,
             },
           }
-        : {
-            data: { items: [wordingRow(false, null), wordingRow(true, 'Urgent: a job close by')] },
-          },
+        : url === '/admin/notification-rules'
+          ? {
+              data: {
+                items: [
+                  { category: 'new_job', mandatory: false, updatedAt: null, updatedBy: null },
+                  { category: 'announcement', mandatory: true, updatedAt: null, updatedBy: null },
+                ],
+              },
+            }
+          : {
+              data: {
+                items: [wordingRow(false, null), wordingRow(true, 'Urgent: a job close by')],
+              },
+            },
     );
     vi.mocked(api.post).mockResolvedValue({ data: { version: 1 } });
   });
@@ -330,6 +349,29 @@ describe('notification rules (ADR 0016)', () => {
     await userEvent.click(screen.getByRole('switch', { name: 'New jobs' }));
     expect(put).toHaveBeenCalledWith('/admin/notification-rules/new_job', { mandatory: true });
     expect(await screen.findByText('“New jobs” is now always sent.')).toBeInTheDocument();
+  });
+
+  it('"For everyone": the daily SMS and WhatsApp limit saves at once (FR-NOT-034)', async () => {
+    const put = vi.fn().mockResolvedValue({ data: {} });
+    (api as unknown as { put: typeof put }).put = put;
+    renderWithRouter(
+      <>
+        <NotificationRulesPage />
+        <Toaster />
+      </>,
+    );
+    const select = await screen.findByRole('combobox', {
+      name: 'Most SMS and WhatsApp messages per person per day',
+    });
+    expect(select).toHaveTextContent('No limit');
+    await userEvent.click(select);
+    await userEvent.click(await screen.findByRole('option', { name: '5 a day' }));
+    expect(put).toHaveBeenCalledWith('/admin/notification-policy', { dailyTextLimit: 5 });
+    expect(
+      await screen.findByText(
+        'Now at most 5 SMS and WhatsApp messages a day per person (urgent alerts always go).',
+      ),
+    ).toBeInTheDocument();
   });
 
   it('wording: live SMS preview, 80-character limit, new version, back to default (FR-NOT-003/011)', async () => {

@@ -262,3 +262,37 @@ describe('alerts', () => {
     expect(dismiss.body.items[0].markedNotImportant).toBe(true);
   });
 });
+
+// BT-17: a held (suspected scam) or removed job is seen only by its own employer and admins.
+describe('held and removed jobs stay private', () => {
+  it('another employer and workers get "not found"; the owner still sees it', async () => {
+    const other = await request(app)
+      .post('/api/auth/register')
+      .send({
+        role: 'business',
+        name: 'Other Employer',
+        email: uniqueEmail('other-employer'),
+        password: PASSWORD,
+      });
+    const otherToken = other.body.accessToken as string;
+    const owner = await prisma.user.findUniqueOrThrow({
+      where: { email: 'employer1@example.com' },
+    });
+    const held = await prisma.job.create({
+      data: {
+        employerId: owner.id,
+        title: 'Held for review',
+        description: 'Pay a fee to start',
+        locationId,
+        skillId,
+        deadline: new Date(Date.now() + 86_400_000),
+        status: 'held',
+        heldAt: new Date(),
+      },
+    });
+    const view = (token: string) => request(app).get(`/api/jobs/${held.id}`).set(auth(token));
+    expect((await view(otherToken)).status).toBe(404);
+    expect((await view(worker)).status).toBe(404);
+    expect((await view(employer)).status).toBe(200);
+  });
+});

@@ -19,6 +19,17 @@ export function frequenciesDue(until: Date): SummaryFrequency[] {
   return due;
 }
 
+/**
+ * The end of the period a summary covers: 08:00 Nairobi today (or yesterday, before 08:00). A
+ * run that starts late (the worker was restarting at 08:00) still covers exactly up to 08:00, so
+ * one day's summary ends where the next one starts: no alert falls in a gap or comes twice (BT-08).
+ */
+export function summaryCutoff(now: Date): Date {
+  const day = now.toLocaleDateString('en-CA', { timeZone: TIMEZONE }); // e.g. "2026-11-07"
+  const cutoff = new Date(`${day}T08:00:00+03:00`); // Nairobi is UTC+3 all year
+  return cutoff > now ? new Date(cutoff.getTime() - DAY_MS) : cutoff;
+}
+
 /** The start of the period a summary covers. Nairobi has no daylight saving, so UTC is safe. */
 export function periodStart(until: Date, frequency: SummaryFrequency): Date {
   if (frequency === 'daily') return new Date(until.getTime() - DAY_MS);
@@ -280,10 +291,12 @@ export async function buildSummaryFor(
   ) {
     return null;
   }
+  const frequency = user.preference.summaryFrequency;
+  const start = periodStart(until, frequency);
   const items = await prisma.notification.findMany({
     where: {
       recipientId: userId,
-      ...lowNotificationsWhere(periodStart(until, user.preference.summaryFrequency), until),
+      ...lowNotificationsWhere(start, until),
     },
     select: { id: true, category: true, title: true, createdAt: true },
   });
@@ -294,5 +307,5 @@ export async function buildSummaryFor(
     frequency: user.preference.summaryFrequency,
     appUrl: `${publicAppUrl.replace(/\/$/, '')}/${sidePath(user.role)}`,
   });
-  return { to: user.email, ...email };
+  return { to: user.email, ...email, frequency, periodStart: start, periodEnd: until };
 }

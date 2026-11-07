@@ -97,7 +97,9 @@
         "spamBlocked": "Taka zilizozuiwa leo",
         "failed": "Zilizoshindwa kufika (saa 24 zilizopita)",
         "spamWaiting": "Zinasubiri ukaguzi wa taka",
-        "held": "Zimeshikiliwa hadi saa za utulivu ziishe"
+        "held": "Zimeshikiliwa hadi saa za utulivu ziishe",
+        "summariesSent": "Barua pepe za muhtasari zilizotumwa (saa 24 zilizopita)",
+        "summariesFailed": "Barua pepe za muhtasari zilizoshindwa (saa 24 zilizopita)"
       },
       "review": "Zikague",
       "rates": {
@@ -269,6 +271,18 @@
         "new_applicant": "Waombaji wapya (kwa waajiri)",
         "message": "Ujumbe",
         "announcement": "Habari kutoka KaziForce"
+      },
+      "policy": {
+        "title": "Kwa kila mtu",
+        "help": "Sheria zinazohusu kila akaunti kwenye KaziForce, juu ya mipangilio ya kila mtu.",
+        "limitLabel": "Idadi ya juu ya SMS na WhatsApp kwa kila mtu kwa siku",
+        "limitHelp": "Kwa arifa zisizo za haraka. Arifa za haraka hutumwa kila wakati. Ikizidi idadi hii, arifa bado inafika kwenye programu (na kwa barua pepe, kama mtu alichagua hivyo).",
+        "none": "Bila kikomo",
+        "perDay_one": "{{count}} kwa siku",
+        "perDay_other": "{{count}} kwa siku",
+        "saved_one": "Sasa ujumbe {{count}} wa SMS au WhatsApp kwa siku kwa kila mtu (arifa za haraka hutumwa kila wakati).",
+        "saved_other": "Sasa jumbe {{count}} za SMS na WhatsApp kwa siku kwa kila mtu (arifa za haraka hutumwa kila wakati).",
+        "savedNone": "Hakuna kikomo cha kila siku kwa SMS na WhatsApp."
       },
       "always": {
         "title": "Tuma kila wakati",

@@ -95,6 +95,15 @@
         "offNote": "Off: no pop-ups, no SMS or email. You can still find them in your alerts list.",
         "mandatory": "Always on. KaziForce sends these to everyone, because they matter for your account or safety."
       },
+      "install": {
+        "title": "KaziForce on your home screen",
+        "help": "Add KaziForce to your phone like an app: it opens with one tap, and its pop-ups reach you even when it is closed.",
+        "button": "Add KaziForce to this phone",
+        "done": "KaziForce is being added to your home screen.",
+        "installed": "KaziForce is on this phone’s home screen.",
+        "iphone": "On an iPhone: tap Share (the square with an arrow), then “Add to Home Screen”. Open KaziForce from there, then switch on pop-ups below.",
+        "menu": "Open your browser’s menu (⋮) and choose “Install app” or “Add to Home screen”."
+      },
       "popups": {
         "label": "Pop-ups on this phone or computer",
         "help": "Alerts pop up even when KaziForce is closed. They show a short line only, never names or details. At night (your quiet hours) they arrive without sound.",
@@ -107,6 +116,13 @@
           "blocked": "Pop-ups were blocked. You can allow them in the browser’s settings."
         }
       }
+    },
+    "myData": {
+      "button": "Download my data",
+      "busy": "Preparing your file…",
+      "help": "A file with everything KaziForce keeps about you: your account, settings, jobs, applications, messages and alerts. Never your password.",
+      "done": "Your file is downloading.",
+      "error": "We could not prepare your file. Please try again."
     },
     "delete": {
       "button": "Delete my account",

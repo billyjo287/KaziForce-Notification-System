@@ -95,6 +95,15 @@
         "offNote": "Imezimwa: hakuna arifa za ghafla, SMS wala barua pepe. Bado utazipata kwenye orodha ya arifa zako.",
         "mandatory": "Huwashwa kila wakati. KaziForce hutuma hizi kwa kila mtu, kwa sababu ni muhimu kwa akaunti au usalama wako."
       },
+      "install": {
+        "title": "KaziForce kwenye skrini yako ya mwanzo",
+        "help": "Weka KaziForce kwenye simu yako kama programu: inafunguka kwa kugusa mara moja, na arifa zake ibukizi zinakufikia hata ikiwa imefungwa.",
+        "button": "Weka KaziForce kwenye simu hii",
+        "done": "KaziForce inawekwa kwenye skrini yako ya mwanzo.",
+        "installed": "KaziForce iko kwenye skrini ya mwanzo ya simu hii.",
+        "iphone": "Kwenye iPhone: gusa Shiriki (mraba wenye mshale), kisha “Add to Home Screen”. Fungua KaziForce kutoka hapo, kisha washa arifa ibukizi hapa chini.",
+        "menu": "Fungua menyu ya kivinjari chako (⋮) na uchague “Install app” au “Add to Home screen”."
+      },
       "popups": {
         "label": "Arifa za ghafla kwenye simu au kompyuta hii",
         "help": "Arifa huonekana hata KaziForce ikiwa imefungwa. Huonyesha mstari mfupi tu, bila majina wala maelezo. Usiku (saa zako za utulivu) huja bila sauti.",
@@ -107,6 +116,13 @@
           "blocked": "Arifa za ghafla zilizuiwa. Unaweza kuziruhusu katika mipangilio ya kivinjari."
         }
       }
+    },
+    "myData": {
+      "button": "Pakua taarifa zangu",
+      "busy": "Tunaandaa faili lako…",
+      "help": "Faili lenye kila kitu KaziForce inachohifadhi kukuhusu: akaunti, mipangilio, kazi, maombi, ujumbe na arifa zako. Kamwe si nenosiri lako.",
+      "done": "Faili lako linapakuliwa.",
+      "error": "Hatukuweza kuandaa faili lako. Tafadhali jaribu tena."
     },
     "delete": {
       "button": "Futa akaunti yangu",

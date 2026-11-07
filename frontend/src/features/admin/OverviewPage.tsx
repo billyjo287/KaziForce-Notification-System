@@ -81,6 +81,16 @@ function OverviewBody({ data }: { data: Overview }) {
             }
           />
           <Tile label={t('admin.overview.tiles.held')} value={data.heldNow} />
+          {data.summaries && (
+            <>
+              <Tile label={t('admin.overview.tiles.summariesSent')} value={data.summaries.sent} />
+              <Tile
+                label={t('admin.overview.tiles.summariesFailed')}
+                value={data.summaries.failed}
+                warn={data.summaries.failed > 0}
+              />
+            </>
+          )}
         </ul>
       </section>
 

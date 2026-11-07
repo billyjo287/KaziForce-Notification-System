@@ -13,6 +13,7 @@ export function testApp(rateLimits: Partial<RateLimitSettings> = {}) {
     healthChecks: {},
     rateLimits: {
       login: 1000,
+      account: 1000,
       passwordReset: 1000,
       phoneCode: 1000,
       lookup: 1000,

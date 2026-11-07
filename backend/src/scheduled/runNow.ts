@@ -15,7 +15,10 @@ if (!which || !(which in JOBS)) {
 
 const connection = queueConnection();
 const queue = new Queue(SCHEDULED_QUEUE, { connection, prefix: env.QUEUE_PREFIX });
-await queue.add(JOBS[which], {}, { removeOnComplete: true });
+// untilNow: a summary asked for by hand covers up to this moment (the clock's covers up to 08:00).
+await queue.add(JOBS[which], which === 'summary' ? { untilNow: true } : {}, {
+  removeOnComplete: true,
+});
 console.log(`Asked the worker to run "${JOBS[which]}" now. Is the worker running (npm run dev)?`);
 await queue.close();
 await connection.quit();

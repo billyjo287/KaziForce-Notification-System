@@ -30,6 +30,8 @@ export interface Overview {
   today: { notifications: number; spamBlocked: number; failedDeliveries: number };
   spamWaiting: number;
   heldNow: number;
+  /** Summary emails in the last 24 hours (one per try). Missing on an older server. */
+  summaries?: { sent: number; failed: number };
   /** null when Redis could not be reached */
   queues: QueueBacklog[] | null;
   recentFailures: {
@@ -224,6 +226,26 @@ export const useNotificationRules = () =>
 export const useSetRule = () =>
   useAdminMutation(({ category, mandatory }: { category: RuleCategory; mandatory: boolean }) =>
     api.put(`/admin/notification-rules/${category}`, { mandatory }),
+  );
+
+/** Policies for everyone on the platform (SRS FR-NOT-034, ADR 0019). */
+export interface NotificationPolicy {
+  /** At most this many SMS + WhatsApp per person per day for non-urgent alerts; null = no limit. */
+  dailyTextLimit: number | null;
+  choices: (number | null)[];
+  updatedAt: string | null;
+  updatedBy: string | null;
+}
+
+export const useNotificationPolicy = () =>
+  useQuery({
+    queryKey: ['admin', 'notificationPolicy'],
+    queryFn: async () => (await api.get<NotificationPolicy>('/admin/notification-policy')).data,
+  });
+
+export const useSetPolicy = () =>
+  useAdminMutation((dailyTextLimit: number | null) =>
+    api.put('/admin/notification-policy', { dailyTextLimit }),
   );
 
 export const useWording = () =>

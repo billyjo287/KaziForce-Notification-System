@@ -7,8 +7,10 @@
 //              history and the training data), but their name is replaced with "a former user"
 //              and the words of their chat messages are removed (forgetSender, below).
 //   delivery logs older than 180 days are removed.
-//   notifications are kept (at least 90 days is required): they are the future training data,
-//              and the ML export is anonymised (Phase 7).
+//   notifications older than 12 months are deleted, with their delivery records and links
+//              (Data Protection Act: keep no longer than needed, BT-12). At least 90 days is
+//              required for history; 12 months is plenty. Training uses the admin's anonymised
+//              exports (Phase 7), downloaded before then, not the live rows.
 //   housekeeping: expired tracked links, finished domain events after 30 days, old sessions,
 //              used or expired reset links and phone codes.
 import type { Language, PrismaClient } from '../generated/prisma/client.js';
@@ -18,6 +20,8 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 
 export const ACCOUNT_DELETION_DAYS = 14;
 export const DELIVERY_LOG_DAYS = 180;
+/** Alerts (title and text, including chat excerpts) are kept 12 months (BT-12). */
+export const NOTIFICATION_DAYS = 365;
 const EVENT_DAYS = 30;
 const SESSION_DAYS = 30;
 
@@ -108,9 +112,15 @@ export async function runRetention(
   const accounts = await prisma.user.deleteMany({ where: { id: { in: due.map((u) => u.id) } } });
   for (const { id } of due) await onUserDeleted?.(id);
 
-  const [deliveryLogs, trackedLinks, domainEvents, sessions, resetTokens, phoneCodes] =
+  // Old alerts first: their delivery records and tracked links go with them (cascade).
+  const notifications = await prisma.notification.deleteMany({
+    where: { createdAt: { lt: daysAgo(NOTIFICATION_DAYS) } },
+  });
+
+  const [deliveryLogs, summaryLogs, trackedLinks, domainEvents, sessions, resetTokens, phoneCodes] =
     await prisma.$transaction([
       prisma.deliveryLog.deleteMany({ where: { createdAt: { lt: daysAgo(DELIVERY_LOG_DAYS) } } }),
+      prisma.summaryLog.deleteMany({ where: { createdAt: { lt: daysAgo(DELIVERY_LOG_DAYS) } } }),
       prisma.trackedLink.deleteMany({ where: { expiresAt: { lt: now } } }),
       prisma.domainEvent.deleteMany({
         where: {
@@ -131,7 +141,9 @@ export async function runRetention(
 
   return {
     accounts: accounts.count,
+    notifications: notifications.count,
     deliveryLogs: deliveryLogs.count,
+    summaryLogs: summaryLogs.count,
     trackedLinks: trackedLinks.count,
     domainEvents: domainEvents.count,
     sessions: sessions.count,

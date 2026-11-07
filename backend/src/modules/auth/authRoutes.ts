@@ -265,7 +265,7 @@ export function authRoutes(limits: RateLimiters) {
     res.json({ exists: !!user, kind: parsed.kind });
   });
 
-  router.post('/login', limits.login, async (req, res) => {
+  router.post('/login', limits.login, limits.account, async (req, res) => {
     const input = parse(loginSchema, req.body);
     const identifier = parseIdentifier(input.identifier ?? input.email ?? '');
     const user = identifier ? await findAccount(identifier) : null;
@@ -437,7 +437,7 @@ export function authRoutes(limits: RateLimiters) {
     res.status(204).end();
   });
 
-  router.post('/forgot-password', limits.passwordReset, async (req, res) => {
+  router.post('/forgot-password', limits.passwordReset, limits.account, async (req, res) => {
     const input = parse(forgotSchema, req.body);
     const user = await prisma.user.findUnique({ where: { email: input.email } });
     // Never to an address that was not confirmed: it may be a typo, someone else's inbox.

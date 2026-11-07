@@ -30,6 +30,7 @@ import {
   type UserPreferences,
 } from '../../preferences/UserPreferenceManager.js';
 import { deletionDate } from '../../scheduled/retention.js';
+import { buildDataExport } from './dataExport.js';
 import { deletionRequestedEmail } from './emails.js';
 import { PRESETS, channelOrderFor, type ExternalChannel } from './presets.js';
 import { serializeUser, userWithProfile } from './serializeUser.js';
@@ -493,6 +494,28 @@ export function meRoutes(limits: RateLimiters) {
     await prisma.pushSubscription.deleteMany({ where: { endpoint, userId: me.id } });
     await auditPreferenceChange(me.id, { browserPopups: false });
     res.json({ ok: true });
+  });
+
+  // ---------- "Download my data" (DPA 2019 right of access, BT-11) ----------
+
+  // A JSON file with everything kept about the person. Counted with the log-in limit so it
+  // cannot be used to load the database; the download itself is recorded in the audit log.
+  router.get('/export', limits.login, async (req, res) => {
+    const me = currentUser(req);
+    const now = new Date();
+    const data = await buildDataExport(prisma, me.id, now);
+    await prisma.auditLog.create({
+      data: {
+        actorId: me.id,
+        action: 'account.data_exported',
+        targetType: 'user',
+        targetId: me.id,
+      },
+    });
+    const day = now.toLocaleDateString('en-CA', { timeZone: 'Africa/Nairobi' });
+    res.setHeader('Content-Disposition', `attachment; filename="kaziforce-my-data-${day}.json"`);
+    res.setHeader('Cache-Control', 'no-store');
+    res.json(data);
   });
 
   // ---------- Account deletion (NFR-2, DR-4) ----------

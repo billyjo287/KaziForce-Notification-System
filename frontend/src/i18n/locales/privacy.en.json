@@ -47,6 +47,7 @@
         "heading": "How long we keep it",
         "items": [
           "Your account: until you delete it. After you ask, it is deleted within 14 days (you can change your mind until then).",
+          "Your alerts: 12 months, then they are deleted.",
           "Records of how alerts were delivered: 180 days.",
           "Log-in codes and password reset links: they stop working within an hour and are removed the next day.",
           "Alerts you sent to other people stay in their history, but your name is replaced with “a former user” and your chat words are removed."
@@ -58,7 +59,7 @@
           "See and correct your details: Settings → Your profile.",
           "Choose what reaches you, and how: Alert settings. Reply STOP (or ACHA) to any SMS or WhatsApp to stop that channel.",
           "Delete your account and your information: Settings → Delete my account.",
-          "Ask for a copy of what we keep about you, or object to how we use it: contact us (below).",
+          "Get a copy of what we keep about you: Settings → Download my data. To object to how we use it: contact us (below).",
           "If you are not happy with our answer, you can complain to the Office of the Data Protection Commissioner (ODPC), www.odpc.go.ke."
         ]
       },

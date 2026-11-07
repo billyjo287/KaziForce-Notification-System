@@ -32,6 +32,7 @@ import {
   effectiveCategorySetting,
   type MandatoryCategories,
 } from '../preferences/categories.js';
+import { createPlatformPolicies, type PlatformPolicies } from '../preferences/policies.js';
 import { SendError, type OutgoingMessage, type Recipient } from './ChannelAdapter.js';
 import { emailContent, shortText } from './messages.js';
 import { createWording, type Wording } from './wording.js';
@@ -60,6 +61,8 @@ export interface DeliveryOptions {
   mandatory?: MandatoryCategories;
   /** Admin-edited SMS and email wording (ADR 0016); the built-in wording if not given. */
   wording?: Wording;
+  /** Platform-wide policies (daily text limit, ADR 0019); made here if not given. */
+  policies?: PlatformPolicies;
   publicApiUrl: string;
   publicAppUrl: string;
   windowMinutes: number;
@@ -112,6 +115,28 @@ export function startDelivery(options: DeliveryOptions) {
   const { prisma, connection, prefix, logger, adapters, preferences } = options;
   const mandatory = options.mandatory ?? createMandatoryCategories(prisma);
   const wording = options.wording ?? createWording(prisma);
+  const policies = options.policies ?? createPlatformPolicies(prisma);
+
+  /**
+   * The daily text limit (FR-NOT-034, ADR 0019): a non-urgent alert does not go by SMS or
+   * WhatsApp once the person has had `limit` of them today (Nairobi day). It stays in the app.
+   */
+  async function overDailyTextLimit(n: Loaded, now: Date) {
+    const { dailyTextLimit } = await policies.get();
+    if (dailyTextLimit === null || priorityOf(n) === 'urgent') return false;
+    const offset = 3 * 60 * 60 * 1000; // Nairobi is UTC+3 all year
+    const day = 24 * 60 * 60 * 1000;
+    const startOfDay = new Date(Math.floor((now.getTime() + offset) / day) * day - offset);
+    const sentToday = await prisma.deliveryLog.count({
+      where: {
+        channel: { in: ['sms', 'whatsapp'] },
+        attempt: 1,
+        createdAt: { gte: startOfDay },
+        notification: { recipientId: n.recipientId },
+      },
+    });
+    return sentToday >= dailyTextLimit;
+  }
 
   /** The person's preferences and the channels this alert's category may use. */
   async function settingsFor(n: Loaded) {
@@ -194,6 +219,13 @@ export function startDelivery(options: DeliveryOptions) {
         },
       );
       return plan;
+    }
+    if (
+      plan.now.some((c) => c === 'sms' || c === 'whatsapp') &&
+      (await overDailyTextLimit(n, now))
+    ) {
+      plan.now = plan.now.filter((c) => c !== 'sms' && c !== 'whatsapp');
+      logger.info({ notificationId }, 'Daily text limit reached: not sent by SMS or WhatsApp');
     }
     for (const channel of plan.now) await enqueueSend(notificationId, channel, false);
     if (plan.escalation) {

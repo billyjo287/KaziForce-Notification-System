@@ -6,6 +6,7 @@ import { i18nReady } from './i18n';
 import './index.css';
 import { router } from './router';
 import './stores/settings'; // applies the theme, text size and reduce motion before drawing
+import './lib/installPrompt'; // keeps Chrome's one-time "install" offer for Settings (ADR 0019)
 
 const root = document.getElementById('root');
 if (!root) throw new Error('Missing #root element in index.html');

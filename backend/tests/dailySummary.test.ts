@@ -8,7 +8,12 @@ import { prisma } from '../src/lib/prisma.js';
 import { closeApiQueues, queueConnection } from '../src/lib/queue.js';
 import { redis } from '../src/lib/redis.js';
 import { PRESETS } from '../src/modules/me/presets.js';
-import { groupForSummary, summaryEmail, type SummaryItem } from '../src/scheduled/dailySummary.js';
+import {
+  groupForSummary,
+  summaryCutoff,
+  summaryEmail,
+  type SummaryItem,
+} from '../src/scheduled/dailySummary.js';
 import { messageText, newApplicantText } from '../src/pipeline/templates.js';
 import { replaceName, runRetention } from '../src/scheduled/retention.js';
 import { startScheduledJobs } from '../src/scheduled/scheduledJobs.js';
@@ -209,6 +214,11 @@ describe('daily summary: who gets one', () => {
       expect(mail.text).not.toContain(title);
     }
     expect(mailFor(swahili.email)[0]!.subject).toBe('Muhtasari wako wa KaziForce: taarifa 1');
+    // Each summary email is recorded (BT-09): who, the period, how many alerts, sent.
+    await eventually(async () => {
+      const logs = await prisma.summaryLog.findMany({ where: { userId: reader.id } });
+      expect(logs).toMatchObject([{ status: 'sent', alertCount: 4, frequency: 'daily' }]);
+    });
 
     // The 08:00 run happening twice the same day (a retry) never sends a second email.
     await jobs.startDailySummary(now);
@@ -276,6 +286,39 @@ describe('account deletion', () => {
     return { token: res.body.accessToken as string, id: res.body.user.id as string };
   }
 
+  it('"Download my data" gives everything kept about the person, never the password (BT-11)', async () => {
+    const { token, id } = await account();
+    await prisma.notification.create({
+      data: {
+        recipientId: id,
+        recipientRole: 'worker',
+        senderRole: 'system',
+        type: 'announcement',
+        category: 'announcement',
+        title: 'Welcome to KaziForce',
+        message: 'Hello',
+        status: 'sent',
+      },
+    });
+    const res = await request(app).get('/api/me/export').set(auth(token));
+    expect(res.status).toBe(200);
+    expect(res.headers['content-disposition']).toMatch(/attachment; filename="kaziforce-my-data-/);
+    expect(res.body.account).toMatchObject({ name: 'Leaving Soon', side: 'worker' });
+    expect(res.body.alerts.map((a: { title: string }) => a.title)).toContain(
+      'Welcome to KaziForce',
+    );
+    expect(res.body.alertSettings).not.toBeNull();
+    const text = JSON.stringify(res.body);
+    const { passwordHash } = await prisma.user.findUniqueOrThrow({ where: { id } });
+    expect(text).not.toContain(passwordHash);
+    expect(text).not.toMatch(/passwordHash|tokenHash/);
+    expect(
+      await prisma.auditLog.count({ where: { actorId: id, action: 'account.data_exported' } }),
+    ).toBe(1);
+    // Only for the person themselves.
+    expect((await request(app).get('/api/me/export')).status).toBe(401);
+  });
+
   it('needs the password; shows the deletion day; "Keep my account" cancels', async () => {
     const { token, id } = await account();
     let res = await request(app)
@@ -322,6 +365,27 @@ describe('account deletion', () => {
     expect(await prisma.notification.findUnique({ where: { id: n.id } })).toBeNull();
     expect(await prisma.deliveryLog.count({ where: { notificationId: n.id } })).toBe(0);
     expect(await prisma.user.findUnique({ where: { id: waiting.id } })).not.toBeNull();
+  });
+
+  it('deletes alerts older than 12 months, with their delivery records (BT-12)', async () => {
+    const keeper = await person();
+    const old = await notification(keeper.id, 'low', 1);
+    const recent = await notification(keeper.id, 'low', 1);
+    await prisma.notification.update({
+      where: { id: old.id },
+      data: { createdAt: new Date(Date.now() - 366 * DAY) },
+    });
+    await prisma.notification.update({
+      where: { id: recent.id },
+      data: { createdAt: new Date(Date.now() - 364 * DAY) },
+    });
+    await prisma.deliveryLog.create({ data: { notificationId: old.id, channel: 'in_app' } });
+
+    const result = await runRetention(prisma, new Date());
+    expect(result.notifications).toBeGreaterThanOrEqual(1);
+    expect(await prisma.notification.findUnique({ where: { id: old.id } })).toBeNull();
+    expect(await prisma.deliveryLog.count({ where: { notificationId: old.id } })).toBe(0);
+    expect(await prisma.notification.findUnique({ where: { id: recent.id } })).not.toBeNull();
   });
 
   it('replaces a name with "a former user", whole words only, capitalised at a sentence start', () => {
@@ -421,5 +485,26 @@ describe('account deletion', () => {
     expect(await prisma.deliveryLog.findUnique({ where: { id: oldLog.id } })).toBeNull();
     expect(await prisma.deliveryLog.findUnique({ where: { id: recentLog.id } })).not.toBeNull();
     expect(await prisma.notification.findUnique({ where: { id: old.id } })).not.toBeNull();
+  });
+});
+
+// BT-08: the clock's summary always ends at 08:00 Nairobi, so a late run leaves no gap.
+describe('summary period ends at 08:00 Nairobi', () => {
+  it('a run at 08:00, a late run at 10:30 and a run just after midnight', () => {
+    // 08:00 Nairobi = 05:00 UTC.
+    expect(summaryCutoff(new Date('2026-11-07T05:00:00Z')).toISOString()).toBe(
+      '2026-11-07T05:00:00.000Z',
+    );
+    expect(summaryCutoff(new Date('2026-11-07T07:30:00Z')).toISOString()).toBe(
+      '2026-11-07T05:00:00.000Z',
+    );
+    // 00:30 Nairobi on the 8th (21:30 UTC on the 7th): still yesterday's 08:00.
+    expect(summaryCutoff(new Date('2026-11-07T21:30:00Z')).toISOString()).toBe(
+      '2026-11-07T05:00:00.000Z',
+    );
+    // 07:59 Nairobi: the day before.
+    expect(summaryCutoff(new Date('2026-11-08T04:59:00Z')).toISOString()).toBe(
+      '2026-11-07T05:00:00.000Z',
+    );
   });
 });

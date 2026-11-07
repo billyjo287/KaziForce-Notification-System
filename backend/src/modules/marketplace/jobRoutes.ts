@@ -83,10 +83,10 @@ export function jobRoutes(limits: RateLimiters) {
         _count: { select: { applications: true } },
       },
     });
-    // Removed jobs are only visible to their employer and admins.
-    if (!job || (['removed', 'held'].includes(job.status) && me.role === 'worker'))
+    const isOwner = job?.employerId === me.id;
+    // Removed and held (suspected scam) jobs: only their own employer and admins (BT-17).
+    if (!job || (['removed', 'held'].includes(job.status) && !isOwner && me.role !== 'admin'))
       throw notFound();
-    const isOwner = job.employerId === me.id;
     res.json({
       job: {
         ...serializeJob(job),

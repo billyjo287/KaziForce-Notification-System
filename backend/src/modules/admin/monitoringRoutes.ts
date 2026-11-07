@@ -100,6 +100,8 @@ export function monitoringRoutes() {
       heldJobs,
       heldNow,
       recent,
+      summariesSent,
+      summariesFailed,
     ] = await Promise.all([
       channelRates(new Date(now.getTime() - DAY)),
       channelRates(new Date(now.getTime() - 7 * DAY)),
@@ -114,6 +116,13 @@ export function monitoringRoutes() {
         include: { notification: { select: { id: true, title: true } } },
         orderBy: { createdAt: 'desc' },
         take: 5,
+      }),
+      // Summary emails (BT-09): one row per try.
+      prisma.summaryLog.count({
+        where: { status: 'sent', createdAt: { gte: new Date(now.getTime() - DAY) } },
+      }),
+      prisma.summaryLog.count({
+        where: { status: 'failed', createdAt: { gte: new Date(now.getTime() - DAY) } },
       }),
     ]);
     // Redis may be down: the page still shows everything else.
@@ -131,6 +140,7 @@ export function monitoringRoutes() {
       },
       spamWaiting: spamAlerts + heldJobs,
       heldNow,
+      summaries: { sent: summariesSent, failed: summariesFailed },
       queues,
       recentFailures: recent.map((log) => ({
         id: log.id,

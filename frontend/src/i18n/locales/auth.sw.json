@@ -91,6 +91,8 @@
       "ruleCommon": "Lisilokisiwa kwa urahisi kama 12345678",
       "passwordCommon": "Nenosiri hili ni rahisi mno kukisia. Jaribu maneno machache pamoja, kama sentensi fupi.",
       "submit": "Fungua akaunti",
+      "privacyNote": "Tunahifadhi tu tunachohitaji kukutumia arifa sahihi.",
+      "privacyLink": "Jinsi tunavyotumia taarifa zako",
       "creating": "Inafungua akaunti yako…",
       "haveAccount": "Tayari una akaunti?",
       "login": "Ingia",

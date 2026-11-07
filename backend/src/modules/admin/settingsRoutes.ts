@@ -1,6 +1,8 @@
 // Admin settings for notifications (ADR 0016):
 //   Notification rules  which alert categories are "Always send" (SRS FR-NOT-035)
 //   Message wording     the SMS and email wording, with every version kept (FR-NOT-003, 011)
+//   Policies            rules for everyone on the platform, e.g. the daily text limit
+//                       (FR-NOT-034, ADR 0019)
 // Every change is written to AuditLog.
 import { Router } from 'express';
 import { z } from 'zod';
@@ -10,7 +12,8 @@ import { prisma } from '../../lib/prisma.js';
 import { parse } from '../../lib/validate.js';
 import { currentUser, requireAuth, requireRole } from '../../middleware/auth.js';
 import { CATEGORIES } from '../../preferences/categories.js';
-import { mandatoryCategories } from '../../preferences/index.js';
+import { mandatoryCategories, platformPolicies } from '../../preferences/index.js';
+import { DAILY_TEXT_LIMITS, POLICY_ID } from '../../preferences/policies.js';
 
 const categoryParam = z.object({ category: z.enum(CATEGORIES) });
 const ruleSchema = z.object({ mandatory: z.boolean() }).strict();
@@ -21,6 +24,18 @@ const wordingSchema = z
     urgent: z.boolean(),
     /** null = back to the built-in wording. */
     text: z.string().max(200).nullable(),
+  })
+  .strict();
+
+const policySchema = z
+  .object({
+    dailyTextLimit: z
+      .number()
+      .int()
+      .nullable()
+      .refine((v) => (DAILY_TEXT_LIMITS as readonly (number | null)[]).includes(v), {
+        message: 'Choose one of the limits on the page',
+      }),
   })
   .strict();
 
@@ -77,6 +92,44 @@ export function settingsRoutes() {
     // This process sees it at once; the worker within 30 seconds (preferences/categories.ts).
     mandatoryCategories.clear();
     res.json({ category, mandatory });
+  });
+
+  // ---------- Policies for everyone (FR-NOT-034) ----------
+  router.get('/notification-policy', async (_req, res) => {
+    const row = await prisma.notificationPolicy.findUnique({
+      where: { id: POLICY_ID },
+      include: { updatedBy: { select: { name: true } } },
+    });
+    res.json({
+      dailyTextLimit: row?.dailyTextLimit ?? null,
+      choices: DAILY_TEXT_LIMITS,
+      updatedAt: row?.updatedAt.toISOString() ?? null,
+      updatedBy: row?.updatedBy?.name ?? null,
+    });
+  });
+
+  router.put('/notification-policy', async (req, res) => {
+    const admin = currentUser(req);
+    const { dailyTextLimit } = parse(policySchema, req.body);
+    await prisma.$transaction([
+      prisma.notificationPolicy.upsert({
+        where: { id: POLICY_ID },
+        create: { id: POLICY_ID, dailyTextLimit, updatedById: admin.id },
+        update: { dailyTextLimit, updatedById: admin.id },
+      }),
+      prisma.auditLog.create({
+        data: {
+          actorId: admin.id,
+          action: 'notification_policy.changed',
+          targetType: 'notification_policy',
+          targetId: admin.id,
+          metadata: { dailyTextLimit },
+        },
+      }),
+    ]);
+    // This process sees it at once; the worker within 30 seconds (preferences/policies.ts).
+    platformPolicies.clear();
+    res.json({ dailyTextLimit });
   });
 
   // ---------- Message wording ----------

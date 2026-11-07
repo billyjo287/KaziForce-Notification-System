@@ -11,8 +11,10 @@ import { apiErrorCode } from '../../lib/api';
 import { usePageTitle } from '../../lib/usePageTitle';
 import { showToast } from '../../stores/toasts';
 import {
+  useNotificationPolicy,
   useNotificationRules,
   useSaveWording,
+  useSetPolicy,
   useSetRule,
   useWording,
   type RuleCategory,
@@ -37,7 +39,8 @@ const SMS_WORDS = {
 } as const;
 
 /**
- * Notification rules (ADR 0016), one page with two parts:
+ * Notification rules (ADR 0016, 0019), one page with three parts:
+ *   For everyone  platform-wide policies, e.g. the daily SMS + WhatsApp limit (FR-NOT-034)
  *   Always send   alert types people cannot switch off (SRS FR-NOT-035)
  *   Wording       the one-line summary every SMS and email is built from, per type, language and
  *                 urgency (FR-NOT-003, FR-NOT-011). Each save is a new version; old ones are kept.
@@ -50,9 +53,68 @@ export default function NotificationRulesPage() {
     <div className="max-w-3xl">
       <h1 className="text-3xl font-bold">{t('admin.rules.title')}</h1>
       <p className="mt-2 mb-6 text-lg text-ink-muted">{t('admin.rules.intro')}</p>
+      <ForEveryone />
       <AlwaysSend />
       <Wording />
     </div>
+  );
+}
+
+/** "none" stands for no limit in the select (its values are strings). */
+const NO_LIMIT = 'none';
+
+function ForEveryone() {
+  const { t } = useTranslation();
+  const { data, isPending, isError, refetch } = useNotificationPolicy();
+  const setPolicy = useSetPolicy();
+
+  function change(value: string) {
+    const limit = value === NO_LIMIT ? null : Number(value);
+    const before = data?.dailyTextLimit ?? null;
+    setPolicy.mutate(limit, {
+      onSuccess: () =>
+        showToast({
+          message:
+            limit === null
+              ? t('admin.rules.policy.savedNone')
+              : t('admin.rules.policy.saved', { count: limit }),
+          actionLabel: t('common.undo'),
+          onAction: () => setPolicy.mutate(before),
+        }),
+      onError: () => showToast({ message: t('admin.rules.saveError') }),
+    });
+  }
+
+  return (
+    <Card className="mb-6">
+      <section aria-labelledby="policy-title" aria-describedby="policy-help">
+        <h2 id="policy-title" className="text-xl font-bold">
+          {t('admin.rules.policy.title')}
+        </h2>
+        <HelpText id="policy-help">{t('admin.rules.policy.help')}</HelpText>
+        <div className="mt-5">
+          {isPending && <CardListSkeleton count={1} />}
+          {isError && (
+            <LoadError title={t('admin.rules.loadError')} onRetry={() => void refetch()} />
+          )}
+          {data && (
+            <Select
+              label={t('admin.rules.policy.limitLabel')}
+              help={t('admin.rules.policy.limitHelp')}
+              value={data.dailyTextLimit === null ? NO_LIMIT : String(data.dailyTextLimit)}
+              options={data.choices.map((choice) => ({
+                value: choice === null ? NO_LIMIT : String(choice),
+                label:
+                  choice === null
+                    ? t('admin.rules.policy.none')
+                    : t('admin.rules.policy.perDay', { count: choice }),
+              }))}
+              onValueChange={change}
+            />
+          )}
+        </div>
+      </section>
+    </Card>
   );
 }
 

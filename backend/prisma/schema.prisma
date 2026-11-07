@@ -179,7 +179,9 @@ model User {
   auditActions           AuditLog[]           @relation("AuditActor")
   wordingChanges         MessageWording[]
   pushSubscriptions      PushSubscription[]
+  summaryLogs            SummaryLog[]
   notificationRules      NotificationRule[]
+  notificationPolicies   NotificationPolicy[]
 
   @@index([role, status])
 }
@@ -489,6 +491,28 @@ model MLMetadata {
 // A browser (phone or computer) that allowed KaziForce pop-ups (Web Push; SRS FR-NOT-016..020,
 // ADR 0017). One row per browser; removed when the person switches pop-ups off or the push
 // service says the subscription has expired (404/410).
+// One row per try of a summary email (BT-09): the summary covers many alerts, so it is not a
+// DeliveryLog of one notification. Shown on the admin overview; removed after 180 days.
+model SummaryLog {
+  id                String           @id @default(uuid()) @db.Uuid
+  userId            String           @db.Uuid
+  frequency         SummaryFrequency
+  periodStart       DateTime
+  periodEnd         DateTime
+  // How many alerts the email listed
+  alertCount        Int
+  // "sent" or "failed"
+  status            String           @db.VarChar(10)
+  providerMessageId String?
+  error             String?          @db.VarChar(500)
+  createdAt         DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
+  @@index([userId, createdAt])
+}
+
 model PushSubscription {
   id         String    @id @default(uuid()) @db.Uuid
   userId     String    @db.Uuid
@@ -514,6 +538,18 @@ model NotificationRule {
   mandatory   Boolean  @default(false)
   updatedById String?  @db.Uuid
   updatedAt   DateTime @updatedAt
+
+  updatedBy User? @relation(fields: [updatedById], references: [id], onDelete: SetNull)
+}
+
+// Notification policies for the whole platform (SRS FR-NOT-034, ADR 0019): one row, id
+// "platform". dailyTextLimit = at most this many SMS + WhatsApp messages per person per Nairobi
+// day for alerts that are not urgent (null = no limit). Every change is in the audit log.
+model NotificationPolicy {
+  id             String   @id @default("platform") @db.VarChar(20)
+  dailyTextLimit Int?
+  updatedById    String?  @db.Uuid
+  updatedAt      DateTime @updatedAt
 
   updatedBy User? @relation(fields: [updatedById], references: [id], onDelete: SetNull)
 }

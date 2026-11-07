@@ -23,6 +23,7 @@ import type {
 } from '../../types/api';
 import { AlertTypeSettings } from './AlertTypeSettings';
 import { BrowserPopups } from './BrowserPopups';
+import { InstallApp } from './InstallApp';
 import '../onboarding/strings';
 import './strings';
 
@@ -169,6 +170,7 @@ export function NotificationSettings() {
                 id="customise-panel"
                 className="flex flex-col gap-8 border-l-4 border-line pl-4 sm:pl-6"
               >
+                <InstallApp />
                 <BrowserPopups />
                 {prefs.channelOrder.map((channel) => (
                   <ChannelControls key={channel} channel={channel} prefs={prefs} save={save} />

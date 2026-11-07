@@ -11,7 +11,7 @@ import type { EmailContent } from '../channels/EmailAdapter.js';
 import type { PrismaClient } from '../generated/prisma/client.js';
 import { idleFriendly } from '../lib/queue.js';
 import { TIMEZONE } from '../preferences/quietHours.js';
-import { buildSummaryFor, summaryRecipients } from './dailySummary.js';
+import { buildSummaryFor, summaryCutoff, summaryRecipients } from './dailySummary.js';
 import { runRetention } from './retention.js';
 
 export const SCHEDULED_QUEUE = 'scheduled';
@@ -69,12 +69,32 @@ export function startScheduledJobs(options: ScheduledJobsOptions) {
   async function sendSummary({ userId, until }: SummaryJobData) {
     const email = await buildSummaryFor(prisma, userId, new Date(until), options.publicAppUrl);
     if (!email) return 'nothing to send';
-    await options.sendEmail({
-      to: email.to,
-      subject: email.subject,
-      text: email.text,
-      html: email.html,
-    });
+    // One SummaryLog row per try, like the DeliveryLog of one alert (BT-09).
+    const log = {
+      userId,
+      frequency: email.frequency,
+      periodStart: email.periodStart,
+      periodEnd: email.periodEnd,
+      alertCount: email.count,
+    };
+    let result: unknown;
+    try {
+      result = await options.sendEmail({
+        to: email.to,
+        subject: email.subject,
+        text: email.text,
+        html: email.html,
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      await prisma.summaryLog
+        .create({ data: { ...log, status: 'failed', error: message.slice(0, 500) } })
+        .catch(() => {});
+      throw error; // tried again later (3 tries)
+    }
+    const providerMessageId =
+      (result as { providerMessageId?: string } | undefined)?.providerMessageId ?? null;
+    await prisma.summaryLog.create({ data: { ...log, status: 'sent', providerMessageId } });
     logger.info({ userId, count: email.count }, 'Daily summary sent');
     return 'sent';
   }
@@ -88,7 +108,11 @@ export function startScheduledJobs(options: ScheduledJobsOptions) {
   async function process(job: Job) {
     switch (job.name) {
       case 'daily-summary':
-        return startDailySummary(new Date());
+        // The clock's run covers up to 08:00 exactly, even if it starts late (BT-08). A run asked
+        // for by hand (runNow.ts, for a demo) covers up to this moment.
+        return startDailySummary(
+          (job.data as { untilNow?: boolean }).untilNow ? new Date() : summaryCutoff(new Date()),
+        );
       case 'daily-summary.user':
         return sendSummary(job.data as SummaryJobData);
       case 'retention':

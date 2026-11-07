@@ -465,6 +465,53 @@ describe('delivery reports (webhooks)', () => {
   });
 });
 
+// ---------- FR-NOT-034: platform-wide daily text limit (ADR 0019) ----------
+
+describe('daily text limit for everyone (FR-NOT-034)', () => {
+  it('above the limit a non-urgent alert stays off SMS and WhatsApp; urgent ones always go', async () => {
+    const limited = startDelivery({
+      prisma,
+      connection,
+      prefix: 'kf-test-policy',
+      logger: silent,
+      adapters: { whatsapp, sms, email },
+      preferences,
+      publicApiUrl: 'http://localhost:4000',
+      publicAppUrl: 'http://localhost:5173',
+      windowMinutes: WINDOW_MINUTES,
+      retryDelayMs: 20,
+      policies: { get: async () => ({ dailyTextLimit: 1 }), clear: () => {} },
+    });
+    try {
+      const { user } = await makeWorker();
+      // "Everything" preset: important alerts also go by WhatsApp.
+      await prisma.userPreference.update({
+        where: { userId: user.id },
+        data: { channelSettings: PRESETS.everything.channelSettings },
+      });
+      await preferences.invalidate(user.id);
+
+      const first = await notify(user.id, 'medium');
+      expect((await limited.dispatch(first.id))?.now).toContain('whatsapp');
+      // The send above is the 1 allowed today.
+      await prisma.deliveryLog.create({
+        data: { notificationId: first.id, channel: 'whatsapp', attempt: 1, status: 'sent' },
+      });
+
+      const second = await notify(user.id, 'medium');
+      const plan = await limited.dispatch(second.id);
+      expect(plan?.now).not.toContain('whatsapp');
+      expect(plan?.now).not.toContain('sms');
+      expect(plan?.now).toContain('email');
+
+      const urgent = await notify(user.id, 'urgent');
+      expect((await limited.dispatch(urgent.id))?.now).toContain('whatsapp');
+    } finally {
+      await limited.close();
+    }
+  });
+});
+
 // ---------- FR-4b ----------
 
 describe('channel suggestion (FR-4b)', () => {

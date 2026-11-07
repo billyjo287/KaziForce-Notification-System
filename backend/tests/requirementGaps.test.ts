@@ -368,6 +368,32 @@ describe('FR-NOT-035: "Always send" rules', () => {
   });
 });
 
+describe('FR-NOT-034: policies for everyone (daily text limit)', () => {
+  it('only admins set it, only to a listed value, and every change is audited', async () => {
+    const { token } = await newAccount();
+    const refused = await request(app)
+      .put('/api/admin/notification-policy')
+      .set(auth(token))
+      .send({ dailyTextLimit: 3 });
+    expect(refused.status).toBe(403);
+    expect((await admin.put('/notification-policy', { dailyTextLimit: 4 })).status).toBe(400);
+
+    expect((await admin.put('/notification-policy', { dailyTextLimit: 5 })).status).toBe(200);
+    const policy = (await admin.get('/notification-policy')).body;
+    expect(policy).toMatchObject({ dailyTextLimit: 5, choices: [null, 3, 5, 10] });
+    expect(policy.updatedBy).toBeTruthy();
+    const audit = await prisma.auditLog.findFirst({
+      where: { action: 'notification_policy.changed' },
+      orderBy: { createdAt: 'desc' },
+    });
+    expect(audit?.metadata).toEqual({ dailyTextLimit: 5 });
+
+    // Back to "no limit" for the other tests.
+    await admin.put('/notification-policy', { dailyTextLimit: null });
+    expect((await admin.get('/notification-policy')).body.dailyTextLimit).toBeNull();
+  });
+});
+
 describe('FR-NOT-003/011: editable SMS and email wording', () => {
   it('checks the wording: 3 to 80 plain characters, no emoji or curly quotes', () => {
     expect(wordingProblem('Hi')).toBe('empty');

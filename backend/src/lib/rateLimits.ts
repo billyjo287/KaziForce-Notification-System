@@ -3,6 +3,12 @@ import { rateLimit } from 'express-rate-limit';
 export interface RateLimitSettings {
   /** Log in / register attempts per 15 minutes per address. */
   login: number;
+  /**
+   * Log-in and "forgot password" attempts per 15 minutes per ACCOUNT (the email or phone typed),
+   * whatever address they come from (BT-07). Network addresses can be faked or shared (everyone
+   * behind Vercel), an account cannot: this is what really stops password guessing.
+   */
+  account: number;
   /** "Forgot password" requests per hour per address. */
   passwordReset: number;
   /** SMS codes per hour per user. */
@@ -25,6 +31,7 @@ export interface RateLimitSettings {
 
 export const DEFAULT_RATE_LIMITS: RateLimitSettings = {
   login: 10,
+  account: 10,
   passwordReset: 5,
   phoneCode: 3,
   lookup: 30,
@@ -54,10 +61,39 @@ function limiter(limit: number, windowMs: number, keyByUser = false) {
   });
 }
 
+/** The account a log-in or reset is for, written one way ("Amina@X.com " = "amina@x.com"). */
+export function accountKey(body: unknown): string {
+  const b = (body ?? {}) as { identifier?: unknown; email?: unknown };
+  const raw = typeof b.identifier === 'string' ? b.identifier : b.email;
+  if (typeof raw !== 'string' || !raw.trim()) return 'account:none';
+  const value = raw.trim().toLowerCase();
+  // Phone numbers: digits only, and 07.. / 01.. written as +2547.. / +2541.. (Kenya).
+  if (!value.includes('@')) {
+    const digits = value.replace(/\D/g, '');
+    return `account:${digits.startsWith('0') ? `254${digits.slice(1)}` : digits}`;
+  }
+  return `account:${value}`;
+}
+
 /** Separate counters per app instance (tests create their own app with their own limits). */
 export function createRateLimiters(settings: RateLimitSettings) {
   return {
     login: limiter(settings.login, 15 * 60 * 1000),
+    account: rateLimit({
+      windowMs: 15 * 60 * 1000,
+      limit: settings.account,
+      standardHeaders: false,
+      legacyHeaders: false,
+      keyGenerator: (req) => accountKey(req.body),
+      handler: (_req, res) => {
+        res.status(429).json({
+          error: {
+            code: 'rate_limited',
+            message: 'Too many tries. Please wait a few minutes and try again.',
+          },
+        });
+      },
+    }),
     passwordReset: limiter(settings.passwordReset, 60 * 60 * 1000),
     phoneCode: limiter(settings.phoneCode, 60 * 60 * 1000, true),
     lookup: limiter(settings.lookup, 15 * 60 * 1000),
