@@ -1,5 +1,6 @@
 // Builds the external channel adapters from the settings (.env). CHANNEL_MODE decides for all of
-// them: mock (log only; email to Mailpit), sandbox (provider test accounts) or live.
+// them: mock (log only; email to Mailpit), sandbox (provider test accounts) or live, except the
+// channels listed in MOCK_CHANNELS, which stay in mock mode (e.g. WhatsApp without a provider).
 import type { Logger } from 'pino';
 import { env } from '../config/env.js';
 import { logger as defaultLogger } from '../lib/logger.js';
@@ -13,10 +14,21 @@ export interface ChannelSetup {
   logger: Logger;
   /** Mock mode only: these channels pretend to fail. */
   mockFailChannels?: string[];
+  /** These channels stay in mock mode whatever `mode` says. */
+  mockChannels?: string[];
 }
 
-export function createAdapters({ mode, logger, mockFailChannels = [] }: ChannelSetup) {
-  const options = (name: string) => ({ mode, logger, mockFails: mockFailChannels.includes(name) });
+export function createAdapters({
+  mode,
+  logger,
+  mockFailChannels = [],
+  mockChannels = env.MOCK_CHANNELS,
+}: ChannelSetup) {
+  const options = (name: string) => ({
+    mode: mockChannels.includes(name) ? ('mock' as const) : mode,
+    logger,
+    mockFails: mockFailChannels.includes(name),
+  });
   const api = env.PUBLIC_API_URL.replace(/\/$/, '');
   return {
     whatsapp: new WhatsAppAdapter(options('whatsapp'), {

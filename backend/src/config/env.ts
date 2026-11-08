@@ -79,6 +79,19 @@ const envSchema = z.object({
         .map((c) => c.trim())
         .filter(Boolean),
     ),
+  // Channels kept in mock mode (log only) while the others use CHANNEL_MODE, e.g. "whatsapp" when
+  // there is no WhatsApp provider account yet: SMS and email go out for real, WhatsApp is only
+  // logged, and its keys are not needed.
+  MOCK_CHANNELS: z
+    .string()
+    .default('')
+    .transform((v) =>
+      v
+        .split(',')
+        .map((c) => c.trim())
+        .filter(Boolean),
+    )
+    .pipe(z.array(z.enum(['whatsapp', 'sms', 'email']))),
   TWILIO_ACCOUNT_SID: z.string().optional(),
   TWILIO_AUTH_TOKEN: z.string().optional(),
   // e.g. whatsapp:+14155238886 (the Twilio sandbox number) or your approved WhatsApp sender
@@ -116,13 +129,20 @@ const withProviderKeys = envSchema.superRefine((v, ctx) => {
     });
   }
   if (v.CHANNEL_MODE === 'mock') return;
+  // A channel kept in mock mode (MOCK_CHANNELS) needs no provider keys.
+  const live = (channel: 'whatsapp' | 'sms' | 'email') => !v.MOCK_CHANNELS.includes(channel);
   const required: (keyof typeof v)[] = [
-    'TWILIO_ACCOUNT_SID',
-    'TWILIO_AUTH_TOKEN',
-    'TWILIO_WHATSAPP_FROM',
-    'AFRICASTALKING_API_KEY',
-    'AFRICASTALKING_WEBHOOK_SECRET',
-    v.EMAIL_PROVIDER === 'resend' ? 'RESEND_API_KEY' : 'SENDGRID_API_KEY',
+    ...(live('whatsapp')
+      ? (['TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN', 'TWILIO_WHATSAPP_FROM'] as const)
+      : []),
+    ...(live('sms') ? (['AFRICASTALKING_API_KEY', 'AFRICASTALKING_WEBHOOK_SECRET'] as const) : []),
+    ...(live('email')
+      ? [
+          v.EMAIL_PROVIDER === 'resend'
+            ? ('RESEND_API_KEY' as const)
+            : ('SENDGRID_API_KEY' as const),
+        ]
+      : []),
   ];
   for (const key of required) {
     if (!v[key]) {

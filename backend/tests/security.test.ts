@@ -84,6 +84,22 @@ describe('production settings', () => {
     expect(JSON.stringify(result.error?.issues)).toContain('JWT_ACCESS_SECRET');
   });
 
+  it('sandbox with WhatsApp kept in mock mode needs no Twilio keys (MOCK_CHANNELS)', () => {
+    const sandbox = {
+      ...base,
+      JWT_ACCESS_SECRET: 'Qm9vdHN0cmFwLXRlc3Qtc2VjcmV0LWZvci1rYXppZm9yY2UtMjAyNg',
+      CHANNEL_MODE: 'sandbox',
+      AFRICASTALKING_API_KEY: 'at-key',
+      AFRICASTALKING_WEBHOOK_SECRET: 'at-secret',
+      RESEND_API_KEY: 're_key',
+    };
+    const without = validateEnv(sandbox);
+    expect(without.success).toBe(false);
+    expect(JSON.stringify(without.error?.issues)).toContain('TWILIO_ACCOUNT_SID');
+    expect(validateEnv({ ...sandbox, MOCK_CHANNELS: 'whatsapp' }).success).toBe(true);
+    expect(validateEnv({ ...sandbox, MOCK_CHANNELS: 'telegram' }).success).toBe(false);
+  });
+
   it('accept a real random secret', () => {
     const result = validateEnv({
       ...base,
