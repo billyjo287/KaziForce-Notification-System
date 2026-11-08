@@ -2,7 +2,8 @@
 
 Training and evaluation scripts for the spam detector and the priority classifier. **Nothing is
 trained yet.** Until Phase 9 (which starts only when Billy says so), /predict is answered by the
-rule-based classifier `rules-v0` (`app/classifiers/rule_based.py`).
+rule-based classifier (`app/classifiers/rule_based.py`), version `rules-v1` since Sprint II (the
+file `rules-v0.json` keeps its first name; the version inside it is `rules-v1`).
 
 ## What Phase 9 will add here
 
@@ -11,7 +12,7 @@ rule-based classifier `rules-v0` (`app/classifiers/rule_based.py`).
 2. `train.py`: TF-IDF text features + one-hot type/role/hour features (PRD DR-6), a priority
    classifier and a spam detector (scikit-learn), saved with joblib to `../models/`.
 3. `evaluate.py`: weighted F1 for priority (target 85% or more), spam accuracy (95% or more) and
-   false positive rate (under 5%), compared with `rules-v0` on the same test set. The results
+   false positive rate (under 5%), compared with `rules-v1` on the same test set (`evaluation/results/rules-v1/`). The results
    are stored in the `MLMetadata` table with the model version.
 4. SHAP explanations for the admin dashboard (PRD NFR-6).
 
@@ -21,7 +22,7 @@ rule-based classifier `rules-v0` (`app/classifiers/rule_based.py`).
   the classifier's answer, delivery and interaction times ("opened", "Not important to me"),
   and admin corrections (`correctedPriority`, `correctedSpam`), which are the training labels.
   User IDs are replaced with random tokens; no names, phones or emails.
-- `../tests/fixtures/rules_v0_examples.json`: 28 labelled examples that any trained model must
+- `../tests/fixtures/rules_v0_examples.json`: 33 labelled examples that any trained model must
   also get right before it replaces the rules.
 
 ## Switching to a trained model (no code changes outside /ml-service)

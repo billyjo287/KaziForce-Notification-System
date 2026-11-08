@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarClock, EyeOff, Mail, MapPin } from 'lucide-react';
+import { ArrowLeft, CalendarClock, EyeOff, Mail, MapPin, Zap } from 'lucide-react';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
@@ -29,11 +29,13 @@ interface AlertDetailProps {
   onMarkUnread: () => void;
   /** The main action was used (recorded as "clicked"). */
   onMainAction: () => void;
+  /** "This was urgent for me" (BT-15). Shown only on alerts that were not urgent. */
+  onUrgentForMe?: () => void;
 }
 
 /** Full alert with its one main action. Phones show it as its own page, desktops beside the list. */
 export const AlertDetail = forwardRef<HTMLHeadingElement, AlertDetailProps>(function AlertDetail(
-  { role, alert, onBack, onNotImportant, onMarkUnread, onMainAction },
+  { role, alert, onBack, onNotImportant, onMarkUnread, onMainAction, onUrgentForMe },
   headingRef,
 ) {
   const { t, i18n } = useTranslation();
@@ -115,6 +117,29 @@ export const AlertDetail = forwardRef<HTMLHeadingElement, AlertDetailProps>(func
             {t('alerts.detail.notImportantHelp')}
           </p>
         </div>
+        {onUrgentForMe && alert.priority !== 'urgent' && (
+          <div className="flex flex-col">
+            {alert.markedUrgent ? (
+              <p className="inline-flex min-h-12 items-center gap-2 font-bold">
+                <Zap aria-hidden="true" className="size-5" />
+                {t('alerts.detail.urgentForMeSaved')}
+              </p>
+            ) : (
+              <button
+                type="button"
+                onClick={onUrgentForMe}
+                aria-describedby={`urgent-for-me-help-${alert.id}`}
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border-2 border-line-strong px-5 font-bold transition-colors duration-150 hover:bg-canvas"
+              >
+                <Zap aria-hidden="true" className="size-5" />
+                {t('alerts.detail.urgentForMe')}
+              </button>
+            )}
+            <p id={`urgent-for-me-help-${alert.id}`} className="mt-1.5 text-ink-muted">
+              {t('alerts.detail.urgentForMeHelp')}
+            </p>
+          </div>
+        )}
         <button
           type="button"
           onClick={onMarkUnread}

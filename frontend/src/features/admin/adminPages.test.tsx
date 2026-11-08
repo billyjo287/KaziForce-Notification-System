@@ -272,6 +272,58 @@ describe('delivery logs', () => {
     });
     expect(screen.getByRole('button', { name: 'Clear filters' })).toBeInTheDocument();
   });
+
+  it('shows why each alert got its priority, and "Send again" on a failed SMS (BT-16, BT-24)', async () => {
+    vi.mocked(api.get).mockReset();
+    vi.mocked(api.get).mockResolvedValue({
+      data: {
+        items: [
+          {
+            id: 'log1',
+            channel: 'sms',
+            status: 'failed',
+            attempt: 3,
+            isEscalation: false,
+            error: 'Provider down',
+            providerMessageId: null,
+            createdAt: new Date().toISOString(),
+            sentAt: null,
+            deliveredAt: null,
+            openedAt: null,
+            notification: {
+              id: 'n1',
+              title: 'Waiters needed tonight',
+              category: 'new_job',
+              priority: 'urgent',
+              corrected: false,
+              reasons: ['closes_within_3_hours', 'urgent_words:tonight'],
+              source: 'rules',
+              recipient: { id: 'u1', name: 'Amina' },
+            },
+          },
+        ],
+        total: 1,
+        page: 1,
+        pageSize: 20,
+      },
+    });
+    vi.mocked(api.post).mockResolvedValue({ data: { ok: true } });
+    renderWithRouter(
+      <>
+        <DeliveryLogsPage />
+        <Toaster />
+      </>,
+      '/admin/delivery-logs',
+    );
+    expect(
+      await screen.findByText('closes within 3 hours · urgent words: tonight'),
+    ).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Send again' }));
+    expect(api.post).toHaveBeenCalledWith('/admin/delivery-logs/log1/resend');
+    expect(
+      await screen.findByText('Sent again. A new try appears here in a moment.'),
+    ).toBeInTheDocument();
+  });
 });
 
 describe('employer: who got the job alert', () => {

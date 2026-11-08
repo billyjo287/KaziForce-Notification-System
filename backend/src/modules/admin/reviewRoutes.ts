@@ -9,7 +9,7 @@ import { conflict, notFound } from '../../lib/httpError.js';
 import { prisma } from '../../lib/prisma.js';
 import { requestRelease } from '../../lib/queue.js';
 import { idParam, parse } from '../../lib/validate.js';
-import { currentUser, requireAuth, requireRole } from '../../middleware/auth.js';
+import { currentUser } from '../../middleware/auth.js';
 
 const priority = z.enum(['urgent', 'medium', 'low']);
 
@@ -41,7 +41,7 @@ async function decide(
 
 export function reviewRoutes() {
   const router = Router();
-  router.use(requireAuth, requireRole('admin'));
+  // Logged in and admin: checked once for every /admin address in app.ts (BT-20).
 
   async function blocked(id: string) {
     const n = await prisma.notification.findUnique({ where: { id } });

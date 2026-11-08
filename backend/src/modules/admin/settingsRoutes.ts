@@ -10,7 +10,7 @@ import { LANGUAGES, listWording, saveWording, wordingProblem } from '../../chann
 import { badRequest } from '../../lib/httpError.js';
 import { prisma } from '../../lib/prisma.js';
 import { parse } from '../../lib/validate.js';
-import { currentUser, requireAuth, requireRole } from '../../middleware/auth.js';
+import { currentUser } from '../../middleware/auth.js';
 import { CATEGORIES } from '../../preferences/categories.js';
 import { mandatoryCategories, platformPolicies } from '../../preferences/index.js';
 import { DAILY_TEXT_LIMITS, POLICY_ID } from '../../preferences/policies.js';
@@ -47,7 +47,7 @@ const WORDING_ERRORS = {
 
 export function settingsRoutes() {
   const router = Router();
-  router.use(requireAuth, requireRole('admin'));
+  // Logged in and admin: checked once for every /admin address in app.ts (BT-20).
 
   // ---------- Notification rules ----------
   router.get('/notification-rules', async (_req, res) => {

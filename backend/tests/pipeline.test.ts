@@ -4,6 +4,7 @@
 import { createServer, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { Redis } from 'ioredis';
+import jwt from 'jsonwebtoken';
 import { io as connect, type Socket } from 'socket.io-client';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -239,6 +240,20 @@ describe('live connection (Socket.IO)', () => {
     const { user, token } = await makeUser('worker');
     await prisma.user.update({ where: { id: user.id }, data: { status: 'suspended' } });
     await expect(openSocket(token)).rejects.toThrow('account_suspended');
+  });
+
+  it('closes the live connection when its login token expires (BT-18)', async () => {
+    const { user } = await makeUser('worker');
+    // A token that lasts 2 seconds (normal ones last 15 minutes).
+    const shortLived = jwt.sign({ role: 'worker' }, env.JWT_ACCESS_SECRET, {
+      subject: user.id,
+      expiresIn: 2,
+      algorithm: 'HS256',
+    });
+    const socket = await openSocket(shortLived);
+    const reason = await new Promise<string>((resolve) => socket.once('disconnect', resolve));
+    // Closed by the server on purpose: the page asks for a fresh token and reconnects.
+    expect(reason).toBe('io server disconnect');
   });
 
   it('closes the live connection when an admin suspends the user', async () => {

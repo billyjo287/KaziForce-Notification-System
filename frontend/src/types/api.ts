@@ -219,6 +219,8 @@ export interface ApiNotification {
   deadlineAt: string | null;
   location: string | null;
   markedNotImportant: boolean;
+  /** "This was urgent for me" (BT-15). Missing from an older server. */
+  markedUrgent?: boolean;
 }
 
 export interface AdminUserRow {

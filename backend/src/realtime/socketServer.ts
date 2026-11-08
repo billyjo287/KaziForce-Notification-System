@@ -33,6 +33,8 @@ export interface RealtimeOptions {
 
 interface SocketData {
   userId: string;
+  /** When the login token used to connect expires (ms since 1970). */
+  expiresAt?: number;
 }
 
 const receivedSchema = z.object({ id: z.uuid() });
@@ -61,6 +63,7 @@ export async function attachRealtime(
       if (!user) return next(new Error('unauthorized'));
       if (user.status === 'suspended') return next(new Error('account_suspended'));
       socket.data.userId = user.id;
+      if (payload.exp) socket.data.expiresAt = payload.exp * 1000;
       next();
     } catch (error) {
       logger.error({ err: error }, 'Socket authentication failed');
@@ -69,8 +72,19 @@ export async function attachRealtime(
   });
 
   io.on('connection', (socket) => {
-    const { userId } = socket.data;
+    const { userId, expiresAt } = socket.data;
     void socket.join(userRoom(userId));
+
+    // The login token is checked only when connecting, so close the connection when it expires
+    // (BT-18). The page then gets a fresh token, reconnects and fetches what it missed
+    // (lib/liveConnection.ts); a logged-out or suspended person cannot come back.
+    if (expiresAt) {
+      const timer = setTimeout(
+        () => socket.disconnect(true),
+        Math.max(0, Math.min(expiresAt - Date.now(), 2_147_000_000)),
+      );
+      socket.on('disconnect', () => clearTimeout(timer));
+    }
 
     socket.on('notification:received', async (raw: unknown) => {
       const parsed = receivedSchema.safeParse(raw);

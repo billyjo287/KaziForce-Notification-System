@@ -6,6 +6,8 @@ import type { Role } from '../generated/prisma/client.js';
 export interface AccessTokenPayload {
   sub: string;
   role: Role;
+  /** When the token stops working (seconds since 1970), as written in it. */
+  exp?: number;
 }
 
 /** Short-lived login token (JWT), kept in the browser's memory only. */
@@ -21,7 +23,7 @@ export function verifyAccessToken(token: string): AccessTokenPayload | null {
   try {
     const payload = jwt.verify(token, env.JWT_ACCESS_SECRET, { algorithms: ['HS256'] });
     if (typeof payload === 'string' || !payload.sub) return null;
-    return { sub: payload.sub, role: payload.role as Role };
+    return { sub: payload.sub, role: payload.role as Role, exp: payload.exp };
   } catch {
     return null;
   }

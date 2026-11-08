@@ -4,6 +4,7 @@ import { Button } from '../../components/ui/Button';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { CardListSkeleton, Skeleton } from '../../components/ui/Skeleton';
 import { usePageTitle } from '../../lib/usePageTitle';
+import { showToast } from '../../stores/toasts';
 import { AlertsDashboard } from './AlertsDashboard';
 import type { AlertRole } from './types';
 import { useAlerts } from './useAlerts';
@@ -11,7 +12,7 @@ import { useAlerts } from './useAlerts';
 export function AlertsPage({ role }: { role: AlertRole }) {
   const { t } = useTranslation();
   usePageTitle(t('alerts.title'));
-  const { status, alerts, actions, refetch } = useAlerts();
+  const { status, alerts, actions, refetch, older } = useAlerts();
 
   if (status === 'loading') {
     return (
@@ -42,7 +43,25 @@ export function AlertsPage({ role }: { role: AlertRole }) {
     );
   }
 
-  return <AlertsDashboard role={role} alerts={alerts} actions={actions} />;
+  return (
+    <>
+      <AlertsDashboard role={role} alerts={alerts} actions={actions} />
+      {older.available && (
+        <div className="mt-8 flex flex-col items-start gap-2">
+          <Button
+            variant="secondary"
+            onClick={() =>
+              void older.load().catch(() => showToast({ message: t('alerts.older.error') }))
+            }
+            disabled={older.loading}
+          >
+            {older.loading ? t('alerts.older.loading') : t('alerts.older.button')}
+          </Button>
+          <p className="text-ink-muted">{t('alerts.older.help')}</p>
+        </div>
+      )}
+    </>
+  );
 }
 
 export const WorkerAlerts = () => <AlertsPage role="worker" />;

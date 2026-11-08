@@ -65,6 +65,12 @@
     "reconnecting": "Reconnecting… New alerts will appear as soon as we are back."
   },
   "alerts": {
+    "older": {
+      "button": "Show older alerts",
+      "loading": "Loading older alerts…",
+      "help": "You are seeing your newest alerts. Older ones load 200 at a time.",
+      "error": "We could not load older alerts. Please try again."
+    },
     "title": "Alerts",
     "unreadSummary_one": "You have {{count}} unread alert.",
     "unreadSummary_other": "You have {{count}} unread alerts.",
@@ -74,6 +80,7 @@
     "closed": "This job has closed",
     "newAlertAnnouncement": "New alert ({{priority}}): {{title}}",
     "notImportantDone": "Marked as not important. We will show you fewer alerts like it.",
+    "urgentForMeDone": "Thank you. As we learn, alerts like this will reach you sooner.",
     "filters": {
       "label": "Show",
       "all": "All",
@@ -118,7 +125,10 @@
       "notImportant": "Not important to me",
       "notImportantHelp": "We will show you fewer alerts like this one.",
       "choose": "Choose an alert on the left to see it here.",
-      "markUnread": "Mark as unread"
+      "markUnread": "Mark as unread",
+      "urgentForMe": "This was urgent for me",
+      "urgentForMeHelp": "Tell us when an alert should have reached you sooner. It helps us sort alerts better.",
+      "urgentForMeSaved": "You said this was urgent for you"
     },
     "tabsLabel": "Alert categories",
     "tabUnread_one": "{{count}} new",

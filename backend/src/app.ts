@@ -22,6 +22,7 @@ import { messageRoutes } from './modules/marketplace/messageRoutes.js';
 import { meRoutes } from './modules/me/meRoutes.js';
 import { notificationRoutes } from './modules/notifications/notificationRoutes.js';
 import { linkRoutes, webhookRoutes } from './modules/webhooks/webhookRoutes.js';
+import { requireAuth, requireRole } from './middleware/auth.js';
 import { healthRouter, type HealthCheck } from './routes/health.js';
 
 export interface AppOptions {
@@ -100,6 +101,8 @@ export function createApp({
   api.use('/applications', applicationRoutes());
   api.use('/conversations', messageRoutes(limits));
   api.use('/notifications', notificationRoutes());
+  // Every /admin address: logged in AND an admin, checked once here for all four routers (BT-20).
+  api.use('/admin', requireAuth, requireRole('admin'));
   api.use('/admin', adminRoutes(limits));
   api.use('/admin', reviewRoutes());
   api.use('/admin', monitoringRoutes());

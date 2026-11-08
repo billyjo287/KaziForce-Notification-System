@@ -206,14 +206,28 @@ export function applicationRoutes() {
       throw conflict('undo_too_late', 'It is too late to undo this change.');
     }
 
-    await prisma.$transaction([
-      prisma.application.update({
+    const from = payload.from;
+    await prisma.$transaction(async (tx) => {
+      // Cancel only if the worker has not taken the event in the meantime: checked and changed
+      // in one step, so Undo and the relay can never both win (BT-19).
+      const cancelled = await tx.domainEvent.updateMany({
+        where: {
+          id: undoId,
+          processedAt: null,
+          cancelledAt: null,
+          availableAt: { gt: new Date() },
+        },
+        data: { cancelledAt: new Date() },
+      });
+      if (cancelled.count === 0) {
+        throw conflict('undo_too_late', 'It is too late to undo this change.');
+      }
+      await tx.application.update({
         where: { id },
-        data: { status: payload.from, statusChangedAt: new Date() },
-      }),
-      prisma.domainEvent.update({ where: { id: undoId }, data: { cancelledAt: new Date() } }),
-    ]);
-    res.json({ application: { id, status: payload.from } });
+        data: { status: from, statusChangedAt: new Date() },
+      });
+    });
+    res.json({ application: { id, status: from } });
   });
 
   return router;

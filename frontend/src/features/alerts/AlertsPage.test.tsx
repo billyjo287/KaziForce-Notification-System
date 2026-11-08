@@ -6,7 +6,9 @@ import i18n from '../../i18n';
 import { renderWithRouter } from '../../test/renderWithRouter';
 import { api } from '../../lib/api';
 import { createNotifications } from '../../test/fixtures/notifications';
+import { AlertDetail } from './AlertDetail';
 import { AlertsPage } from './AlertsPage';
+import { toAlert } from './useAlerts';
 import type { AlertRole } from './types';
 
 function renderAlerts(role: AlertRole = 'worker', path = '/worker/alerts') {
@@ -206,6 +208,43 @@ describe('Alerts dashboard', () => {
     expect(api.patch).toHaveBeenLastCalledWith('/notifications', { ids: ['a1'], read: false });
     expect(await screen.findByText('Marked as unread.')).toBeInTheDocument();
     expect(screen.getByText('You have 4 unread alerts.')).toBeInTheDocument();
+  });
+
+  it('"This was urgent for me" on a non-urgent alert, with Undo; not offered on urgent ones (BT-15)', async () => {
+    renderAlerts();
+    await userEvent.click(await screen.findByRole('tab', { name: /Check today/ }));
+    await userEvent.click(screen.getByRole('button', { name: /New message from Pwani Events/ }));
+    await userEvent.click(await screen.findByRole('button', { name: 'This was urgent for me' }));
+    expect(api.patch).toHaveBeenLastCalledWith('/notifications', {
+      ids: ['a3'],
+      urgentForMe: true,
+    });
+    expect(await screen.findByText('You said this was urgent for you')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Undo' }));
+    expect(api.patch).toHaveBeenLastCalledWith('/notifications', {
+      ids: ['a3'],
+      urgentForMe: false,
+    });
+  });
+
+  it('does not offer "This was urgent for me" on an alert that was already urgent', () => {
+    const urgent = toAlert(createNotifications()[0]!);
+    expect(urgent.priority).toBe('urgent');
+    renderWithRouter(
+      <AlertDetail
+        role="worker"
+        alert={urgent}
+        onBack={() => {}}
+        onNotImportant={() => {}}
+        onMarkUnread={() => {}}
+        onMainAction={() => {}}
+        onUrgentForMe={() => {}}
+      />,
+    );
+    expect(screen.getByRole('button', { name: 'Not important to me' })).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'This was urgent for me' }),
+    ).not.toBeInTheDocument();
   });
 
   it('search asks the server, across the whole history, and opens a result (FR-NOT-027)', async () => {

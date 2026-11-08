@@ -61,6 +61,10 @@ export interface DeliveryLogRow {
     category: string;
     priority: Priority;
     corrected: boolean;
+    /** The classifier's strongest reasons for this priority (BT-16). Missing on an older server. */
+    reasons?: string[];
+    /** ml, rules, or rules_fallback */
+    source?: string | null;
     recipient: { id: string; name: string };
   };
 }
@@ -169,6 +173,10 @@ export const usePublishHeldJob = () =>
 
 export const useRemoveHeldJob = () =>
   useAdminMutation((id: string) => api.post(`/admin/review/jobs/${id}/remove`));
+
+/** "Send again" for a failed WhatsApp, SMS or email (BT-24). */
+export const useResendDelivery = () =>
+  useAdminMutation((id: string) => api.post(`/admin/delivery-logs/${id}/resend`));
 
 export const useCorrectPriority = () =>
   useAdminMutation(({ id, priority }: { id: string; priority: Priority }) =>

@@ -65,6 +65,12 @@
     "reconnecting": "Tunaunganisha tena… Arifa mpya zitaonekana punde tu."
   },
   "alerts": {
+    "older": {
+      "button": "Onyesha arifa za zamani",
+      "loading": "Inapakia arifa za zamani…",
+      "help": "Unaona arifa zako mpya zaidi. Za zamani zinapakiwa 200 kwa wakati mmoja.",
+      "error": "Hatukuweza kupakia arifa za zamani. Tafadhali jaribu tena."
+    },
     "title": "Arifa",
     "unreadSummary_one": "Una arifa {{count}} ambayo haijasomwa.",
     "unreadSummary_other": "Una arifa {{count}} ambazo hazijasomwa.",
@@ -74,6 +80,7 @@
     "closed": "Kazi hii imefungwa",
     "newAlertAnnouncement": "Arifa mpya ({{priority}}): {{title}}",
     "notImportantDone": "Imewekwa kama si muhimu. Tutakuonyesha arifa chache kama hii.",
+    "urgentForMeDone": "Asante. Arifa kama hii zitakufikia mapema zaidi tunapojifunza.",
     "filters": {
       "label": "Onyesha",
       "all": "Zote",
@@ -118,7 +125,10 @@
       "notImportant": "Si muhimu kwangu",
       "notImportantHelp": "Tutakuonyesha arifa chache kama hii.",
       "choose": "Chagua arifa upande wa kushoto uione hapa.",
-      "markUnread": "Weka kuwa haijasomwa"
+      "markUnread": "Weka kuwa haijasomwa",
+      "urgentForMe": "Hii ilikuwa ya haraka kwangu",
+      "urgentForMeHelp": "Tuambie arifa inapopaswa kukufikia mapema zaidi. Inatusaidia kupanga arifa vizuri zaidi.",
+      "urgentForMeSaved": "Ulisema hii ilikuwa ya haraka kwako"
     },
     "tabsLabel": "Aina za arifa",
     "tabUnread_one": "{{count}} mpya",

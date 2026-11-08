@@ -16,6 +16,7 @@ import { showToast } from '../../stores/toasts';
 import { PriorityBadge } from '../alerts/PriorityBadge';
 import {
   useCorrectPriority,
+  useResendDelivery,
   useDeliveryLogs,
   type DeliveryLogRow,
   type DeliveryStatus,
@@ -150,6 +151,9 @@ export default function DeliveryLogsPage() {
 function LogRow({ row, onCorrect }: { row: DeliveryLogRow; onCorrect: () => void }) {
   const { t, i18n } = useTranslation();
   const style = STATUS_STYLE[row.status];
+  const resend = useResendDelivery();
+  // Only a failed try on an outside channel can be sent again (BT-24).
+  const canResend = row.status === 'failed' && ['whatsapp', 'sms', 'email'].includes(row.channel);
   return (
     <article className="flex flex-col gap-2 rounded-xl border border-line bg-surface p-4">
       <div className="flex flex-wrap items-center gap-2">
@@ -175,10 +179,35 @@ function LogRow({ row, onCorrect }: { row: DeliveryLogRow; onCorrect: () => void
         {row.notification.corrected && (
           <span className="text-ink-muted">{t('admin.logs.corrected')}</span>
         )}
-        <Button variant="secondary" className="ml-auto" onClick={onCorrect}>
+        {canResend && (
+          <Button
+            variant="secondary"
+            className="ml-auto"
+            disabled={resend.isPending || resend.isSuccess}
+            onClick={() =>
+              resend.mutate(row.id, {
+                onSuccess: () => showToast({ message: t('admin.logs.resent') }),
+                onError: () => showToast({ message: t('admin.logs.resendError') }),
+              })
+            }
+          >
+            {t('admin.logs.resend')}
+          </Button>
+        )}
+        <Button variant="secondary" className={canResend ? '' : 'ml-auto'} onClick={onCorrect}>
           {t('admin.logs.correct')}
         </Button>
       </div>
+      {/* Why the classifier chose it (BT-16): helps decide whether to correct it. */}
+      {row.notification.reasons && row.notification.reasons.length > 0 && (
+        <p className="text-ink-muted">
+          <span className="font-bold text-ink">{t('admin.logs.why')}</span>{' '}
+          {row.notification.reasons
+            .map((r) => r.replace(/:/g, ': ').replace(/_/g, ' ').replace(/,/g, ', '))
+            .join(' · ')}
+          {row.notification.source === 'rules_fallback' && ` (${t('admin.logs.byBackupRules')})`}
+        </p>
+      )}
     </article>
   );
 }

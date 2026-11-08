@@ -132,6 +132,30 @@ export async function requestRelease(notificationId: string, prefix = env.QUEUE_
   );
 }
 
+/**
+ * Admin "Send again" for a failed delivery (BT-24): one new send on that channel, with its own
+ * job id so it is not mistaken for the first one. Returns the job id.
+ */
+export async function requestResend(
+  notificationId: string,
+  channel: 'whatsapp' | 'sms' | 'email',
+  prefix = env.QUEUE_PREFIX,
+) {
+  const jobId = `${notificationId}-${channel}-resend-${Date.now()}`;
+  await apiQueue<ChannelJobData>(channelQueueName(channel), prefix).add(
+    `send.${channel}`,
+    { notificationId, channel, isEscalation: false },
+    {
+      jobId,
+      attempts: 3,
+      backoff: { type: 'exponential', delay: 1000 },
+      removeOnComplete: 1000,
+      removeOnFail: 5000,
+    },
+  );
+  return jobId;
+}
+
 /** The queues shown on the admin overview, with plain names (the page translates them). */
 export const MONITORED_QUEUES = [
   NOTIFICATION_QUEUE,

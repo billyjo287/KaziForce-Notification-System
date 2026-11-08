@@ -159,7 +159,12 @@
       "emptyTitle": "Hakuna utumaji unaolingana na vichujio hivi",
       "emptyBody": "Jaribu njia, matokeo au tarehe nyingine.",
       "correct": "Sahihisha kipaumbele",
-      "corrected": "Kimesahihishwa na msimamizi"
+      "corrected": "Kimesahihishwa na msimamizi",
+      "why": "Kwa nini kipaumbele hiki:",
+      "resend": "Tuma tena",
+      "resent": "Imetumwa tena. Jaribio jipya litaonekana hapa baada ya muda mfupi.",
+      "resendError": "Haikuweza kutumwa tena. Tafadhali jaribu tena.",
+      "byBackupRules": "imeamuliwa na sheria za akiba"
     },
     "correct": {
       "title": "Kipaumbele cha “{{title}}” kiwe kipi?",

@@ -159,7 +159,12 @@
       "emptyTitle": "No deliveries match these filters",
       "emptyBody": "Try another channel, result or date.",
       "correct": "Correct priority",
-      "corrected": "Corrected by an admin"
+      "corrected": "Corrected by an admin",
+      "why": "Why this priority:",
+      "resend": "Send again",
+      "resent": "Sent again. A new try appears here in a moment.",
+      "resendError": "It could not be sent again. Please try again.",
+      "byBackupRules": "decided by the backup rules"
     },
     "correct": {
       "title": "What should the priority of “{{title}}” be?",

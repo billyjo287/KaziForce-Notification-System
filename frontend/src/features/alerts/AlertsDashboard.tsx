@@ -60,7 +60,8 @@ export function AlertsDashboard({
   actions: AlertActions;
 }) {
   const { t } = useTranslation();
-  const { markRead, markManyRead, markManyUnread, setNotImportant, markClicked } = actions;
+  const { markRead, markManyRead, markManyUnread, setNotImportant, markClicked, setUrgentForMe } =
+    actions;
 
   const shown = useMemo(() => alerts.filter((a) => !a.markedNotImportant), [alerts]);
   // "?open=<id>" (from the "Open" button on a new-alert message) opens that alert directly.
@@ -131,6 +132,16 @@ export function AlertsDashboard({
       message: t('alerts.markedAllRead', { count: ids.length }),
       actionLabel: t('common.undo'),
       onAction: () => markManyUnread(ids),
+    });
+  }
+
+  /** "This was urgent for me" (BT-15): thanks, with Undo. The alert stays open. */
+  function markUrgentForMe(alert: Alert) {
+    setUrgentForMe(alert.id, true);
+    showToast({
+      message: t('alerts.urgentForMeDone'),
+      actionLabel: t('common.undo'),
+      onAction: () => setUrgentForMe(alert.id, false),
     });
   }
 
@@ -362,6 +373,7 @@ export function AlertsDashboard({
                   onBack={() => setSelectedId(null)}
                   onNotImportant={() => markNotImportant(selected)}
                   onMarkUnread={() => markUnread(selected.id)}
+                  onUrgentForMe={() => markUrgentForMe(selected)}
                   onMainAction={() => markClicked(selected.id)}
                 />
               </m.div>

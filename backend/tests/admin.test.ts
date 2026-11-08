@@ -153,6 +153,40 @@ describe('overview', () => {
   });
 });
 
+describe('delivery log: reasons and "Send again" (BT-16, BT-24)', () => {
+  it('each row says why the alert got its priority; a failed SMS can be sent again', async () => {
+    const worker = await person('Resend Person');
+    const n = await notification(worker.id, { title: 'Resend me', predictedPriority: 'urgent' });
+    await prisma.notification.update({
+      where: { id: n.id },
+      data: {
+        explanation: [
+          { feature: 'spam:mobile_money_number', weight: 0.9 },
+          { feature: 'urgent_words:tonight', weight: 0.3 },
+          { feature: 'closes_within_3_hours', weight: 0.6 },
+        ],
+      },
+    });
+    const failed = await log(n.id, 'sms', 'failed', 3);
+    const res = await get('/admin/delivery-logs?channel=sms&status=failed');
+    const row = res.body.items.find((i: { id: string }) => i.id === failed.id);
+    // Strongest first, spam checks left out.
+    expect(row.notification.reasons).toEqual(['closes_within_3_hours', 'urgent_words:tonight']);
+
+    const resent = await post(`/admin/delivery-logs/${failed.id}/resend`, {});
+    expect(resent.status).toBe(202);
+    expect(resent.body.jobId).toMatch(new RegExp(`^${n.id}-sms-resend-`));
+    const audit = await prisma.auditLog.findFirst({
+      where: { action: 'delivery.resent', targetId: n.id },
+    });
+    expect(audit?.metadata).toMatchObject({ channel: 'sms' });
+
+    // Only failed tries on outside channels.
+    const sent = await log(n.id, 'sms', 'sent', 4);
+    expect((await post(`/admin/delivery-logs/${sent.id}/resend`, {})).status).toBe(409);
+  });
+});
+
 describe('delivery log', () => {
   it('filters by channel, status and Nairobi date, newest first, with the alert it belongs to', async () => {
     const worker = await person('Delivery Log Person');

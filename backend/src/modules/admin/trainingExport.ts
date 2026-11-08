@@ -56,6 +56,8 @@ export const CSV_COLUMNS = [
   'clicked',
   'dismissed',
   'marked_not_important',
+  // "This was urgent for me" (BT-15): a weak urgent label from the person.
+  'marked_urgent_by_user',
   // The reason chosen from the fixed list (never the free-text note, which may name people).
   'not_important_reason',
   'delivery_failures',
@@ -169,6 +171,7 @@ type Source = {
   heldUntil: Date | null;
   readAt: Date | null;
   markedNotImportant: boolean;
+  markedUrgentByUser: boolean;
   notImportantReason: string | null;
   deliveries: Delivery[];
 };
@@ -235,6 +238,7 @@ export function toRow(
     clicked: n.deliveries.some((d) => d.clickedAt),
     dismissed: n.deliveries.some((d) => d.dismissedAt),
     marked_not_important: n.markedNotImportant,
+    marked_urgent_by_user: n.markedUrgentByUser,
     not_important_reason: n.notImportantReason,
     delivery_failures: n.deliveries.filter((d) => d.status === 'failed').length,
     // Response time = opened - sent (CLAUDE.md section 6), in seconds.

@@ -16,9 +16,15 @@ const updateSchema = z
     notImportant: z.boolean().optional(),
     /** The user followed the alert's main action (e.g. "View job"). */
     clicked: z.literal(true).optional(),
+    /** "This was urgent for me" (BT-15), or its Undo. */
+    urgentForMe: z.boolean().optional(),
   })
   .refine(
-    (v) => v.read !== undefined || v.notImportant !== undefined || v.clicked !== undefined,
+    (v) =>
+      v.read !== undefined ||
+      v.notImportant !== undefined ||
+      v.clicked !== undefined ||
+      v.urgentForMe !== undefined,
     'Nothing to change',
   );
 
@@ -36,7 +42,13 @@ const feedbackSchema = z.object({
   note: z.string().trim().max(300).optional(),
 });
 
-const searchSchema = z.object({ q: z.string().trim().max(100).optional() });
+const searchSchema = z.object({
+  q: z.string().trim().max(100).optional(),
+  /** "Show older alerts" (BT-21): the 200 before this moment (the oldest one on screen). */
+  before: z.iso.datetime().optional(),
+});
+/** Alerts per page: the newest 200 first, then 200 more each time. */
+export const ALERTS_PAGE = 200;
 
 export function notificationRoutes() {
   const router = Router();
@@ -45,13 +57,14 @@ export function notificationRoutes() {
   router.get('/', async (req, res) => {
     const me = currentUser(req);
     // ?q=words: search the person's whole history, title and text (SRS FR-NOT-027).
-    const { q } = parse(searchSchema, req.query);
+    const { q, before } = parse(searchSchema, req.query);
     const words = q?.split(/\s+/).filter(Boolean) ?? [];
     const notifications = await prisma.notification.findMany({
       // Spam is never shown; notifications still being processed are not ready yet.
       where: {
         recipientId: me.id,
         status: { in: ['sent', 'held', 'failed'] },
+        ...(before && { createdAt: { lt: new Date(before) } }),
         // Every word must appear, in the title or the text (any letter case).
         AND: words.map((word) => ({
           OR: [
@@ -62,7 +75,7 @@ export function notificationRoutes() {
       },
       include,
       orderBy: { createdAt: 'desc' },
-      take: 200,
+      take: ALERTS_PAGE,
     });
     // Anything that had not reached this person yet (they were offline) has reached them now.
     await prisma.deliveryLog.updateMany({
@@ -103,6 +116,24 @@ export function notificationRoutes() {
         await tx.deliveryLog.updateMany({
           where: { ...inApp, clickedAt: null },
           data: { clickedAt: now },
+        });
+      }
+      if (input.urgentForMe !== undefined) {
+        // Only alerts the classifier did NOT call urgent: that is the useful signal.
+        await tx.notification.updateMany({
+          where: {
+            ...mine,
+            // Written as what IS allowed: in SQL "not urgent" is never true for an empty field.
+            OR: [
+              { correctedPriority: { in: ['medium', 'low'] } },
+              { correctedPriority: null, predictedPriority: { in: ['medium', 'low'] } },
+              { correctedPriority: null, predictedPriority: null },
+            ],
+          },
+          data: {
+            markedUrgentByUser: input.urgentForMe,
+            markedUrgentAt: input.urgentForMe ? now : null,
+          },
         });
       }
       if (input.notImportant !== undefined) {

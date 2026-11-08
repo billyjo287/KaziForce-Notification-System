@@ -29,6 +29,7 @@ export function serializeNotification(n: NotificationRow) {
     deadlineAt: n.deadlineAt?.toISOString() ?? null,
     location: n.job?.location.name ?? null,
     markedNotImportant: n.markedNotImportant,
+    markedUrgent: n.markedUrgentByUser,
   };
 }
 

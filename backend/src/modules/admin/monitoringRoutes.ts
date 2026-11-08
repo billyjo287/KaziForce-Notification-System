@@ -5,14 +5,28 @@ import { z } from 'zod';
 import type { Channel, Prisma } from '../../generated/prisma/client.js';
 import { logger } from '../../lib/logger.js';
 import { prisma } from '../../lib/prisma.js';
-import { queueBacklog } from '../../lib/queue.js';
-import { PAGE_SIZE, pageQuery, parse } from '../../lib/validate.js';
-import { currentUser, requireAuth, requireRole } from '../../middleware/auth.js';
+import { conflict, notFound } from '../../lib/httpError.js';
+import { queueBacklog, requestResend } from '../../lib/queue.js';
+import { idParam, PAGE_SIZE, pageQuery, parse } from '../../lib/validate.js';
+import { currentUser } from '../../middleware/auth.js';
 import { writeTrainingCsv } from './trainingExport.js';
 
 const HOUR = 60 * 60 * 1000;
 const DAY = 24 * HOUR;
 const CHANNELS: Channel[] = ['in_app', 'whatsapp', 'sms', 'email'];
+
+/**
+ * The classifier's top 3 reasons for a PRIORITY (not the spam checks), strongest first, e.g.
+ * ["closes_within_60_minutes", "urgent_words:today"] (BT-16).
+ */
+export function priorityReasons(explanation: unknown): string[] {
+  if (!Array.isArray(explanation)) return [];
+  return (explanation as { feature?: unknown; weight?: unknown }[])
+    .filter((e) => typeof e.feature === 'string' && !e.feature.startsWith('spam:'))
+    .sort((a, b) => Math.abs(Number(b.weight) || 0) - Math.abs(Number(a.weight) || 0))
+    .slice(0, 3)
+    .map((e) => e.feature as string);
+}
 
 /** Midnight in Nairobi (UTC+3 all year) at the start of the day that contains `now`. */
 export function nairobiDayStart(now: Date): Date {
@@ -85,7 +99,7 @@ const exportQuery = z.object({ from: day.optional(), to: day.optional() });
 
 export function monitoringRoutes() {
   const router = Router();
-  router.use(requireAuth, requireRole('admin'));
+  // Logged in and admin: checked once for every /admin address in app.ts (BT-20).
 
   // ---------- Overview ----------
   router.get('/overview', async (_req, res) => {
@@ -174,6 +188,8 @@ export function monitoringRoutes() {
               category: true,
               predictedPriority: true,
               correctedPriority: true,
+              explanation: true,
+              predictionSource: true,
               recipient: { select: { id: true, name: true } },
             },
           },
@@ -204,6 +220,9 @@ export function monitoringRoutes() {
           priority:
             log.notification.correctedPriority ?? log.notification.predictedPriority ?? 'medium',
           corrected: log.notification.correctedPriority !== null,
+          // Why the classifier chose this priority (BT-16, PRD NFR-6): its strongest reasons.
+          reasons: priorityReasons(log.notification.explanation),
+          source: log.notification.predictionSource,
           recipient: log.notification.recipient,
         },
       })),
@@ -251,6 +270,37 @@ export function monitoringRoutes() {
         };
       }),
     });
+  });
+
+  // ---------- "Send again" for a failed delivery (BT-24) ----------
+  // For when the cause is fixed (e.g. an expired provider key). Only failed WhatsApp, SMS and
+  // email tries; a new try gets its own DeliveryLog row. Written to the audit log.
+  router.post('/delivery-logs/:id/resend', async (req, res) => {
+    const admin = currentUser(req);
+    const { id } = parse(idParam, req.params);
+    const log = await prisma.deliveryLog.findUnique({
+      where: { id },
+      include: { notification: { select: { id: true, title: true } } },
+    });
+    if (!log) throw notFound();
+    const channel = log.channel;
+    if (
+      log.status !== 'failed' ||
+      (channel !== 'whatsapp' && channel !== 'sms' && channel !== 'email')
+    ) {
+      throw conflict('cannot_resend', 'Only a failed WhatsApp, SMS or email can be sent again.');
+    }
+    const jobId = await requestResend(log.notificationId, channel);
+    await prisma.auditLog.create({
+      data: {
+        actorId: admin.id,
+        action: 'delivery.resent',
+        targetType: 'notification',
+        targetId: log.notificationId,
+        metadata: { channel, title: log.notification.title },
+      },
+    });
+    res.status(202).json({ ok: true, jobId });
   });
 
   // ---------- Anonymised training data (FR-9, DR-2) ----------

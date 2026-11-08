@@ -296,6 +296,12 @@ export function startDelivery(options: DeliveryOptions) {
     if (!adapter || !n || !reachable(n)) return 'gone';
     const attempt = job.attemptsMade + 1;
     const lastTry = attempt >= (job.opts.attempts ?? adapter.attempts);
+    // A retry (or an escalation) for an alert the person has already opened would only cost
+    // money and attention (BT-28): stop here. The first try always goes as planned.
+    if ((attempt > 1 || isEscalation) && isOpened(n)) {
+      logger.info({ notificationId, channel, attempt }, 'Already opened: no more tries needed');
+      return 'already opened';
+    }
 
     const log = await prisma.deliveryLog.create({
       data: { notificationId, channel, attempt, status: 'pending', isEscalation },

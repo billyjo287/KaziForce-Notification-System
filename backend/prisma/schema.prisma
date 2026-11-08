@@ -387,6 +387,10 @@ model Notification {
   // not_available | too_many | other, plus an optional short note (feedback and training data).
   notImportantReason   String?   @db.VarChar(30)
   notImportantNote     String?   @db.VarChar(300)
+  // "This was urgent for me" on an alert that was not urgent (BT-15): the missed-urgent signal
+  // the model needs most (recall on urgent). A weak label: one person's view.
+  markedUrgentByUser   Boolean   @default(false)
+  markedUrgentAt       DateTime?
 
   // ---- Urgent escalation ----
   escalatedAt DateTime?

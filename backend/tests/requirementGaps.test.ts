@@ -368,6 +368,45 @@ describe('FR-NOT-035: "Always send" rules', () => {
   });
 });
 
+// BT-15: the missed-urgent signal for the model.
+describe('"This was urgent for me"', () => {
+  it('is saved on alerts that were not urgent, can be undone, and is ignored on urgent ones', async () => {
+    const { token, id } = await newAccount();
+    const make = (priority: 'urgent' | 'medium') =>
+      prisma.notification.create({
+        data: {
+          recipientId: id,
+          recipientRole: 'worker',
+          senderRole: 'business',
+          type: 'message',
+          category: 'message',
+          title: `A ${priority} one`,
+          message: 'Hello',
+          status: 'sent',
+          predictedPriority: priority,
+        },
+      });
+    const medium = await make('medium');
+    const urgent = await make('urgent');
+    const res = await request(app)
+      .patch('/api/notifications')
+      .set(auth(token))
+      .send({ ids: [medium.id, urgent.id], urgentForMe: true });
+    expect(res.status).toBe(200);
+    const byId = new Map(res.body.items.map((n: { id: string }) => [n.id, n]));
+    expect(byId.get(medium.id)).toMatchObject({ markedUrgent: true });
+    expect(byId.get(urgent.id)).toMatchObject({ markedUrgent: false });
+
+    await request(app)
+      .patch('/api/notifications')
+      .set(auth(token))
+      .send({ ids: [medium.id], urgentForMe: false })
+      .expect(200);
+    const after = await prisma.notification.findUniqueOrThrow({ where: { id: medium.id } });
+    expect(after).toMatchObject({ markedUrgentByUser: false, markedUrgentAt: null });
+  });
+});
+
 describe('FR-NOT-034: policies for everyone (daily text limit)', () => {
   it('only admins set it, only to a listed value, and every change is audited', async () => {
     const { token } = await newAccount();

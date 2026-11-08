@@ -18,6 +18,8 @@ export interface Alert {
   link?: string | null;
   /** The user tapped "Not important to me" (hidden from the list; a training signal later). */
   markedNotImportant?: boolean;
+  /** The user said "This was urgent for me" (BT-15): a training signal. */
+  markedUrgent?: boolean;
   /** Arrived while the page was open, so it slides in. */
   arrivedLive?: boolean;
 }

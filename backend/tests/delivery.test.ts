@@ -211,6 +211,28 @@ describe('urgent: first choice, with a safety net', () => {
     );
   });
 
+  it('no retry and no next channel once the alert was opened in the app (BT-28)', async () => {
+    const { user } = await makeWorker();
+    const n = await notify(user.id, 'urgent');
+    // Opened in the app before the WhatsApp retry comes round.
+    await prisma.notification.update({ where: { id: n.id }, data: { readAt: new Date() } });
+    whatsapp.test.failNext = 1;
+    try {
+      await delivery.dispatch(n.id);
+      await eventually(async () => {
+        const rows = await logs(n.id);
+        expect(rows.map((r) => [r.channel, r.attempt, r.status])).toEqual([
+          ['whatsapp', 1, 'failed'],
+        ]);
+      });
+      await wait(400); // time for the retry, which must do nothing
+      expect((await logs(n.id)).map((r) => r.channel)).toEqual(['whatsapp']);
+      expect(sms.test.sent.filter((m) => m.notificationId === n.id)).toHaveLength(0);
+    } finally {
+      whatsapp.test.failNext = 0;
+    }
+  });
+
   it('a permanent failure (e.g. invalid number) moves on at once, without retrying', async () => {
     const { user } = await makeWorker();
     const n = await notify(user.id, 'urgent');

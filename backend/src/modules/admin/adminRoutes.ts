@@ -9,7 +9,7 @@ import { prisma } from '../../lib/prisma.js';
 import type { RateLimiters } from '../../lib/rateLimits.js';
 import { redis } from '../../lib/redis.js';
 import { PAGE_SIZE, idParam, pageQuery, parse } from '../../lib/validate.js';
-import { currentUser, requireAuth, requireRole } from '../../middleware/auth.js';
+import { currentUser } from '../../middleware/auth.js';
 import { publish } from '../../realtime/bus.js';
 import { jobInclude, serializeJob } from '../marketplace/serializers.js';
 
@@ -49,7 +49,7 @@ const userListSelect = {
 
 export function adminRoutes(limits: RateLimiters) {
   const router = Router();
-  router.use(requireAuth, requireRole('admin'));
+  // Logged in and admin: checked once for every /admin address in app.ts (BT-20).
 
   // ---------- Users ----------
   router.get('/users', async (req, res) => {
