@@ -1,4 +1,10 @@
-# Runtime dependencies. scikit-learn, spaCy, joblib and SHAP are added in the phases that use them.
+# Runtime dependencies. Phase 9 (docs/ml-training.md): scikit-learn for the trained models (TF-IDF +
+# Logistic Regression), with numpy, scipy and joblib (saving the models). The model is trained at
+# image build time, so the version that trains it is the version that loads it.
 fastapi==0.141.1
 uvicorn==0.53.0
 pydantic==2.13.5
+scikit-learn==1.7.2
+numpy==2.2.6
+scipy==1.15.3
+joblib==1.5.2

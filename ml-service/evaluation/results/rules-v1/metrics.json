@@ -1,11 +1,12 @@
 {
   "run": {
-    "run_at": "2026-10-22 09:13 UTC",
+    "run_at": "2026-11-08 11:27 UTC",
     "dataset": "evaluation/holdout-v1.csv",
     "dataset_sha256": "66920042f56b817d10e5bd18d0e1c83ca2a616ff729b9332e6e9228997b924de",
     "rules_sha256": "dfd0a5b1d8ccb0d9ba49da14d95e8eab56d3a82d77569fb7ea648ecc440668a6",
+    "model_sha256": "9226aae0fb1712f1366acf688f595ab23ecd86074d6030ed5d5bc014d9f6df19",
     "rows": 177,
-    "python": "3.10.11"
+    "python": "3.12.15"
   },
   "model_version": "rules-v1",
   "priority": {

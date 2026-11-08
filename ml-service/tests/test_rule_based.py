@@ -89,7 +89,8 @@ def test_normalize():
 def test_classifier_is_chosen_by_setting_only():
     rules = load_classifier(Settings(classifier="rules", model_path=None, log_level="info"))
     assert rules.version == "rules-v1"
-    with pytest.raises(RuntimeError, match="Phase 9"):
+    # A missing model file says how to make one (Phase 9: python -m training.train).
+    with pytest.raises(RuntimeError, match="training.train"):
         load_classifier(
             Settings(classifier="trained", model_path="models/x.joblib", log_level="info")
         )

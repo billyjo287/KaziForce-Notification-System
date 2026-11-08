@@ -94,7 +94,9 @@ services:
     image: kaziforce-ml-service
     restart: unless-stopped
     environment:
-      CLASSIFIER: rules
+      # The trained model (Phase 9, docs/ml-training.md), made while the image builds. To go
+      # back to the rules: CLASSIFIER=rules in deploy/azure/.env, then docker compose up -d.
+      CLASSIFIER: ${CLASSIFIER:-trained}
       LOG_LEVEL: info
 
   # Job queues. Private (no port open to the internet). appendonly = every change written to

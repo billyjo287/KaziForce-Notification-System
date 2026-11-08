@@ -1,0 +1,788 @@
+{
+  "run": {
+    "run_at": "2026-11-08 11:27 UTC",
+    "dataset": "evaluation/holdout-v1.csv",
+    "dataset_sha256": "66920042f56b817d10e5bd18d0e1c83ca2a616ff729b9332e6e9228997b924de",
+    "rules_sha256": "dfd0a5b1d8ccb0d9ba49da14d95e8eab56d3a82d77569fb7ea648ecc440668a6",
+    "model_sha256": "9226aae0fb1712f1366acf688f595ab23ecd86074d6030ed5d5bc014d9f6df19",
+    "rows": 177,
+    "python": "3.12.15"
+  },
+  "model_version": "ml-v1",
+  "priority": {
+    "rows": 147,
+    "accuracy": 0.8299319727891157,
+    "weighted_f1": 0.8306751796763904,
+    "macro_f1": 0.8309086629001884,
+    "per_class": {
+      "urgent": {
+        "precision": 0.9705882352941176,
+        "recall": 0.717391304347826,
+        "f1": 0.825,
+        "support": 46
+      },
+      "medium": {
+        "precision": 0.7272727272727273,
+        "recall": 0.9230769230769231,
+        "f1": 0.8135593220338984,
+        "support": 52
+      },
+      "low": {
+        "precision": 0.8723404255319149,
+        "recall": 0.8367346938775511,
+        "f1": 0.8541666666666667,
+        "support": 49
+      }
+    },
+    "labels": [
+      "urgent",
+      "medium",
+      "low"
+    ],
+    "confusion_matrix": [
+      [
+        33,
+        11,
+        2
+      ],
+      [
+        0,
+        48,
+        4
+      ],
+      [
+        1,
+        7,
+        41
+      ]
+    ]
+  },
+  "spam": {
+    "rows": 177,
+    "accuracy": 0.9717514124293786,
+    "weighted_f1": 0.9719347524483004,
+    "macro_f1": 0.9504839702344319,
+    "per_class": {
+      "True": {
+        "precision": 0.9032258064516129,
+        "recall": 0.9333333333333333,
+        "f1": 0.9180327868852459,
+        "support": 30
+      },
+      "False": {
+        "precision": 0.9863013698630136,
+        "recall": 0.9795918367346939,
+        "f1": 0.9829351535836177,
+        "support": 147
+      }
+    },
+    "labels": [
+      "True",
+      "False"
+    ],
+    "confusion_matrix": [
+      [
+        28,
+        2
+      ],
+      [
+        3,
+        144
+      ]
+    ],
+    "false_positive_rate": 0.02040816326530612
+  },
+  "by_language": {
+    "en": {
+      "priority": {
+        "rows": 97,
+        "accuracy": 0.845360824742268,
+        "weighted_f1": 0.8458039415888822,
+        "macro_f1": 0.8462465804237956,
+        "per_class": {
+          "urgent": {
+            "precision": 0.9565217391304348,
+            "recall": 0.7586206896551724,
+            "f1": 0.8461538461538461,
+            "support": 29
+          },
+          "medium": {
+            "precision": 0.7674418604651163,
+            "recall": 0.9166666666666666,
+            "f1": 0.8354430379746837,
+            "support": 36
+          },
+          "low": {
+            "precision": 0.8709677419354839,
+            "recall": 0.84375,
+            "f1": 0.8571428571428571,
+            "support": 32
+          }
+        },
+        "labels": [
+          "urgent",
+          "medium",
+          "low"
+        ],
+        "confusion_matrix": [
+          [
+            22,
+            6,
+            1
+          ],
+          [
+            0,
+            33,
+            3
+          ],
+          [
+            1,
+            4,
+            27
+          ]
+        ]
+      },
+      "spam": {
+        "rows": 117,
+        "accuracy": 0.9743589743589743,
+        "weighted_f1": 0.9746052422660535,
+        "macro_f1": 0.9556426134209528,
+        "per_class": {
+          "True": {
+            "precision": 0.9047619047619048,
+            "recall": 0.95,
+            "f1": 0.9268292682926829,
+            "support": 20
+          },
+          "False": {
+            "precision": 0.9895833333333334,
+            "recall": 0.979381443298969,
+            "f1": 0.9844559585492227,
+            "support": 97
+          }
+        },
+        "labels": [
+          "True",
+          "False"
+        ],
+        "confusion_matrix": [
+          [
+            19,
+            1
+          ],
+          [
+            2,
+            95
+          ]
+        ],
+        "false_positive_rate": 0.020618556701030927
+      }
+    },
+    "sw": {
+      "priority": {
+        "rows": 50,
+        "accuracy": 0.8,
+        "weighted_f1": 0.8017815517815517,
+        "macro_f1": 0.8011433011433011,
+        "per_class": {
+          "urgent": {
+            "precision": 1.0,
+            "recall": 0.6470588235294118,
+            "f1": 0.7857142857142858,
+            "support": 17
+          },
+          "medium": {
+            "precision": 0.6521739130434783,
+            "recall": 0.9375,
+            "f1": 0.7692307692307693,
+            "support": 16
+          },
+          "low": {
+            "precision": 0.875,
+            "recall": 0.8235294117647058,
+            "f1": 0.8484848484848485,
+            "support": 17
+          }
+        },
+        "labels": [
+          "urgent",
+          "medium",
+          "low"
+        ],
+        "confusion_matrix": [
+          [
+            11,
+            5,
+            1
+          ],
+          [
+            0,
+            15,
+            1
+          ],
+          [
+            0,
+            3,
+            14
+          ]
+        ]
+      },
+      "spam": {
+        "rows": 60,
+        "accuracy": 0.9666666666666667,
+        "weighted_f1": 0.9666666666666667,
+        "macro_f1": 0.94,
+        "per_class": {
+          "True": {
+            "precision": 0.9,
+            "recall": 0.9,
+            "f1": 0.9,
+            "support": 10
+          },
+          "False": {
+            "precision": 0.98,
+            "recall": 0.98,
+            "f1": 0.98,
+            "support": 50
+          }
+        },
+        "labels": [
+          "True",
+          "False"
+        ],
+        "confusion_matrix": [
+          [
+            9,
+            1
+          ],
+          [
+            1,
+            49
+          ]
+        ],
+        "false_positive_rate": 0.02
+      }
+    }
+  },
+  "mistakes": [
+    {
+      "id": 9,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Waiters for a wedding this evening\nHarusi Caterers needs Catering in Nakuru. Pay: KSh 1,500. Apply before 16:00.",
+      "label_priority": "urgent",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "work is this evening",
+      "explanation": [
+        "meta:dl_3to24h",
+        "word:apply before",
+        "word:before",
+        "word:evening"
+      ]
+    },
+    {
+      "id": 11,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Movers needed immediately\nHomeShift Movers needs Moving in Kileleshwa. Pay: KSh 1,300. Apply before 14:00.",
+      "label_priority": "urgent",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "work starts immediately",
+      "explanation": [
+        "meta:dl_3to24h",
+        "word:apply before",
+        "word:before",
+        "word:moneytoken"
+      ]
+    },
+    {
+      "id": 51,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Graphic design gig\nAdWorks needs Design (remote). Pay: KSh 5,000. Apply before Sunday.",
+      "label_priority": "low",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes in 3 days",
+      "explanation": [
+        "word:apply before",
+        "word:before",
+        "word:moneytoken",
+        "word:moneytoken apply"
+      ]
+    },
+    {
+      "id": 59,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Seasonal tea pickers\nKericho Tea Estates needs Farming in Kericho. Pay: KSh 600 per day. Apply this month.",
+      "label_priority": "low",
+      "predicted_priority": "urgent",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes in 3 weeks",
+      "explanation": [
+        "meta:sender_business",
+        "meta:type_job_alert",
+        "word:in",
+        "word:this"
+      ]
+    },
+    {
+      "id": 60,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Mechanic\nAuto Fix needs Mechanics in Industrial Area. Pay: KSh 1,800 per day. Apply before Monday.",
+      "label_priority": "low",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes in 4 days",
+      "explanation": [
+        "word:monday",
+        "word:apply before",
+        "word:before",
+        "word:moneytoken"
+      ]
+    },
+    {
+      "id": 65,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Waiters for a conference on Friday\nSafari Events needs Waiting in Westlands. Pay: KSh 1,500. Apply before Thursday evening.",
+      "label_priority": "low",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes in 2.5 days",
+      "explanation": [
+        "word:friday",
+        "word:thursday",
+        "word:apply before",
+        "word:before"
+      ]
+    },
+    {
+      "id": 70,
+      "language": "sw",
+      "type": "job_alert",
+      "text": "Fundi seremala\nMbao Bora inahitaji Useremala huko Kitale. Malipo: KSh 1,500 kwa siku. Omba kabla ya Jumatatu.",
+      "label_priority": "low",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes in 4 days",
+      "explanation": [
+        "word:omba kabla",
+        "word:ya",
+        "word:omba",
+        "word:moneytoken"
+      ]
+    },
+    {
+      "id": 71,
+      "language": "en",
+      "type": "status_update",
+      "text": "Your application was accepted\nMwangi Logistics accepted your application for \"Warehouse packers\". Open Messages to agree the details.",
+      "label_priority": "urgent",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "accepted: confirm before the place goes to someone else",
+      "explanation": [
+        "meta:type_status_update",
+        "meta:dl_none",
+        "word:your",
+        "word:application"
+      ]
+    },
+    {
+      "id": 73,
+      "language": "sw",
+      "type": "status_update",
+      "text": "Ombi lako limekubaliwa\nMwangi Logistics wamekubali ombi lako la \"Wapakiaji\". Fungua Ujumbe mkubaliane maelezo.",
+      "label_priority": "urgent",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "accepted",
+      "explanation": [
+        "meta:type_status_update",
+        "meta:dl_none",
+        "word:ombi",
+        "word:maelezo"
+      ]
+    },
+    {
+      "id": 74,
+      "language": "sw",
+      "type": "status_update",
+      "text": "Ombi lako limekubaliwa\nHarusi Caterers wamekubali ombi lako la \"Wahudumu wa harusi\". Thibitisha kabla ya saa 10 leo.",
+      "label_priority": "urgent",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "accepted, confirm today",
+      "explanation": [
+        "meta:type_status_update",
+        "meta:dl_none",
+        "word:ombi",
+        "word:lako"
+      ]
+    },
+    {
+      "id": 77,
+      "language": "sw",
+      "type": "status_update",
+      "text": "Umechaguliwa\nSparkle Cleaning wamekuchagua kwa \"Wasafishaji\". Fika Kasarani saa 8 mchana.",
+      "label_priority": "urgent",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "chosen, report this afternoon",
+      "explanation": [
+        "meta:type_status_update",
+        "meta:dl_none",
+        "word:kwa",
+        "meta:sender_business"
+      ]
+    },
+    {
+      "id": 90,
+      "language": "en",
+      "type": "status_update",
+      "text": "New applicant (urgent job)\nKamau Njoroge applied for \"Replacement mason\", which starts in 1 hour.",
+      "label_priority": "urgent",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "applicant for a job starting in 1 hour",
+      "explanation": [
+        "meta:type_status_update",
+        "meta:dl_none",
+        "meta:recipient_business",
+        "meta:sender_worker"
+      ]
+    },
+    {
+      "id": 91,
+      "language": "sw",
+      "type": "status_update",
+      "text": "Mwombaji mpya\nMutua Musyoka ameomba kazi ya \"Dereva wa mizigo\" inayoanza sasa hivi.",
+      "label_priority": "urgent",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "applicant for a job starting now",
+      "explanation": [
+        "meta:type_status_update",
+        "meta:dl_none",
+        "meta:recipient_business",
+        "meta:sender_worker"
+      ]
+    },
+    {
+      "id": 93,
+      "language": "sw",
+      "type": "status_update",
+      "text": "Kazi imefungwa\nKazi ya \"Mpiga rangi\" imejazwa. Huhitaji kufanya chochote.",
+      "label_priority": "low",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "information only",
+      "explanation": [
+        "meta:type_status_update",
+        "meta:dl_none",
+        "word:ya",
+        "word:kazi"
+      ]
+    },
+    {
+      "id": 98,
+      "language": "sw",
+      "type": "message",
+      "text": "Ujumbe mpya kutoka kwa Wanjiru Kamau\nNiko getini lakini hakuna mtu. Tafadhali nipigie.",
+      "label_priority": "urgent",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "worker waiting at the gate now",
+      "explanation": [
+        "meta:dl_none",
+        "meta:recipient_business",
+        "word:niko",
+        "word:mpya"
+      ]
+    },
+    {
+      "id": 101,
+      "language": "en",
+      "type": "message",
+      "text": "New message from Otieno Ochieng\nMy matatu broke down, I will be 20 minutes late for the 9 am shift.",
+      "label_priority": "urgent",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "late for a shift starting soon",
+      "explanation": [
+        "meta:dl_none",
+        "meta:recipient_business",
+        "meta:sender_worker",
+        "word:for the"
+      ]
+    },
+    {
+      "id": 102,
+      "language": "en",
+      "type": "message",
+      "text": "New message from Smile Dental\nThe address changed: come to Upper Hill Medical Centre, 3rd floor, before 10.",
+      "label_priority": "urgent",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": true,
+      "why": "changed address for this morning",
+      "explanation": [
+        "meta:dl_none",
+        "word:come",
+        "word:before",
+        "word:new",
+        "spam:word:medical",
+        "spam:char: ad",
+        "spam:char: med",
+        "spam:char: medi"
+      ]
+    },
+    {
+      "id": 106,
+      "language": "sw",
+      "type": "message",
+      "text": "Ujumbe mpya kutoka kwa Elimu Bora\nAsante kwa kuomba. Unafundisha masomo gani?",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "question to answer",
+      "explanation": [
+        "word:asante",
+        "meta:recipient_worker",
+        "word:kwa",
+        "meta:type_message"
+      ]
+    },
+    {
+      "id": 112,
+      "language": "en",
+      "type": "message",
+      "text": "New message from Bright Minds\nYou can see our timetable at https://brightminds.co.ke/timetable before Thursday.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "company website link: honest",
+      "explanation": [
+        "meta:recipient_worker",
+        "word:see",
+        "word:you can",
+        "word:can see"
+      ]
+    },
+    {
+      "id": 121,
+      "language": "sw",
+      "type": "message",
+      "text": "Ujumbe mpya kutoka kwa Mutua Musyoka\nSawa, asante sana.",
+      "label_priority": "low",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": true,
+      "why": "thanks only",
+      "explanation": [
+        "word:asante",
+        "word:asante sana",
+        "word:sana",
+        "word:kwa",
+        "spam:char:ana.",
+        "spam:char:ana. ",
+        "spam:char:sana.",
+        "spam:word:ujumbe mpya"
+      ]
+    },
+    {
+      "id": 122,
+      "language": "en",
+      "type": "message",
+      "text": "New message from Safari Events\nHave a good weekend!",
+      "label_priority": "low",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": true,
+      "why": "greeting only",
+      "explanation": [
+        "meta:recipient_worker",
+        "word:events",
+        "meta:type_message",
+        "char: wee",
+        "spam:word:have",
+        "spam:char: hav",
+        "spam:char: have",
+        "spam:char:ave "
+      ]
+    },
+    {
+      "id": 139,
+      "language": "en",
+      "type": "announcement",
+      "text": "New rules for job posts\nFrom next Monday every job post must show the pay. Please update your open jobs.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "action needed within days",
+      "explanation": [
+        "meta:sender_admin",
+        "meta:type_announcement",
+        "word:next",
+        "word:job"
+      ]
+    },
+    {
+      "id": 140,
+      "language": "en",
+      "type": "announcement",
+      "text": "Please add your ID number\nAdd your ID number in your profile within 2 days so employers can trust you.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "action needed within days (in the app, not by message)",
+      "explanation": [
+        "meta:sender_admin",
+        "meta:type_announcement",
+        "meta:recipient_worker",
+        "word:you"
+      ]
+    },
+    {
+      "id": 141,
+      "language": "en",
+      "type": "announcement",
+      "text": "Service problem right now\nSMS alerts are delayed this morning. Please open the app to see urgent jobs.",
+      "label_priority": "urgent",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "outage now: open the app to avoid missing jobs",
+      "explanation": [
+        "meta:sender_admin",
+        "meta:type_announcement",
+        "meta:recipient_worker",
+        "word:see"
+      ]
+    },
+    {
+      "id": 142,
+      "language": "sw",
+      "type": "announcement",
+      "text": "Tatizo la huduma sasa hivi\nArifa za SMS zimechelewa asubuhi hii. Fungua programu kuona kazi za haraka.",
+      "label_priority": "urgent",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "outage now: open the app to avoid missing jobs",
+      "explanation": [
+        "meta:sender_admin",
+        "meta:type_announcement",
+        "meta:recipient_worker",
+        "meta:dl_none"
+      ]
+    },
+    {
+      "id": 159,
+      "language": "en",
+      "type": "message",
+      "text": "New message from KaziForce Support\nYour account is blocked. Log in here to unblock: http://kaziforce-login.xyz",
+      "label_priority": "urgent",
+      "predicted_priority": "low",
+      "label_spam": true,
+      "predicted_spam": false,
+      "why": "fake login page (phishing)",
+      "explanation": [
+        "meta:recipient_worker",
+        "word:urltoken",
+        "word:kaziforce",
+        "meta:type_message"
+      ]
+    },
+    {
+      "id": 163,
+      "language": "sw",
+      "type": "message",
+      "text": "Ujumbe mpya kutoka kwa Bwana Peter\nPesa ya haraka! Jiunge na kikundi chetu kwa KSh 500 tu.",
+      "label_priority": "medium",
+      "predicted_priority": "medium",
+      "label_spam": true,
+      "predicted_spam": false,
+      "why": "pay to join, quick money",
+      "explanation": [
+        "meta:dl_none",
+        "word:pesa",
+        "word:mpya",
+        "word:ya"
+      ]
+    },
+    {
+      "id": 173,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Cashier (M-Pesa experience)\nNaivas Express needs Cashier in Ruaka. You must know how to use M-Pesa and the till. Pay: KSh 900. Apply before Saturday.",
+      "label_priority": "low",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "M-Pesa skill, honest",
+      "explanation": [
+        "word:pesa",
+        "word:use",
+        "word:saturday",
+        "word:apply before"
+      ]
+    },
+    {
+      "id": 175,
+      "language": "sw",
+      "type": "job_alert",
+      "text": "Wakala wa M-Pesa\nDuka la Baraka inahitaji Wakala wa M-Pesa huko Thika. Malipo: KSh 800. Omba kabla ya Jumamosi.",
+      "label_priority": "low",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "M-Pesa agent job, honest",
+      "explanation": [
+        "word:pesa",
+        "word:omba kabla",
+        "word:ya",
+        "word:jumamosi"
+      ]
+    }
+  ],
+  "targets": {
+    "priority_weighted_f1": {
+      "target": 0.85,
+      "met": false
+    },
+    "spam_accuracy": {
+      "target": 0.95,
+      "met": true
+    },
+    "spam_false_positive_rate": {
+      "target": 0.05,
+      "met": true
+    }
+  }
+}

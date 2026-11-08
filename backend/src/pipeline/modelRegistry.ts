@@ -8,6 +8,10 @@ const DESCRIPTIONS: Record<string, string> = {
   rules:
     'Rule-based classifier (PRD section 5): deadline, keywords and application status for ' +
     'priority; payment requests, scam phrases, links, capitals and punctuation for spam.',
+  ml:
+    'Trained on synthetic data (Phase 9, docs/ml-training.md): TF-IDF words, letter pieces and ' +
+    'message details; Logistic Regression for priority, Naive Bayes for spam; guardrails: a job ' +
+    'closing within 3 hours is urgent, and the scam check of the rules still blocks.',
 };
 
 export function createModelRegistry(prisma: PrismaClient) {
@@ -15,7 +19,11 @@ export function createModelRegistry(prisma: PrismaClient) {
 
   return async function register(version: string) {
     if (known.has(version)) return;
-    const algorithm = version.startsWith('rules') ? 'rules' : 'unknown';
+    const algorithm = version.startsWith('rules')
+      ? 'rules'
+      : version.startsWith('ml')
+        ? 'ml'
+        : 'unknown';
     await prisma.$transaction(async (tx) => {
       const existing = await tx.mLMetadata.findUnique({ where: { version } });
       if (existing?.isActive) return;
