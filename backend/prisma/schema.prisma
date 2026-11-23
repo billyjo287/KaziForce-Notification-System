@@ -182,6 +182,7 @@ model User {
   summaryLogs            SummaryLog[]
   notificationRules      NotificationRule[]
   notificationPolicies   NotificationPolicy[]
+  oauthAccounts          OAuthAccount[]
 
   @@index([role, status])
 }
@@ -214,6 +215,24 @@ model Skill {
 // One row per logged-in device. The refresh token itself is never stored, only its SHA-256 hash.
 // Tokens rotate on every refresh: the old row gets revokedAt + replacedById. If a revoked token
 // is used again (likely stolen), every session of that user is revoked.
+// "Continue with Google / GitHub" (ADR 0022): which provider account belongs to which user. One
+// user can link several; the provider's own id (not the email, which can change) finds it again.
+model OAuthAccount {
+  id             String   @id @default(uuid()) @db.Uuid
+  userId         String   @db.Uuid
+  // "google" | "github"
+  provider       String   @db.VarChar(20)
+  providerUserId String   @db.VarChar(100)
+  // The verified email the provider gave when it was linked (for the admin, never for log-in)
+  email          String   @db.VarChar(254)
+  createdAt      DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerUserId])
+  @@index([userId])
+}
+
 model Session {
   id           String    @id @default(uuid()) @db.Uuid
   userId       String    @db.Uuid

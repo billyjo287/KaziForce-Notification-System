@@ -40,6 +40,7 @@ import {
   trustDevice,
 } from './accountCodes.js';
 import { describeDevice, newLoginEmail, passwordResetEmail } from './emails.js';
+import { oauthRoutes } from './oauth.js';
 
 const COOKIE = 'kf_refresh';
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -99,7 +100,7 @@ function requireAppHeader(req: Request, _res: Response, next: NextFunction) {
   next();
 }
 
-async function startSession(res: Response, user: User, userAgent: string | undefined) {
+async function startSession(res: Response, user: Pick<User, 'id'>, userAgent: string | undefined) {
   const token = randomToken();
   const session = await prisma.session.create({
     data: {
@@ -130,6 +131,8 @@ function endAllSessions(userId: string) {
 
 export function authRoutes(limits: RateLimiters) {
   const router = Router();
+  // "Continue with Google / GitHub" (oauth.ts): same session cookie as a password log-in.
+  router.use('/oauth', oauthRoutes(limits, startSession));
 
   router.post('/register', limits.login, async (req, res) => {
     const input = parse(registerSchema, req.body);

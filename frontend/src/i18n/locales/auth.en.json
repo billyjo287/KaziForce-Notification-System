@@ -129,6 +129,22 @@
       "send": "Send me a code",
       "sent": "We sent a 6-digit code to {{email}}. If it is not in your inbox, check the spam folder.",
       "done": "Thank you. Your email address is confirmed."
+    },
+    "social": {
+      "or": "or",
+      "google": "Continue with Google",
+      "github": "Continue with GitHub",
+      "finishing": "Logging you in",
+      "finishingBody": "One moment, we are opening your account.",
+      "errors": {
+        "no_account": "No KaziForce account uses that Google or GitHub account yet. Choose whether you are looking for work or hiring, then continue with Google or GitHub again.",
+        "cancelled": "You stopped before finishing. Nothing was changed. Try again when you are ready.",
+        "expired": "That took too long or the page was opened twice. Please try again.",
+        "email_not_verified": "Google or GitHub has not confirmed that email address yet. Confirm it there, or use your email and a password here.",
+        "account_suspended": "This account has been suspended.",
+        "provider_off": "That way of logging in is not available right now. Use your email or phone number.",
+        "other": "Something went wrong with Google or GitHub. Please try again, or use your email and password."
+      }
     }
   },
   "demoCode": {

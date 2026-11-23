@@ -129,6 +129,22 @@
       "send": "Nitumie msimbo",
       "sent": "Tumetuma msimbo wa tarakimu 6 kwa {{email}}. Kama hauko kwenye kikasha, angalia folda ya barua taka.",
       "done": "Asante. Barua pepe yako imethibitishwa."
+    },
+    "social": {
+      "or": "au",
+      "google": "Endelea na Google",
+      "github": "Endelea na GitHub",
+      "finishing": "Tunakuingiza",
+      "finishingBody": "Subiri kidogo, tunafungua akaunti yako.",
+      "errors": {
+        "no_account": "Bado hakuna akaunti ya KaziForce inayotumia akaunti hiyo ya Google au GitHub. Chagua kama unatafuta kazi au unaajiri, kisha endelea na Google au GitHub tena.",
+        "cancelled": "Ulisimama kabla ya kumaliza. Hakuna kilichobadilika. Jaribu tena ukiwa tayari.",
+        "expired": "Ilichukua muda mrefu au ukurasa ulifunguliwa mara mbili. Tafadhali jaribu tena.",
+        "email_not_verified": "Google au GitHub bado haijathibitisha barua pepe hiyo. Ithibitishe huko, au tumia barua pepe na nenosiri hapa.",
+        "account_suspended": "Akaunti hii imesimamishwa.",
+        "provider_off": "Njia hiyo ya kuingia haipatikani kwa sasa. Tumia barua pepe au nambari ya simu.",
+        "other": "Kuna tatizo na Google au GitHub. Tafadhali jaribu tena, au tumia barua pepe na nenosiri."
+      }
     }
   },
   "demoCode": {

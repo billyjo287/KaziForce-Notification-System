@@ -104,6 +104,17 @@ const envSchema = z.object({
   AFRICASTALKING_SENDER_ID: z.string().optional(),
   // Secret part of the delivery-report address given to Africa's Talking (it signs nothing).
   AFRICASTALKING_WEBHOOK_SECRET: z.string().optional(),
+  // ---- "Continue with Google / GitHub" (ADR 0022). Empty = that button is hidden. ----
+  // Google Cloud console > APIs & Services > Credentials > OAuth client ID (Web application);
+  // GitHub > Settings > Developer settings > OAuth Apps. Callback address for both:
+  // <OAUTH_CALLBACK_BASE>/api/auth/oauth/<google|github>/callback
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
+  GITHUB_CLIENT_ID: z.string().optional(),
+  GITHUB_CLIENT_SECRET: z.string().optional(),
+  // The address the browser comes back to. Defaults to PUBLIC_API_URL; behind Vercel use the
+  // website's own address (it forwards /api), so the login cookie belongs to the website.
+  OAUTH_CALLBACK_BASE: z.url().optional(),
   EMAIL_PROVIDER: z.enum(['resend', 'sendgrid']).default('resend'),
   RESEND_API_KEY: z.string().optional(),
   SENDGRID_API_KEY: z.string().optional(),

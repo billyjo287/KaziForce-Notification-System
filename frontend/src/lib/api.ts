@@ -13,6 +13,18 @@ export const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
  */
 const REST_BASE = import.meta.env.VITE_SAME_ORIGIN_API === 'true' ? '/api' : `${API_URL}/api`;
 
+export type OAuthProvider = 'google' | 'github';
+
+/** The address that starts "Continue with Google / GitHub" (a full-page link, not a request). */
+export function oauthStartUrl(
+  provider: OAuthProvider,
+  params: { intent: 'login' | 'signup'; role?: 'worker' | 'business'; lang: 'en' | 'sw' },
+): string {
+  const query = new URLSearchParams({ intent: params.intent, lang: params.lang });
+  if (params.role) query.set('role', params.role);
+  return `${REST_BASE}/auth/oauth/${provider}/start?${query.toString()}`;
+}
+
 export const api = axios.create({
   baseURL: REST_BASE,
   withCredentials: true, // send the refresh cookie

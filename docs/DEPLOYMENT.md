@@ -302,3 +302,30 @@ commands a month, is not used: CLAUDE.md.)
 | The first build stops with "killed" | Not enough memory: check the swap exists (`swapon --show`), or resize the server to B2s |
 | SSH: `UNPROTECTED PRIVATE KEY FILE` | Run the `icacls` command in step 4 again |
 | Site down after the credit ran out | Azure stopped the server. Move to another plan (for example Azure pay-as-you-go) or Oracle Cloud Always Free; the same `deploy/azure` files work on any Ubuntu server |
+
+## 15. "Continue with Google" and "Continue with GitHub" (optional)
+
+The buttons appear on the log-in and sign-up pages only once their keys are set (ADR 0022).
+Use your Vercel address below, e.g. `https://kazi-force-notification-system-o7ih.vercel.app`.
+
+**Google**
+1. https://console.cloud.google.com → create a project `kaziforce` → **APIs & Services →
+   OAuth consent screen**: External, app name KaziForce, your email; scopes `email`,
+   `profile`, `openid`. While the app is in "Testing", add the Google accounts of your testers.
+2. **Credentials → Create credentials → OAuth client ID → Web application**.
+   - Authorised JavaScript origin: your Vercel address.
+   - Authorised redirect URI: `<Vercel address>/api/auth/oauth/google/callback`
+3. Copy the client ID and secret into `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`.
+
+**GitHub**
+1. https://github.com/settings/developers → **OAuth Apps → New OAuth App**.
+   - Homepage URL: your Vercel address.
+   - Authorization callback URL: `<Vercel address>/api/auth/oauth/github/callback`
+2. **Generate a new client secret**; copy both into `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET`.
+
+Then, in `deploy/azure/.env`, set `OAUTH_CALLBACK_BASE=<Vercel address>` and run
+`cd ~/kaziforce/deploy/azure && docker compose up -d --force-recreate api`.
+
+**On your own computer:** register `http://localhost:4000/api/auth/oauth/<google|github>/callback`
+as a second redirect address (GitHub needs a second OAuth App for that) and put the keys in
+`backend/.env`; leave `OAUTH_CALLBACK_BASE` empty.

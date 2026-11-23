@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useLocation, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router';
 import { Button } from '../../components/ui/Button';
 import { Checkbox } from '../../components/ui/Checkbox';
 import { ChoiceCards } from '../../components/ui/ChoiceCards';
@@ -25,6 +25,8 @@ import type { CodeChannel, CodeSent, Session, SignupCodeStep } from '../../types
 import { AuthLayout, StepHeading } from './AuthLayout';
 import { CodeSteps } from './CodeSteps';
 import { isCommonPassword, parseIdentifier, rememberAccount, suggestEmail } from './identifier';
+import { useOAuthError } from './oauthErrors';
+import { SocialSignIn } from './SocialSignIn';
 
 type SignUpRole = 'worker' | 'business';
 type StepName = 'role' | 'email' | 'exists' | 'name' | 'password' | 'send' | 'code';
@@ -90,6 +92,9 @@ export default function RegisterPage() {
   const location = useLocation();
   const setSession = useAuth((s) => s.setSession);
   const errorMessage = useApiErrorMessage();
+  const [params] = useSearchParams();
+  // Back from Google or GitHub, e.g. "no account yet: choose worker or employer first".
+  const oauthError = useOAuthError(params.get('oauth_error'));
 
   // From the log-in page ("We cannot find an account" -> Create an account): email filled in.
   const fromLogin = (location.state as { email?: string } | null)?.email ?? '';
@@ -435,6 +440,8 @@ export default function RegisterPage() {
             {busy ? t('auth.login.checking') : t('auth.login.continue')}
           </Button>
         </form>
+        {/* Or skip the email, name and password steps with an account they already have. */}
+        {draft.role && <SocialSignIn intent="signup" role={draft.role} />}
         {back('role')}
       </AuthLayout>
     );
@@ -526,6 +533,7 @@ export default function RegisterPage() {
   return (
     <AuthLayout>
       <StepHeading {...step} title={t('auth.register.roleQuestion')} />
+      {oauthError && <FormAlert>{oauthError}</FormAlert>}
       <form
         noValidate
         className="flex flex-col gap-6"

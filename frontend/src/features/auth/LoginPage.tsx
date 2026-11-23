@@ -15,6 +15,8 @@ import { homePath, useAuth } from '../../stores/auth';
 import type { CodeSent, LoginCodeStep, Session } from '../../types/api';
 import { AuthLayout, StepHeading } from './AuthLayout';
 import { CodeSteps } from './CodeSteps';
+import { useOAuthError } from './oauthErrors';
+import { SocialSignIn } from './SocialSignIn';
 import {
   forgetAccount,
   formatPhone,
@@ -58,6 +60,8 @@ export default function LoginPage() {
   const temporary = notice === 'loggedOut' || notice === 'loggedOutAll';
   const leaving = useTimedExit(temporary, NOTICE_MS, clearNotice);
   const errorMessage = useApiErrorMessage();
+  // Back from Google or GitHub with a problem (oauth.ts adds ?oauth_error=...).
+  const oauthError = useOAuthError(params.get('oauth_error'));
 
   // Sent here by sign-up ("You already have an account"): straight to the password.
   const fromSignup = parseIdentifier(
@@ -317,6 +321,7 @@ export default function LoginPage() {
       <StepHeading title={t('auth.login.title')} intro={t('auth.login.intro')} />
       {noticeAlert}
       {serverError && <FormAlert>{serverError}</FormAlert>}
+      {oauthError && !serverError && <FormAlert>{oauthError}</FormAlert>}
       <form onSubmit={onContinue} noValidate className="flex flex-col gap-5">
         <Input
           label={t('auth.login.identifier')}
@@ -337,6 +342,7 @@ export default function LoginPage() {
           {busy ? t('auth.login.checking') : t('auth.login.continue')}
         </Button>
       </form>
+      <SocialSignIn intent="login" />
       <div className="flex flex-col gap-3 text-lg">
         {forgotLink}
         <p>

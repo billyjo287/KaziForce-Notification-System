@@ -61,6 +61,11 @@ export const router = createBrowserRouter([
       // ---------- Accounts ----------
       { path: 'login', lazy: guestOnly(() => import('./features/auth/LoginPage')) },
       { path: 'register', lazy: guestOnly(() => import('./features/auth/RegisterPage')) },
+      // Back from "Continue with Google / GitHub" (ADR 0022).
+      {
+        path: 'oauth/done',
+        lazy: async () => ({ Component: (await import('./features/auth/OAuthDonePage')).default }),
+      },
       {
         path: 'forgot-password',
         lazy: async () => ({ Component: (await passwordPages()).ForgotPasswordPage }),

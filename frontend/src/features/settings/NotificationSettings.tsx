@@ -278,7 +278,7 @@ function ChannelOrder({ prefs, save }: { prefs: NotificationPreferences; save: S
           return (
             <li
               key={channel}
-              className="flex items-center gap-3 rounded-xl border-2 border-line-strong bg-surface p-3"
+              className="flex items-center gap-2 rounded-xl border-2 border-line-strong bg-surface p-3 sm:gap-3"
             >
               <span
                 aria-hidden="true"
@@ -286,7 +286,11 @@ function ChannelOrder({ prefs, save }: { prefs: NotificationPreferences; save: S
               >
                 {index + 1}
               </span>
-              <Icon aria-hidden="true" className="size-6 shrink-0 text-kf-primary-text" />
+              {/* Decoration only: hidden on narrow phones so the channel name keeps its line. */}
+              <Icon
+                aria-hidden="true"
+                className="hidden size-6 shrink-0 text-kf-primary-text min-[400px]:block"
+              />
               <span className="min-w-0 flex-1">
                 <span className="block text-lg font-bold">{title}</span>
                 {note && (
@@ -295,7 +299,7 @@ function ChannelOrder({ prefs, save }: { prefs: NotificationPreferences; save: S
                   </span>
                 )}
               </span>
-              <span className="flex shrink-0 gap-2">
+              <span className="flex shrink-0 gap-1.5 sm:gap-2">
                 {(['up', 'down'] as const).map((direction) => {
                   const Arrow = direction === 'up' ? ArrowUp : ArrowDown;
                   const disabled = direction === 'up' ? index === 0 : index === order.length - 1;
@@ -315,7 +319,7 @@ function ChannelOrder({ prefs, save }: { prefs: NotificationPreferences; save: S
                       )}
                       disabled={disabled}
                       onClick={() => move(index, direction)}
-                      className="flex size-12 items-center justify-center rounded-xl border-2 border-line-strong bg-surface text-ink hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
+                      className="flex size-11 items-center justify-center rounded-xl border-2 border-line-strong bg-surface text-ink hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40 sm:size-12"
                     >
                       <Arrow aria-hidden="true" className="size-6" />
                     </button>
