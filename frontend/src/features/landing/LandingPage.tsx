@@ -425,7 +425,7 @@ export default function LandingPage() {
               <img
                 src="/brand/kaziforce-logo-dark.svg"
                 alt={t('app.name')}
-                width={463}
+                width={466}
                 height={100}
                 className="h-9 w-auto"
               />
