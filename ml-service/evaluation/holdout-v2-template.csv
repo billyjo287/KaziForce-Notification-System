@@ -1,0 +1,2 @@
+id,language,type,recipient_role,sender_role,created_at,deadline_minutes,text,priority,is_spam,why
+1,sw,status_update,worker,business,2026-11-25T14:05:00+03:00,,"Umechaguliwa! Ripoti kesho saa mbili asubuhi Westlands. Thibitisha leo.",urgent,false,confirm today or lose the place
