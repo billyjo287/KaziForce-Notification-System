@@ -134,6 +134,28 @@ async function loadChallenge(challengeId: string, purpose: Purpose): Promise<Cha
   return challenge;
 }
 
+/**
+ * Where a log-in code may go for this account. SMS only if the phone is confirmed and not opted
+ * out; with CODE_SMS=when-no-email, not at all when a confirmed email exists (ADR 0024). An
+ * unconfirmed email (SMS sign-up) gets no codes while SMS works.
+ */
+export function loginContact(
+  user: {
+    phone: string | null;
+    phoneVerified: boolean;
+    smsOptedOutAt: Date | null;
+    email: string | null;
+    emailVerifiedAt: Date | null;
+  },
+  policy: 'choice' | 'when-no-email' = env.CODE_SMS,
+) {
+  const emailOk = Boolean(user.email && user.emailVerifiedAt);
+  const smsOk = user.phoneVerified && Boolean(user.phone) && !user.smsOptedOutAt;
+  const phone = smsOk && !(policy === 'when-no-email' && emailOk) ? user.phone! : undefined;
+  const email = user.email && (user.emailVerifiedAt || !phone) ? user.email : undefined;
+  return { phone, email };
+}
+
 /** The ways a code can reach this person, masked, for "Where should we send your code?". */
 export function codeOptions(challenge: Pick<Challenge, 'phone' | 'email'>) {
   return [

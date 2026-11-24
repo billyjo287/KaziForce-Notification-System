@@ -329,3 +329,28 @@ Then, in `deploy/azure/.env`, set `OAUTH_CALLBACK_BASE=<Vercel address>` and run
 **On your own computer:** register `http://localhost:4000/api/auth/oauth/<google|github>/callback`
 as a second redirect address (GitHub needs a second OAuth App for that) and put the keys in
 `backend/.env`; leave `OAUTH_CALLBACK_BASE` empty.
+
+## 16. Codes through Gmail, alerts through the providers (ADR 0023, ADR 0024)
+
+Resend's free plan sends to other people only from a domain you own. Without one, use a Gmail
+account: free, about 500 emails a day, enough for codes, password resets, email alerts and the
+daily summary during testing and the presentation.
+
+1. Make a new Gmail account for the app, for example `kaziforce.alerts@gmail.com`.
+2. https://myaccount.google.com/security → **2-Step Verification** → turn it on.
+3. https://myaccount.google.com/apppasswords → App name `KaziForce` → **Create**. Copy the
+   16 letters shown (you see them only once).
+4. Add to `deploy/azure/.env` (the lines are ready in `deploy/azure/.env.additions` on your laptop):
+   ```
+   GMAIL_USER=kaziforce.alerts@gmail.com
+   GMAIL_APP_PASSWORD=abcd efgh ijkl mnop
+   EMAIL_FROM="KaziForce <kaziforce.alerts@gmail.com>"
+   ACCOUNT_EMAIL=gmail
+   EMAIL_PROVIDER=gmail
+   CODE_SMS=when-no-email
+   ACCOUNT_CODES=true
+   ```
+   `ACCOUNT_EMAIL=gmail` sends codes for real even when `CHANNEL_MODE=mock` or `MOCK_CHANNELS`
+   keeps alert channels log-only; `CODE_SMS=when-no-email` uses SMS codes only for phone-only
+   accounts.
+5. `bash ~/kaziforce/deploy/azure/update.sh`

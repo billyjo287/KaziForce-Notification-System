@@ -1,5 +1,6 @@
-// Email: Resend (default) or SendGrid (EMAIL_PROVIDER=sendgrid) in sandbox/live mode, both over
-// HTTPS with no SDK. Mock mode really sends, but to Mailpit, the fake inbox on this computer
+// Email: Resend (default), SendGrid (EMAIL_PROVIDER=sendgrid), both over HTTPS with no SDK, or a
+// Gmail account (EMAIL_PROVIDER=gmail) over SMTP with an app password: free, about 500 emails a
+// day, and no own domain needed, which suits a student deployment (ADR 0023). Mock mode really sends, but to Mailpit, the fake inbox on this computer
 // (http://localhost:8025 by default), so the email can be looked at; automated tests keep it in
 // memory. Account emails (password reset, new login) use this adapter too (lib/mailer.ts).
 import { randomUUID } from 'node:crypto';
@@ -14,8 +15,10 @@ import {
 } from './ChannelAdapter.js';
 
 export interface EmailConfig {
-  provider: 'resend' | 'sendgrid';
+  provider: 'resend' | 'sendgrid' | 'gmail';
   from: string;
+  /** EMAIL_PROVIDER=gmail: the Gmail address and its 16-character app password. */
+  gmail?: { user: string; appPassword: string };
   resendApiKey?: string;
   sendgridApiKey?: string;
   smtp: { host: string; port: number } | 'memory';
@@ -37,6 +40,7 @@ function splitAddress(from: string) {
 export class EmailAdapter extends ChannelAdapter {
   readonly name = 'email' as const;
   private readonly smtp;
+  private readonly gmail;
 
   constructor(
     options: AdapterOptions,
@@ -47,6 +51,14 @@ export class EmailAdapter extends ChannelAdapter {
       config.smtp === 'memory'
         ? nodemailer.createTransport({ jsonTransport: true })
         : nodemailer.createTransport({ ...config.smtp, secure: false });
+    this.gmail = config.gmail
+      ? nodemailer.createTransport({
+          host: 'smtp.gmail.com',
+          port: 465,
+          secure: true,
+          auth: { user: config.gmail.user, pass: config.gmail.appPassword },
+        })
+      : null;
   }
 
   addressFor(r: Recipient) {
@@ -91,9 +103,30 @@ export class EmailAdapter extends ChannelAdapter {
         throw new SendError(`Mailpit: ${(error as Error).message}`);
       }
     }
+    if (this.config.provider === 'gmail') return this.viaGmail(to, subject, text, html);
     return this.config.provider === 'sendgrid'
       ? this.viaSendGrid(to, subject, text, html)
       : this.viaResend(to, subject, text, html);
+  }
+
+  private async viaGmail(to: string, subject: string, text: string, html?: string) {
+    if (!this.gmail || !this.config.gmail) throw new SendError('Gmail is not configured', false);
+    // Gmail sends only "from" its own address: keep the display name, use the Gmail address.
+    const name = splitAddress(this.config.from).name ?? 'KaziForce';
+    try {
+      const info = await this.gmail.sendMail({
+        from: { name, address: this.config.gmail.user },
+        to,
+        subject,
+        text,
+        html,
+      });
+      return { providerMessageId: info.messageId || `gmail-${randomUUID()}` };
+    } catch (error) {
+      const code = (error as { responseCode?: number }).responseCode;
+      // 5xx: refused for good (bad address, daily limit reached); otherwise try again later.
+      throw new SendError(`Gmail: ${(error as Error).message}`, !(code && code >= 500));
+    }
   }
 
   private async viaResend(to: string, subject: string, text: string, html?: string) {

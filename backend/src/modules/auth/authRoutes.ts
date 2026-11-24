@@ -31,6 +31,7 @@ import { serializeUser, userWithProfile } from '../me/serializeUser.js';
 import {
   checkCode,
   codeOptions,
+  loginContact,
   createChallenge,
   findAccount,
   forgetDevices,
@@ -282,10 +283,7 @@ export function authRoutes(limits: RateLimiters) {
 
     // A new phone or computer: the password was right, now a code by SMS or email.
     if (env.ACCOUNT_CODES && !(await isTrustedDevice(req, user.id))) {
-      const phone =
-        user.phoneVerified && user.phone && !user.smsOptedOutAt ? user.phone : undefined;
-      // An email address that was never confirmed (SMS sign-up) gets no codes while SMS works.
-      const contact = { phone, email: user.emailVerifiedAt || !phone ? user.email : undefined };
+      const contact = loginContact(user);
       const challengeId = await createChallenge({
         purpose: 'login',
         userId: user.id,

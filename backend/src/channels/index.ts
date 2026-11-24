@@ -51,6 +51,10 @@ export function createAdapters({
       from: env.EMAIL_FROM,
       resendApiKey: env.RESEND_API_KEY || undefined,
       sendgridApiKey: env.SENDGRID_API_KEY || undefined,
+      gmail:
+        env.GMAIL_USER && env.GMAIL_APP_PASSWORD
+          ? { user: env.GMAIL_USER, appPassword: env.GMAIL_APP_PASSWORD.replace(/\s+/g, '') }
+          : undefined,
       // Automated tests keep emails in memory; development sends them to Mailpit.
       smtp: env.NODE_ENV === 'test' ? 'memory' : { host: env.SMTP_HOST, port: env.SMTP_PORT },
     }),
@@ -58,6 +62,29 @@ export function createAdapters({
 }
 
 export type ExternalAdapters = ReturnType<typeof createAdapters>;
+
+let accountMailer: EmailAdapter | null = null;
+
+/**
+ * The email adapter for account emails (codes, password resets). ACCOUNT_EMAIL=gmail: a live
+ * Gmail sender, whatever CHANNEL_MODE says (ADR 0024); otherwise the usual email adapter.
+ */
+export function accountEmailAdapter(): EmailAdapter {
+  if (env.ACCOUNT_EMAIL !== 'gmail' || env.NODE_ENV === 'test') return sharedAdapters().email;
+  accountMailer ??= new EmailAdapter(
+    { mode: 'live', logger: defaultLogger },
+    {
+      provider: 'gmail',
+      from: env.EMAIL_FROM,
+      gmail: {
+        user: env.GMAIL_USER!,
+        appPassword: env.GMAIL_APP_PASSWORD!.replace(/\s+/g, ''),
+      },
+      smtp: { host: env.SMTP_HOST, port: env.SMTP_PORT },
+    },
+  );
+  return accountMailer;
+}
 
 let shared: ExternalAdapters | null = null;
 

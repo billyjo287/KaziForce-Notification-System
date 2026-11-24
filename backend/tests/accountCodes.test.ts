@@ -6,7 +6,12 @@ import { afterAll, afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { env, validateEnv } from '../src/config/env.js';
 import { prisma } from '../src/lib/prisma.js';
 import { redis } from '../src/lib/redis.js';
-import { maskEmail, maskPhone, parseIdentifier } from '../src/modules/auth/accountCodes.js';
+import {
+  loginContact,
+  maskEmail,
+  maskPhone,
+  parseIdentifier,
+} from '../src/modules/auth/accountCodes.js';
 import { sha256 } from '../src/lib/tokens.js';
 import { PASSWORD, auth, testApp, uniqueEmail } from './helpers.js';
 
@@ -341,5 +346,55 @@ describe('production', () => {
       JWT_ACCESS_SECRET: 'Qm9vdHN0cmFwLXRlc3Qtc2VjcmV0LWZvci1rYXppZm9yY2UtMjAyNg',
     });
     expect(result.success && result.data.ACCOUNT_CODES).toBe(true);
+  });
+});
+
+describe('where log-in codes go (CODE_SMS, ADR 0024)', () => {
+  const user = {
+    phone: '+254700000001',
+    phoneVerified: true,
+    smsOptedOutAt: null,
+    email: 'amina@example.com',
+    emailVerifiedAt: new Date(),
+  };
+
+  it('offers SMS and email when the person may choose', () => {
+    expect(loginContact(user, 'choice')).toEqual({
+      phone: '+254700000001',
+      email: 'amina@example.com',
+    });
+  });
+
+  it('sends by email only when a confirmed email exists and SMS is kept for others', () => {
+    expect(loginContact(user, 'when-no-email')).toEqual({
+      phone: undefined,
+      email: 'amina@example.com',
+    });
+  });
+
+  it('still uses SMS for an account without a confirmed email', () => {
+    expect(loginContact({ ...user, emailVerifiedAt: null }, 'when-no-email')).toEqual({
+      phone: '+254700000001',
+      email: undefined,
+    });
+  });
+});
+
+describe('account emails through Gmail (ACCOUNT_EMAIL, ADR 0024)', () => {
+  it('needs the Gmail address and app password', () => {
+    const base = {
+      NODE_ENV: 'development',
+      DATABASE_URL: 'postgresql://u:p@localhost:5432/kf',
+      REDIS_URL: 'redis://localhost:6379',
+      JWT_ACCESS_SECRET: 'Qm9vdHN0cmFwLXRlc3Qtc2VjcmV0LWZvci1rYXppZm9yY2UtMjAyNg',
+      ACCOUNT_EMAIL: 'gmail',
+    };
+    const without = validateEnv(base);
+    expect(without.success).toBe(false);
+    expect(JSON.stringify(without.error?.issues)).toContain('GMAIL_USER');
+    expect(
+      validateEnv({ ...base, GMAIL_USER: 'kf@gmail.com', GMAIL_APP_PASSWORD: 'abcdabcdabcdabcd' })
+        .success,
+    ).toBe(true);
   });
 });

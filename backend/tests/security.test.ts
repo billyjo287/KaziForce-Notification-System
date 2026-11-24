@@ -100,6 +100,26 @@ describe('production settings', () => {
     expect(validateEnv({ ...sandbox, MOCK_CHANNELS: 'telegram' }).success).toBe(false);
   });
 
+  it('Gmail as the email provider needs the Gmail address and app password, not Resend', () => {
+    const gmail = {
+      ...base,
+      JWT_ACCESS_SECRET: 'Qm9vdHN0cmFwLXRlc3Qtc2VjcmV0LWZvci1rYXppZm9yY2UtMjAyNg',
+      CHANNEL_MODE: 'sandbox',
+      MOCK_CHANNELS: 'whatsapp,sms',
+      EMAIL_PROVIDER: 'gmail',
+    };
+    const without = validateEnv(gmail);
+    expect(without.success).toBe(false);
+    expect(JSON.stringify(without.error?.issues)).toContain('GMAIL_APP_PASSWORD');
+    expect(JSON.stringify(without.error?.issues)).not.toContain('RESEND_API_KEY');
+    const ok = validateEnv({
+      ...gmail,
+      GMAIL_USER: 'kaziforce.alerts@gmail.com',
+      GMAIL_APP_PASSWORD: 'abcd efgh ijkl mnop',
+    });
+    expect(ok.success).toBe(true);
+  });
+
   it('accept a real random secret', () => {
     const result = validateEnv({
       ...base,

@@ -48,6 +48,14 @@ const envSchema = z.object({
     .enum(['true', 'false'])
     .default('false')
     .transform((v) => v === 'true'),
+  // Where account emails (6-digit codes, password resets, new-log-in alerts) go (ADR 0024):
+  // "channel" = the same way as email alerts (EMAIL_PROVIDER, CHANNEL_MODE, MOCK_CHANNELS);
+  // "gmail" = always for real through the Gmail account (GMAIL_USER), even when the alert
+  // channels are in mock mode, so codes reach people while alerts cost no credit.
+  ACCOUNT_EMAIL: z.enum(['channel', 'gmail']).default('channel'),
+  // SMS codes cost credit (ADR 0024). "choice" = the person picks SMS or email;
+  // "when-no-email" = email whenever the account has a confirmed email, SMS only without one.
+  CODE_SMS: z.enum(['choice', 'when-no-email']).default('choice'),
   SMTP_HOST: z.string().default('localhost'),
   SMTP_PORT: z.coerce.number().int().positive().default(1025),
   EMAIL_FROM: z.string().default('KaziForce <alerts@kaziforce.local>'),
@@ -115,7 +123,11 @@ const envSchema = z.object({
   // The address the browser comes back to. Defaults to PUBLIC_API_URL; behind Vercel use the
   // website's own address (it forwards /api), so the login cookie belongs to the website.
   OAUTH_CALLBACK_BASE: z.url().optional(),
-  EMAIL_PROVIDER: z.enum(['resend', 'sendgrid']).default('resend'),
+  EMAIL_PROVIDER: z.enum(['resend', 'sendgrid', 'gmail']).default('resend'),
+  // EMAIL_PROVIDER=gmail: a Gmail address with 2-Step Verification and an app password
+  // (myaccount.google.com/apppasswords). Free, about 500 emails a day, no domain needed.
+  GMAIL_USER: z.string().optional(),
+  GMAIL_APP_PASSWORD: z.string().optional(),
   RESEND_API_KEY: z.string().optional(),
   SENDGRID_API_KEY: z.string().optional(),
 });
@@ -139,6 +151,17 @@ const withProviderKeys = envSchema.superRefine((v, ctx) => {
       message: 'Demo codes are shown on screen: turn OTP_DEMO_MODE off in production',
     });
   }
+  if (v.ACCOUNT_EMAIL === 'gmail') {
+    for (const key of ['GMAIL_USER', 'GMAIL_APP_PASSWORD'] as const) {
+      if (!v[key]) {
+        ctx.addIssue({
+          code: 'custom',
+          path: [key],
+          message: 'Needed when ACCOUNT_EMAIL is gmail',
+        });
+      }
+    }
+  }
   if (v.CHANNEL_MODE === 'mock') return;
   // A channel kept in mock mode (MOCK_CHANNELS) needs no provider keys.
   const live = (channel: 'whatsapp' | 'sms' | 'email') => !v.MOCK_CHANNELS.includes(channel);
@@ -148,11 +171,13 @@ const withProviderKeys = envSchema.superRefine((v, ctx) => {
       : []),
     ...(live('sms') ? (['AFRICASTALKING_API_KEY', 'AFRICASTALKING_WEBHOOK_SECRET'] as const) : []),
     ...(live('email')
-      ? [
-          v.EMAIL_PROVIDER === 'resend'
-            ? ('RESEND_API_KEY' as const)
-            : ('SENDGRID_API_KEY' as const),
-        ]
+      ? v.EMAIL_PROVIDER === 'gmail'
+        ? (['GMAIL_USER', 'GMAIL_APP_PASSWORD'] as const)
+        : [
+            v.EMAIL_PROVIDER === 'resend'
+              ? ('RESEND_API_KEY' as const)
+              : ('SENDGRID_API_KEY' as const),
+          ]
       : []),
   ];
   for (const key of required) {
