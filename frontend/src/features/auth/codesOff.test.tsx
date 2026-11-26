@@ -31,6 +31,9 @@ describe('Sign up with codes switched off (VITE_ACCOUNT_CODES=false, for a demo)
 
     expect(screen.getByText('Step 1 of 4')).toBeVisible();
     await userEvent.click(screen.getByRole('radio', { name: /I'm looking for work/ }));
+    await userEvent.click(
+      screen.getByRole('checkbox', { name: /I agree to the Terms of Service/ }),
+    );
     await next();
     await userEvent.type(screen.getByLabelText('Email address'), 'amina@example.com');
     await next();
@@ -41,6 +44,7 @@ describe('Sign up with codes switched off (VITE_ACCOUNT_CODES=false, for a demo)
     await next();
 
     expect(api.post).toHaveBeenLastCalledWith('/auth/register', {
+      acceptTerms: true,
       role: 'worker',
       name: 'Amina Hassan',
       email: 'amina@example.com',

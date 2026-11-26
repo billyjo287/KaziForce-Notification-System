@@ -174,6 +174,7 @@ describe('onboarding', () => {
     const created = await request(app)
       .post('/api/auth/register')
       .send({
+        acceptTerms: true,
         role: 'worker',
         name: 'New Person',
         email: uniqueEmail('onboard'),
@@ -269,6 +270,7 @@ describe('held and removed jobs stay private', () => {
     const other = await request(app)
       .post('/api/auth/register')
       .send({
+        acceptTerms: true,
         role: 'business',
         name: 'Other Employer',
         email: uniqueEmail('other-employer'),

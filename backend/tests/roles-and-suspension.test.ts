@@ -58,7 +58,13 @@ describe('suspension', () => {
     const email = uniqueEmail('suspend');
     const created = await request(app)
       .post('/api/auth/register')
-      .send({ role: 'worker', name: 'Soon Suspended', email, password: PASSWORD });
+      .send({
+        acceptTerms: true,
+        role: 'worker',
+        name: 'Soon Suspended',
+        email,
+        password: PASSWORD,
+      });
     const userId = created.body.user.id as string;
     const token = created.body.accessToken as string;
 

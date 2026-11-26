@@ -142,6 +142,8 @@ model User {
   // Explicit consent to receive SMS/WhatsApp (Kenya Data Protection Act 2019)
   consentSmsWhatsapp    Boolean    @default(false)
   consentAt             DateTime?
+  // When the person ticked "I agree to the Terms of Service and Privacy Policy" at sign-up.
+  termsAcceptedAt       DateTime?
   usesWhatsApp          Boolean    @default(false)
   // Workers: where they want work (and up to 5 skills). Employers: where the company is.
   locationId            String?    @db.Uuid

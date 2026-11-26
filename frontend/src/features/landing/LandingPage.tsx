@@ -84,6 +84,7 @@ const FOOTER_COLUMNS = [
       { key: 'register', to: '/register' },
       { key: 'forgot', to: '/forgot-password' },
       { key: 'privacy', to: '/privacy' },
+      { key: 'terms', to: '/terms' },
     ],
   },
 ] as const;

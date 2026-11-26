@@ -75,6 +75,8 @@ interface Pending {
   intent: 'login' | 'signup';
   role?: 'worker' | 'business';
   language: 'en' | 'sw';
+  /** Sign-up: the Terms of Service and Privacy Policy box was ticked before leaving for the provider. */
+  terms?: boolean;
   verifier?: string;
 }
 
@@ -95,6 +97,7 @@ const startSchema = z.object({
   intent: z.enum(['login', 'signup']).default('login'),
   role: z.enum(['worker', 'business']).optional(),
   lang: z.enum(['en', 'sw']).default('en'),
+  terms: z.literal('1').optional(),
 });
 
 const base64url = (b: Buffer) => b.toString('base64url');
@@ -198,6 +201,8 @@ export async function accountFor(provider: OAuthProvider, profile: ProviderProfi
   }
 
   if (p.intent !== 'signup' || !p.role) throw new OAuthFailure('no_account');
+  // A new account needs the Terms and Privacy box, as with a password sign-up.
+  if (!p.terms) throw new OAuthFailure('terms_required');
   const name = profile.name.trim().slice(0, 80) || profile.email.split('@')[0]!;
   return prisma.user.create({
     data: {
@@ -205,6 +210,7 @@ export async function accountFor(provider: OAuthProvider, profile: ProviderProfi
       name: name.length >= 2 ? name : 'KaziForce user',
       email: profile.email,
       emailVerifiedAt: new Date(),
+      termsAcceptedAt: new Date(),
       language: p.language,
       // No password yet: a random one nobody knows. "Forgot your password?" sets a real one.
       passwordHash: await bcrypt.hash(randomToken(), 12),
@@ -249,6 +255,7 @@ export function oauthRoutes(
       intent: input.data.intent,
       role: input.data.role,
       language: input.data.lang,
+      terms: input.data.terms === '1',
     };
     const params = new URLSearchParams({
       client_id: providers[provider].clientId!,
@@ -298,7 +305,8 @@ export function oauthRoutes(
     } catch (err) {
       if (err instanceof OAuthFailure) {
         // "no_account" on log-in: send them to sign up, where they choose worker or employer.
-        return fail(err.code, err.code === 'no_account' ? 'signup' : pending.intent);
+        const toSignup = err.code === 'no_account' || err.code === 'terms_required';
+        return fail(err.code, toSignup ? 'signup' : pending.intent);
       }
       logger.warn({ err, provider }, 'OAuth sign-in failed');
       return fail('provider_error', pending.intent);

@@ -103,7 +103,12 @@
       "phoneHelp": "A Kenyan mobile number, for example 0712 345 678.",
       "consent": "I agree to receive WhatsApp and SMS messages from KaziForce about jobs and my account.",
       "consentHelp": "You can change this at any time in Settings.",
-      "consentNeeded": "Tick the box to get your code by SMS."
+      "consentNeeded": "Tick the box to get your code by SMS.",
+      "termsAgree": "I agree to the",
+      "termsLink": "Terms of Service",
+      "termsAnd": "and the",
+      "privacyPolicyLink": "Privacy Policy",
+      "termsNeeded": "Tick the box to agree to the Terms of Service and the Privacy Policy."
     },
     "forgot": {
       "title": "Forgot your password?",
@@ -143,7 +148,8 @@
         "email_not_verified": "Google or GitHub has not confirmed that email address yet. Confirm it there, or use your email and a password here.",
         "account_suspended": "This account has been suspended.",
         "provider_off": "That way of logging in is not available right now. Use your email or phone number.",
-        "other": "Something went wrong with Google or GitHub. Please try again, or use your email and password."
+        "other": "Something went wrong with Google or GitHub. Please try again, or use your email and password.",
+        "terms_required": "To create an account with Google or GitHub, first tick the box to agree to the Terms of Service and the Privacy Policy."
       }
     }
   },
@@ -163,6 +169,7 @@
     "phone_invalid": "Type a Kenyan mobile number, for example 0712 345 678.",
     "consent_required": "Tick the box to get your code by SMS.",
     "phone_taken": "This number is already used by another account. Choose email, or use another number.",
-    "email_confirmed": "Your email address is already confirmed."
+    "email_confirmed": "Your email address is already confirmed.",
+    "terms_required": "Please agree to the Terms of Service and the Privacy Policy to create an account."
   }
 }

@@ -12,7 +12,7 @@ afterAll(() => prisma.$disconnect());
 async function register(role = 'worker', email = uniqueEmail()) {
   return request(app)
     .post('/api/auth/register')
-    .send({ role, name: 'Test Person', email, password: PASSWORD });
+    .send({ acceptTerms: true, role, name: 'Test Person', email, password: PASSWORD });
 }
 
 describe('register', () => {
@@ -45,9 +45,30 @@ describe('register', () => {
   it('refuses short passwords', async () => {
     const res = await request(app)
       .post('/api/auth/register')
-      .send({ role: 'worker', name: 'Test', email: uniqueEmail(), password: 'short' });
+      .send({
+        acceptTerms: true,
+        role: 'worker',
+        name: 'Test',
+        email: uniqueEmail(),
+        password: 'short',
+      });
     expect(res.status).toBe(400);
     expect(res.body.error.details.fields.password).toBeTruthy();
+  });
+
+  it('refuses a sign-up without the Terms and Privacy box, and records when it was ticked', async () => {
+    const email = uniqueEmail();
+    const refused = await request(app)
+      .post('/api/auth/register')
+      .send({ role: 'worker', name: 'No Terms', email, password: PASSWORD });
+    expect(refused.status).toBe(400);
+    expect(refused.body.error.code).toBe('terms_required');
+
+    const before = Date.now();
+    const ok = await register('worker', email);
+    expect(ok.status).toBe(201);
+    const user = await prisma.user.findUniqueOrThrow({ where: { email } });
+    expect(user.termsAcceptedAt?.getTime()).toBeGreaterThanOrEqual(before - 1000);
   });
 });
 

@@ -24,7 +24,13 @@ const preferences = new UserPreferenceManager(prisma, redis, 'kf-test');
 async function newAccount(role: 'worker' | 'business' = 'worker') {
   const res = await request(app)
     .post('/api/auth/register')
-    .send({ role, name: 'Settings Tester', email: uniqueEmail('prefs'), password: PASSWORD });
+    .send({
+      acceptTerms: true,
+      role,
+      name: 'Settings Tester',
+      email: uniqueEmail('prefs'),
+      password: PASSWORD,
+    });
   expect(res.status).toBe(201);
   return { token: res.body.accessToken as string, id: res.body.user.id as string };
 }

@@ -196,7 +196,8 @@
     "privacyLink": "How we use your information (Privacy)",
     "logoutAllTitle": "Log out of all devices?",
     "logoutAllBody": "You will need to log in again on every phone and computer, including this one.",
-    "logoutAllConfirm": "Log out everywhere"
+    "logoutAllConfirm": "Log out everywhere",
+    "termsLink": "Terms of Service"
   },
   "channels": {
     "whatsapp": "WhatsApp",

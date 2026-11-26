@@ -1,0 +1,63 @@
+{
+  "terms": {
+    "title": "Terms of Service",
+    "updated": "Last updated: 26 November 2026",
+    "intro": "These terms are the rules for using KaziForce. By creating an account you agree to them and to our Privacy Policy. Please read them; they are short.",
+    "back": "Back to the home page",
+    "privacyLink": "Read the Privacy Policy",
+    "sections": {
+      "who": {
+        "heading": "Who we are",
+        "body": "KaziForce connects people looking for short-term work with employers in Kenya and sends each alert in the way that suits its urgency. This version is a student project at Strathmore University, Nairobi, run for testing and demonstration."
+      },
+      "account": {
+        "heading": "Your account",
+        "items": [
+          "You must be at least 18 years old to use KaziForce.",
+          "Give true details about yourself and, for employers, your business.",
+          "Keep your password and log-in codes to yourself. You are responsible for what happens in your account.",
+          "One person, one account. Do not use someone else’s account, email address or phone number."
+        ]
+      },
+      "use": {
+        "heading": "Using KaziForce fairly",
+        "items": [
+          "Employers: post only real, legal jobs, describe the pay and hours honestly, and treat applicants with respect.",
+          "Workers: apply only for jobs you can do, and tell the employer if you can no longer come.",
+          "Never ask anyone for money to get a job, such as a “registration fee” or a “deposit”. This is a common scam and is not allowed.",
+          "Do not send spam, insults, threats or anything illegal, and do not try to break or misuse the site.",
+          "We may remove jobs or messages, and suspend accounts, that break these rules."
+        ]
+      },
+      "alerts": {
+        "heading": "Alerts",
+        "items": [
+          "KaziForce sorts alerts automatically by urgency and checks them for scams. The sorting can be wrong, and an alert can arrive late or not at all, for example when the network is down. Always check the details of a job before you act on it.",
+          "WhatsApp and SMS alerts are sent only if you agreed to them. You can switch any channel off in Alert settings, or reply STOP (or ACHA).",
+          "Receiving WhatsApp alerts uses your mobile data."
+        ]
+      },
+      "role": {
+        "heading": "What KaziForce does and does not do",
+        "body": "KaziForce helps employers and workers find each other. We are not the employer and we are not part of any agreement between you. We do not promise that you will find work or workers, and we are not responsible for pay, hours or what happens at work. If something goes wrong with a job, report it to an administrator."
+      },
+      "service": {
+        "heading": "The service",
+        "body": "As a student project, KaziForce is provided as it is, without guarantees. It may change, have errors or stop. As far as the law allows, we are not liable for losses that come from using it, such as a missed job or a delayed alert."
+      },
+      "ending": {
+        "heading": "Ending your use",
+        "body": "You can delete your account at any time in Settings → Delete my account. We may suspend or close an account that breaks these terms; we will tell you why, unless the law or someone’s safety prevents it."
+      },
+      "changes": {
+        "heading": "Changes and the law",
+        "body": "If we change these terms, we will update the date at the top and tell you in the app about any important change. These terms are governed by the laws of Kenya."
+      }
+    },
+    "contact": {
+      "heading": "Contact",
+      "withEmail": "Questions about these terms: write to {{email}}.",
+      "withoutEmail": "Questions about these terms: send a message to the KaziForce team from your account, or ask an administrator."
+    }
+  }
+}

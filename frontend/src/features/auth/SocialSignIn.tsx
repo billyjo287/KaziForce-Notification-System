@@ -13,9 +13,12 @@ import { api, oauthStartUrl, type OAuthProvider } from '../../lib/api';
 export function SocialSignIn({
   intent,
   role,
+  terms,
 }: {
   intent: 'login' | 'signup';
   role?: 'worker' | 'business';
+  /** Sign-up: the Terms and Privacy box was ticked on the first step. */
+  terms?: boolean;
 }) {
   const { t, i18n } = useTranslation();
   const [providers, setProviders] = useState<OAuthProvider[]>([]);
@@ -47,7 +50,7 @@ export function SocialSignIn({
       {providers.map((provider) => (
         <a
           key={provider}
-          href={oauthStartUrl(provider, { intent, role, lang })}
+          href={oauthStartUrl(provider, { intent, role, lang, terms })}
           className="flex min-h-14 items-center justify-center gap-3 rounded-xl border-2 border-line-strong bg-surface px-4 text-lg font-bold text-ink hover:bg-surface-sunken"
         >
           {provider === 'google' ? <GoogleIcon /> : <GitHubIcon />}

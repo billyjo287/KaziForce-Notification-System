@@ -148,6 +148,7 @@ describe('"Pop-ups on this device" API', () => {
     const res = await request(app)
       .post('/api/auth/register')
       .send({
+        acceptTerms: true,
         role: 'worker',
         name: 'Push Tester',
         email: uniqueEmail('push-api'),

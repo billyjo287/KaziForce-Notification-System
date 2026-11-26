@@ -1,0 +1,63 @@
+{
+  "terms": {
+    "title": "Masharti ya Huduma",
+    "updated": "Ilisasishwa: 26 Novemba 2026",
+    "intro": "Masharti haya ni kanuni za kutumia KaziForce. Ukifungua akaunti, unakubali masharti haya na Sera yetu ya Faragha. Tafadhali yasome; ni mafupi.",
+    "back": "Rudi kwenye ukurasa wa mwanzo",
+    "privacyLink": "Soma Sera ya Faragha",
+    "sections": {
+      "who": {
+        "heading": "Sisi ni nani",
+        "body": "KaziForce inaunganisha watu wanaotafuta kazi za muda mfupi na waajiri nchini Kenya, na hutuma kila arifa kwa njia inayolingana na uharaka wake. Toleo hili ni mradi wa mwanafunzi katika Chuo Kikuu cha Strathmore, Nairobi, kwa majaribio na maonyesho."
+      },
+      "account": {
+        "heading": "Akaunti yako",
+        "items": [
+          "Lazima uwe na umri wa miaka 18 au zaidi kutumia KaziForce.",
+          "Toa taarifa za kweli kukuhusu na, kwa waajiri, kuhusu biashara yako.",
+          "Weka nenosiri na misimbo ya kuingia kuwa siri yako. Unawajibika kwa kinachotokea kwenye akaunti yako.",
+          "Mtu mmoja, akaunti moja. Usitumie akaunti, barua pepe au nambari ya simu ya mtu mwingine."
+        ]
+      },
+      "use": {
+        "heading": "Kutumia KaziForce kwa haki",
+        "items": [
+          "Waajiri: tangazeni kazi za kweli na halali tu, elezeni malipo na saa kwa uaminifu, na waheshimuni waombaji.",
+          "Wafanyakazi: ombeni kazi mnazoweza kufanya tu, na mjulisheni mwajiri msipoweza kufika tena.",
+          "Usimwombe mtu yeyote pesa ili apate kazi, kama “ada ya usajili” au “amana”. Huu ni utapeli wa kawaida na hauruhusiwi.",
+          "Usitume barua taka, matusi, vitisho au chochote kisicho halali, na usijaribu kuharibu au kutumia vibaya tovuti.",
+          "Tunaweza kuondoa kazi au ujumbe, na kusimamisha akaunti, zinazovunja kanuni hizi."
+        ]
+      },
+      "alerts": {
+        "heading": "Arifa",
+        "items": [
+          "KaziForce hupanga arifa yenyewe kulingana na uharaka na kuzikagua kama ni utapeli. Mpangilio unaweza kukosea, na arifa inaweza kuchelewa au kutofika kabisa, kwa mfano mtandao ukiwa haupo. Kagua taarifa za kazi kila mara kabla ya kuchukua hatua.",
+          "Arifa za WhatsApp na SMS hutumwa ukikubali tu. Unaweza kuzima njia yoyote kwenye Mipangilio ya arifa, au kujibu STOP (au ACHA).",
+          "Kupokea arifa za WhatsApp kunatumia data yako ya simu."
+        ]
+      },
+      "role": {
+        "heading": "KaziForce inafanya nini na haifanyi nini",
+        "body": "KaziForce inawasaidia waajiri na wafanyakazi kupatana. Sisi si mwajiri na hatuhusiki na makubaliano yoyote kati yenu. Hatuahidi kwamba utapata kazi au wafanyakazi, na hatuwajibiki kwa malipo, saa za kazi au kinachotokea kazini. Kitu kikienda vibaya kuhusu kazi, ripoti kwa msimamizi."
+      },
+      "service": {
+        "heading": "Huduma",
+        "body": "Kama mradi wa mwanafunzi, KaziForce inatolewa ilivyo, bila dhamana. Inaweza kubadilika, kuwa na makosa au kusimama. Kwa kadiri sheria inavyoruhusu, hatuwajibiki kwa hasara zinazotokana na kuitumia, kama kukosa kazi au arifa iliyochelewa."
+      },
+      "ending": {
+        "heading": "Kuacha kutumia",
+        "body": "Unaweza kufuta akaunti yako wakati wowote kwenye Mipangilio → Futa akaunti yangu. Tunaweza kusimamisha au kufunga akaunti inayovunja masharti haya; tutakueleza sababu, isipokuwa sheria au usalama wa mtu unazuia."
+      },
+      "changes": {
+        "heading": "Mabadiliko na sheria",
+        "body": "Tukibadilisha masharti haya, tutasasisha tarehe iliyo juu na kukujulisha ndani ya programu kuhusu mabadiliko yoyote muhimu. Masharti haya yanaongozwa na sheria za Kenya."
+      }
+    },
+    "contact": {
+      "heading": "Mawasiliano",
+      "withEmail": "Maswali kuhusu masharti haya: andika kwa {{email}}.",
+      "withoutEmail": "Maswali kuhusu masharti haya: tuma ujumbe kwa timu ya KaziForce kutoka kwenye akaunti yako, au muulize msimamizi."
+    }
+  }
+}

@@ -79,6 +79,11 @@ export const router = createBrowserRouter([
         path: 'privacy',
         lazy: async () => ({ Component: (await import('./features/privacy/PrivacyPage')).default }),
       },
+      // Terms of Service: agreed to at sign-up; open to everyone.
+      {
+        path: 'terms',
+        lazy: async () => ({ Component: (await import('./features/terms/TermsPage')).default }),
+      },
       {
         path: 'onboarding',
         lazy: async () => ({

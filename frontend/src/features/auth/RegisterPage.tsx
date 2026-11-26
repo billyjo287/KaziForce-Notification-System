@@ -29,6 +29,7 @@ import { useOAuthError } from './oauthErrors';
 import { SocialSignIn } from './SocialSignIn';
 
 type SignUpRole = 'worker' | 'business';
+const TERMS_LINK = 'font-bold text-kf-primary-text underline underline-offset-4';
 type StepName = 'role' | 'email' | 'exists' | 'name' | 'password' | 'send' | 'code';
 // VITE_ACCOUNT_CODES=false (with ACCOUNT_CODES=false on the server): no code at sign-up, so the
 // account is made straight after the password and the two code steps are skipped.
@@ -48,6 +49,8 @@ const STEP_NUMBER: Record<StepName, number> = {
 interface Draft {
   step: StepName;
   role?: SignUpRole;
+  /** Step 1: the Terms of Service and Privacy Policy box. */
+  terms?: boolean;
   email: string;
   name: string;
   /** Step 5: where the code goes, and the phone number for SMS. */
@@ -109,6 +112,7 @@ export default function RegisterPage() {
   const [challenge, setChallenge] = useState<SignupCodeStep | null>(null);
   const [consent, setConsent] = useState(false);
   const [consentError, setConsentError] = useState<string | null>(null);
+  const [termsError, setTermsError] = useState<string | null>(null);
 
   useEffect(() => saveDraft(draft), [draft]);
 
@@ -223,6 +227,7 @@ export default function RegisterPage() {
         password,
         language: i18n.language,
         channel: by,
+        acceptTerms: draft.terms === true,
         ...(phone && { phone, consentSms: true }),
       });
       if ('codeRequired' in data) {
@@ -237,7 +242,10 @@ export default function RegisterPage() {
       const code = apiErrorCode(e);
       if (code === 'email_taken') goTo('exists');
       else if (code === 'phone_taken' || code === 'phone_invalid') setFieldError(errorMessage(e));
-      else setError(errorMessage(e));
+      else if (code === 'terms_required') {
+        update({ step: 'role', terms: false });
+        setError(errorMessage(e));
+      } else setError(errorMessage(e));
     }
   }
 
@@ -441,7 +449,7 @@ export default function RegisterPage() {
           </Button>
         </form>
         {/* Or skip the email, name and password steps with an account they already have. */}
-        {draft.role && <SocialSignIn intent="signup" role={draft.role} />}
+        {draft.role && <SocialSignIn intent="signup" role={draft.role} terms={draft.terms} />}
         {back('role')}
       </AuthLayout>
     );
@@ -534,13 +542,16 @@ export default function RegisterPage() {
     <AuthLayout>
       <StepHeading {...step} title={t('auth.register.roleQuestion')} />
       {oauthError && <FormAlert>{oauthError}</FormAlert>}
+      {error && <FormAlert>{error}</FormAlert>}
       <form
         noValidate
         className="flex flex-col gap-6"
         onSubmit={(e) => {
           e.preventDefault();
-          if (draft.role) goTo('email');
-          else setFieldError(t('validation.choose'));
+          const termsMissing = draft.terms !== true;
+          setTermsError(termsMissing ? t('auth.register.termsNeeded') : null);
+          if (!draft.role) setFieldError(t('validation.choose'));
+          if (draft.role && !termsMissing) goTo('email');
         }}
       >
         <ChoiceCards<SignUpRole>
@@ -567,6 +578,28 @@ export default function RegisterPage() {
               icon: Briefcase,
             },
           ]}
+        />
+        {/* Required, as on other sites: the Terms of Service and the Privacy Policy. */}
+        <Checkbox
+          name="terms"
+          checked={draft.terms === true}
+          onChange={(e) => {
+            update({ terms: e.target.checked });
+            if (e.target.checked) setTermsError(null);
+          }}
+          error={termsError ?? undefined}
+          label={
+            <>
+              {t('auth.register.termsAgree')}{' '}
+              <Link to="/terms" target="_blank" className={TERMS_LINK}>
+                {t('auth.register.termsLink')}
+              </Link>{' '}
+              {t('auth.register.termsAnd')}{' '}
+              <Link to="/privacy" target="_blank" className={TERMS_LINK}>
+                {t('auth.register.privacyPolicyLink')}
+              </Link>
+            </>
+          }
         />
         <Button type="submit" size="lg">
           {t('auth.login.continue')}

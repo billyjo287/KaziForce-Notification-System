@@ -1,7 +1,7 @@
 {
   "privacy": {
     "title": "Privacy: how we use your information",
-    "updated": "Last updated: 7 November 2026",
+    "updated": "Last updated: 26 November 2026",
     "intro": "KaziForce follows Kenya’s Data Protection Act, 2019. This page says, in plain words, what we keep about you, why, who else sees it, for how long, and what you can do about it.",
     "back": "Back to the home page",
     "sections": {
@@ -13,10 +13,12 @@
         "heading": "What we keep",
         "items": [
           "Your account: name, email address, password (stored scrambled, never readable), your side (worker or employer), language, area, skills or company name.",
+          "If you sign up or log in with Google or GitHub: the name, email address and account number they share with us. We never see your Google or GitHub password.",
           "Your phone number, only if you give it, and whether you agreed to SMS and WhatsApp alerts.",
           "What you do on KaziForce: jobs you post or apply for, your messages, and your alert settings.",
           "Your alerts, and when each one was sent, delivered, opened or marked “Not important to me”.",
-          "For safety: the phones and computers you log in from, so we can ask for a code on a new one."
+          "For safety: the phones and computers you log in from, so we can ask for a code on a new one.",
+          "The date you agreed to the Terms of Service and this Privacy Policy."
         ]
       },
       "why": {
@@ -33,7 +35,8 @@
         "intro": "Only the services we need to send your alerts and run the site:",
         "items": [
           "Twilio (WhatsApp) and Africa’s Talking (SMS): your phone number and a short summary with a link. Never your personal details.",
-          "Resend (email): your email address and the email we send you.",
+          "Google (Gmail): your email address and the emails we send you, such as log-in codes, alerts and your daily summary.",
+          "Google and GitHub, only if you choose to sign in with them: they confirm who you are and send us your name and email address.",
           "Your browser’s pop-up service (Google, Mozilla or Apple), if you turn pop-ups on: a one-line summary only.",
           "Supabase (database), Microsoft Azure (server) and Vercel (website): they store and run KaziForce for us."
         ],
@@ -68,6 +71,7 @@
         "withEmail": "Questions about your information: write to {{email}}. We answer within 7 days.",
         "withoutEmail": "Questions about your information: send a message to the KaziForce team from your account, or ask an administrator. We answer within 7 days."
       }
-    }
+    },
+    "termsLink": "Read the Terms of Service"
   }
 }

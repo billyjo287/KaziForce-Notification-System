@@ -213,6 +213,12 @@ export function SettingsPage() {
           >
             {t('settings.privacyLink')}
           </Link>
+          <Link
+            to="/terms"
+            className="inline-flex min-h-11 items-center text-lg font-bold text-kf-primary-text underline underline-offset-4"
+          >
+            {t('settings.termsLink')}
+          </Link>
         </div>
       </Card>
 

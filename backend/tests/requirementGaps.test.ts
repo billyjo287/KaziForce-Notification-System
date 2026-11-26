@@ -87,7 +87,13 @@ afterAll(async () => {
 async function newAccount() {
   const res = await request(app)
     .post('/api/auth/register')
-    .send({ role: 'worker', name: 'Gap Tester', email: uniqueEmail('gaps'), password: PASSWORD });
+    .send({
+      acceptTerms: true,
+      role: 'worker',
+      name: 'Gap Tester',
+      email: uniqueEmail('gaps'),
+      password: PASSWORD,
+    });
   expect(res.status).toBe(201);
   return { token: res.body.accessToken as string, id: res.body.user.id as string };
 }

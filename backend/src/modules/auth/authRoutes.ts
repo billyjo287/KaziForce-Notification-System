@@ -75,6 +75,8 @@ const registerSchema = z.object({
   channel: z.enum(['email', 'sms']).default('email'),
   phone: z.string().trim().max(30).optional(),
   consentSms: z.boolean().optional(),
+  // The "I agree to the Terms of Service and Privacy Policy" box: required to make an account.
+  acceptTerms: z.boolean().optional(),
 });
 // "identifier" is an email or a phone number; older pages (and the tests) send "email".
 const loginSchema = z
@@ -137,6 +139,12 @@ export function authRoutes(limits: RateLimiters) {
 
   router.post('/register', limits.login, async (req, res) => {
     const input = parse(registerSchema, req.body);
+    if (input.acceptTerms !== true) {
+      throw badRequest(
+        'terms_required',
+        'Please agree to the Terms of Service and Privacy Policy to create an account.',
+      );
+    }
     const existing = await prisma.user.findUnique({ where: { email: input.email } });
     if (existing) throw conflict('email_taken', 'An account with this email already exists.');
     const phone =
@@ -148,6 +156,7 @@ export function authRoutes(limits: RateLimiters) {
       email: input.email,
       language: input.language,
       passwordHash: await bcrypt.hash(input.password, 12),
+      termsAcceptedAt: new Date().toISOString(),
     };
 
     if (env.ACCOUNT_CODES) {
@@ -220,6 +229,8 @@ export function authRoutes(limits: RateLimiters) {
       email: string;
       passwordHash: string;
       language: 'en' | 'sw';
+      /** When the Terms and Privacy box was ticked (ISO text: it may have waited in Redis). */
+      termsAcceptedAt?: string;
     },
     rememberDevice = false,
     /** Signed up with an SMS code: the confirmed phone and the consent given with it. */
@@ -240,6 +251,7 @@ export function authRoutes(limits: RateLimiters) {
         }),
         language: input.language,
         passwordHash: input.passwordHash,
+        termsAcceptedAt: input.termsAcceptedAt ? new Date(input.termsAcceptedAt) : now,
         lastLoginAt: new Date(),
         preference: {
           create: {

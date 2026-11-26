@@ -18,10 +18,17 @@ export type OAuthProvider = 'google' | 'github';
 /** The address that starts "Continue with Google / GitHub" (a full-page link, not a request). */
 export function oauthStartUrl(
   provider: OAuthProvider,
-  params: { intent: 'login' | 'signup'; role?: 'worker' | 'business'; lang: 'en' | 'sw' },
+  params: {
+    intent: 'login' | 'signup';
+    role?: 'worker' | 'business';
+    lang: 'en' | 'sw';
+    /** Sign-up: the Terms of Service and Privacy Policy box is ticked. */
+    terms?: boolean;
+  },
 ): string {
   const query = new URLSearchParams({ intent: params.intent, lang: params.lang });
   if (params.role) query.set('role', params.role);
+  if (params.terms) query.set('terms', '1');
   return `${REST_BASE}/auth/oauth/${provider}/start?${query.toString()}`;
 }
 

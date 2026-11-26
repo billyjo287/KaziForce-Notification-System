@@ -103,7 +103,12 @@
       "phoneHelp": "Namba ya simu ya Kenya, kwa mfano 0712 345 678.",
       "consent": "Nakubali kupokea ujumbe wa WhatsApp na SMS kutoka KaziForce kuhusu kazi na akaunti yangu.",
       "consentHelp": "Unaweza kubadilisha hili wakati wowote kwenye Mipangilio.",
-      "consentNeeded": "Weka alama kwenye kisanduku ili kupata msimbo kwa SMS."
+      "consentNeeded": "Weka alama kwenye kisanduku ili kupata msimbo kwa SMS.",
+      "termsAgree": "Nakubali",
+      "termsLink": "Masharti ya Huduma",
+      "termsAnd": "na",
+      "privacyPolicyLink": "Sera ya Faragha",
+      "termsNeeded": "Weka alama kwenye kisanduku kukubali Masharti ya Huduma na Sera ya Faragha."
     },
     "forgot": {
       "title": "Umesahau nenosiri?",
@@ -143,7 +148,8 @@
         "email_not_verified": "Google au GitHub bado haijathibitisha barua pepe hiyo. Ithibitishe huko, au tumia barua pepe na nenosiri hapa.",
         "account_suspended": "Akaunti hii imesimamishwa.",
         "provider_off": "Njia hiyo ya kuingia haipatikani kwa sasa. Tumia barua pepe au nambari ya simu.",
-        "other": "Kuna tatizo na Google au GitHub. Tafadhali jaribu tena, au tumia barua pepe na nenosiri."
+        "other": "Kuna tatizo na Google au GitHub. Tafadhali jaribu tena, au tumia barua pepe na nenosiri.",
+        "terms_required": "Ili kufungua akaunti kwa Google au GitHub, kwanza weka alama kwenye kisanduku kukubali Masharti ya Huduma na Sera ya Faragha."
       }
     }
   },
@@ -163,6 +169,7 @@
     "phone_invalid": "Andika namba ya simu ya Kenya, kwa mfano 0712 345 678.",
     "consent_required": "Weka alama kwenye kisanduku ili kupata msimbo kwa SMS.",
     "phone_taken": "Namba hii tayari inatumiwa na akaunti nyingine. Chagua barua pepe, au tumia namba nyingine.",
-    "email_confirmed": "Barua pepe yako tayari imethibitishwa."
+    "email_confirmed": "Barua pepe yako tayari imethibitishwa.",
+    "terms_required": "Tafadhali kubali Masharti ya Huduma na Sera ya Faragha ili kufungua akaunti."
   }
 }

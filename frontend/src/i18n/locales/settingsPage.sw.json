@@ -196,7 +196,8 @@
     "privacyLink": "Jinsi tunavyotumia taarifa zako (Faragha)",
     "logoutAllTitle": "Toka kwenye vifaa vyote?",
     "logoutAllBody": "Utahitaji kuingia tena kwenye kila simu na kompyuta, pamoja na hii.",
-    "logoutAllConfirm": "Toka kila mahali"
+    "logoutAllConfirm": "Toka kila mahali",
+    "termsLink": "Masharti ya Huduma"
   },
   "channels": {
     "whatsapp": "WhatsApp",

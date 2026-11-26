@@ -1,9 +1,10 @@
-import { useId, type InputHTMLAttributes, type Ref } from 'react';
+import { useId, type InputHTMLAttributes, type ReactNode, type Ref } from 'react';
 import { describedBy } from '../../lib/describedBy';
 import { ErrorText, HelpText } from './Field';
 
 interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'id' | 'type'> {
-  label: string;
+  /** Text, or text with links (links inside open without ticking the box). */
+  label: ReactNode;
   help?: string;
   error?: string;
   ref?: Ref<HTMLInputElement>;

@@ -75,7 +75,8 @@
         "login": "Log in",
         "register": "Create an account",
         "forgot": "Forgot your password?",
-        "privacy": "Privacy"
+        "privacy": "Privacy",
+        "terms": "Terms"
       }
     },
     "demo": {

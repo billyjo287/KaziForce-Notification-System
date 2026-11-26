@@ -278,6 +278,7 @@ describe('account deletion', () => {
     const res = await request(app)
       .post('/api/auth/register')
       .send({
+        acceptTerms: true,
         role: 'worker',
         name: 'Leaving Soon',
         email: uniqueEmail('delete'),

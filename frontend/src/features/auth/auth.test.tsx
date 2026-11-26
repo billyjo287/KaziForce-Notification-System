@@ -288,8 +288,27 @@ describe('Sign up', () => {
     expect(screen.getByText('Step 1 of 6')).toBeVisible();
     await next();
     expect(screen.getByText('Please choose one.')).toBeInTheDocument();
+    expect(
+      screen.getByText('Tick the box to agree to the Terms of Service and the Privacy Policy.'),
+    ).toBeInTheDocument();
 
+    // The role alone is not enough: the Terms of Service and Privacy Policy box is required.
     await userEvent.click(screen.getByRole('radio', { name: /I'm hiring/ }));
+    await next();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+      'What brings you to KaziForce?',
+    );
+    expect(screen.getByRole('link', { name: 'Terms of Service' })).toHaveAttribute(
+      'href',
+      '/terms',
+    );
+    expect(screen.getByRole('link', { name: 'Privacy Policy' })).toHaveAttribute(
+      'href',
+      '/privacy',
+    );
+    await userEvent.click(
+      screen.getByRole('checkbox', { name: /I agree to the Terms of Service/ }),
+    );
     await next();
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
       'What is your email address?',
@@ -300,6 +319,9 @@ describe('Sign up', () => {
     replies({ '/auth/check': [{ exists: true, kind: 'email' }] });
     renderWithRouter(<RegisterPage />, '/register');
     await userEvent.click(screen.getByRole('radio', { name: /I'm looking for work/ }));
+    await userEvent.click(
+      screen.getByRole('checkbox', { name: /I agree to the Terms of Service/ }),
+    );
     await next();
     await userEvent.type(screen.getByLabelText('Email address'), 'amina@gmial.com');
     await next();
@@ -335,6 +357,9 @@ describe('Sign up', () => {
     });
     renderWithRouter(<RegisterPage />, '/register');
     await userEvent.click(screen.getByRole('radio', { name: /I'm looking for work/ }));
+    await userEvent.click(
+      screen.getByRole('checkbox', { name: /I agree to the Terms of Service/ }),
+    );
     await next();
     await userEvent.type(screen.getByLabelText('Email address'), 'amina@example.com');
     await next();
@@ -363,6 +388,7 @@ describe('Sign up', () => {
     expect(api.post).toHaveBeenCalledTimes(1); // nothing sent before "Send my code"
     await userEvent.click(screen.getByRole('button', { name: 'Send my code' }));
     expect(api.post).toHaveBeenCalledWith('/auth/register', {
+      acceptTerms: true,
       role: 'worker',
       name: 'Amina Hassan',
       email: 'amina@example.com',
@@ -398,6 +424,9 @@ describe('Sign up', () => {
     });
     renderWithRouter(<RegisterPage />, '/register');
     await userEvent.click(screen.getByRole('radio', { name: /I'm looking for work/ }));
+    await userEvent.click(
+      screen.getByRole('checkbox', { name: /I agree to the Terms of Service/ }),
+    );
     await next();
     await userEvent.type(screen.getByLabelText('Email address'), 'juma@example.com');
     await next();
@@ -414,6 +443,7 @@ describe('Sign up', () => {
     await userEvent.click(screen.getByRole('checkbox', { name: /I agree to receive/ }));
     await userEvent.click(screen.getByRole('button', { name: 'Send my code' }));
     expect(api.post).toHaveBeenLastCalledWith('/auth/register', {
+      acceptTerms: true,
       role: 'worker',
       name: 'Juma Otieno',
       email: 'juma@example.com',
@@ -430,6 +460,9 @@ describe('Sign up', () => {
   it('keeps the answers (never the password) if the page reloads', async () => {
     renderWithRouter(<RegisterPage />, '/register');
     await userEvent.click(screen.getByRole('radio', { name: /I'm hiring/ }));
+    await userEvent.click(
+      screen.getByRole('checkbox', { name: /I agree to the Terms of Service/ }),
+    );
     await next();
     await userEvent.type(screen.getByLabelText('Email address'), 'boss@example.com');
     const saved = JSON.parse(sessionStorage.getItem('kf.signupDraft')!);

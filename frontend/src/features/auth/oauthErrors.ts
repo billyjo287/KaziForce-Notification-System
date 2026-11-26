@@ -11,6 +11,7 @@ export function useOAuthError(code: string | null): string | null {
     'email_not_verified',
     'account_suspended',
     'provider_off',
+    'terms_required',
   ];
   return t(`auth.social.errors.${known.includes(code) ? code : 'other'}`);
 }

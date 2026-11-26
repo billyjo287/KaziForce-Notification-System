@@ -1,7 +1,7 @@
 {
   "privacy": {
     "title": "Faragha: jinsi tunavyotumia taarifa zako",
-    "updated": "Ilisasishwa: 7 Novemba 2026",
+    "updated": "Ilisasishwa: 26 Novemba 2026",
     "intro": "KaziForce inafuata Sheria ya Ulinzi wa Data ya Kenya, 2019. Ukurasa huu unaeleza, kwa maneno rahisi, tunachohifadhi kukuhusu, kwa nini, nani mwingine anakiona, kwa muda gani, na unachoweza kufanya.",
     "back": "Rudi kwenye ukurasa wa mwanzo",
     "sections": {
@@ -13,10 +13,12 @@
         "heading": "Tunachohifadhi",
         "items": [
           "Akaunti yako: jina, barua pepe, nenosiri (huhifadhiwa likiwa limefichwa, haliwezi kusomwa), upande wako (mfanyakazi au mwajiri), lugha, eneo, ujuzi au jina la kampuni.",
+          "Ukijisajili au kuingia kwa Google au GitHub: jina, barua pepe na nambari ya akaunti wanayotushirikisha. Hatuoni kamwe nenosiri lako la Google au GitHub.",
           "Nambari yako ya simu, ukiitoa tu, na kama ulikubali arifa za SMS na WhatsApp.",
           "Unachofanya kwenye KaziForce: kazi unazotangaza au kuomba, ujumbe wako, na mipangilio ya arifa.",
           "Arifa zako, na lini kila moja ilitumwa, ilifika, ilifunguliwa au ilitiwa alama “Si muhimu kwangu”.",
-          "Kwa usalama: simu na kompyuta unazoingia nazo, ili tukuombe msimbo kwenye kifaa kipya."
+          "Kwa usalama: simu na kompyuta unazoingia nazo, ili tukuombe msimbo kwenye kifaa kipya.",
+          "Tarehe uliyokubali Masharti ya Huduma na Sera hii ya Faragha."
         ]
       },
       "why": {
@@ -33,7 +35,8 @@
         "intro": "Huduma tunazohitaji tu kutuma arifa zako na kuendesha tovuti:",
         "items": [
           "Twilio (WhatsApp) na Africa’s Talking (SMS): nambari yako ya simu na muhtasari mfupi wenye kiungo. Kamwe si taarifa zako binafsi.",
-          "Resend (barua pepe): anwani yako ya barua pepe na barua tunayokutumia.",
+          "Google (Gmail): anwani yako ya barua pepe na barua tunazokutumia, kama misimbo ya kuingia, arifa na muhtasari wako wa kila siku.",
+          "Google na GitHub, ukichagua tu kuingia kupitia kwao: wanathibitisha wewe ni nani na kututumia jina lako na barua pepe.",
           "Huduma ya arifa ibukizi ya kivinjari chako (Google, Mozilla au Apple), ukiziwasha: muhtasari wa mstari mmoja tu.",
           "Supabase (hifadhidata), Microsoft Azure (seva) na Vercel (tovuti): zinahifadhi na kuendesha KaziForce kwa niaba yetu."
         ],
@@ -68,6 +71,7 @@
         "withEmail": "Maswali kuhusu taarifa zako: andika kwa {{email}}. Tunajibu ndani ya siku 7.",
         "withoutEmail": "Maswali kuhusu taarifa zako: tuma ujumbe kwa timu ya KaziForce kutoka kwenye akaunti yako, au muulize msimamizi. Tunajibu ndani ya siku 7."
       }
-    }
+    },
+    "termsLink": "Soma Masharti ya Huduma"
   }
 }

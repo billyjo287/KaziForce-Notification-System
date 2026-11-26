@@ -47,6 +47,8 @@ interface Challenge {
     language: Language;
     /** SMS sign-up: agreed to get SMS and WhatsApp messages (Kenya Data Protection Act). */
     consentSms?: boolean;
+    /** When the Terms of Service and Privacy Policy box was ticked. */
+    termsAcceptedAt?: string;
   };
   name: string;
   language: Language;

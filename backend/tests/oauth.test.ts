@@ -87,7 +87,7 @@ describe('OAuth sign-in', () => {
   });
 
   it('creates a worker account on sign-up with Google and logs it in', async () => {
-    const { state, cookie } = await start('google', 'intent=signup&role=worker&lang=sw');
+    const { state, cookie } = await start('google', 'intent=signup&role=worker&lang=sw&terms=1');
     const res = await callback('google', state, cookie);
 
     expect(res.status).toBe(302);
@@ -99,6 +99,7 @@ describe('OAuth sign-in', () => {
     });
     expect(user).toMatchObject({ role: 'worker', language: 'sw', name: 'Achieng Otieno' });
     expect(user.emailVerifiedAt).not.toBeNull();
+    expect(user.termsAcceptedAt).not.toBeNull();
     expect(user.preference).not.toBeNull();
     expect(user.oauthAccounts).toEqual([
       expect.objectContaining({ provider: 'google', providerUserId: profile.sub }),
@@ -128,15 +129,22 @@ describe('OAuth sign-in', () => {
     expect(await prisma.user.findUnique({ where: { email: profile.email } })).toBeNull();
   });
 
+  it('sends a new Google sign-up without the Terms box back to sign-up, making no account', async () => {
+    const { state, cookie } = await start('google', 'intent=signup&role=worker');
+    const res = await callback('google', state, cookie);
+    expect(res.headers.location).toMatch(/\/register\?oauth_error=terms_required$/);
+    expect(await prisma.user.findUnique({ where: { email: profile.email } })).toBeNull();
+  });
+
   it('refuses an email the provider has not verified', async () => {
     profile.email_verified = false;
-    const { state, cookie } = await start('google', 'intent=signup&role=business');
+    const { state, cookie } = await start('google', 'intent=signup&role=business&terms=1');
     const res = await callback('google', state, cookie);
     expect(res.headers.location).toMatch(/oauth_error=email_not_verified$/);
   });
 
   it('refuses a state that does not match the browser cookie, and a reused state', async () => {
-    const { state, cookie } = await start('google', 'intent=signup&role=worker');
+    const { state, cookie } = await start('google', 'intent=signup&role=worker&terms=1');
     const forged = await callback('google', state, 'kf_oauth=someone-else');
     expect(forged.headers.location).toMatch(/oauth_error=expired$/);
 

@@ -213,7 +213,7 @@ describe('codes on', () => {
     const email = uniqueEmail('signup');
     const start = await request(app)
       .post('/api/auth/register')
-      .send({ role: 'worker', name: 'Grace Achieng', email, password: PASSWORD })
+      .send({ acceptTerms: true, role: 'worker', name: 'Grace Achieng', email, password: PASSWORD })
       .expect(200);
     expect(start.body).toMatchObject({
       codeRequired: true,
@@ -242,7 +242,14 @@ describe('codes on', () => {
     const register = (extra: object) =>
       request(app)
         .post('/api/auth/register')
-        .send({ role: 'worker', name: 'Juma Otieno', email, password: PASSWORD, ...extra });
+        .send({
+          acceptTerms: true,
+          role: 'worker',
+          name: 'Juma Otieno',
+          email,
+          password: PASSWORD,
+          ...extra,
+        });
     const noConsent = await register({ channel: 'sms', phone: phone.typed }).expect(400);
     expect(noConsent.body.error.code).toBe('consent_required');
     const badNumber = await register({ channel: 'sms', phone: '12345', consentSms: true });
@@ -291,6 +298,7 @@ describe('codes on', () => {
     const start = await request(app)
       .post('/api/auth/register')
       .send({
+        acceptTerms: true,
         role: 'business',
         name: 'Faith Wambui',
         email,
@@ -320,7 +328,13 @@ describe('codes on', () => {
   it('sign-up: an email that is already used never gets a code', async () => {
     const res = await request(app)
       .post('/api/auth/register')
-      .send({ role: 'worker', name: 'Someone', email: 'worker1@example.com', password: PASSWORD })
+      .send({
+        acceptTerms: true,
+        role: 'worker',
+        name: 'Someone',
+        email: 'worker1@example.com',
+        password: PASSWORD,
+      })
       .expect(409);
     expect(res.body.error.code).toBe('email_taken');
   });

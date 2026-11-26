@@ -75,7 +75,10 @@ export default function PrivacyPage() {
         </p>
       </section>
 
-      <p className="mt-12">
+      <p className="mt-12 flex flex-col gap-3">
+        <Link to="/terms" className={LINK}>
+          {t('privacy.termsLink')}
+        </Link>
         <Link to="/" className={LINK}>
           {t('privacy.back')}
         </Link>
