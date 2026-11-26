@@ -30,6 +30,8 @@ export function serializeNotification(n: NotificationRow) {
     location: n.job?.location.name ?? null,
     markedNotImportant: n.markedNotImportant,
     markedUrgent: n.markedUrgentByUser,
+    // Why the priority differs from the classifier's, from the person's own habits.
+    personalReason: n.personalReason as 'often_skipped' | 'often_opened' | null,
   };
 }
 

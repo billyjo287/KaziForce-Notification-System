@@ -7,6 +7,7 @@
 //                up on an urgent alert, the next channel is tried at once.
 //   escalation   when the window ends: if the alert is still unopened (in the app, by a tracked
 //                link, or a WhatsApp "read"), send it on the next channel; save escalatedAt/To.
+//   A/B test     group A gets every alert the same way (in the app + email), no escalation.
 //   held         quiet hours (FR-5): a non-urgent alert waits until they end, then is planned
 //                again with the settings of that moment (skipped if already opened in the app).
 //
@@ -39,6 +40,7 @@ import { createWording, type Wording } from './wording.js';
 import {
   nextChannel,
   planDelivery,
+  planUniform,
   usableChannels,
   type Adapters,
   type ExternalChannel,
@@ -88,6 +90,7 @@ const include = {
       smsOptedOutAt: true,
       status: true,
       deletionRequestedAt: true,
+      abGroup: true,
     },
   },
   deliveries: { select: { channel: true, openedAt: true, clickedAt: true } },
@@ -194,16 +197,26 @@ export function startDelivery(options: DeliveryOptions) {
     // Switched off by the person (and not mandatory): kept quietly in the app only.
     if (n.mutedByPreference) return null;
     const { prefs, categoryChannels } = await settingsFor(n);
-    const plan = planDelivery({
-      priority: priorityOf(n),
-      preferences: prefs,
-      categoryChannels,
-      recipient: recipientOf(n),
-      adapters,
-      deadlineAt: n.deadlineAt,
-      now,
-      windowMinutes: options.windowMinutes,
-    });
+    // A/B test group A: the same delivery for every priority (docs/ml-v2-plan.md step 8).
+    const plan =
+      n.recipient.abGroup === 'A'
+        ? planUniform({
+            preferences: prefs,
+            categoryChannels,
+            recipient: recipientOf(n),
+            adapters,
+            now,
+          })
+        : planDelivery({
+            priority: priorityOf(n),
+            preferences: prefs,
+            categoryChannels,
+            recipient: recipientOf(n),
+            adapters,
+            deadlineAt: n.deadlineAt,
+            now,
+            windowMinutes: options.windowMinutes,
+          });
     if (plan.heldUntil) {
       await prisma.notification.update({
         where: { id: notificationId },
@@ -242,6 +255,8 @@ export function startDelivery(options: DeliveryOptions) {
   async function escalate(notificationId: string, reason: EscalationJobData['reason']) {
     const n = await load(prisma, notificationId);
     if (!n || !reachable(n) || priorityOf(n) !== 'urgent' || isOpened(n)) return null;
+    // A/B test group A has no priority safety net.
+    if (n.recipient.abGroup === 'A') return null;
     // The window check escalates once; a failure always moves on (so a message gets through).
     if (reason === 'window' && n.escalatedAt) return null;
     const { prefs, categoryChannels } = await settingsFor(n);

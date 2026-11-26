@@ -56,15 +56,13 @@ describe('role checks', () => {
 describe('suspension', () => {
   it('a suspended user cannot log in and their open sessions stop working at once', async () => {
     const email = uniqueEmail('suspend');
-    const created = await request(app)
-      .post('/api/auth/register')
-      .send({
-        acceptTerms: true,
-        role: 'worker',
-        name: 'Soon Suspended',
-        email,
-        password: PASSWORD,
-      });
+    const created = await request(app).post('/api/auth/register').send({
+      acceptTerms: true,
+      role: 'worker',
+      name: 'Soon Suspended',
+      email,
+      password: PASSWORD,
+    });
     const userId = created.body.user.id as string;
     const token = created.body.accessToken as string;
 

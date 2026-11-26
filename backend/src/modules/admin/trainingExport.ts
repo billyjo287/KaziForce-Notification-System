@@ -35,6 +35,10 @@ export const CSV_COLUMNS = [
   'spam_score',
   'model_version',
   'prediction_source',
+  // The person's own habits moved the priority (Objective ii): the one used, and why.
+  // predicted_priority above is always the classifier's own answer.
+  'personal_priority',
+  'personal_reason',
   // admin corrections, and the label to train on (correction if any, else the prediction)
   'corrected_priority',
   'corrected_spam',
@@ -163,6 +167,8 @@ type Source = {
   spamScore: number | null;
   modelVersion: string | null;
   predictionSource: string | null;
+  modelPriority: string | null;
+  personalReason: string | null;
   correctedPriority: string | null;
   correctedSpam: boolean | null;
   priorityReviewedAt: Date | null;
@@ -196,7 +202,9 @@ export function toRow(
     }),
   ].sort((a, b) => a.at.getTime() - b.at.getTime());
   const firstOpen = opens[0] ?? null;
-  const labelPriority = n.correctedPriority ?? n.predictedPriority ?? 'medium';
+  // The classifier's own answer, before the person's habits moved it.
+  const modelPriority = n.modelPriority ?? n.predictedPriority;
+  const labelPriority = n.correctedPriority ?? modelPriority ?? 'medium';
 
   return {
     notification_token: token(n.id),
@@ -214,19 +222,21 @@ export function toRow(
     deadline_minutes: n.deadlineAt
       ? Math.round((n.deadlineAt.getTime() - n.createdAt.getTime()) / 60_000)
       : null,
-    predicted_priority: n.predictedPriority,
+    predicted_priority: modelPriority,
     priority_confidence: n.priorityConfidence,
     is_spam: n.isSpam,
     spam_score: n.spamScore,
     model_version: n.modelVersion,
     prediction_source: n.predictionSource,
+    personal_priority: n.personalReason ? n.predictedPriority : null,
+    personal_reason: n.personalReason,
     corrected_priority: n.correctedPriority,
     corrected_spam: n.correctedSpam,
     label_priority: labelPriority,
     label_spam: n.correctedSpam ?? n.isSpam,
     // A correction saved before priorityReviewedAt existed also counts as checked.
     priority_label_source:
-      n.priorityReviewedAt || n.correctedPriority ? 'admin' : n.predictedPriority ? 'model' : null,
+      n.priorityReviewedAt || n.correctedPriority ? 'admin' : modelPriority ? 'model' : null,
     spam_label_source: n.correctedSpam !== null ? 'admin' : n.predictionSource ? 'model' : null,
     status: n.status,
     channels_sent: [...new Set(sent.map((d) => d.channel))].join(';'),

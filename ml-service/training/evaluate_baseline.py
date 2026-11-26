@@ -32,6 +32,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DATASET = ROOT / "evaluation" / "holdout-v1.csv"
 RESULTS = ROOT / "evaluation" / "results"
 PRIORITIES = ["urgent", "medium", "low"]
+LANGUAGE_NAMES = {"en": "English", "sw": "Kiswahili", "sh": "Sheng or mixed"}
 SPAM_LABELS = [True, False]
 
 TARGET_WEIGHTED_F1 = 0.85
@@ -259,7 +260,7 @@ def report(results: dict, run: dict) -> str:
     ]
     for lang, r in results["by_language"].items():
         out.append(
-            f"| {'English' if lang == 'en' else 'Kiswahili'} | {r['priority']['rows']} "
+            f"| {LANGUAGE_NAMES.get(lang, lang)} | {r['priority']['rows']} "
             f"| {pct(r['priority']['weighted_f1'])} | {r['spam']['rows']} "
             f"| {pct(r['spam']['accuracy'])} | {pct(r['spam']['per_class']['True']['recall'])} |"
         )

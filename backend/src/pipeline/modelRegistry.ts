@@ -1,7 +1,7 @@
 // Keeps the MLMetadata table (the list of classifier versions) up to date: the first time the
 // worker sees a model version on an answer, it is registered and marked as the active one.
-// "rules-v0" and now "rules-v1" are registered this way (and by the seed); a trained "ml-v1" will be too in Phase 9,
-// without any change here. Metrics are added by the training scripts in Phase 9.
+// "rules-v0", "rules-v1" and the trained "ml-v1" and "ml-v2" are registered this way (and by the
+// seed), without any change here.
 import type { PrismaClient } from '../generated/prisma/client.js';
 
 const DESCRIPTIONS: Record<string, string> = {
@@ -10,7 +10,8 @@ const DESCRIPTIONS: Record<string, string> = {
     'priority; payment requests, scam phrases, links, capitals and punctuation for spam.',
   ml:
     'Trained on synthetic data (Phase 9, docs/ml-training.md): TF-IDF words, letter pieces and ' +
-    'message details; Logistic Regression for priority, Naive Bayes for spam; guardrails: a job ' +
+    'message details; Logistic Regression or Naive Bayes, chosen by cross-validation (the model ' +
+    'card says which); guardrails: a job ' +
     'closing within 3 hours is urgent, and the scam check of the rules still blocks.',
 };
 

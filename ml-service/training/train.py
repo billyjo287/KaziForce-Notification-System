@@ -1,12 +1,15 @@
 """Trains the priority classifier and the spam detector (Phase 9, docs/ml-training.md).
 
-    python -m training.train            # writes models/ml-v1.joblib and models/ml-v1.json
+    python -m training.train            # writes models/ml-v2.joblib and models/ml-v2.json
 
 Steps:
-  1. Make the synthetic data (training/make_synthetic.py), also saved to data/synthetic-v1.csv.
-  2. Split it 80/20 BY TEMPLATE (validation messages come from templates the model never saw).
+  1. Make the synthetic data (training/make_synthetic_v2.py: about 150 situations, each written
+     many ways in English, Kiswahili and Sheng), also saved to data/synthetic-v2.csv.
+     ml-v1 used training/make_synthetic.py (68 fixed templates); it is kept to reproduce ml-v1.
+  2. Split it 80/20 BY SITUATION (validation messages come from situations the model never saw).
   3. Compare two models with 5-fold cross-validation (also by template) on the 80%:
        TF-IDF + Logistic Regression  and  TF-IDF + Multinomial Naive Bayes.
+     (The "template" column holds the situation id, so every split keeps a situation on one side.)
      Keep the better one for each task (macro F1).
   4. Choose the decision thresholds on the 20%:
        urgent: the highest threshold that still finds 90% of urgent messages (recall first:
@@ -15,8 +18,9 @@ Steps:
   5. Train the chosen models on ALL the synthetic data and save them with a model card (data
      hash, sizes, cross-validation and validation scores, thresholds, library versions).
 
-The hand-written evaluation set (evaluation/holdout-v1.csv) is not used here at all: it is the
-final test (training/evaluate_models.py).
+The hand-written test sets are not used here at all. holdout-v1 is now a development set (it
+was already used for ml-v1); holdout-v2, written by volunteers, is the final test
+(training/evaluate_models.py).
 """
 
 from __future__ import annotations
@@ -39,11 +43,11 @@ from sklearn.pipeline import FeatureUnion, Pipeline
 from sklearn.preprocessing import FunctionTransformer
 
 from app.classifiers import features
-from training import make_synthetic
+from training import make_synthetic_v2 as make_synthetic
 
 ROOT = Path(__file__).resolve().parent.parent
 MODELS = ROOT / "models"
-VERSION = "ml-v1"
+VERSION = "ml-v2"
 SEED = 2026
 PRIORITIES = ["urgent", "medium", "low"]
 URGENT_RECALL_TARGET = 0.90
@@ -186,10 +190,10 @@ def main() -> None:
         "version": VERSION,
         "trained_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
         "data": {
-            "source": "synthetic (training/make_synthetic.py, seed 2026); no real messages",
+            "source": "synthetic (training/make_synthetic_v2.py, seed 2026); no real messages",
             "rows": len(rows),
             "spam_rows": sum(r["is_spam"] for r in rows),
-            "templates": len(set(groups)),
+            "situations": len(set(groups)),
             "train_rows": len(train),
             "validation_rows": len(val),
             "sha256": sha256_rows(rows),
@@ -251,7 +255,7 @@ def main() -> None:
 
     print(
         f"{VERSION} trained on {len(rows)} synthetic messages "
-        f"({card['data']['templates']} templates)"
+        f"({card['data']['situations']} situations)"
     )
     print(
         f"  priority: {p_kind}, CV macro F1 {cv[p_kind]:.3f}, urgent threshold {t_urgent}, "

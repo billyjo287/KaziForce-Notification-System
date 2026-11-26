@@ -10,6 +10,7 @@ import {
   DEFAULT_RATE_LIMITS,
   type RateLimitSettings,
 } from './lib/rateLimits.js';
+import { abTestRoutes } from './modules/admin/abTest.js';
 import { adminRoutes } from './modules/admin/adminRoutes.js';
 import { monitoringRoutes } from './modules/admin/monitoringRoutes.js';
 import { reviewRoutes } from './modules/admin/reviewRoutes.js';
@@ -101,12 +102,13 @@ export function createApp({
   api.use('/applications', applicationRoutes());
   api.use('/conversations', messageRoutes(limits));
   api.use('/notifications', notificationRoutes());
-  // Every /admin address: logged in AND an admin, checked once here for all four routers (BT-20).
+  // Every /admin address: logged in AND an admin, checked once here for all the routers (BT-20).
   api.use('/admin', requireAuth, requireRole('admin'));
   api.use('/admin', adminRoutes(limits));
   api.use('/admin', reviewRoutes());
   api.use('/admin', monitoringRoutes());
   api.use('/admin', settingsRoutes());
+  api.use('/admin', abTestRoutes());
   app.use('/api', api);
 
   app.use((_req, res) => {

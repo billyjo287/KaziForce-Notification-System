@@ -1,7 +1,7 @@
 """The trained classifier (Phase 9): same contract as the rules, and its guardrails work.
 
-A small model is trained on the spot from the synthetic generator, so these tests do not need
-models/ml-v1.joblib to exist.
+A small model is trained on the spot from the synthetic generator (version 2), so these tests do
+not need models/ml-v2.joblib to exist.
 """
 
 import joblib
@@ -9,14 +9,12 @@ import pytest
 
 from app.classifiers.trained import TrainedClassifier
 from app.schemas import PredictRequest, PredictResponse
-from training import make_synthetic, train
+from training import make_synthetic, make_synthetic_v2, train
 
 
 @pytest.fixture(scope="module")
 def model_path(tmp_path_factory):
-    rows = make_synthetic.generate(
-        counts={"urgent": 150, "medium": 150, "low": 150, "spam": 120}, hard_each=10
-    )
+    rows = make_synthetic_v2.generate(per_situation=6)
     priority_rows = [r for r in rows if not r["is_spam"]]
     bundle = {
         "version": "ml-test",
@@ -27,7 +25,7 @@ def model_path(tmp_path_factory):
         "urgent_threshold": 0.4,
         "spam_threshold": 0.6,
     }
-    path = tmp_path_factory.mktemp("models") / "ml-v1.joblib"
+    path = tmp_path_factory.mktemp("models") / "ml-v2.joblib"
     joblib.dump(bundle, path)
     return path
 
@@ -97,3 +95,26 @@ def test_synthetic_data_has_no_real_people_and_keeps_templates():
         counts={"urgent": 20, "medium": 20, "low": 20, "spam": 20}, hard_each=2
     )
     assert rows == again
+
+
+def test_generator_v2_has_150_situations_three_languages_and_hard_negatives():
+    situations = make_synthetic_v2.SITUATIONS
+    assert len(situations) >= 150
+    assert len({s.id for s in situations}) == len(situations), "situation ids are unique"
+    assert {s.label for s in situations} == {"urgent", "medium", "low", "spam"}
+    assert sum(s.hard for s in situations) >= 12
+    for s in situations:
+        assert s.en and s.sw and s.sh, f"{s.id} is written in all three languages"
+        if s.type == "job_alert":
+            assert s.deadline, f"{s.id}: a job alert needs a deadline range"
+    rows = make_synthetic_v2.generate(per_situation=3)
+    assert rows == make_synthetic_v2.generate(per_situation=3), "same seed, same data"
+    assert {r["language"] for r in rows} == {"en", "sw", "sh"}
+    # Job-alert labels agree with the written rules (LABELLING.md): urgent closes within a day of
+    # starting, low closes in more than 2 days.
+    for r in rows:
+        if r["type"] == "job_alert" and not r["is_spam"]:
+            if r["priority"] == "low":
+                assert r["deadline_minutes"] > 2880
+            if r["priority"] == "urgent":
+                assert r["deadline_minutes"] <= 600

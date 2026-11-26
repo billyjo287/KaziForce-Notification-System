@@ -1,23 +1,28 @@
 """The final test (Phase 9, docs/ml-training.md): rules vs trained model on the hand-written set.
 
-    python -m training.evaluate_models
+    python -m training.evaluate_models                                     # holdout-v1
+    python -m training.evaluate_models --dataset evaluation/holdout-v2.csv # the final test
 
-Scores three classifiers on evaluation/holdout-v1.csv (177 hand-written messages, English and
-Kiswahili, never used for training or tuning):
-    rules-v1            the rule-based classifier in use until now
-    ml-v1-model-only    the trained models alone
-    ml-v1               the trained models + two guardrails (what /predict serves)
-Writes evaluation/results/<version>/{metrics.json, report.md} for each (same format as the
-Sprint II baseline) and evaluation/results/comparison.md with 95% bootstrap confidence intervals
-(the set is small: one message is about half a percentage point).
+Scores three classifiers on a hand-written set:
+    rules-v1            the rule-based classifier
+    ml-vN-model-only    the trained models alone
+    ml-vN               the trained models + two guardrails (what /predict serves)
+holdout-v1 (177 messages) was the final test of ml-v1 and is a development set for ml-v2.
+holdout-v2, written by volunteers who never saw the generator, is the final test of ml-v2: run it
+ONCE, after every choice about the model is made, and report what it says.
+Writes <results>/<version>/{metrics.json, report.md} for each and <results>/comparison.md with 95%
+bootstrap confidence intervals, where <results> is evaluation/results for holdout-v1 and
+evaluation/results/<dataset name> for any other set.
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 import platform
 import random
 from datetime import datetime, timezone
+from pathlib import Path
 
 from app.classifiers.rule_based import RULES_FILE, RuleBasedClassifier
 from app.classifiers.trained import DEFAULT_MODEL, TrainedClassifier
@@ -107,8 +112,13 @@ NAMES = {
 }
 
 
-def main() -> None:
-    rows = load_rows()
+def main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    parser.add_argument("--dataset", type=Path, default=DATASET)
+    args = parser.parse_args(argv)
+    dataset = args.dataset if args.dataset.is_absolute() else (ROOT / args.dataset)
+    results_dir = RESULTS if dataset.resolve() == DATASET.resolve() else RESULTS / dataset.stem
+    rows = load_rows(dataset)
     classifiers = [
         RuleBasedClassifier(),
         TrainedClassifier(str(DEFAULT_MODEL), guardrails=False),
@@ -116,8 +126,8 @@ def main() -> None:
     ]
     run = {
         "run_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
-        "dataset": DATASET.relative_to(ROOT).as_posix(),
-        "dataset_sha256": sha256(DATASET),
+        "dataset": dataset.relative_to(ROOT).as_posix(),
+        "dataset_sha256": sha256(dataset),
         "rules_sha256": sha256(RULES_FILE),
         "model_sha256": sha256(DEFAULT_MODEL),
         "rows": len(rows),
@@ -126,7 +136,7 @@ def main() -> None:
     table = {}
     for c in classifiers:
         results = evaluate(c, rows)
-        folder = RESULTS / results["model_version"]
+        folder = results_dir / results["model_version"]
         folder.mkdir(parents=True, exist_ok=True)
         (folder / "metrics.json").write_text(
             json.dumps({"run": run, **results}, indent=2, ensure_ascii=False) + "\n",
@@ -140,8 +150,14 @@ def main() -> None:
     lines = [
         "# Rules vs trained model on the hand-written test set",
         "",
-        f"{len(rows)} hand-written messages (`{run['dataset']}`), never used for training or "
-        "tuning. Ranges are 95% bootstrap confidence intervals "
+        f"{len(rows)} hand-written messages (`{run['dataset']}`), never used for training. "
+        + (
+            "For ml-v2 this set was a practice check only (it was looked at while building the "
+            "generator); the final test is holdout-v2. "
+            if dataset.resolve() == DATASET.resolve()
+            else ""
+        )
+        + "Ranges are 95% bootstrap confidence intervals "
         f"({BOOTSTRAP} resamples). Run: {run['run_at']}.",
         "",
         "| Measure | Target | " + " | ".join(versions) + " |",
@@ -158,16 +174,17 @@ def main() -> None:
     lines += [
         "",
         "- **rules-v1**: the rule-based classifier (Sprint II).",
-        "- **ml-v1-model-only**: TF-IDF + the chosen model, trained on synthetic data only.",
-        "- **ml-v1**: the same model with two guardrails (a job alert closing within 3 hours is "
-        "urgent, as the label definition says; anything the rule-based scam check blocks stays "
-        "blocked). This is what "
+        f"- **{versions[1]}**: TF-IDF + the chosen model, trained on synthetic data only.",
+        f"- **{versions[2]}**: the same model with two guardrails (a job alert closing within "
+        "3 hours is urgent, as the label definition says; anything the rule-based scam check "
+        "blocks stays blocked). This is what "
         "`CLASSIFIER=trained` serves.",
         "",
         "Every wrong answer is listed in each version's `report.md`.",
         "",
     ]
-    (RESULTS / "comparison.md").write_text("\n".join(lines), encoding="utf-8")
+    results_dir.mkdir(parents=True, exist_ok=True)
+    (results_dir / "comparison.md").write_text("\n".join(lines), encoding="utf-8")
     print("\n".join(lines))
 
 

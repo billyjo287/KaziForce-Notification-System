@@ -1,6 +1,6 @@
 """The trained classifier (Phase 9, docs/ml-training.md): CLASSIFIER=trained.
 
-Loads models/ml-v1.joblib (made by training/train.py) and answers /predict with exactly the same
+Loads models/ml-v2.joblib (made by training/train.py) and answers /predict with exactly the same
 PredictResponse as the rules, with source="ml". Two small safety rules sit on top of the model
 ("guardrails", explained in docs/ml-training.md):
 
@@ -26,7 +26,7 @@ from app.schemas import ExplanationItem, PredictRequest, PredictResponse
 #: A job alert closing this soon is urgent, whatever the model says (LABELLING.md).
 URGENT_DEADLINE_MINUTES = 180
 
-DEFAULT_MODEL = Path(__file__).resolve().parents[2] / "models" / "ml-v1.joblib"
+DEFAULT_MODEL = Path(__file__).resolve().parents[2] / "models" / "ml-v2.joblib"
 
 
 def _feature_names(pipeline) -> list[str]:
@@ -69,7 +69,7 @@ class TrainedClassifier:
     def __init__(self, model_path: str | None = None, guardrails: bool = True) -> None:
         path = Path(model_path) if model_path else DEFAULT_MODEL
         if path.is_dir():
-            path = path / "ml-v1.joblib"
+            path = path / "ml-v2.joblib"
         if not path.exists():
             raise RuntimeError(
                 f"No trained model at {path}. "

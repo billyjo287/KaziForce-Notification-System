@@ -366,6 +366,30 @@ describe('medium and low', () => {
   });
 });
 
+describe('A/B test group A: every alert the same way (ml-v2 plan step 8)', () => {
+  it('urgent, medium and low all go in the app + email only; no SMS/WhatsApp, no escalation', async () => {
+    const { user } = await makeWorker();
+    await prisma.user.update({ where: { id: user.id }, data: { abGroup: 'A' } });
+    for (const priority of ['urgent', 'medium', 'low'] as const) {
+      const n = await notify(user.id, priority);
+      expect(await delivery.dispatch(n.id)).toEqual({ now: ['email'], escalation: null });
+    }
+    await eventually(async () => expect(email.test.sent).toHaveLength(3));
+    await wait(WINDOW_MINUTES * 60_000 + 300);
+    expect(whatsapp.test.sent).toHaveLength(0);
+    expect(sms.test.sent).toHaveLength(0);
+  });
+
+  it('group B keeps the normal priority routing', async () => {
+    const { user } = await makeWorker();
+    await prisma.user.update({ where: { id: user.id }, data: { abGroup: 'B' } });
+    const n = await notify(user.id, 'urgent');
+    const plan = await delivery.dispatch(n.id);
+    expect(plan?.now).toEqual(['whatsapp']);
+    expect(plan?.escalation?.to).toBe('sms');
+  });
+});
+
 // ---------- providers calling back ----------
 
 /** Posts form fields signed like Twilio does. */

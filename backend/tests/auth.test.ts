@@ -43,15 +43,13 @@ describe('register', () => {
   });
 
   it('refuses short passwords', async () => {
-    const res = await request(app)
-      .post('/api/auth/register')
-      .send({
-        acceptTerms: true,
-        role: 'worker',
-        name: 'Test',
-        email: uniqueEmail(),
-        password: 'short',
-      });
+    const res = await request(app).post('/api/auth/register').send({
+      acceptTerms: true,
+      role: 'worker',
+      name: 'Test',
+      email: uniqueEmail(),
+      password: 'short',
+    });
     expect(res.status).toBe(400);
     expect(res.body.error.details.fields.password).toBeTruthy();
   });

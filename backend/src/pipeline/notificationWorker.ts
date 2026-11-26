@@ -2,6 +2,7 @@
 //   QUEUED -> processing -> classify (ML service /predict, or the same rules in Node if it does
 //   not answer within 500 ms) -> spam? BLOCKED (never delivered; waits for admin review;
 //   an admin can release it, and then it comes back here and skips the classification)
+//          -> the person's own habits may move the priority one step (personalise.ts)
 //          -> in-app delivery: DeliveryLog row + live push to the user's Socket.IO room -> SENT
 //          -> external channels (channels/delivery.ts): WhatsApp / SMS / email by priority and
 //             the person's preferences, with the urgent safety net.
@@ -10,12 +11,13 @@
 import { Worker } from 'bullmq';
 import type { Redis } from 'ioredis';
 import type { Logger } from 'pino';
-import type { PrismaClient } from '../generated/prisma/client.js';
+import type { Priority, PrismaClient } from '../generated/prisma/client.js';
 import { NOTIFICATION_QUEUE, idleFriendly, type ProcessJobData } from '../lib/queue.js';
 import { notificationInclude, serializeNotification } from '../modules/notifications/serialize.js';
 import { InAppAdapter } from '../channels/InAppAdapter.js';
 import { classify } from './classify.js';
 import { createModelRegistry } from './modelRegistry.js';
+import { personalPriority } from './personalise.js';
 
 export interface WorkerOptions {
   prisma: PrismaClient;
@@ -133,6 +135,23 @@ export function startNotificationWorker({
           data: { ...classification, status: 'blocked' },
         });
         return 'blocked';
+      }
+    }
+
+    // The person's own habits (Objective ii). A failed check changes nothing.
+    if (!released && 'predictedPriority' in classification) {
+      const model = (classification as { predictedPriority: Priority }).predictedPriority;
+      const personal = await personalPriority(prisma, input, model).catch((error: unknown) => {
+        logger.warn({ err: error, notificationId: id }, 'Personal priority check failed');
+        return { priority: model, reason: null };
+      });
+      if (personal.reason) {
+        classification = {
+          ...classification,
+          predictedPriority: personal.priority,
+          modelPriority: model,
+          personalReason: personal.reason,
+        };
       }
     }
 

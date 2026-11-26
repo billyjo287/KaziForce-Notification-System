@@ -44,7 +44,7 @@ const ALLOWS: Record<Threshold, Priority[]> = {
 };
 
 /** Settings saved as JSON: anything missing falls back to the Recommended preset. */
-function settingFor(settings: unknown, channel: ExternalChannel) {
+export function settingFor(settings: unknown, channel: ExternalChannel) {
   const saved = (settings as Partial<ChannelSettings> | null)?.[channel];
   const fallback = PRESETS.recommended.channelSettings[channel];
   return {
@@ -143,6 +143,35 @@ export function planDelivery(input: {
         }
       : null,
   };
+}
+
+/**
+ * A/B test group A (docs/ml-v2-plan.md step 8): every alert goes the same way whatever its
+ * priority: in the app (already done) plus email when the person and the category allow it.
+ * No SMS or WhatsApp, no escalation; quiet hours hold it like any other alert.
+ */
+export function planUniform(input: {
+  preferences: Preferences;
+  recipient: Recipient;
+  adapters: Adapters;
+  now: Date;
+  categoryChannels?: readonly ExternalChannel[];
+}): DeliveryPlan {
+  // "urgent" passes every threshold: only "is email switched on and reachable" is checked.
+  const email = usableChannels(
+    'urgent',
+    input.preferences,
+    input.recipient,
+    input.adapters,
+    input.categoryChannels,
+  ).filter((c) => c === 'email');
+  const quietUntil =
+    email.length > 0 && input.preferences.quietHours
+      ? quietHoursEndAt(input.preferences.quietHours, input.now)
+      : null;
+  return quietUntil
+    ? { now: [], escalation: null, heldUntil: quietUntil }
+    : { now: email, escalation: null };
 }
 
 /** The next usable channel not tried yet (after a failure or an unopened window). */

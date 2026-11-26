@@ -23,10 +23,12 @@ templates, 60% on unseen ones).
 | 1 | Freeze `holdout-v1` as a development set (already used, no longer blind) | Claude | done |
 | 2 | Volunteers write `holdout-v2`: 180+ messages (guide below), never shown to Claude before step 6 | Billy + 3-5 friends | 1 day, in parallel |
 | 3 | Generator v2: build messages from parts (opening + situation + time + action + closing) in EN, SW and Sheng, so one "template" yields thousands of different sentences; 150+ situations instead of 68; more urgent status updates and direct messages; Sheng and code-switching everywhere; typing noise (typos, no spaces, emojis) | Claude | 3-4 hours |
+| 3b | **User interaction patterns** (Objective ii): a per-user adjustment after the model, using what each person already does in the app. If someone has marked several alerts of the same kind (type and sender) "Not important to me", that kind is lowered one level for them (urgent is never lowered below medium, and never for job closing soon); if they open a kind quickly most of the time, it is raised from low to medium. Each change is shown as a reason ("You usually skip these"). Opens and "not important" taps also go into the retraining export with the admin's corrections. | Claude | 3-4 hours |
 | 4 | Retrain; choose settings only with unseen-template CV and the validation split; repeat step 3 until CV >= 0.75 | Claude | 1-2 hours |
 | 5 | Optional second opinion: a small multilingual model (for example a distilled multilingual BERT) compared on the same CV; kept only if clearly better and still under 500 ms on the server CPU | Claude | 2 hours |
 | 6 | One final run on `holdout-v2`, report the numbers as they are (also by language), update Chapter 5 | Claude + Billy | 1 hour |
 | 7 | Deploy `ml-v2` (update.sh), check the admin Models page | Billy | 15 min |
+| 8 | **A/B test and opt-out rate** (Objective v), on the final system: volunteers split at random into two groups for 3-5 days. Group A gets every alert the same way (in the app and by email); group B gets KaziForce priority routing. Test job alerts are posted at set times. Measured: time from sending to opening (target: B at least 40% faster) and channels switched off or STOP replies (B must not be higher than A). Needs a small "test group" setting and an admin export. | Claude (code) + Billy (volunteers) | half a day of code, 3-5 days of running |
 
 ## Guide for the volunteers who write holdout-v2
 

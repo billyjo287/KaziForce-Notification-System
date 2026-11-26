@@ -171,10 +171,13 @@ async function makeUser(
 }
 
 /** Opens a live connection; resolves when connected, rejects with the server's reason. */
-function openSocket(token: string | null): Promise<Socket> {
+function openSocket(
+  token: string | null,
+  transports: ('websocket' | 'polling')[] = ['websocket'],
+): Promise<Socket> {
   const socket = connect(baseUrl, {
     auth: token ? { token } : {},
-    transports: ['websocket'],
+    transports,
     forceNew: true,
     reconnection: false,
   });
@@ -266,6 +269,24 @@ describe('live connection (Socket.IO)', () => {
       .send({ reason: 'Testing live disconnect' });
     expect(res.status).toBe(200);
     expect(await closed).toBe('io server disconnect');
+  });
+  it('TC-008: with WebSockets blocked, the connection falls back to long-polling and alerts still arrive live', async () => {
+    // A network that blocks WebSockets (some offices and mobile networks) leaves only HTTP.
+    // A client that may only use long-polling stands in for it.
+    const socket = await openSocket(employerToken, ['polling']);
+    expect(socket.io.engine.transport.name).toBe('polling');
+    const arrived = nextNotification(socket, (n) => n.title === 'Polling check');
+    const started = Date.now();
+    const res = await request(app).post('/api/admin/announcements').set(auth(adminToken)).send({
+      audience: 'business',
+      title: 'Polling check',
+      message: 'This announcement must arrive without a WebSocket.',
+    });
+    expect(res.status).toBe(201);
+    expect(await arrived).toMatchObject({ sender: 'KaziForce', title: 'Polling check' });
+    expect(socket.io.engine.transport.name).toBe('polling');
+    // Logged for the testing report: time from the request to the alert on the polling client.
+    logger.info({ ms: Date.now() - started }, 'TC-008 long-polling delivery');
   });
 });
 
@@ -983,6 +1004,85 @@ describe('scam job posts are held until an admin decides (rules-v1)', () => {
       expect(n.status).toBe('blocked');
       expect(JSON.stringify(n.explanation)).toContain('job_description:spam:mobile_money_number');
     }, 5000);
+  });
+});
+
+describe("the person's own habits (Objective ii)", () => {
+  it('lowers alerts from a sender the person keeps marking "Not important", and says why', async () => {
+    const job = await prisma.job.create({
+      data: {
+        employerId,
+        title: 'Habits test job',
+        description: 'Used to check the personal priority.',
+        locationId: kisumu,
+        skillId: painting,
+        deadline: inTwoDays(),
+      },
+    });
+    const worker = await makeUser('worker', { locationId: kisumu });
+    const application = await prisma.application.create({
+      data: { jobId: job.id, workerId: worker.user.id },
+    });
+    const send = (body: string) =>
+      request(app)
+        .post(`/api/conversations/${application.id}`)
+        .set(auth(employerToken))
+        .send({ body })
+        .expect(201);
+    const saved = (message: string) =>
+      prisma.notification.findFirstOrThrow({ where: { recipientId: worker.user.id, message } });
+
+    await send('Hello, are you free on Monday for the painting?');
+    let first!: Awaited<ReturnType<typeof saved>>;
+    await eventually(async () => {
+      first = await saved('Hello, are you free on Monday for the painting?');
+      expect(first.status).toBe('sent');
+    });
+    expect(first.personalReason).toBeNull();
+    // The worker marked three earlier messages from this employer "Not important to me".
+    for (let i = 0; i < 3; i++) {
+      await prisma.notification.create({
+        data: {
+          ...Object.fromEntries(
+            Object.entries(first).filter(([k]) =>
+              [
+                'recipientId',
+                'recipientRole',
+                'senderId',
+                'senderRole',
+                'type',
+                'category',
+                'title',
+                'message',
+                'predictedPriority',
+              ].includes(k),
+            ),
+          ),
+          status: 'sent',
+          markedNotImportant: true,
+          markedNotImportantAt: new Date(),
+          createdAt: new Date(Date.now() - (i + 1) * 60_000),
+        } as never,
+      });
+    }
+
+    const socket = await openSocket(worker.token);
+    const arrived = nextNotification(socket, (n) => n.body === 'Another note about Monday');
+    await send('Another note about Monday');
+    const live = await arrived;
+    const second = await saved('Another note about Monday');
+    const lower = { urgent: 'medium', medium: 'low', low: 'low' } as const;
+    // A direct message is never low, so there is a step to go down.
+    expect(first.predictedPriority).not.toBe('low');
+    expect(second).toMatchObject({
+      modelPriority: first.predictedPriority,
+      predictedPriority: lower[first.predictedPriority!],
+      personalReason: 'often_skipped',
+    });
+    expect(live).toMatchObject({
+      priority: lower[first.predictedPriority!],
+      personalReason: 'often_skipped',
+    });
   });
 });
 

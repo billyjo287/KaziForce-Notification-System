@@ -58,8 +58,13 @@ export const AlertDetail = forwardRef<HTMLHeadingElement, AlertDetailProps>(func
       </button>
 
       <div className="flex flex-col gap-3">
-        <div>
+        <div className="flex flex-wrap items-center gap-3">
           <PriorityBadge priority={alert.priority} />
+          {alert.personalReason && (
+            <span className="text-ink-muted">
+              {t(`alerts.detail.personal.${alert.personalReason}`)}
+            </span>
+          )}
         </div>
         <h2 ref={headingRef} tabIndex={-1} className="text-2xl leading-tight font-bold">
           {alert.title}

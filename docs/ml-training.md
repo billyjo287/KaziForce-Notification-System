@@ -1,4 +1,40 @@
-# Model training (Phase 9): KaziForce priority and spam model `ml-v1`
+# Model training: KaziForce priority and spam models (`ml-v2`, and `ml-v1` below)
+
+## 0. ml-v2 (26 November 2026)
+
+Why: ml-v1 learned from about 40 templates, so it struggled with wordings it had not seen (urgent
+recall 71.7% on holdout-v1). The plan is in [ml-v2-plan.md](ml-v2-plan.md).
+
+What changed:
+- **Data** (`training/make_synthetic_v2.py`): 151 situations instead of templates. Each is a real
+  thing that happens on KaziForce (for example "employer moved today's job to another site") and
+  is written out separately in English, Kiswahili and Sheng, not translated word for word, with
+  short forms, typos and emojis added at random. 5,436 messages; 32 spam situations, 14 honest
+  "hard negatives" that look like scams but are not (real fees, real links).
+- **Validation**: grouped by situation, so the model is always scored on situations it never saw.
+- **Model**: same features and the same two guardrails. Logistic Regression won for both tasks.
+
+| Check | ml-v1 | ml-v2 |
+| --- | ---: | ---: |
+| Grouped cross-validation, priority macro F1 (unseen situations) | (templates) | 0.740 |
+| Grouped cross-validation, spam macro F1 | (templates) | 0.902 |
+| holdout-v1 urgent recall (practice set for ml-v2) | 71.7% | 91.3% (EN 93.1%, SW 88.2%) |
+| holdout-v1 priority weighted F1 | 83.1% | 92.5% |
+| holdout-v1 spam accuracy / honest messages blocked | 97.2% / 2.0% | 98.9% / 0.7% |
+
+**Be careful with these numbers.** holdout-v1 was the final test of ml-v1; for ml-v2 it was
+looked at while writing situations, so it is a practice set and the scores above are
+optimistic. The final test of ml-v2 is **holdout-v2**: messages written and labelled by
+volunteers who never saw the generator (Google Form, `KaziForce_Test_Messages_Form.gs`). It is
+imported with `python -m training.import_holdout_v2 responses.csv` and scored once with
+`python -m training.evaluate_models --dataset evaluation/holdout-v2.csv`. Only that result goes
+in the report. The health check (`python -m training.diagnostics`) shows the gap between seen
+(0.997) and unseen (0.740) situations, and the learning curve still rising, so more situations
+or real messages would help more than tuning.
+
+---
+
+The rest of this file is the ml-v1 record (Phase 9).
 
 Phase 9 started on 8 November 2026. This file covers the training only: what was done, the
 results, the limits, and how to present it. The original plan is the "ML Model Training Plan"

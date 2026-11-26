@@ -156,6 +156,13 @@ model User {
   suspendedReason       String?    @db.VarChar(500)
   // Set when the user asks to delete their account; a cleanup job deletes it within 30 days.
   deletionRequestedAt   DateTime?
+  // ---- A/B test (docs/ml-v2-plan.md step 8) ----
+  // "A" = every alert the same way (in the app, plus email when allowed), whatever its priority;
+  // "B" = normal priority routing. Empty = not in the test (normal routing).
+  abGroup      String?   @db.VarChar(1)
+  abAssignedAt DateTime?
+  // The person's settings when they joined, to count opt-outs: { channelsOn, categoriesOff }.
+  abBaseline   Json?
   // The person replied STOP (WhatsApp) or opted out with their network (SMS): that channel is
   // switched off in their preferences and never used until they switch it back on.
   whatsappOptedOutAt    DateTime?
@@ -390,6 +397,13 @@ model Notification {
   predictionSource   PredictionSource?
   // Top features behind the decision: [{ "feature": "...", "weight": 0.4 }]
   explanation        Json?
+
+  // ---- The person's own habits (Objective ii, pipeline/personalise.ts) ----
+  // When the person's history changed the classifier's answer: predictedPriority is the one
+  // used for delivery, modelPriority what the classifier said, and personalReason why
+  // (often_skipped | often_opened). Both empty = no change.
+  modelPriority  Priority?
+  personalReason String?   @db.VarChar(30)
 
   // ---- Admin corrections (training labels for the ML phase) ----
   correctedPriority Priority?

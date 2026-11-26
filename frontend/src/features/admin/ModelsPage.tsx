@@ -1,4 +1,4 @@
-import { BrainCircuit, CircleCheck, Download } from 'lucide-react';
+import { BrainCircuit, CircleCheck, Download, FlaskConical } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '../../components/ui/Badge';
@@ -7,11 +7,20 @@ import { Card } from '../../components/ui/Card';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { FormAlert } from '../../components/ui/FormAlert';
 import { Input } from '../../components/ui/Input';
+import { Textarea } from '../../components/ui/Textarea';
 import { CardListSkeleton } from '../../components/ui/Skeleton';
 import { useApiErrorMessage } from '../../lib/useApiErrorMessage';
 import { usePageTitle } from '../../lib/usePageTitle';
 import { showToast } from '../../stores/toasts';
-import { downloadTrainingData, useModels, type ModelVersion } from './adminApi';
+import {
+  downloadAbResults,
+  downloadTrainingData,
+  useAbAssign,
+  useAbRemove,
+  useAbTest,
+  useModels,
+  type ModelVersion,
+} from './adminApi';
 import { LoadError } from './shared';
 
 /** Model versions (MLMetadata) and the anonymised training data download (PRD FR-9). */
@@ -43,6 +52,7 @@ export default function ModelsPage() {
         </ul>
       )}
       <TrainingExport />
+      <AbTest />
     </div>
   );
 }
@@ -174,6 +184,85 @@ function TrainingExport() {
           <Download aria-hidden="true" className="size-5" />
           {busy ? t('admin.export.busy') : t('admin.export.button')}
         </Button>
+      </section>
+    </Card>
+  );
+}
+
+/** A/B test of priority routing: put volunteers in groups, see opt-outs, download results. */
+function AbTest() {
+  const { t } = useTranslation();
+  const { data } = useAbTest();
+  const assign = useAbAssign();
+  const remove = useAbRemove();
+  const [emails, setEmails] = useState('');
+  const [error, setError] = useState<string>();
+  const errorMessage = useApiErrorMessage();
+  const list = emails
+    .split(/[\s,;]+/)
+    .map((e) => e.trim())
+    .filter(Boolean);
+
+  async function run(action: 'assign' | 'remove' | 'download') {
+    setError(undefined);
+    try {
+      if (action === 'download') await downloadAbResults();
+      else {
+        await (action === 'assign' ? assign : remove).mutateAsync(list);
+        setEmails('');
+      }
+      showToast({ message: t(`admin.abTest.done.${action}`) });
+    } catch (e) {
+      setError(errorMessage(e));
+    }
+  }
+  const busy = assign.isPending || remove.isPending;
+  const count = (g: 'A' | 'B') => data?.filter((p) => p.group === g).length ?? 0;
+
+  return (
+    <Card className="mt-8">
+      <section aria-labelledby="ab-title" className="flex flex-col gap-4">
+        <h2 id="ab-title" className="flex items-center gap-2 text-xl font-bold">
+          <FlaskConical aria-hidden="true" className="size-5" />
+          {t('admin.abTest.title')}
+        </h2>
+        <p>{t('admin.abTest.body')}</p>
+        <p className="font-bold">{t('admin.abTest.counts', { a: count('A'), b: count('B') })}</p>
+        {data && data.length > 0 && (
+          <ul className="flex flex-col gap-1">
+            {data.map((p) => (
+              <li key={p.id}>
+                {p.name} · {t('admin.abTest.group', { group: p.group })}
+                {p.optOuts.length > 0 && (
+                  <span className="text-ink-muted"> · {t('admin.abTest.optedOut')}</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+        {error && <FormAlert>{error}</FormAlert>}
+        <Textarea
+          label={t('admin.abTest.emails')}
+          help={t('admin.abTest.emailsHelp')}
+          value={emails}
+          onChange={(e) => setEmails(e.target.value)}
+        />
+        <div className="flex flex-wrap gap-3">
+          <Button onClick={() => void run('assign')} disabled={busy || list.length === 0}>
+            {t('admin.abTest.assign')}
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => void run('remove')}
+            disabled={busy || list.length === 0}
+          >
+            {t('admin.abTest.remove')}
+          </Button>
+          <Button variant="secondary" onClick={() => void run('download')}>
+            <Download aria-hidden="true" className="size-5" />
+            {t('admin.abTest.download')}
+          </Button>
+        </div>
       </section>
     </Card>
   );

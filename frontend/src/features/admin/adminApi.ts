@@ -297,3 +297,43 @@ export async function downloadTrainingData(range: { from?: string; to?: string }
   link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 10_000);
 }
+
+// ---------- A/B test of priority routing (docs/ml-v2-plan.md step 8) ----------
+
+export interface AbParticipant {
+  id: string;
+  name: string;
+  role: 'worker' | 'business';
+  group: 'A' | 'B';
+  assignedAt: string | null;
+  optOuts: string[];
+}
+
+export const useAbTest = () =>
+  useQuery({
+    queryKey: ['admin', 'abTest'],
+    queryFn: async () => (await api.get<{ items: AbParticipant[] }>('/admin/ab-test')).data.items,
+  });
+
+export const useAbAssign = () =>
+  useAdminMutation((emails: string[]) =>
+    api.post('/admin/ab-test/assign', { emails, group: 'random' }),
+  );
+
+export const useAbRemove = () =>
+  useAdminMutation((emails: string[]) => api.post('/admin/ab-test/remove', { emails }));
+
+/** Downloads the A/B results as a CSV (one row per alert). */
+export async function downloadAbResults() {
+  const res = await api.get<Blob>('/admin/ab-test/export.csv', { responseType: 'blob' });
+  const url = URL.createObjectURL(res.data);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download =
+    /filename="([^"]+)"/.exec(String(res.headers['content-disposition'] ?? ''))?.[1] ??
+    'kaziforce-ab-test.csv';
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 10_000);
+}

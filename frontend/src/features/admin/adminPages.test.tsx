@@ -11,6 +11,7 @@ import DeliveryLogsPage from './DeliveryLogsPage';
 import OverviewPage from './OverviewPage';
 import NotificationRulesPage from './NotificationRulesPage';
 import SpamReviewPage from './SpamReviewPage';
+import ModelsPage from './ModelsPage';
 
 vi.mock('../../lib/api', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../../lib/api')>()),
@@ -468,6 +469,49 @@ describe('notification rules (ADR 0016)', () => {
       language: 'en',
       urgent: true,
       text: null,
+    });
+  });
+});
+
+describe('A/B test card (ml-v2 plan step 8)', () => {
+  it('shows the groups and opt-outs, and splits pasted emails at random', async () => {
+    vi.mocked(api.get).mockImplementation(async (url) => ({
+      data:
+        url === '/admin/ab-test'
+          ? {
+              items: [
+                {
+                  id: 'u1',
+                  name: 'Amina',
+                  role: 'worker',
+                  group: 'A',
+                  assignedAt: null,
+                  optOuts: [],
+                },
+                {
+                  id: 'u2',
+                  name: 'Otieno',
+                  role: 'worker',
+                  group: 'B',
+                  assignedAt: null,
+                  optOuts: ['channel_off:email'],
+                },
+              ],
+            }
+          : [],
+    }));
+    vi.mocked(api.post).mockResolvedValue({ data: { items: [] } });
+    renderWithRouter(<ModelsPage />);
+    expect(await screen.findByText('Group A: 1 · Group B: 1')).toBeInTheDocument();
+    expect(screen.getByText(/switched something off since joining/)).toBeInTheDocument();
+    await userEvent.type(
+      screen.getByLabelText("Volunteers' emails"),
+      'a@example.com{enter}b@example.com',
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Split at random into A and B' }));
+    expect(api.post).toHaveBeenCalledWith('/admin/ab-test/assign', {
+      emails: ['a@example.com', 'b@example.com'],
+      group: 'random',
     });
   });
 });

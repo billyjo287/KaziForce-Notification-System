@@ -221,6 +221,8 @@ export interface ApiNotification {
   markedNotImportant: boolean;
   /** "This was urgent for me" (BT-15). Missing from an older server. */
   markedUrgent?: boolean;
+  /** Why the priority was moved from the person's own habits (Objective ii). */
+  personalReason?: 'often_skipped' | 'often_opened' | null;
 }
 
 export interface AdminUserRow {

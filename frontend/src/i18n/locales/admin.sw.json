@@ -321,6 +321,23 @@
           "wording_characters": "Tumia herufi na alama za kawaida tu (bila emoji wala alama za nukuu zilizopinda)."
         }
       }
+    },
+    "abTest": {
+      "title": "Jaribio la A/B la kupanga arifa kwa kipaumbele",
+      "body": "Kundi A linapata kila arifa kwa njia moja (ndani ya programu, pamoja na barua pepe). Kundi B linapata mpangilio wa kawaida wa kipaumbele (za dharura kwa SMS au WhatsApp, za chini katika muhtasari wa kila siku). Ongeza tu wanaojitolea waliokubali kushiriki.",
+      "counts": "Kundi A: {{a}} · Kundi B: {{b}}",
+      "group": "kundi {{group}}",
+      "optedOut": "amezima kitu tangu ajiunge",
+      "emails": "Barua pepe za wanaojitolea",
+      "emailsHelp": "Moja kwa kila mstari. Wanagawanywa bila mpangilio, nusu A na nusu B.",
+      "assign": "Gawanya bila mpangilio katika A na B",
+      "remove": "Ondoa kwenye jaribio",
+      "download": "Pakua matokeo ya A/B (CSV)",
+      "done": {
+        "assign": "Wanaojitolea wameongezwa kwenye jaribio",
+        "remove": "Wameondolewa kwenye jaribio",
+        "download": "Faili iko tayari"
+      }
     }
   },
   "apiErrors": {

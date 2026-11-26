@@ -25,6 +25,7 @@ export function toAlert(n: ApiNotification): Alert {
     location: n.location ?? undefined,
     markedNotImportant: n.markedNotImportant,
     markedUrgent: n.markedUrgent ?? false,
+    personalReason: n.personalReason ?? undefined,
   };
 }
 

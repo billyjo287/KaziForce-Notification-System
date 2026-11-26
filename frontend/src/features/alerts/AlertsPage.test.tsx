@@ -247,6 +247,24 @@ describe('Alerts dashboard', () => {
     ).not.toBeInTheDocument();
   });
 
+  it("says why the priority was moved from the person's own habits (Objective ii)", () => {
+    const alert = toAlert({ ...createNotifications()[1]!, personalReason: 'often_skipped' });
+    renderWithRouter(
+      <AlertDetail
+        role="worker"
+        alert={alert}
+        onBack={() => {}}
+        onNotImportant={() => {}}
+        onMarkUnread={() => {}}
+        onMainAction={() => {}}
+        onUrgentForMe={() => {}}
+      />,
+    );
+    expect(
+      screen.getByText('Lowered: you usually mark these “Not important to me”'),
+    ).toBeInTheDocument();
+  });
+
   it('search asks the server, across the whole history, and opens a result (FR-NOT-027)', async () => {
     const old = { ...createNotifications()[0]!, id: 'old1', title: 'Old job: Loaders in Thika' };
     vi.mocked(api.get).mockImplementation(async (_url, config) =>

@@ -1,4 +1,4 @@
-"""Model health check for ml-v1: is it overfitting or underfitting, and does it work in both
+"""Model health check for ml-v2: is it overfitting or underfitting, and does it work in both
 languages? Read-only: it trains copies of the models on the synthetic data and never changes
 models/ or the test set.
 
@@ -6,7 +6,7 @@ Run from ml-service/:  python -m training.diagnostics
 
 What it reports (docs/ml-training.md, section "Model health check"):
 1. Fit on the training data itself vs unseen templates (the overfitting gap).
-2. Random 5-fold vs template-grouped 5-fold cross-validation (memorising templates vs learning).
+2. Random 5-fold vs situation-grouped 5-fold cross-validation (memorising templates vs learning).
 3. A learning curve: more templates -> better unseen-template score?
 4. A regularisation sweep (C for logistic regression, alpha for Naive Bayes).
 5. How close each test message is to its nearest training message (leakage check).
@@ -27,7 +27,7 @@ from sklearn.model_selection import GroupKFold, GroupShuffleSplit, KFold
 
 from app.classifiers import features
 from app.classifiers.trained import TrainedClassifier
-from training import make_synthetic
+from training import make_synthetic_v2 as make_synthetic
 from training.evaluate_baseline import load_rows, to_request
 from training.train import SEED, build, requests_of
 

@@ -1,0 +1,508 @@
+{
+  "run": {
+    "run_at": "2026-11-26 18:12 UTC",
+    "dataset": "evaluation/holdout-v1.csv",
+    "dataset_sha256": "66920042f56b817d10e5bd18d0e1c83ca2a616ff729b9332e6e9228997b924de",
+    "rules_sha256": "dfd0a5b1d8ccb0d9ba49da14d95e8eab56d3a82d77569fb7ea648ecc440668a6",
+    "model_sha256": "eb0840e3abf177064750616160fa50089373a202061f99456a07ec1b637cfe77",
+    "rows": 177,
+    "python": "3.13.18"
+  },
+  "model_version": "ml-v2-model-only",
+  "priority": {
+    "rows": 147,
+    "accuracy": 0.9251700680272109,
+    "weighted_f1": 0.9250820917348915,
+    "macro_f1": 0.9251128732782781,
+    "per_class": {
+      "urgent": {
+        "precision": 0.9333333333333333,
+        "recall": 0.9130434782608695,
+        "f1": 0.9230769230769231,
+        "support": 46
+      },
+      "medium": {
+        "precision": 0.94,
+        "recall": 0.9038461538461539,
+        "f1": 0.9215686274509804,
+        "support": 52
+      },
+      "low": {
+        "precision": 0.9038461538461539,
+        "recall": 0.9591836734693877,
+        "f1": 0.9306930693069307,
+        "support": 49
+      }
+    },
+    "labels": [
+      "urgent",
+      "medium",
+      "low"
+    ],
+    "confusion_matrix": [
+      [
+        42,
+        2,
+        2
+      ],
+      [
+        2,
+        47,
+        3
+      ],
+      [
+        1,
+        1,
+        47
+      ]
+    ]
+  },
+  "spam": {
+    "rows": 177,
+    "accuracy": 0.9887005649717514,
+    "weighted_f1": 0.9887005649717514,
+    "macro_f1": 0.9799319727891156,
+    "per_class": {
+      "True": {
+        "precision": 0.9666666666666667,
+        "recall": 0.9666666666666667,
+        "f1": 0.9666666666666667,
+        "support": 30
+      },
+      "False": {
+        "precision": 0.9931972789115646,
+        "recall": 0.9931972789115646,
+        "f1": 0.9931972789115646,
+        "support": 147
+      }
+    },
+    "labels": [
+      "True",
+      "False"
+    ],
+    "confusion_matrix": [
+      [
+        29,
+        1
+      ],
+      [
+        1,
+        146
+      ]
+    ],
+    "false_positive_rate": 0.006802721088435374
+  },
+  "by_language": {
+    "en": {
+      "priority": {
+        "rows": 97,
+        "accuracy": 0.9484536082474226,
+        "weighted_f1": 0.9484199837257314,
+        "macro_f1": 0.9474398482428713,
+        "per_class": {
+          "urgent": {
+            "precision": 0.9310344827586207,
+            "recall": 0.9310344827586207,
+            "f1": 0.9310344827586207,
+            "support": 29
+          },
+          "medium": {
+            "precision": 0.9459459459459459,
+            "recall": 0.9722222222222222,
+            "f1": 0.9589041095890412,
+            "support": 36
+          },
+          "low": {
+            "precision": 0.967741935483871,
+            "recall": 0.9375,
+            "f1": 0.9523809523809523,
+            "support": 32
+          }
+        },
+        "labels": [
+          "urgent",
+          "medium",
+          "low"
+        ],
+        "confusion_matrix": [
+          [
+            27,
+            1,
+            1
+          ],
+          [
+            1,
+            35,
+            0
+          ],
+          [
+            1,
+            1,
+            30
+          ]
+        ]
+      },
+      "spam": {
+        "rows": 117,
+        "accuracy": 0.9829059829059829,
+        "weighted_f1": 0.9829059829059829,
+        "macro_f1": 0.9698453608247424,
+        "per_class": {
+          "True": {
+            "precision": 0.95,
+            "recall": 0.95,
+            "f1": 0.9500000000000001,
+            "support": 20
+          },
+          "False": {
+            "precision": 0.9896907216494846,
+            "recall": 0.9896907216494846,
+            "f1": 0.9896907216494846,
+            "support": 97
+          }
+        },
+        "labels": [
+          "True",
+          "False"
+        ],
+        "confusion_matrix": [
+          [
+            19,
+            1
+          ],
+          [
+            1,
+            96
+          ]
+        ],
+        "false_positive_rate": 0.010309278350515464
+      }
+    },
+    "sw": {
+      "priority": {
+        "rows": 50,
+        "accuracy": 0.88,
+        "weighted_f1": 0.8781290216135952,
+        "macro_f1": 0.877137986030908,
+        "per_class": {
+          "urgent": {
+            "precision": 0.9375,
+            "recall": 0.8823529411764706,
+            "f1": 0.9090909090909091,
+            "support": 17
+          },
+          "medium": {
+            "precision": 0.9230769230769231,
+            "recall": 0.75,
+            "f1": 0.8275862068965517,
+            "support": 16
+          },
+          "low": {
+            "precision": 0.8095238095238095,
+            "recall": 1.0,
+            "f1": 0.8947368421052632,
+            "support": 17
+          }
+        },
+        "labels": [
+          "urgent",
+          "medium",
+          "low"
+        ],
+        "confusion_matrix": [
+          [
+            15,
+            1,
+            1
+          ],
+          [
+            1,
+            12,
+            3
+          ],
+          [
+            0,
+            0,
+            17
+          ]
+        ]
+      },
+      "spam": {
+        "rows": 60,
+        "accuracy": 1.0,
+        "weighted_f1": 1.0,
+        "macro_f1": 1.0,
+        "per_class": {
+          "True": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 10
+          },
+          "False": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 50
+          }
+        },
+        "labels": [
+          "True",
+          "False"
+        ],
+        "confusion_matrix": [
+          [
+            10,
+            0
+          ],
+          [
+            0,
+            50
+          ]
+        ],
+        "false_positive_rate": 0.0
+      }
+    }
+  },
+  "mistakes": [
+    {
+      "id": 32,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Laundry assistant\nFreshFold needs Laundry in Kilimani. Pay: KSh 700. Apply before 20:00.",
+      "label_priority": "medium",
+      "predicted_priority": "urgent",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "closes in about 12 hours, nothing starts today",
+      "explanation": [
+        "meta:sender_business",
+        "meta:dl_3to24h",
+        "meta:type_job_alert",
+        "word:in"
+      ]
+    },
+    {
+      "id": 56,
+      "language": "en",
+      "type": "job_alert",
+      "text": "Sales agents (commission)\nFiberNet needs Sales in Kisumu. Pay: commission on each sale. Apply before 14 October.",
+      "label_priority": "low",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": true,
+      "why": "closes in 5 days",
+      "explanation": [
+        "meta:dl_gt2d",
+        "meta:recipient_worker",
+        "word:apply before",
+        "word:pay",
+        "spam:meta:sender_business",
+        "spam:meta:dl_gt2d",
+        "spam:word:pay",
+        "spam:meta:recipient_worker"
+      ]
+    },
+    {
+      "id": 71,
+      "language": "en",
+      "type": "status_update",
+      "text": "Your application was accepted\nMwangi Logistics accepted your application for \"Warehouse packers\". Open Messages to agree the details.",
+      "label_priority": "urgent",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "accepted: confirm before the place goes to someone else",
+      "explanation": [
+        "meta:dl_none",
+        "word:application",
+        "word:application for",
+        "word:messages"
+      ]
+    },
+    {
+      "id": 73,
+      "language": "sw",
+      "type": "status_update",
+      "text": "Ombi lako limekubaliwa\nMwangi Logistics wamekubali ombi lako la \"Wapakiaji\". Fungua Ujumbe mkubaliane maelezo.",
+      "label_priority": "urgent",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "accepted",
+      "explanation": [
+        "word:ombi",
+        "meta:dl_none",
+        "word:lako",
+        "word:lako la"
+      ]
+    },
+    {
+      "id": 85,
+      "language": "sw",
+      "type": "status_update",
+      "text": "Mwombaji mpya\nOtieno Ochieng ameomba kazi ya \"Walinzi wawili\".",
+      "label_priority": "medium",
+      "predicted_priority": "urgent",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "new applicant to look at",
+      "explanation": [
+        "meta:type_status_update",
+        "meta:sender_worker",
+        "meta:recipient_business",
+        "meta:hr_afternoon"
+      ]
+    },
+    {
+      "id": 92,
+      "language": "en",
+      "type": "status_update",
+      "text": "Job closed\nThe job \"Painters, one-day job\" was filled. You do not need to do anything.",
+      "label_priority": "low",
+      "predicted_priority": "urgent",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "information only",
+      "explanation": [
+        "meta:sender_business",
+        "meta:type_status_update",
+        "word:do",
+        "word:the"
+      ]
+    },
+    {
+      "id": 106,
+      "language": "sw",
+      "type": "message",
+      "text": "Ujumbe mpya kutoka kwa Elimu Bora\nAsante kwa kuomba. Unafundisha masomo gani?",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "question to answer",
+      "explanation": [
+        "word:asante kwa",
+        "word:asante",
+        "meta:recipient_worker",
+        "word:kwa"
+      ]
+    },
+    {
+      "id": 110,
+      "language": "sw",
+      "type": "message",
+      "text": "Ujumbe mpya kutoka kwa Rangi Bora\nTutakulipa kwa M-Pesa baada ya kazi kuisha.",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "wages by M-Pesa after work: honest",
+      "explanation": [
+        "meta:recipient_worker",
+        "word:kwa",
+        "char:tuta",
+        "char: tuta"
+      ]
+    },
+    {
+      "id": 116,
+      "language": "sw",
+      "type": "message",
+      "text": "Ujumbe mpya kutoka kwa Shamba Bora\nTutahitaji watu 5 zaidi mwezi ujao. Una marafiki?",
+      "label_priority": "medium",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "question to answer",
+      "explanation": [
+        "word:mwezi",
+        "meta:recipient_worker",
+        "word:ujao",
+        "char:tuta"
+      ]
+    },
+    {
+      "id": 122,
+      "language": "en",
+      "type": "message",
+      "text": "New message from Safari Events\nHave a good weekend!",
+      "label_priority": "low",
+      "predicted_priority": "medium",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "greeting only",
+      "explanation": [
+        "meta:type_message",
+        "meta:dl_none",
+        "word:have",
+        "char:wee"
+      ]
+    },
+    {
+      "id": 141,
+      "language": "en",
+      "type": "announcement",
+      "text": "Service problem right now\nSMS alerts are delayed this morning. Please open the app to see urgent jobs.",
+      "label_priority": "urgent",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "outage now: open the app to avoid missing jobs",
+      "explanation": [
+        "meta:sender_admin",
+        "meta:type_announcement",
+        "meta:recipient_worker",
+        "word:see"
+      ]
+    },
+    {
+      "id": 142,
+      "language": "sw",
+      "type": "announcement",
+      "text": "Tatizo la huduma sasa hivi\nArifa za SMS zimechelewa asubuhi hii. Fungua programu kuona kazi za haraka.",
+      "label_priority": "urgent",
+      "predicted_priority": "low",
+      "label_spam": false,
+      "predicted_spam": false,
+      "why": "outage now: open the app to avoid missing jobs",
+      "explanation": [
+        "meta:sender_admin",
+        "meta:type_announcement",
+        "meta:recipient_worker",
+        "word:fungua"
+      ]
+    },
+    {
+      "id": 156,
+      "language": "en",
+      "type": "message",
+      "text": "New message from Faith\nHi dear, I am stuck. Please send me KSh 1,000 by M-Pesa, I will pay back tomorrow.",
+      "label_priority": "medium",
+      "predicted_priority": "medium",
+      "label_spam": true,
+      "predicted_spam": false,
+      "why": "stranger asks for money",
+      "explanation": [
+        "meta:type_message",
+        "word:tomorrow",
+        "meta:dl_none",
+        "word:by"
+      ]
+    }
+  ],
+  "targets": {
+    "priority_weighted_f1": {
+      "target": 0.85,
+      "met": true
+    },
+    "spam_accuracy": {
+      "target": 0.95,
+      "met": true
+    },
+    "spam_false_positive_rate": {
+      "target": 0.05,
+      "met": true
+    }
+  }
+}

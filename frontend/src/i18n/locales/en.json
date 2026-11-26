@@ -128,7 +128,11 @@
       "markUnread": "Mark as unread",
       "urgentForMe": "This was urgent for me",
       "urgentForMeHelp": "Tell us when an alert should have reached you sooner. It helps us sort alerts better.",
-      "urgentForMeSaved": "You said this was urgent for you"
+      "urgentForMeSaved": "You said this was urgent for you",
+      "personal": {
+        "often_skipped": "Lowered: you usually mark these “Not important to me”",
+        "often_opened": "Raised: you usually open these quickly"
+      }
     },
     "tabsLabel": "Alert categories",
     "tabUnread_one": "{{count}} new",

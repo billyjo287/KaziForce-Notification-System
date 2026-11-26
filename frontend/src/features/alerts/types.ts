@@ -20,6 +20,8 @@ export interface Alert {
   markedNotImportant?: boolean;
   /** The user said "This was urgent for me" (BT-15): a training signal. */
   markedUrgent?: boolean;
+  /** The priority was moved one step from the person's own habits (Objective ii). */
+  personalReason?: 'often_skipped' | 'often_opened';
   /** Arrived while the page was open, so it slides in. */
   arrivedLive?: boolean;
 }

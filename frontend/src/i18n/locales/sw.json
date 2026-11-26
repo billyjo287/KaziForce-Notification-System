@@ -128,7 +128,11 @@
       "markUnread": "Weka kuwa haijasomwa",
       "urgentForMe": "Hii ilikuwa ya haraka kwangu",
       "urgentForMeHelp": "Tuambie arifa inapopaswa kukufikia mapema zaidi. Inatusaidia kupanga arifa vizuri zaidi.",
-      "urgentForMeSaved": "Ulisema hii ilikuwa ya haraka kwako"
+      "urgentForMeSaved": "Ulisema hii ilikuwa ya haraka kwako",
+      "personal": {
+        "often_skipped": "Imeshushwa: kwa kawaida unaziweka “Si muhimu kwangu”",
+        "often_opened": "Imepandishwa: kwa kawaida unazifungua haraka"
+      }
     },
     "tabsLabel": "Aina za arifa",
     "tabUnread_one": "{{count}} mpya",

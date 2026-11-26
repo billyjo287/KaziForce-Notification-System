@@ -252,6 +252,8 @@ export async function summaryRecipients(prisma: PrismaClient, until: Date): Prom
           role: { not: 'admin' },
           emailVerifiedAt: { not: null },
           preference: { dailySummary: true, summaryFrequency: frequency },
+          // A/B test group A already got every low alert by email (planUniform).
+          OR: [{ abGroup: null }, { abGroup: { not: 'A' } }],
         },
       },
       distinct: ['recipientId'],
@@ -278,6 +280,7 @@ export async function buildSummaryFor(
       language: true,
       status: true,
       deletionRequestedAt: true,
+      abGroup: true,
       preference: { select: { dailySummary: true, summaryFrequency: true } },
     },
   });
@@ -287,6 +290,7 @@ export async function buildSummaryFor(
     user.deletionRequestedAt ||
     !user.emailVerifiedAt ||
     user.role === 'admin' ||
+    user.abGroup === 'A' ||
     !user.preference?.dailySummary
   ) {
     return null;

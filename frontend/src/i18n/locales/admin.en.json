@@ -321,6 +321,23 @@
           "wording_characters": "Use plain letters and punctuation only (no emoji or curly quotes)."
         }
       }
+    },
+    "abTest": {
+      "title": "A/B test of priority routing",
+      "body": "Group A gets every alert the same way (in the app, plus email). Group B gets the normal priority routing (urgent by SMS or WhatsApp, low ones in the daily summary). Only add volunteers who agreed to take part.",
+      "counts": "Group A: {{a}} · Group B: {{b}}",
+      "group": "group {{group}}",
+      "optedOut": "switched something off since joining",
+      "emails": "Volunteers' emails",
+      "emailsHelp": "One per line. They are split at random, half in A and half in B.",
+      "assign": "Split at random into A and B",
+      "remove": "Remove from the test",
+      "download": "Download A/B results (CSV)",
+      "done": {
+        "assign": "Volunteers added to the test",
+        "remove": "Removed from the test",
+        "download": "Download ready"
+      }
     }
   },
   "apiErrors": {
