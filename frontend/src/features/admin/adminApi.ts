@@ -320,6 +320,10 @@ export const useAbAssign = () =>
     api.post('/admin/ab-test/assign', { emails, group: 'random' }),
   );
 
+/** Sends test round 1, 2 or 3: the same six alerts to every worker in the test. */
+export const useAbRound = () =>
+  useAdminMutation((round: 1 | 2 | 3) => api.post('/admin/ab-test/round', { round }));
+
 export const useAbRemove = () =>
   useAdminMutation((emails: string[]) => api.post('/admin/ab-test/remove', { emails }));
 

@@ -1086,6 +1086,58 @@ describe("the person's own habits (Objective ii)", () => {
   });
 });
 
+describe('A/B test rounds (ml-v2 plan step 8, short version)', () => {
+  it('sends the same six alerts to every worker in the test, in their language, through the pipeline', async () => {
+    const english = await makeUser('worker');
+    const swahili = await makeUser('worker', { language: 'sw' });
+    const outside = await makeUser('worker');
+    await prisma.user.updateMany({
+      where: { id: { in: [english.user.id, swahili.user.id] } },
+      data: { abGroup: 'A' },
+    });
+    await prisma.user.update({ where: { id: swahili.user.id }, data: { abGroup: 'B' } });
+
+    const sent = await request(app)
+      .post('/api/admin/ab-test/round')
+      .set(auth(adminToken))
+      .send({ round: 1 })
+      .expect(201);
+    expect(sent.body.round).toBe(1);
+
+    const of = (id: string) =>
+      prisma.notification.findMany({ where: { recipientId: id, senderRole: 'system' } });
+    await eventually(async () => {
+      for (const p of [english, swahili]) {
+        const alerts = await of(p.user.id);
+        expect(alerts).toHaveLength(6);
+        expect(alerts.every((n) => n.status === 'sent' && n.predictedPriority)).toBe(true);
+      }
+    });
+    const en = await of(english.user.id);
+    const sw = await of(swahili.user.id);
+    expect(en.every((n) => n.message.endsWith('(Test alert for the KaziForce study.)'))).toBe(true);
+    expect(sw.some((n) => n.title.startsWith('Msafishaji'))).toBe(true);
+    // The job closing in an hour is urgent for both (the 3-hour guardrail).
+    for (const list of [en, sw]) {
+      const closing = list.find(
+        (n) => n.type === 'job_alert' && n.deadlineAt!.getTime() - Date.now() < 2 * 3_600_000,
+      );
+      expect(closing?.predictedPriority).toBe('urgent');
+    }
+    expect(await of(outside.user.id)).toHaveLength(0);
+
+    await prisma.user.updateMany({
+      where: { id: { in: [english.user.id, swahili.user.id] } },
+      data: { abGroup: null },
+    });
+    await request(app)
+      .post('/api/admin/ab-test/round')
+      .set(auth(adminToken))
+      .send({ round: 4 })
+      .expect(400);
+  });
+});
+
 describe('"Not important to me": the optional "why?"', () => {
   it('saves a reason (and a note) only after marking; Undo forgets them', async () => {
     const worker = await makeUser('worker', { locationId: kisumu });

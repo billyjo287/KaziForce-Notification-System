@@ -336,8 +336,11 @@
       "done": {
         "assign": "Wanaojitolea wameongezwa kwenye jaribio",
         "remove": "Wameondolewa kwenye jaribio",
-        "download": "Faili iko tayari"
-      }
+        "download": "Faili iko tayari",
+        "round": "Raundi {{round}} imetumwa"
+      },
+      "roundsHelp": "Jaribio fupi: tuma raundi ya 1, kisha ya 2 na ya 3 baada ya saa kadhaa. Kila mfanyakazi kwenye jaribio anapata arifa sita zilezile (zimeandikwa kuwa za majaribio); kipaumbele kinaamuliwa na mfumo.",
+      "sendRound": "Tuma raundi ya majaribio {{round}}"
     }
   },
   "apiErrors": {

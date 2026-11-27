@@ -513,5 +513,7 @@ describe('A/B test card (ml-v2 plan step 8)', () => {
       emails: ['a@example.com', 'b@example.com'],
       group: 'random',
     });
+    await userEvent.click(screen.getByRole('button', { name: 'Send test round 2' }));
+    expect(api.post).toHaveBeenCalledWith('/admin/ab-test/round', { round: 2 });
   });
 });

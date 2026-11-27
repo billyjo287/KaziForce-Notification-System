@@ -38,6 +38,11 @@ export interface DomainEventPayloads {
     title: string;
     message: string;
   };
+  // A/B test round: the same alerts to every worker in the test (modules/admin/abRounds.ts).
+  'abtest.round': {
+    adminId: string;
+    round: 1 | 2 | 3;
+  };
 }
 
 export type DomainEventType = keyof DomainEventPayloads;

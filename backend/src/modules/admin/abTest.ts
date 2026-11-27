@@ -16,6 +16,7 @@ import { currentUser } from '../../middleware/auth.js';
 import { settingFor } from '../../channels/router.js';
 import { CATEGORIES, normalizeCategorySettings } from '../../preferences/categories.js';
 import { csvLine, makeTokenizer } from './trainingExport.js';
+import { recordEvent } from '../../events/domainEvents.js';
 
 const EXTERNAL = ['whatsapp', 'sms', 'email'] as const;
 
@@ -280,6 +281,37 @@ export function abTestRoutes() {
       }),
     ]);
     res.json({ removed: result.count });
+  });
+
+  // Sends one test round (1-3) to every worker in the test, through the normal pipeline.
+  router.post('/ab-test/round', async (req, res) => {
+    const admin = currentUser(req);
+    const { round } = parse(
+      z.object({ round: z.union([z.literal(1), z.literal(2), z.literal(3)]) }),
+      req.body,
+    );
+    const workers = await prisma.user.count({
+      where: {
+        role: 'worker',
+        abGroup: { in: ['A', 'B'] },
+        status: 'active',
+        deletionRequestedAt: null,
+      },
+    });
+    if (workers === 0) throw notFound('No workers are in the A/B test yet');
+    await prisma.$transaction(async (tx) => {
+      const event = await recordEvent(tx, 'abtest.round', { adminId: admin.id, round });
+      await tx.auditLog.create({
+        data: {
+          actorId: admin.id,
+          action: 'ab_test.round_sent',
+          targetType: 'announcement',
+          targetId: event.id,
+          metadata: { round, workers },
+        },
+      });
+    });
+    res.status(201).json({ round, workers, alerts: workers * 6 });
   });
 
   router.get('/ab-test/export.csv', async (req, res) => {

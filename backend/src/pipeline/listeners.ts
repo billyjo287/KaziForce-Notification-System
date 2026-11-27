@@ -4,10 +4,12 @@
 //   application.status_changed  -> the worker: reviewed / accepted / rejected (FR-2.2)
 //   message.sent                -> the other person in the conversation (FR-2.3)
 //   admin.announcement          -> everyone, or all workers, or all employers (FR-2.4)
+//   abtest.round                -> every worker in the A/B test: the round's six alerts
 // Each listener only DESCRIBES the notifications; createNotifications.ts checks and saves them.
 import type { DomainEventPayloads, DomainEventType } from '../events/domainEvents.js';
 import type { Prisma, Role } from '../generated/prisma/client.js';
 import type { NotificationInput } from './createNotifications.js';
+import { roundFor } from '../modules/admin/abRounds.js';
 import { applicationStatusText, jobAlertText, messageText, newApplicantText } from './templates.js';
 
 type Tx = Prisma.TransactionClient;
@@ -197,12 +199,33 @@ const announcement: Listener<'admin.announcement'> = async (tx, payload) => {
   }));
 };
 
+const abRound: Listener<'abtest.round'> = async (tx, payload) => {
+  const people = await tx.user.findMany({
+    where: { role: 'worker', abGroup: { in: ['A', 'B'] }, ...reachable },
+    select: { id: true, role: true, language: true },
+  });
+  const now = new Date();
+  return people.flatMap((person) =>
+    roundFor(payload.round, person.language === 'sw' ? 'sw' : 'en', now).map((alert) => ({
+      ...alert,
+      recipientId: person.id,
+      recipientRole: person.role,
+      senderId: null,
+      senderRole: 'system' as const,
+      link: null,
+      jobId: null,
+      createdAt: now,
+    })),
+  );
+};
+
 const listeners: { [T in DomainEventType]: Listener<T> } = {
   'job.posted': jobPosted,
   'application.created': applicationCreated,
   'application.status_changed': statusChanged,
   'message.sent': messageSent,
   'admin.announcement': announcement,
+  'abtest.round': abRound,
 };
 
 export const isKnownEvent = (type: string): type is DomainEventType => type in listeners;

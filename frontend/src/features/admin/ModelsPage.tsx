@@ -17,6 +17,7 @@ import {
   downloadTrainingData,
   useAbAssign,
   useAbRemove,
+  useAbRound,
   useAbTest,
   useModels,
   type ModelVersion,
@@ -195,6 +196,7 @@ function AbTest() {
   const { data } = useAbTest();
   const assign = useAbAssign();
   const remove = useAbRemove();
+  const round = useAbRound();
   const [emails, setEmails] = useState('');
   const [error, setError] = useState<string>();
   const errorMessage = useApiErrorMessage();
@@ -203,9 +205,14 @@ function AbTest() {
     .map((e) => e.trim())
     .filter(Boolean);
 
-  async function run(action: 'assign' | 'remove' | 'download') {
+  async function run(action: 'assign' | 'remove' | 'download' | 1 | 2 | 3) {
     setError(undefined);
     try {
+      if (typeof action === 'number') {
+        await round.mutateAsync(action);
+        showToast({ message: t('admin.abTest.done.round', { round: action }) });
+        return;
+      }
       if (action === 'download') await downloadAbResults();
       else {
         await (action === 'assign' ? assign : remove).mutateAsync(list);
@@ -216,7 +223,7 @@ function AbTest() {
       setError(errorMessage(e));
     }
   }
-  const busy = assign.isPending || remove.isPending;
+  const busy = assign.isPending || remove.isPending || round.isPending;
   const count = (g: 'A' | 'B') => data?.filter((p) => p.group === g).length ?? 0;
 
   return (
@@ -247,6 +254,19 @@ function AbTest() {
           value={emails}
           onChange={(e) => setEmails(e.target.value)}
         />
+        <p>{t('admin.abTest.roundsHelp')}</p>
+        <div className="flex flex-wrap gap-3">
+          {([1, 2, 3] as const).map((r) => (
+            <Button
+              key={r}
+              variant="secondary"
+              onClick={() => void run(r)}
+              disabled={busy || !data?.length}
+            >
+              {t('admin.abTest.sendRound', { round: r })}
+            </Button>
+          ))}
+        </div>
         <div className="flex flex-wrap gap-3">
           <Button onClick={() => void run('assign')} disabled={busy || list.length === 0}>
             {t('admin.abTest.assign')}
