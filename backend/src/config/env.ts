@@ -100,6 +100,19 @@ const envSchema = z.object({
         .filter(Boolean),
     )
     .pipe(z.array(z.enum(['whatsapp', 'sms', 'email']))),
+  // Channels switched off completely: never chosen, for anyone, so alerts go to the next channel
+  // in each person's order. E.g. "whatsapp" while there is no WhatsApp account, so urgent alerts
+  // go straight to SMS instead of to a WhatsApp message that is only logged.
+  OFF_CHANNELS: z
+    .string()
+    .default('')
+    .transform((v) =>
+      v
+        .split(',')
+        .map((c) => c.trim())
+        .filter(Boolean),
+    )
+    .pipe(z.array(z.enum(['whatsapp', 'sms', 'email']))),
   TWILIO_ACCOUNT_SID: z.string().optional(),
   TWILIO_AUTH_TOKEN: z.string().optional(),
   // e.g. whatsapp:+14155238886 (the Twilio sandbox number) or your approved WhatsApp sender
@@ -164,7 +177,8 @@ const withProviderKeys = envSchema.superRefine((v, ctx) => {
   }
   if (v.CHANNEL_MODE === 'mock') return;
   // A channel kept in mock mode (MOCK_CHANNELS) needs no provider keys.
-  const live = (channel: 'whatsapp' | 'sms' | 'email') => !v.MOCK_CHANNELS.includes(channel);
+  const live = (channel: 'whatsapp' | 'sms' | 'email') =>
+    !v.MOCK_CHANNELS.includes(channel) && !v.OFF_CHANNELS.includes(channel);
   const required: (keyof typeof v)[] = [
     ...(live('whatsapp')
       ? (['TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN', 'TWILIO_WHATSAPP_FROM'] as const)

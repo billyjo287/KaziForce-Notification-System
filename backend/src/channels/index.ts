@@ -1,6 +1,7 @@
 // Builds the external channel adapters from the settings (.env). CHANNEL_MODE decides for all of
 // them: mock (log only; email to Mailpit), sandbox (provider test accounts) or live, except the
 // channels listed in MOCK_CHANNELS, which stay in mock mode (e.g. WhatsApp without a provider).
+// Channels in OFF_CHANNELS reach nobody, so the router skips them and uses the next channel.
 import type { Logger } from 'pino';
 import { env } from '../config/env.js';
 import { logger as defaultLogger } from '../lib/logger.js';
@@ -16,6 +17,8 @@ export interface ChannelSetup {
   mockFailChannels?: string[];
   /** These channels stay in mock mode whatever `mode` says. */
   mockChannels?: string[];
+  /** These channels are switched off: they reach nobody, so the router skips them. */
+  offChannels?: string[];
 }
 
 export function createAdapters({
@@ -23,6 +26,7 @@ export function createAdapters({
   logger,
   mockFailChannels = [],
   mockChannels = env.MOCK_CHANNELS,
+  offChannels = env.OFF_CHANNELS,
 }: ChannelSetup) {
   const options = (name: string) => ({
     mode: mockChannels.includes(name) ? ('mock' as const) : mode,
@@ -30,7 +34,7 @@ export function createAdapters({
     mockFails: mockFailChannels.includes(name),
   });
   const api = env.PUBLIC_API_URL.replace(/\/$/, '');
-  return {
+  const adapters = {
     whatsapp: new WhatsAppAdapter(options('whatsapp'), {
       accountSid: env.TWILIO_ACCOUNT_SID || undefined,
       authToken: env.TWILIO_AUTH_TOKEN || undefined,
@@ -59,6 +63,11 @@ export function createAdapters({
       smtp: env.NODE_ENV === 'test' ? 'memory' : { host: env.SMTP_HOST, port: env.SMTP_PORT },
     }),
   };
+  for (const name of offChannels) {
+    const adapter = adapters[name as keyof typeof adapters];
+    if (adapter) adapter.addressFor = () => null;
+  }
+  return adapters;
 }
 
 export type ExternalAdapters = ReturnType<typeof createAdapters>;

@@ -277,3 +277,26 @@ describe('WhatsApp through Twilio (sandbox)', () => {
     expect(form.get('Body')).toContain('KaziForce (Act now)');
   });
 });
+
+describe('OFF_CHANNELS: a channel switched off for everyone', () => {
+  it('with WhatsApp off, urgent alerts go straight to SMS and escalate to email', () => {
+    const noWhatsApp = createAdapters({
+      mode: 'mock',
+      logger: pino({ level: 'silent' }),
+      offChannels: ['whatsapp'],
+    });
+    expect(noWhatsApp.whatsapp.addressFor(person())).toBeNull();
+    expect(noWhatsApp.sms.addressFor(person())).toBe('+254712345678');
+    const result = planDelivery({
+      priority: 'urgent',
+      preferences: prefs(),
+      recipient: person(),
+      adapters: noWhatsApp,
+      deadlineAt: null,
+      now,
+      windowMinutes: 10,
+    });
+    expect(result.now).toEqual(['sms']);
+    expect(result.escalation?.to).toBe('email');
+  });
+});
